@@ -58,17 +58,19 @@ planning proceeds.
 - [x] A documentation tree containing only Markdown fails the project, excludes it from the site, and
   makes the build exit 1.
 
-## Remaining open questions
+## Resolved questions
 
-These are recorded in `plan.md` under "Assumptions pending confirmation" and were reported to the
-user as a single numbered list. None blocks writing the plan or the task list.
+All questions raised during planning were answered by the user on 2026-10-31 and are recorded in
+`plan.md` under "Confirmed decisions". Nothing remains open.
 
-- [ ] Whether creating the `doc-target` organization property is a task in this repository or an
-  operator setup step.
-- [ ] Search extract limit and index granularity.
-- [ ] Default concurrency.
-- [ ] Whether the site repository's workflow YAML belongs in this specification.
-- [ ] Whether Markdown migration of `message-bus` and `messagebus-event` is tracked here.
+- [x] Creating the `doc-target` organization property is an operator setup step, not a task in this
+  repository.
+- [x] Search extract limit is 2,000 characters per page, with one index per project covering all
+  versions plus a site index.
+- [x] Default render concurrency is 4.
+- [x] The site repository's workflow YAML belongs to the follow-on action and site specifications.
+- [x] Markdown migration of `message-bus` and `messagebus-event` is tracked as separate pull requests
+  in those repositories, not here.
 
 ## Notes
 

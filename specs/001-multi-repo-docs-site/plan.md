@@ -645,9 +645,10 @@ Full detail in `research.md`. Summary of the decisions that shape the plan:
 | Site owns the HTML document shell instead of the converter | The converter's shell cannot express project switcher, version selector, site-owned sidebar, or clock-free output | Using `header_footer` and post-processing the converter's shell would require parsing HTML to inject chrome, which is more fragile than rendering a template |
 | Content-hashed asset names | Cache invalidation without a build id, while keeping output deterministic | A fixed asset name plus a query string would either be non-deterministic or defeat caching on GitHub Pages, which ignores query strings for caching |
 
-## Assumptions pending confirmation
+## Confirmed decisions
 
-Each line states the default this plan adopts and the alternative that was rejected.
+These are settled decisions, accepted by the user on 2026-10-31. Each line states the decision and the
+alternative that was rejected.
 
 1. Search extract limit is 2,000 characters per page, truncated at a word boundary; rejected: no
    truncation, which inflates the index for long API pages.

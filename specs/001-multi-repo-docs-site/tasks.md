@@ -377,12 +377,15 @@ new repository can be onboarded by following the README.
   and its safe-mode limits, cross-project links, and what drives the outdated-version banner.
   Acceptance: a new author can add a page to an existing project by following the guide alone, and the
   guide references no source file, class, or function.
-- [ ] T075 Write the operator guide at `docs/v1/operating.adoc`, covering creating the `doc-target`
-  organization property, the two fine-grained PATs with their exact permissions as recorded in
-  `plan.md`, the site repository secrets, and the nightly, manual dispatch, and `repository_dispatch`
-  triggers. Acceptance: an operator holding organization admin can onboard a repository end to end
-  using only this document, and every permission it names matches the credentials section of
-  `plan.md` word for word.
+- [ ] T075 Write the operator guide at `docs/v1/operating.adoc`, covering the `doc-target` organization
+  property with its actual configuration (boolean value, organization scope, `required` true,
+  `default_value` `"false"`, `require_explicit_values` true, `values_editable_by` `org_actors`), the
+  two fine-grained PATs with their exact permissions as recorded in `plan.md`, the site repository
+  secrets, and the nightly, manual dispatch, and `repository_dispatch` triggers. Acceptance: an
+  operator holding organization admin can onboard a repository end to end using only this document;
+  the document states that onboarding requires an organization owner rather than a repository admin,
+  that new repositories arrive with `doc-target` set to `false`, and every permission it names matches
+  the credentials section of `plan.md` word for word.
 - [ ] T076 Write the theme guide at `docs/v1/theming.adoc`, covering the token set, the per-project
   accent override, light and dark behaviour including the system preference and the persisted choice,
   and where to override without forking the package. Acceptance: changing a token or an accent in

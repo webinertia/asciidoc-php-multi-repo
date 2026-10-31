@@ -112,8 +112,10 @@ sequence.
 ## R7. How is discovery implemented?
 
 **Evidence**: the organization custom property `ci-target` already exists and is read from the
-organization's repository list. The equivalent for documentation is `doc-target`. A token is required
-because custom property values are not readable anonymously at the organization level.
+organization's repository list. The equivalent for documentation is `doc-target`, which is modelled
+on `ci-target` but differs: it is required with an explicit default of `false`, requires explicit
+values, and is editable by organization owners only. A token is required because custom property
+values are not readable anonymously at the organization level.
 
 **Decision**: `GitHubPropertyDiscovery` calls the GitHub REST API through `ext-curl`, reading the
 token from the environment variable named in configuration, following pagination, and treating only

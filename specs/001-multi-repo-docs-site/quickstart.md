@@ -93,7 +93,9 @@ converter repository's stack.
 1. Migrate the project's documentation to AsciiDoc under `docs/`, one directory per published
    version: `docs/v1/index.adoc`, `docs/v2/index.adoc`, and so on. A project with a single unversioned
    `docs/` directory publishes at `/slug/latest/`.
-2. Set the organization custom property `doc-target` to `true` on the repository.
+2. Set the organization custom property `doc-target` to `true` on the repository. This needs an
+   organization owner: the property is required with a default of `false` and is editable by
+   organization owners only, so every repository already carries `false` until an owner flips it.
 3. Do nothing else. No change to `site.json`, no entry in a list, no code change.
 
 The next build discovers the repository, renders it, adds a landing-page card, a switcher entry, and a

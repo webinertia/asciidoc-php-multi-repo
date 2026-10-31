@@ -84,6 +84,43 @@ in a component repository cannot enumerate the organization.
 **Publishing**: the `gh-pages` branch is pushed with the site repository's own `GITHUB_TOKEN`, not
 either PAT.
 
+#### Organization property configuration
+
+The `doc-target` property exists in the organization and is configured as follows. The builder reads
+this configuration; it never creates or modifies organization properties, and the discovery token
+holds Custom properties Read only, so editability has no effect on the builder.
+
+| Field | `doc-target` | `ci-target` |
+| --- | --- | --- |
+| `value_type` | `true_false` | `true_false` |
+| `source_type` | `organization` | `organization` |
+| `required` | `true` | `false` |
+| `default_value` | `"false"` | none |
+| `require_explicit_values` | `true` | `false` |
+| `values_editable_by` | `org_actors` | `org_and_repo_actors` |
+| description | "Custom property for targeting repo's for the doc builder." | "This property targets a repo for CI workflow runs." |
+
+Because `required` is true with `require_explicit_values` true and a default of `"false"`, every
+repository in the organization carries an explicit value, so discovery filters on the string `"true"`
+and never sees null. Onboarding therefore requires an organization owner, not a repository admin.
+That is deliberate: it prevents a repository admin from publishing to the public documentation site
+under a slug of their choosing.
+
+Verify the live configuration before a first build:
+
+```
+gh api orgs/webinertia/properties/schema
+```
+
+#### Non-organization deployments
+
+GitHub custom properties exist only for organizations, so a personal-account deployment cannot use
+property discovery at all. It supplies the project list through the existing `--manifest` path
+specified in `contracts/cli.md` and FR-006, which reads a local manifest instead of calling the API.
+That is the complete org-agnostic story: configuration names the organization, the property, and the
+onboard value for organization deployments, and names a manifest for everything else. No
+per-repository property fallback is planned.
+
 Verification, before the first live build:
 
 ```
@@ -698,7 +735,11 @@ alternative that was rejected.
    schema on the docs site, which couples schema availability to a build.
 5. Creating the `doc-target` organization property is a documented setup step owned by the operator,
    not something the builder does; rejected: having the builder create the property, which would need
-   admin scope and mutate organization state.
+   admin scope and mutate organization state. The live property is boolean-valued and
+   organization-scoped, marked required with an explicit default of `"false"`, requires explicit
+   values, and is editable by organization owners only (`org_actors`), so onboarding needs an
+   organization owner and every repository carries an explicit value; the builder reads it with
+   Custom properties Read and never writes it.
 6. Discovery uses the GitHub REST custom property values endpoint with a fine-grained PAT from the
    environment; rejected: shelling out to `gh`, which adds a binary to the action image.
 7. The site repository's nightly, dispatch, and `repository_dispatch` workflows are specified in the

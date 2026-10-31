@@ -59,8 +59,11 @@ page. No other story is required for this test to pass.
 2. **Given** the same repository, **When** a reader requests `/message-bus/`, **Then** the served
    page resolves to `/message-bus/v2/` (the highest `vN`), and `/message-bus/v1/` still serves the
    older documentation.
-3. **Given** a repository with `doc-target` unset, null, or false, **When** a build runs, **Then** no
-   output path is produced for that repository and it does not appear in the site navigation.
+3. **Given** a repository whose `doc-target` value is `false`, **When** a build runs, **Then** no
+   output path is produced for that repository and it does not appear in the site navigation. The
+   builder applies the same rule to an unset or null value, although with `required` true,
+   `require_explicit_values` true, and a default of `"false"`, every organization repository carries
+   an explicit value and only `false` occurs in practice.
 4. **Given** a repository whose `docs/` directory has no `vN` subdirectory, **When** a build runs,
    **Then** its pages are published under `/slug/latest/...` and `/slug/` resolves to
    `/slug/latest/`.
@@ -294,6 +297,9 @@ written and the exit code matches the documented semantics.
   configured base path and no link starts with a hard-coded slash-rooted path.
 - The organization has more repositories than one API page returns: discovery follows pagination and
   produces the same project set as a single-page response.
+- A deployment targets a personal account rather than an organization: GitHub custom properties exist
+  only for organizations, so property discovery is unavailable and the deployment supplies the
+  project list through the offline manifest instead.
 - A repository is deleted between discovery and fetch: that project fails with reason `fetch-failed`
   and the rest of the build continues.
 - The same project is discovered twice through an override and through discovery: the override wins
@@ -310,7 +316,10 @@ written and the exit code matches the documented semantics.
 
 - **FR-001**: The builder MUST obtain the project list by reading the organization custom property
   named in configuration (default name `doc-target`) and MUST treat only repositories whose value is
-  the configured onboard value (default `true`) as onboarded.
+  the configured onboard value (default `true`) as onboarded. Because the organization property is
+  required with an explicit default of `false`, discovery filters on the value and never sees null;
+  the builder still treats unset and null as not onboarded so the property name and onboard value
+  remain configurable.
 - **FR-002**: Discovery MUST follow API pagination until exhausted and MUST produce the same project
   set regardless of page size.
 - **FR-003**: Discovery MUST exclude repositories named in the configuration exclude list, and MUST
@@ -504,9 +513,14 @@ written and the exit code matches the documented semantics.
 - **FR-074**: Onboarding a repository MUST require only setting the organization custom property to
   the onboard value and providing a documentation tree that satisfies FR-010 to FR-014; no change to
   this package or to the site configuration MAY be required.
-- **FR-075**: The organization custom property MUST be created as a boolean-valued property editable
-  by organization and repository actors, mirroring the existing CI targeting property, and the
-  builder MUST NOT create or modify organization properties.
+- **FR-075**: The organization custom property MUST be a boolean-valued, organization-scoped property
+  configured with `value_type` `true_false`, `source_type` `organization`, `required` true,
+  `default_value` `"false"`, `require_explicit_values` true, and `values_editable_by` `org_actors`
+  (organization owners only). It is modelled on the existing CI targeting property (`ci-target`), and
+  the fields that differ are `required` (true versus false), `default_value` (`"false"` versus none),
+  `require_explicit_values` (true versus false), and `values_editable_by` (`org_actors` versus
+  `org_and_repo_actors`). The builder MUST NOT create or modify organization properties, and because
+  the discovery token holds Custom properties Read only, editability has no effect on the builder.
 - **FR-076**: The site configuration MUST allow per-project overrides for slug, title, description,
   accent colour, and display order, and MUST require no override for a project to appear.
 
@@ -571,9 +585,10 @@ written and the exit code matches the documented semantics.
   a sub-path deployment is supported by configuration but is not the primary target.
 - `git` is available wherever the builder runs, including the action image and the local container
   stack.
-- The existing organization CI property (`ci-target`) establishes the pattern for the new
-  documentation property: organization scope, boolean value, editable by organization and repository
-  actors.
+- The existing organization CI property (`ci-target`) is the model for the documentation property:
+  organization scope, boolean value, read through the same endpoint. The documentation property
+  differs by being required with an explicit default of `false` and editable by organization owners
+  only, so every organization repository carries a value and onboarding needs an organization owner.
 - The first two onboarded projects are `message-bus` and `messagebus-event`, both with `docs/v1` and
   `docs/v2` Markdown trees that are migrated to AsciiDoc before or during onboarding.
 - Search runs entirely in the browser over a pre-built index; no server-side search, no external

@@ -79,8 +79,11 @@ No secret value, and no token, may appear on either stream.
 
 | Variable | Required | Purpose |
 | --- | --- | --- |
-| The name in `organization.tokenEnvVar` | For live discovery only | Property enumeration |
+| The name in `organization.tokenEnvVar` | For live discovery only | Property enumeration. The token needs Organization permissions, Custom properties, Read, with the organization as resource owner and public repository access. See the credentials section of `plan.md` |
 | `NO_COLOR` | no | When set, colour is disabled |
+
+The token must not be the same credential used to trigger `repository_dispatch` on the site
+repository. Publishing `gh-pages` uses the site repository's own `GITHUB_TOKEN`.
 
 No other environment variable affects behaviour. The command must not read `HOME`, a shell profile, or
 a global config file.

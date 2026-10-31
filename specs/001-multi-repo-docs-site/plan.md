@@ -58,6 +58,43 @@ across runs. No secret may reach disk, stdout, or the report.
 **Scale/Scope**: designed for 10 to 100 repositories, 1 to 10 versions per project, up to a few
 thousand pages in aggregate.
 
+### Credentials and operator setup
+
+Two separate fine-grained personal access tokens, plus the site repository's own `GITHUB_TOKEN`.
+
+**Discovery token** (enumerates `doc-target` repositories):
+
+- Organization permissions: Custom properties, Read. That is the permission GitHub lists for
+  `GET /orgs/{org}/properties/values`.
+- Resource owner: the organization. Repository access: public repositories, read only. Public clones
+  need no authentication, so no Contents permission is required.
+- No write permissions of any kind.
+- That single endpoint returns `repository_full_name` for every repository, so no separate repository
+  listing call is made and no Metadata, Administration, or Contents permission is needed.
+- The token owner must be an organization member, because organization members can read these
+  properties. If the organization enforces a fine-grained PAT policy, the token must be approved or
+  calls return 403.
+- If private repositories are onboarded later, add Contents, Read, and select those repositories.
+
+**Trigger token** (separate credential, never the discovery token): calling `repository_dispatch` on
+the site repository requires Contents, Read and write on `webinertia/docs.webinertia.net`. Using
+`workflow_dispatch` instead would require Actions, write. The credentials are separated so that a leak
+in a component repository cannot enumerate the organization.
+
+**Publishing**: the `gh-pages` branch is pushed with the site repository's own `GITHUB_TOKEN`, not
+either PAT.
+
+Verification, before the first live build:
+
+```
+curl -sS -H "Authorization: Bearer $DOC_DISCOVERY_TOKEN" \
+  "https://api.github.com/orgs/webinertia/properties/values?per_page=1"
+```
+
+A `200` with a JSON array means the permission and membership are correct. A `403` means the token
+policy needs approval or the owner is not an organization member.
+
+
 ## Constitution Check
 
 *GATE: must pass before implementation. Re-checked after Phase 1 design.*

@@ -22,6 +22,7 @@ increment and never depends on unmerged work from a later group.
 | 5 | `feat: search index and browser search` | Group 4 | Story 4 |
 | 6 | `feat: incremental builds, determinism, and reporting` | Group 5 | Story 2 and Story 5 |
 | 7 | `feat: container stack, CLI contract, and onboarding docs` | Group 6 | Story 6, Story 7, onboarding |
+| 8 | `docs: author, operator, theme, and troubleshooting guides` | Group 7 | Documentation set and dogfooded package docs |
 
 Tasks marked `[P]` inside a group can be executed in parallel by different people because they touch
 disjoint files. A task without `[P]` must follow the task above it in the same group.
@@ -369,6 +370,39 @@ report per-project outcomes with documented exit codes.
 **Checkpoint Group 7**: the container stack works, the CLI contract is documented and tested, and a
 new repository can be onboarded by following the README.
 
+## Phase 9: Documentation (Group 8)
+
+- [ ] T074 Write the author guide at `docs/v1/authoring.adoc`, covering the `docs/vN` layout, the entry
+  page contract (`index.adoc` then `README.adoc`), where images and assets belong, `include::` usage
+  and its safe-mode limits, cross-project links, and what drives the outdated-version banner.
+  Acceptance: a new author can add a page to an existing project by following the guide alone, and the
+  guide references no source file, class, or function.
+- [ ] T075 Write the operator guide at `docs/v1/operating.adoc`, covering creating the `doc-target`
+  organization property, the two fine-grained PATs with their exact permissions as recorded in
+  `plan.md`, the site repository secrets, and the nightly, manual dispatch, and `repository_dispatch`
+  triggers. Acceptance: an operator holding organization admin can onboard a repository end to end
+  using only this document, and every permission it names matches the credentials section of
+  `plan.md` word for word.
+- [ ] T076 Write the theme guide at `docs/v1/theming.adoc`, covering the token set, the per-project
+  accent override, light and dark behaviour including the system preference and the persisted choice,
+  and where to override without forking the package. Acceptance: changing a token or an accent in
+  `site.json` changes the rendered site with no package edit, verified by a before-and-after build
+  comparison.
+- [ ] T077 Dogfood the pipeline: author this package's own documentation in AsciiDoc under its own
+  `docs/v1` tree, and add a CI step that renders it through this package. Acceptance: the CI step
+  fails the build when rendering fails, and a test asserts the rendered output contains the package
+  name and at least one link to another rendered page.
+- [ ] T078 Write the troubleshooting and reason code reference at `docs/v1/troubleshooting.adoc`: every
+  reason code the report can emit, what causes it, and how to fix it. Acceptance: a test compares the
+  reason codes in `contracts/report.schema.json` against the codes documented in the table and fails
+  when one is missing.
+- [ ] T079 Add a README pointer section linking the author, operator, theme, and troubleshooting guides
+  plus `quickstart.md`. Acceptance: every guide is reachable from the README in one hop, verified by a
+  link check over the README.
+
+**Checkpoint Group 8**: the package documents itself, the four guides are reachable from the README,
+and this repository's own documentation is built by its own pipeline in CI.
+
 ## Dependencies and ordering
 
 - Group 1 must land first: every later group uses `Path`, `ProcessRunner`, `Filesystem`, `Json`,
@@ -383,6 +417,8 @@ new repository can be onboarded by following the README.
 - Group 6 depends on Groups 2 to 5 being able to produce a complete site, because determinism and
   incrementality are measured over the whole output.
 - Group 7 depends on Group 6 for exit codes and reports that the container and watch loop surface.
+- Group 8 depends on Group 7: the guides document the CLI contract and onboarding behaviour that
+  Group 7 finalises, and the dogfooding task needs the render pipeline and container stack in place.
 
 ## Parallel opportunities
 
@@ -394,6 +430,8 @@ new repository can be onboarded by following the README.
 - Within Group 5: T048 and T051 are independent; T049 depends on T048.
 - Within Group 6: T055 and T058 are independent; T059 depends on T058.
 - Within Group 7: T063, T066, T067, and T068 are independent; T069 depends on T063 and T065.
+- Within Group 8: T074, T075, T076, and T078 are independent; T077 depends on T074 for its source
+  tree; T079 depends on T074, T075, T076, and T078 existing.
 
 ## Out of scope for this task list
 
@@ -409,4 +447,4 @@ new repository can be onboarded by following the README.
 
 ## Counts
 
-Tasks: 73 (T001 to T073). Groups: 7. User stories covered: 7 of 7.
+Tasks: 79 (T001 to T079). Groups: 8. User stories covered: 7 of 7.

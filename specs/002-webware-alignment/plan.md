@@ -179,15 +179,23 @@ repeats this list.
 - **D-3 `.gitattributes` export-ignore paths.** The artifact carries `/test/ export-ignore`. This
   package's directory is `tests/`, so the entry becomes `/tests/ export-ignore`. The existing
   `bin/asciidoc-php-multi-repo text eol=lf` entry is preserved in the merged file.
-- **D-4 README badges.** The artifact opens with Packagist PHP-version and latest-version badges.
-  `webware/asciidoc-php-multi-repo` is not published on Packagist (the package metadata endpoint
-  returns 404), so those two badges would render as errors. The block keeps License, Required CI,
-  codecov and Mutation testing, all with `DEFAULT_BRANCH` = `1.0.x`, and omits the two Packagist
-  badges until the package is published.
-- **D-5 Container artifacts.** `Dockerfile`, `compose.yml` and `.dockerignore` are owned by
-  `tyrsson-container-stack`. This feature verifies that they exist, that the `tooling` service is
-  the single source of truth, and that no Mago version literal appears in them; it does not edit
-  them.
+- **D-4 README badges.** The artifact opens with Packagist PHP-version and latest-version badges
+  and a License badge. `webware/asciidoc-php-multi-repo` is not published on Packagist (the package
+  metadata endpoint returns 404) and the repository carries no `LICENSE` file, so those three
+  badges would render as errors. The Required CI badge is kept, pointed at the organization config
+  repository's actual workflow. `webinertia/.github` ships `continuous-integration.yml`, not the
+  artifact's `org-required-ci.yml`, so the synthetic route is
+  `required/webinertia/.github/.github/workflows/continuous-integration.yml`. The codecov and
+  Stryker mutation badges are omitted until those reports exist for `1.0.x`. `DEFAULT_BRANCH` is
+  `1.0.x`.
+- **D-5 Container artifacts.** `compose.yml` and `.dockerignore` are owned by the container session
+  and are not edited here. `Dockerfile` is replaced with a byte-identical copy of
+  `presets/webware-alignment/artifacts/Dockerfile` (5400 bytes, SHA256
+  `0b6a454d24fb24e52781b4ae43a3bc2451a5645045c2535508db24c982f90799`), restoring the Mago install
+  stage that `1.0.x` carried only in its transitional 3111-byte form. The stage resolves
+  `WEBWARE_TOOLS_REV` from `composer.lock`, fetches `webware-tools/mago.toml` at that revision and
+  reads its `version =` pin, so the Mago version keeps exactly one home and no version literal
+  exists in this repository.
 - **D-6 Guard remediation for the CLI command namespace.** `mago guard` cannot be baselined. The
   shared ruleset reserves `{App,Webware}\**\Command\*` for message-bus commands (final, named
   `*Command`, implementing `Webware\MessageBus\Command\NamedCommandInterface`) and requires
@@ -197,6 +205,13 @@ repeats this list.
   `Webware\AsciidocPhpMultiRepo\Cli\Commands`, and `interface Command` is renamed to
   `interface CommandInterface`. No class is renamed, no behaviour changes, and `contracts/cli.md`
   is untouched because it documents flags, commands and exit codes, not class names.
+- **D-7 `[analyzer] excludes` for the `tests/` layout.** `mago.toml` extends the shared configuration,
+  and `[analyzer] excludes` replaces the parent array rather than merging into it. The parent
+  excludes `["test", "bench"]` because the fleet keeps tests in `test/`. With `paths = ["src",
+  "tests"]` from D-1, the local file must restate the exclusion against this package's actual test
+  directory, so `[analyzer] excludes` becomes `["tests", "bench"]`. Without it the analyzer walks the
+  test suite and reports 305 `unhandled-thrown-type` findings that belong to test doubles rather
+  than to shipped code, which would bury the 135 findings in `src/` that are worth baselining.
 
 ## Implementation Phases
 

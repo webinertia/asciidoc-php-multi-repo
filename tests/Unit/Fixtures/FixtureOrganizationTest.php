@@ -77,9 +77,11 @@ final class FixtureOrganizationTest extends TestCase
         $archived = [];
 
         foreach ($manifest->repositories() as $entry) {
-            if (!($entry->archived())) { continue; }
+            if (! $entry->archived()) {
+                continue;
+            }
 
-$archived[] = $entry->name();
+            $archived[] = $entry->name();
         }
 
         self::assertSame(['archived'], $archived);
@@ -229,9 +231,16 @@ $archived[] = $entry->name();
         $directories = [];
 
         foreach ($entries as $entry) {
-            if (!(str_starts_with($entry, 'v') && is_dir(Path::join($this->repository($repository), 'docs', $entry)))) { continue; }
+            if (
+                ! (
+                    str_starts_with($entry, 'v')
+                    && is_dir(Path::join($this->repository($repository), 'docs', $entry))
+                )
+            ) {
+                continue;
+            }
 
-$directories[] = $entry;
+            $directories[] = $entry;
         }
 
         sort($directories);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webware\AsciidocPhpMultiRepo\Cli\Commands;
 
+use Override;
 use Webware\AsciidocPhpMultiRepo\Cli\ExitCode;
 use Webware\AsciidocPhpMultiRepo\Cli\Options;
 use Webware\AsciidocPhpMultiRepo\Cli\Output;
@@ -18,6 +19,7 @@ use function sprintf;
  */
 abstract class StubCommand implements CommandInterface
 {
+    #[Override]
     final public function execute(Options $options, SiteConfig $config, Output $output): ExitCode
     {
         $output->error(sprintf('%s: not implemented', $this->name()));

@@ -176,7 +176,8 @@ final class OptionsParser
      * @throws UsageException
      */
     private function applyShortOption(
-        #[\SensitiveParameter] string $token,
+        #[\SensitiveParameter]
+        string $token,
         array $arguments,
         int &$index,
         array &$values,
@@ -229,7 +230,8 @@ final class OptionsParser
      * @throws UsageException
      */
     private function parseLongOption(
-        #[\SensitiveParameter] string $token,
+        #[\SensitiveParameter]
+        string $token,
         array $arguments,
         int &$index,
         array &$values,
@@ -286,7 +288,8 @@ final class OptionsParser
      * @throws UsageException
      */
     private function parseShortOption(
-        #[\SensitiveParameter] string $token,
+        #[\SensitiveParameter]
+        string $token,
         array $arguments,
         int &$index,
         array &$values,

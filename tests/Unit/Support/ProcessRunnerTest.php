@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Webware\AsciidocPhpMultiRepo\Test\Unit\Support;
 
-
-use const PHP_BINARY;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhpMultiRepo\Support\ProcessFailedException;
 use Webware\AsciidocPhpMultiRepo\Support\ProcessRunner;
+
+use const PHP_BINARY;
 
 #[CoversClass(ProcessRunner::class)]
 final class ProcessRunnerTest extends TestCase

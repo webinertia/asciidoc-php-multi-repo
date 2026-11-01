@@ -196,7 +196,7 @@ final class ApplicationTest extends TestCase
         $path = Path::join($this->scratch, 'site.json');
 
         /** @var array<string, mixed> $document */
-        $document                  = json_decode(
+        $document = json_decode(
             (string) file_get_contents($this->fixtureConfig()),
             true,
             512,

@@ -1,4 +1,7 @@
-# asciidoc-php-multi-repo
+# webware/asciidoc-php-multi-repo
+
+[![Continuous Integration](https://github.com/webinertia/asciidoc-php-multi-repo/actions/workflows/required/webinertia/.github/.github/workflows/continuous-integration.yml/badge.svg)](https://github.com/webinertia/asciidoc-php-multi-repo/actions/workflows/required/webinertia/.github/.github/workflows/continuous-integration.yml)
+
 Multi-repository site builder for asciidoc-php: aggregates docs from many repos into one GitHub Pages site
 
 ## Running the gates in the container

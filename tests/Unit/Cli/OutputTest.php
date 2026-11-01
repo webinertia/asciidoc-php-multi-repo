@@ -80,7 +80,7 @@ final class OutputTest extends TestCase
             timings: true,
             noColor: true,
         );
-        $output  = Output::forCli($options, true, null);
+        $output = Output::forCli($options, true, null);
 
         self::assertTrue($output->isQuiet());
         self::assertTrue($output->isVerbose());

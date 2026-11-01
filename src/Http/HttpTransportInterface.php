@@ -14,7 +14,8 @@ interface HttpTransportInterface
     /**
      * @param array<string, string> $headers request headers keyed by name
      *
-     * @throws HttpException when the request cannot be completed
+     * @throws HttpException when the request cannot be completed, or when a header name or value
+     *                       carries a CR or an LF; implementations must reject both
      */
     public function get(string $url, array $headers = []): HttpResponse;
 }

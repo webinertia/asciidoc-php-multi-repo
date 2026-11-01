@@ -53,6 +53,30 @@ final class TocExtractorTest extends TestCase
         self::assertSame([], $entries);
     }
 
+    public function testAParagraphBeforeTheFirstSectionDoesNotStopTheScan(): void
+    {
+        $entries = new TocExtractor()->extract(
+            $this->document("= Title\n\nAn opening paragraph.\n\n== One\n\nText.\n\n== Two\n\nText.\n"),
+            [2],
+        );
+
+        self::assertSame(['_one', '_two'], array_map(static fn(TocEntry $entry): string => $entry->id(), $entries));
+    }
+
+    public function testASectionIdIsTrimmedBeforeItBecomesAnAnchor(): void
+    {
+        $document = new Document();
+        $section  = new Section($document, $document, 1);
+        $section->setTitle('Spaced heading');
+        $section->setAttribute('id', '  spaced-id  ');
+        $document->append($section);
+
+        $entries = new TocExtractor()->extract($document, [2]);
+
+        self::assertCount(1, $entries);
+        self::assertSame('spaced-id', $entries[0]->id());
+    }
+
     public function testASectionWithoutAnIdFailsWithTocTargetMissing(): void
     {
         $document = new Document();
@@ -94,6 +118,22 @@ final class TocExtractorTest extends TestCase
 
         self::assertCount(2, $entries);
         self::assertSame([2, 2], array_map(static fn(TocEntry $entry): int => $entry->level(), $entries));
+    }
+
+    public function testSectionsAfterABlockThatIsNotASectionAreStillReturned(): void
+    {
+        $entries = new TocExtractor()->extract(
+            $this->document("= Page\n\nA paragraph before any section.\n\n== First\n\n=== Second"),
+            [2, 3],
+        );
+
+        self::assertSame(
+            [
+                ['level' => 2, 'id' => '_first', 'title' => 'First'],
+                ['level' => 3, 'id' => '_second', 'title' => 'Second'],
+            ],
+            array_map(static fn(TocEntry $entry): array => $entry->toArray(), $entries),
+        );
     }
 
     private function document(string $source): Document

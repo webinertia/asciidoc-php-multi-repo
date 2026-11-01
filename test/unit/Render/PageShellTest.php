@@ -10,8 +10,12 @@ use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Render\PageContext;
 use Webware\AsciidocPhp\MultiRepo\Render\PageShell;
 use Webware\AsciidocPhp\MultiRepo\Render\TocEntry;
+use WebwareTest\AsciidocPhp\MultiRepo\Support\TempDirectoryTrait;
 
+use function file_put_contents;
+use function ob_get_level;
 use function preg_match_all;
+use function str_replace;
 use function substr_count;
 
 /**
@@ -41,6 +45,34 @@ use function substr_count;
 #[CoversMethod(PageContext::class, 'versionLabel')]
 final class PageShellTest extends TestCase
 {
+    use TempDirectoryTrait;
+
+    public function testABufferLeftOpenByTheTemplateDoesNotEscapeTheShell(): void
+    {
+        $directory = $this->createTempDirectory();
+        file_put_contents("{$directory}/page.php", '<?php ob_start(); echo "leaked";');
+
+        $level = ob_get_level();
+
+        try {
+            $html = new PageShell($directory)->render($this->context());
+
+            self::assertSame($level, ob_get_level());
+            self::assertSame('leaked', $html);
+        } finally {
+            $this->removeTempDirectory($directory);
+        }
+    }
+
+    public function testAnOmittedTemplateDirectoryFallsBackToTheShippedTemplates(): void
+    {
+        $directory = new PageShell(null)->templateDirectory();
+
+        self::assertDirectoryExists($directory);
+        self::assertStringEndsWith('resources/templates', str_replace('\\', '/', $directory));
+        self::assertSame($directory, new PageShell()->templateDirectory());
+    }
+
     public function testInterpolatedValuesAreEscaped(): void
     {
         $html = new PageShell()->render($this->context(
@@ -89,6 +121,14 @@ final class PageShellTest extends TestCase
         self::assertStringContainsString('rel="noopener"', $html);
         self::assertStringContainsString('data-theme-toggle', $html);
         self::assertStringContainsString('aria-pressed="false"', $html);
+    }
+
+    public function testTheShellHelpersAreCallableFromOutsideTheShell(): void
+    {
+        $shell = new PageShell();
+
+        self::assertSame('&lt;b&gt; &amp; more', $shell->escape('<b> & more'));
+        self::assertStringContainsString('href="#_guide"', $shell->renderToc([new TocEntry(2, '_guide', 'Guide')]));
     }
 
     public function testTheSourceLinkIsOmittedWhenThereIsNoSourceUrl(): void

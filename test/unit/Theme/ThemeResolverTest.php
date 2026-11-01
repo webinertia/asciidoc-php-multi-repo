@@ -16,6 +16,7 @@ use function dirname;
 use function file_get_contents;
 use function file_put_contents;
 use function str_contains;
+use function str_repeat;
 use function str_replace;
 
 /**
@@ -46,6 +47,19 @@ use function str_replace;
 final class ThemeResolverTest extends TestCase
 {
     use TempDirectoryTrait;
+
+    public function testAMalformedTokenBlockYieldsNoTokens(): void
+    {
+        self::assertSame([], $this->lightColorsFrom(':root {'));
+        self::assertSame([], $this->lightColorsFrom(":root {\n    color: red;\n}\n"));
+    }
+
+    public function testAnUnterminatedTokenBlockYieldsNoTokens(): void
+    {
+        $css = ":root {\n    --color-link: #6a49c9;\n" . str_repeat("    --padding-token: 1;\n", 8);
+
+        self::assertSame([], $this->lightColorsFrom($css));
+    }
 
     public function testAssetUrlsCarryTheBasePath(): void
     {
@@ -159,8 +173,29 @@ final class ThemeResolverTest extends TestCase
         self::assertSame('#16131c', $dark['--surface-page']);
     }
 
+    public function testTheTokenScanStopsAtTheBlockBoundary(): void
+    {
+        self::assertSame(['--a' => '1'], $this->lightColorsFrom(':root {--a: 1;}'));
+        self::assertSame(['--a' => '1'], $this->lightColorsFrom(":root {--a:   1   ;}\n--leak: 9;"));
+    }
+
     protected function tearDown(): void
     {
         $this->removeTempDirectory();
+    }
+
+    /**
+     * Reads the light token block out of a crafted stylesheet, so the block scan can be driven past
+     * the shapes the shipped stylesheet happens to have.
+     *
+     * @return array<string, string>
+     */
+    private function lightColorsFrom(string $css): array
+    {
+        $directory = '' === $this->tempDirectory ? $this->createTempDirectory() : $this->tempDirectory;
+
+        file_put_contents("{$directory}/site.css", $css);
+
+        return new ThemeResolver(cssDirectory: $directory)->lightColors();
     }
 }

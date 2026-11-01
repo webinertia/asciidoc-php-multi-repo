@@ -23,6 +23,14 @@ final class LinkRewriterTest extends TestCase
 {
     private const string PAGE = '/project/latest/guide.html';
 
+    public function testAFragmentThatDoesNotEndInAdocIsLeftAlone(): void
+    {
+        $rewriter = new LinkRewriter();
+
+        self::assertSame('#adoc', $rewriter->rewriteUrl('#adoc', self::PAGE, '/docs/'));
+        self::assertSame('#page.adoc.txt', $rewriter->rewriteUrl('#page.adoc.txt', self::PAGE, '/docs/'));
+    }
+
     public function testAnAdocLinkBecomesAnHtmlLinkUnderASubdirectoryBasePath(): void
     {
         $url = new LinkRewriter()->rewriteUrl('../v2/usage-examples.adoc', self::PAGE, '/docs/');
@@ -35,6 +43,14 @@ final class LinkRewriterTest extends TestCase
         $url = new LinkRewriter()->rewriteUrl('../v2/usage-examples.adoc', self::PAGE, '/');
 
         self::assertSame('/project/v2/usage-examples.html', $url);
+    }
+
+    public function testAnEmptyRelBecomesNoopenerRatherThanAnEmptyToken(): void
+    {
+        self::assertSame(
+            '<a href="https://example.com" rel="noopener">External</a>',
+            new LinkRewriter()->rewrite('<a href="https://example.com" rel="">External</a>', self::PAGE, '/'),
+        );
     }
 
     public function testAnExistingRelIsExtendedRatherThanDuplicated(): void
@@ -51,6 +67,14 @@ final class LinkRewriterTest extends TestCase
         );
     }
 
+    public function testAnExistingRelIsRecognisedInAnyCase(): void
+    {
+        self::assertSame(
+            '<a href="https://example.com" rel="external noopener">External</a>',
+            new LinkRewriter()->rewrite('<a href="https://example.com" REL="external">External</a>', self::PAGE, '/'),
+        );
+    }
+
     public function testAnInPageFragmentIsLeftAlone(): void
     {
         $rewriter = new LinkRewriter();
@@ -58,11 +82,35 @@ final class LinkRewriterTest extends TestCase
         self::assertSame('#install', $rewriter->rewriteUrl('#install', self::PAGE, '/docs/'));
     }
 
+    public function testAnXrefAnchorIsAppendedAfterTheResolvedPath(): void
+    {
+        self::assertSame(
+            '/docs/versioned/v1/reference/nested.html#install',
+            new LinkRewriter()->rewriteUrl('#reference/nested.adoc#install', '/versioned/v1/index.html', '/docs/'),
+        );
+    }
+
+    public function testAnXrefIsRecognisedInAnyCase(): void
+    {
+        self::assertSame(
+            '/docs/versioned/v1/Reference/Nested.html',
+            new LinkRewriter()->rewriteUrl('#Reference/Nested.ADOC', '/versioned/v1/index.html', '/docs/'),
+        );
+    }
+
     public function testAnXrefToAnotherPageIsResolvedAgainstThePageDirectory(): void
     {
         $url = new LinkRewriter()->rewriteUrl('#reference/nested.adoc', '/versioned/v1/index.html', '/docs/');
 
         self::assertSame('/docs/versioned/v1/reference/nested.html', $url);
+    }
+
+    public function testAnXrefWithNoAnchorGainsNoEmptyFragment(): void
+    {
+        self::assertSame(
+            '/docs/versioned/v1/reference/nested.html',
+            new LinkRewriter()->rewriteUrl('#reference/nested.adoc', '/versioned/v1/index.html', '/docs/'),
+        );
     }
 
     public function testEveryInternalLinkUnderASubdirectoryBasePathStartsWithThatBasePath(): void
@@ -95,6 +143,14 @@ final class LinkRewriterTest extends TestCase
         self::assertFalse(new LinkRewriter()->isExternal('../v2/usage.adoc'));
     }
 
+    public function testOnlyTheFirstHrefAttributeIsRewritten(): void
+    {
+        self::assertSame(
+            '<a href="/project/latest/one.html" data-href="two.adoc">One</a>',
+            new LinkRewriter()->rewrite('<a href="one.adoc" data-href="two.adoc">One</a>', self::PAGE, '/'),
+        );
+    }
+
     public function testTheAnchorKeepsItsFragmentAndQuery(): void
     {
         $rewriter = new LinkRewriter();
@@ -106,6 +162,14 @@ final class LinkRewriterTest extends TestCase
         self::assertSame(
             '/docs/project/v2/usage.html?mode=full#install',
             $rewriter->rewriteUrl('../v2/usage.adoc?mode=full#install', self::PAGE, '/docs/'),
+        );
+    }
+
+    public function testTheNoopenerAttributeIsSeparatedFromATrailingSpace(): void
+    {
+        self::assertSame(
+            '<a href="https://example.com" rel="noopener">External</a>',
+            new LinkRewriter()->rewrite('<a href="https://example.com" >External</a>', self::PAGE, '/'),
         );
     }
 }

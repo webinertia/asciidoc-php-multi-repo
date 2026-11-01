@@ -12,6 +12,7 @@ use Webware\AsciidocPhp\Converter\Html5Converter;
 use Webware\AsciidocPhp\Document;
 use Webware\AsciidocPhp\MultiRepo\Render\SiteConverter;
 
+
 use function preg_match_all;
 
 /**
@@ -49,6 +50,22 @@ final class SiteConverterTest extends TestCase
         A paragraph in the second section.
         ADOC;
 
+    public function testANonDocumentNodeIsDelegatedToTheParentConverter(): void
+    {
+        $converter = new SiteConverter();
+
+        Asciidoc::convert(self::SOURCE, ['converter' => $converter, 'header_footer' => false]);
+
+        $document = $converter->lastDocument();
+        self::assertInstanceOf(Document::class, $document);
+
+        $block = $document->getBlocks()[0] ?? null;
+        self::assertNotNull($block);
+
+        self::assertStringNotContainsString('<article class="doc">', $converter->convert($block));
+        self::assertStringContainsString('<article class="doc">', $converter->convert($document));
+    }
+
     public function testHeadingIdsMatchTheParentConverter(): void
     {
         self::assertSame($this->parentIds(), $this->siteIds());
@@ -59,6 +76,30 @@ final class SiteConverterTest extends TestCase
     {
         self::assertSame($this->parentSections(), $this->siteSections());
         self::assertNotSame([], $this->siteSections());
+    }
+
+    public function testTheArticleFragmentIsAvailableWithoutTheConvertEntryPoint(): void
+    {
+        $converter = new SiteConverter();
+
+        Asciidoc::convert(self::SOURCE, ['converter' => $converter, 'header_footer' => false]);
+
+        $document = $converter->lastDocument();
+        self::assertInstanceOf(Document::class, $document);
+
+        $html = $converter->convertDocument($document);
+
+        self::assertStringStartsWith('<article class="doc">', $html);
+        self::assertStringContainsString('<h2 id="_first_section">First section</h2>', $html);
+    }
+
+    public function testTheConverterDelegatesEveryOtherTransformToTheParent(): void
+    {
+        $converter = new SiteConverter();
+
+        self::assertTrue($converter->handles('paragraph'));
+        self::assertTrue($converter->handles('section'));
+        self::assertFalse($converter->handles('not-a-transform'));
     }
 
     public function testTheConverterHandlesTheDocumentTransform(): void

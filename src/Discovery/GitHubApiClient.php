@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace Webware\AsciidocPhp\MultiRepo\Discovery;
 
+use InvalidArgumentException;
+use Laminas\Diactoros\RequestFactory;
+use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Http\Message\ResponseInterface;
 use SensitiveParameter;
 use Throwable;
 use Webware\AsciidocPhp\MultiRepo\Config\OrganizationSection;
 use Webware\AsciidocPhp\MultiRepo\Http\CurlHttpTransport;
-use Webware\AsciidocPhp\MultiRepo\Http\HttpException;
-use Webware\AsciidocPhp\MultiRepo\Http\HttpResponse;
-use Webware\AsciidocPhp\MultiRepo\Http\HttpTransportInterface;
 use Webware\AsciidocPhp\MultiRepo\Support\Json;
 use Webware\AsciidocPhp\MultiRepo\Support\JsonDecodeException;
 
@@ -24,6 +27,9 @@ use function sprintf;
  *
  * The token travels as a parameter marked `#[SensitiveParameter]` so it cannot reach a backtrace,
  * and it never appears in an exception message: failures name the organisation and the property.
+ *
+ * The transport is any PSR-18 client, so the network layer is swappable without touching this
+ * class, and the request is built through the PSR-17 factory rather than by this class directly.
  */
 final class GitHubApiClient
 {
@@ -32,9 +38,10 @@ final class GitHubApiClient
     private const int MAX_PAGES = 100;
 
     public function __construct(
-        private readonly HttpTransportInterface $transport = new CurlHttpTransport(),
+        private readonly ClientInterface $transport = new CurlHttpTransport(),
         private readonly string $apiBase = 'https://api.github.com',
         private readonly Json $json = new Json(),
+        private readonly RequestFactoryInterface $requestFactory = new RequestFactory(),
     ) {}
 
     /**
@@ -71,10 +78,10 @@ final class GitHubApiClient
     /**
      * @throws DiscoveryException when the body is not valid JSON
      */
-    private function decode(HttpResponse $response, OrganizationSection $organization): mixed
+    private function decode(ResponseInterface $response, OrganizationSection $organization): mixed
     {
         try {
-            return $this->json->decode($response->body(), 'GitHub response');
+            return $this->json->decode((string) $response->getBody(), 'GitHub response');
         } catch (JsonDecodeException $exception) {
             throw $this->failure($organization, 'the response was not valid JSON.', $exception);
         }
@@ -116,13 +123,16 @@ final class GitHubApiClient
             $response       = $this->request($next, $token, $organization);
 
             $pages[] = $this->decode($response, $organization);
-            $next    = GitHubLinkHeader::next($response->header('link'));
+            $next    = GitHubLinkHeader::next($response->getHeaderLine('link'));
         }
 
         return $pages;
     }
 
     /**
+     * A rejected header name or value is reported without the message the message implementation
+     * raised, because that message quotes the value and the value may be the token.
+     *
      * @throws DiscoveryException when the transport fails or answers a non-success status
      */
     private function request(
@@ -130,21 +140,27 @@ final class GitHubApiClient
         #[SensitiveParameter]
         string $token,
         OrganizationSection $organization,
-    ): HttpResponse {
+    ): ResponseInterface {
         try {
-            $response = $this->transport->get($url, [
-                'Accept'               => 'application/vnd.github+json',
-                'Authorization'        => sprintf('Bearer %s', $token),
-                'X-GitHub-Api-Version' => '2022-11-28',
-            ]);
-        } catch (HttpException $exception) {
+            $request = $this->requestFactory
+                ->createRequest('GET', $url)
+                ->withHeader('Accept', 'application/vnd.github+json')
+                ->withHeader('Authorization', sprintf('Bearer %s', $token))
+                ->withHeader('X-GitHub-Api-Version', '2022-11-28');
+
+            $response = $this->transport->sendRequest($request);
+        } catch (ClientExceptionInterface $exception) {
             throw $this->failure($organization, $exception->getMessage(), $exception);
+        } catch (InvalidArgumentException) {
+            throw $this->failure($organization, 'the request could not be built.');
         }
 
-        if (! $response->successful()) {
+        $status = $response->getStatusCode();
+
+        if ($status < 200 || $status > 299) {
             throw $this->failure(
                 $organization,
-                sprintf('GitHub answered HTTP %d.', $response->status()),
+                sprintf('GitHub answered HTTP %d.', $status),
             );
         }
 

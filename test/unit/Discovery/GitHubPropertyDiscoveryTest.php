@@ -7,6 +7,9 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Discovery;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Webware\AsciidocPhp\MultiRepo\Discovery\DiscoveredRepository;
 use Webware\AsciidocPhp\MultiRepo\Discovery\DiscoveryException;
 use Webware\AsciidocPhp\MultiRepo\Discovery\GitHubApiClient;
@@ -16,9 +19,8 @@ use Webware\AsciidocPhp\MultiRepo\Discovery\GitHubPropertyValues;
 use Webware\AsciidocPhp\MultiRepo\Discovery\GitHubRepositoryMetadata;
 use Webware\AsciidocPhp\MultiRepo\Discovery\OnboardValue;
 use Webware\AsciidocPhp\MultiRepo\Http\HttpException;
-use Webware\AsciidocPhp\MultiRepo\Http\HttpResponse;
-use Webware\AsciidocPhp\MultiRepo\Http\HttpTransportInterface;
 use WebwareTest\AsciidocPhp\MultiRepo\Support\SourceFixture;
+use WebwareTest\AsciidocPhp\MultiRepo\Support\StubHttpResponse;
 use WebwareTest\AsciidocPhp\MultiRepo\Support\StubHttpTransport;
 
 use function array_map;
@@ -86,10 +88,10 @@ final class GitHubPropertyDiscoveryTest extends TestCase
 
     public function testAnInvalidJsonBodyIsReportedAsADiscoveryFailure(): void
     {
-        $transport = new class implements HttpTransportInterface {
-            public function get(string $url, array $headers = []): HttpResponse
+        $transport = new class implements ClientInterface {
+            public function sendRequest(RequestInterface $request): ResponseInterface
             {
-                return new HttpResponse(200, 'not json');
+                return StubHttpResponse::create(200, 'not json');
             }
         };
 
@@ -151,10 +153,10 @@ final class GitHubPropertyDiscoveryTest extends TestCase
 
     public function testTheTokenNeverAppearsInAFailureMessage(): void
     {
-        $transport = new class implements HttpTransportInterface {
-            public function get(string $url, array $headers = []): HttpResponse
+        $transport = new class implements ClientInterface {
+            public function sendRequest(RequestInterface $request): ResponseInterface
             {
-                return new HttpResponse(401, '{"message":"Bad credentials"}');
+                return StubHttpResponse::create(401, '{"message":"Bad credentials"}');
             }
         };
 
@@ -172,8 +174,8 @@ final class GitHubPropertyDiscoveryTest extends TestCase
 
     public function testTheTokenNeverAppearsWhenTheTransportItselfFails(): void
     {
-        $transport = new class implements HttpTransportInterface {
-            public function get(string $url, array $headers = []): HttpResponse
+        $transport = new class implements ClientInterface {
+            public function sendRequest(RequestInterface $request): ResponseInterface
             {
                 throw new HttpException('cURL error 6: Could not resolve host');
             }
@@ -249,7 +251,7 @@ final class GitHubPropertyDiscoveryTest extends TestCase
     /**
      * @return list<DiscoveredRepository>
      */
-    private function discover(HttpTransportInterface $transport): array
+    private function discover(ClientInterface $transport): array
     {
         return new GitHubPropertyDiscovery(new GitHubApiClient(transport: $transport))
             ->discover(SourceFixture::config());
@@ -326,14 +328,14 @@ final class GitHubPropertyDiscoveryTest extends TestCase
     private function singlePageTransport(?array $searchOverride = null): StubHttpTransport
     {
         return new StubHttpTransport([
-            'properties/values'   => new HttpResponse(
+            'properties/values'   => StubHttpResponse::create(
                 200,
                 (string) json_encode([
                     ...$this->propertyValuesPage1(),
                     ...$this->propertyValuesPage2(),
                 ]),
             ),
-            'search/repositories' => new HttpResponse(
+            'search/repositories' => StubHttpResponse::create(
                 200,
                 (string) json_encode($searchOverride ?? $this->searchPage()),
             ),
@@ -348,16 +350,16 @@ final class GitHubPropertyDiscoveryTest extends TestCase
         $second = 'https://api.github.com/orgs/fixture-org/properties/values?per_page=100&page=2';
 
         return new StubHttpTransport([
-            'page=2'              => new HttpResponse(
+            'page=2'              => StubHttpResponse::create(
                 200,
                 (string) json_encode($this->propertyValuesPage2()),
             ),
-            'properties/values'   => new HttpResponse(
+            'properties/values'   => StubHttpResponse::create(
                 200,
                 (string) json_encode($this->propertyValuesPage1()),
                 ['link' => sprintf('<%s>; rel="next"', $second)],
             ),
-            'search/repositories' => new HttpResponse(
+            'search/repositories' => StubHttpResponse::create(
                 200,
                 (string) json_encode($searchOverride ?? $this->searchPage()),
             ),

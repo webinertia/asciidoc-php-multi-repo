@@ -31,6 +31,24 @@ message = "Literal argument `1` should be passed as a named argument for clarity
 count = 1
 
 [[issues]]
+file = "src/Cli/Commands/BuildCommand.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Cli/Commands/BuildCommand.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
+file = "src/Cli/Commands/BuildCommand.php"
+code = "kan-defect"
+message = "Class has a high kan defect score."
+count = 1
+
+[[issues]]
 file = "src/Cli/Commands/StubCommand.php"
 code = "class-name"
 message = "Abstract class name `StubCommand` should be prefixed with `Abstract`."
@@ -283,6 +301,96 @@ message = "Parameter list is too long."
 count = 1
 
 [[issues]]
+file = "src/Render/LinkRewriter.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Render/LinkRewriter.php"
+code = "literal-named-argument"
+message = "Literal argument `'#'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Render/LinkRewriter.php"
+code = "literal-named-argument"
+message = "Literal argument `'.html'` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "src/Render/LinkRewriter.php"
+code = "literal-named-argument"
+message = "Literal argument `'/'` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "src/Render/LinkRewriter.php"
+code = "literal-named-argument"
+message = "Literal argument `'?'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Render/LinkRewriter.php"
+code = "literal-named-argument"
+message = "Literal argument `0` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "src/Render/PageContext.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
+file = "src/Render/PageRenderer.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Render/PageRenderer.php"
+code = "literal-named-argument"
+message = "Literal argument `' '` should be passed as a named argument for clarity."
+count = 3
+
+[[issues]]
+file = "src/Render/PageRenderer.php"
+code = "literal-named-argument"
+message = "Literal argument `'.adoc'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Render/PageRenderer.php"
+code = "literal-named-argument"
+message = "Literal argument `'/'` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "src/Render/PageRenderer.php"
+code = "literal-named-argument"
+message = "Literal argument `0` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "src/Render/PageShell.php"
+code = "literal-named-argument"
+message = "Literal argument `'UTF-8'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Render/PageShell.php"
+code = "literal-named-argument"
+message = "Literal argument `2` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Render/RenderedPage.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
 file = "src/Source/FetchedRepository.php"
 code = "excessive-parameter-list"
 message = "Parameter list is too long."
@@ -505,6 +613,42 @@ message = "Unsafe use of error control operator `@`."
 count = 2
 
 [[issues]]
+file = "src/Theme/AssetHasher.php"
+code = "literal-named-argument"
+message = "Literal argument `0` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Theme/ThemeResolver.php"
+code = "literal-named-argument"
+message = "Literal argument `'/'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Theme/ThemeResolver.php"
+code = "literal-named-argument"
+message = "Literal argument `'{'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Theme/ThemeResolver.php"
+code = "literal-named-argument"
+message = "Literal argument `'}'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Theme/ThemeResolver.php"
+code = "literal-named-argument"
+message = "Literal argument `2` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "src/Theme/ThemeResolver.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
 file = "test/integration/DocumentationPipelineTest.php"
 code = "assertion-style"
 message = "Inconsistent assertions style."
@@ -598,6 +742,66 @@ count = 1
 file = "test/integration/DocumentationPipelineTest.php"
 code = "prefer-test-attribute"
 message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheWholeFixtureSetIsAccountedFor`."
+count = 1
+
+[[issues]]
+file = "test/integration/SiteBuildTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 21
+
+[[issues]]
+file = "test/integration/SiteBuildTest.php"
+code = "literal-named-argument"
+message = "Literal argument `2` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "test/integration/SiteBuildTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAPublishedPageCarriesTheShellAndTheRewrittenLink`."
+count = 1
+
+[[issues]]
+file = "test/integration/SiteBuildTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheBuildPrintsOnePageCountPerProject`."
+count = 1
+
+[[issues]]
+file = "test/integration/SiteBuildTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheBuildPublishesEveryPageOfEveryVersion`."
+count = 1
+
+[[issues]]
+file = "test/integration/SiteBuildTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheBuildWritesTheSharedAssetsOnce`."
+count = 1
+
+[[issues]]
+file = "test/integration/SiteBuildTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheFixtureSetExitsDegradedBecauseTwoProjectsFail`."
+count = 1
+
+[[issues]]
+file = "test/unit/Build/ContentWriterTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 4
+
+[[issues]]
+file = "test/unit/Build/ContentWriterTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testANestedPathIsCreatedAndTheFileIsWritten`."
+count = 1
+
+[[issues]]
+file = "test/unit/Build/ContentWriterTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testASecondWriteReplacesTheContents`."
 count = 1
 
 [[issues]]
@@ -2449,6 +2653,300 @@ message = "Use `#[Test]` attribute instead of `test` prefix on method `testVersi
 count = 1
 
 [[issues]]
+file = "test/unit/Render/AttributePolicyTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 17
+
+[[issues]]
+file = "test/unit/Render/AttributePolicyTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testHighlightingLeavesTheHighlighterAttributeAlone`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/AttributePolicyTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testRenderingTwiceAcrossAClockChangeProducesIdenticalBytes`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/AttributePolicyTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheClockAttributesCarryNoValueInTheDocument`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/AttributePolicyTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheConverterChromeIsSwitchedOff`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/AttributePolicyTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheSixClockAttributesArePinnedToAnEmptyString`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/AttributePolicyTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testWithoutThePolicyTheClockAttributesCarryTheBuildDate`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/LinkRewriterTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 15
+
+[[issues]]
+file = "test/unit/Render/LinkRewriterTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAnAdocLinkBecomesAnHtmlLinkUnderASubdirectoryBasePath`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/LinkRewriterTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAnAdocLinkBecomesAnHtmlLinkUnderTheRootBasePath`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/LinkRewriterTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAnExistingRelIsExtendedRatherThanDuplicated`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/LinkRewriterTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAnInPageFragmentIsLeftAlone`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/LinkRewriterTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAnXrefToAnotherPageIsResolvedAgainstThePageDirectory`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/LinkRewriterTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testEveryInternalLinkUnderASubdirectoryBasePathStartsWithThatBasePath`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/LinkRewriterTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testExternalLinksAreUntouchedButMarkedNoopener`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/LinkRewriterTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheAnchorKeepsItsFragmentAndQuery`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/PageRendererTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 38
+
+[[issues]]
+file = "test/unit/Render/PageRendererTest.php"
+code = "literal-named-argument"
+message = "Literal argument `512` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/PageRendererTest.php"
+code = "literal-named-argument"
+message = "Literal argument `900` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/PageRendererTest.php"
+code = "literal-named-argument"
+message = "Literal argument `true` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/PageRendererTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testABrokenIncludeFailsWithRenderFailedAndTheSourcePath`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/PageRendererTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testASubdirectoryBasePathIsAppliedToEveryAssetAndLink`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/PageRendererTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheEntryPageRendersWithTheExpectedTitleAndPath`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/PageRendererTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheIncludedSectionIsRenderedIntoThePageUnderSafeMode`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/PageRendererTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testThePageCarriesNoBuildDateAndNoAbsolutePath`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/PageRendererTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheSearchTextIsPlain`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/PageRendererTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheSearchTextStopsAtTheConfiguredLimit`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/PageRendererTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheSourceLinkPointsAtTheRepository`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/PageRendererTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheTableOfContentsComesFromTheDocumentSections`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/PageShellTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 24
+
+[[issues]]
+file = "test/unit/Render/PageShellTest.php"
+code = "literal-named-argument"
+message = """Literal argument `'<link rel="stylesheet"'` should be passed as a named argument for clarity."""
+count = 1
+
+[[issues]]
+file = "test/unit/Render/PageShellTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testInterpolatedValuesAreEscaped`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/PageShellTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheArticleBodyIsNotEscaped`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/PageShellTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheShellCarriesEveryDocumentedElement`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/PageShellTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheSourceLinkIsOmittedWhenThereIsNoSourceUrl`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/PageShellTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheTableOfContentsIsRenderedAsAList`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/PageShellTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheThemeModeReachesTheDocumentElement`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/SiteConverterTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 14
+
+[[issues]]
+file = "test/unit/Render/SiteConverterTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testHeadingIdsMatchTheParentConverter`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/SiteConverterTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testSectionMarkupMatchesTheParentConverter`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/SiteConverterTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheConverterHandlesTheDocumentTransform`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/SiteConverterTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheDocumentIsCapturedForLaterInspection`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/SiteConverterTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheDocumentIsWrappedInAnArticleAndNothingElse`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/SiteConverterTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheStylesheetIsEmpty`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/TocExtractorTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 9
+
+[[issues]]
+file = "test/unit/Render/TocExtractorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testASectionWithoutAnIdFailsWithTocTargetMissing`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/TocExtractorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAnH1OnlyPageYieldsAnEmptyTableOfContents`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/TocExtractorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testHeadingsAreReturnedInDocumentOrder`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/TocExtractorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testOnlyTheConfiguredLevelsAreReturned`."
+count = 1
+
+[[issues]]
 file = "test/unit/Report/ReasonCodeTest.php"
 code = "assertion-style"
 message = "Inconsistent assertions style."
@@ -3427,7 +3925,127 @@ message = "Use `#[Test]` attribute instead of `test` prefix on method `testWorki
 count = 1
 
 [[issues]]
+file = "test/unit/Support/SiteFixtureTrait.php"
+code = "literal-named-argument"
+message = "Literal argument `2` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
 file = "test/unit/Support/TempDirectoryTrait.php"
 code = "no-error-control-operator"
 message = "Unsafe use of error control operator `@`."
 count = 2
+
+[[issues]]
+file = "test/unit/Theme/ContrastTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 5
+
+[[issues]]
+file = "test/unit/Theme/ContrastTest.php"
+code = "literal-named-argument"
+message = "Literal argument `0` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "test/unit/Theme/ContrastTest.php"
+code = "literal-named-argument"
+message = "Literal argument `1` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "test/unit/Theme/ContrastTest.php"
+code = "literal-named-argument"
+message = "Literal argument `2.4` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "test/unit/Theme/ContrastTest.php"
+code = "literal-named-argument"
+message = "Literal argument `2` should be passed as a named argument for clarity."
+count = 4
+
+[[issues]]
+file = "test/unit/Theme/ContrastTest.php"
+code = "literal-named-argument"
+message = "Literal argument `4` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "test/unit/Theme/ContrastTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheBodyTextTokenClearsTheContrastMinimum`."
+count = 1
+
+[[issues]]
+file = "test/unit/Theme/ContrastTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheLinkTokenClearsTheContrastMinimumOnBothSurfaces`."
+count = 1
+
+[[issues]]
+file = "test/unit/Theme/ContrastTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheMutedTextTokenClearsTheContrastMinimumOnBothSurfaces`."
+count = 1
+
+[[issues]]
+file = "test/unit/Theme/ThemeResolverTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 32
+
+[[issues]]
+file = "test/unit/Theme/ThemeResolverTest.php"
+code = "literal-named-argument"
+message = "Literal argument `'--surface-page: #fffffe;'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "test/unit/Theme/ThemeResolverTest.php"
+code = "literal-named-argument"
+message = "Literal argument `3` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "test/unit/Theme/ThemeResolverTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAssetUrlsCarryTheBasePath`."
+count = 1
+
+[[issues]]
+file = "test/unit/Theme/ThemeResolverTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testOneChangedByteChangesThePublishedName`."
+count = 1
+
+[[issues]]
+file = "test/unit/Theme/ThemeResolverTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheAccentIsValidatedAndFallsBack`."
+count = 1
+
+[[issues]]
+file = "test/unit/Theme/ThemeResolverTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheModeAndTheInitialPaintComeFromTheThemeConfig`."
+count = 1
+
+[[issues]]
+file = "test/unit/Theme/ThemeResolverTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testThePublishedStylesheetIsSelfContained`."
+count = 1
+
+[[issues]]
+file = "test/unit/Theme/ThemeResolverTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheThemeScriptIsHashedAndCarriesTheToggleBehaviour`."
+count = 1
+
+[[issues]]
+file = "test/unit/Theme/ThemeResolverTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheTokenBlocksFromThePlanArePresent`."
+count = 1

@@ -1,0 +1,47 @@
+/*
+ * Print stylesheet.
+ *
+ * This file is appended to the site stylesheet when the build writes assets, so the shell keeps
+ * exactly two stylesheet links and the site stylesheet needs no import rule.
+ */
+
+@media print {
+    .site-header,
+    .sidebar,
+    .site-footer,
+    .skip-link,
+    .theme-toggle {
+        display: none;
+    }
+
+    .layout {
+        display: block;
+        padding: 0;
+    }
+
+    body {
+        background-color: #ffffff;
+        color: #000000;
+        font-size: 11pt;
+    }
+
+    a {
+        color: #000000;
+        text-decoration: underline;
+    }
+
+    .doc {
+        max-width: none;
+    }
+
+    .doc h2,
+    .doc h3 {
+        break-after: avoid;
+    }
+
+    .doc pre,
+    .doc table,
+    .doc blockquote {
+        break-inside: avoid;
+    }
+}

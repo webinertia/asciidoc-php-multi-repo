@@ -1,0 +1,30 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/webinertia/asciidoc-php-multi-repo/main/config/manifest.schema.json",
+    "title": "Offline Discovery Manifest",
+    "description": "The repository list consumed by the --manifest option. It replaces organization property discovery for tests, air-gapped builds, and personal-account deployments.",
+    "type": "object",
+    "required": ["schemaVersion", "repositories"],
+    "additionalProperties": false,
+    "properties": {
+        "$schema": { "type": "string" },
+        "schemaVersion": { "type": "integer", "const": 1 },
+        "repositories": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+                "type": "object",
+                "required": ["name"],
+                "additionalProperties": false,
+                "properties": {
+                    "name": { "type": "string", "minLength": 1 },
+                    "slug": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+                    "defaultBranch": { "type": "string", "minLength": 1, "default": "main" },
+                    "archived": { "type": "boolean", "default": false },
+                    "onboarded": { "type": "boolean", "default": true },
+                    "path": { "type": "string", "minLength": 1 }
+                }
+            }
+        }
+    }
+}

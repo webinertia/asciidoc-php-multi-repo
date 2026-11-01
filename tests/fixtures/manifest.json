@@ -1,0 +1,54 @@
+{
+    "schemaVersion": 1,
+    "repositories": [
+        {
+            "name": "versioned",
+            "slug": "versioned",
+            "defaultBranch": "main",
+            "archived": false,
+            "path": "org/versioned"
+        },
+        {
+            "name": "unversioned",
+            "slug": "unversioned",
+            "defaultBranch": "main",
+            "archived": false,
+            "path": "org/unversioned"
+        },
+        {
+            "name": "markdown-only",
+            "slug": "markdown-only",
+            "defaultBranch": "main",
+            "archived": false,
+            "path": "org/markdown-only"
+        },
+        {
+            "name": "missing-entry",
+            "slug": "missing-entry",
+            "defaultBranch": "main",
+            "archived": false,
+            "path": "org/missing-entry"
+        },
+        {
+            "name": "broken-include",
+            "slug": "broken-include",
+            "defaultBranch": "main",
+            "archived": false,
+            "path": "org/broken-include"
+        },
+        {
+            "name": "archived",
+            "slug": "archived",
+            "defaultBranch": "main",
+            "archived": true,
+            "path": "org/archived"
+        },
+        {
+            "name": "mixed",
+            "slug": "mixed",
+            "defaultBranch": "main",
+            "archived": false,
+            "path": "org/mixed"
+        }
+    ]
+}

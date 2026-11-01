@@ -1,0 +1,3 @@
+== Nested reference
+
+A page inside a nested directory.

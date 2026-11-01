@@ -1,0 +1,7 @@
+= Versioned Project
+
+Welcome to version 1.
+
+include::guide.adoc[]
+
+See xref:reference/nested.adoc[Nested reference] for more.

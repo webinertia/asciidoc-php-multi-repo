@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace WebwareTest\AsciidocPhp\MultiRepo\Http;
 
+use Laminas\Diactoros\Request;
 use Laminas\Diactoros\RequestFactory;
 use Laminas\Diactoros\StreamFactory;
 use Laminas\Diactoros\Uri;
@@ -127,6 +128,27 @@ final class CurlHttpTransportTest extends TestCase
         ]);
 
         $this->assertStringContainsString('not a valid HTTP header name', $exception->getMessage());
+    }
+
+    /**
+     * diactoros permits an obs-fold and unfolds it into one value; the transport rejects every CR
+     * and LF instead. The divergence is deliberate, so both halves of it are pinned here.
+     */
+    #[Test]
+    public function anObsFoldInAHeaderValueIsRejected(): void
+    {
+        $unfolded = new Request()
+            ->withHeader('X-Folded', "abc\r\n folded")
+            ->getHeaderLine('X-Folded');
+
+        $this->assertSame('abc folded', $unfolded, 'The PSR-7 implementation unfolds an obs-fold.');
+
+        $exception = $this->rejectionOf(self::CLOSED_PORT, [
+            'X-Folded' => "abc\r\n folded",
+        ]);
+
+        $this->assertStringContainsString('X-Folded', $exception->getMessage());
+        $this->assertStringNotContainsString('abc', $exception->getMessage());
     }
 
     #[Test]

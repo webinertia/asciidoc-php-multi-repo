@@ -43,9 +43,12 @@ use const CURLOPT_TIMEOUT_MS;
  * message it can raise.
  *
  * PSR-18 already forbids following redirects, and the explicit cURL option keeps that true rather
- * than leaving it to the contract alone. The header and URL checks are repeated here instead of
- * being delegated to the PSR-7 implementation, so a request built by a permissive one is still
- * refused before libcurl sees it.
+ * than leaving it to the contract alone.
+ *
+ * The header and URL checks stay local because the guarantee cannot rest on the injected message
+ * implementation. A PSR-7 implementation must validate, but nothing requires it to be diactoros,
+ * and diactoros is no substitute anyway: it rewrites a control character in a URI instead of
+ * rejecting it, and its header rejection interpolates the whole value, which may be the credential.
  */
 final class CurlHttpTransport implements ClientInterface
 {
@@ -58,6 +61,10 @@ final class CurlHttpTransport implements ClientInterface
 
     /**
      * A CR, an LF, or a NUL ends the header line, so any of them lets a value forge a second one.
+     *
+     * Deliberately stricter than the PSR-7 implementation: diactoros permits an obs-fold, a CRLF
+     * followed by a space or a tab, and unfolds it into a single value, while this pattern rejects
+     * every CR and LF. That divergence is intended, so do not relax it to match.
      */
     private const string HEADER_VALUE_PATTERN = '/[\r\n\x00]/';
 

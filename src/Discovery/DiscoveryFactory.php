@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Webware\AsciidocPhp\MultiRepo\Discovery;
 
+use Psr\Http\Client\ClientInterface;
 use Webware\AsciidocPhp\MultiRepo\Config\ManifestLoader;
 use Webware\AsciidocPhp\MultiRepo\Http\CurlHttpTransport;
-use Webware\AsciidocPhp\MultiRepo\Http\HttpTransportInterface;
 
 /**
  * Chooses the discovery source: a manifest when one was named, the organisation property otherwise.
@@ -18,7 +18,7 @@ final class DiscoveryFactory
 {
     public function __construct(
         private readonly ManifestLoader $manifestLoader = new ManifestLoader(),
-        private readonly HttpTransportInterface $transport = new CurlHttpTransport(),
+        private readonly ClientInterface $transport = new CurlHttpTransport(),
         private readonly SlugNormalizer $normalizer = new SlugNormalizer(),
         private readonly SlugCollisionDetector $collisions = new SlugCollisionDetector(),
         private readonly string $apiBase = 'https://api.github.com',

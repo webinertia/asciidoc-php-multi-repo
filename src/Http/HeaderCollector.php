@@ -17,14 +17,15 @@ use function trim;
  * Accumulates response header lines from a cURL transfer.
  *
  * A new status line resets the map, so a redirect chain leaves only the final response's headers.
+ * Values are kept as a list per name because PSR-7 allows a header to repeat.
  */
 final class HeaderCollector
 {
-    /** @var array<string, string> */
+    /** @var array<string, list<string>> */
     private array $headers = [];
 
     /**
-     * @return array<string, string>
+     * @return array<string, list<string>>
      */
     public function headers(): array
     {
@@ -47,11 +48,12 @@ final class HeaderCollector
             offset: 0,
             length: $separator,
         )));
-        $value = trim(substr($line, $separator + 1));
 
-        if ('' !== $name) {
-            $this->headers[$name] = $value;
+        if ('' === $name) {
+            return;
         }
+
+        $this->headers[$name][] = trim(substr($line, $separator + 1));
     }
 
     public function __invoke(CurlHandle $_handle, string $line): int

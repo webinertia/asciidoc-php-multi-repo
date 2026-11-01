@@ -13,7 +13,6 @@ use Webware\AsciidocPhp\MultiRepo\Cli\Options;
 use Webware\AsciidocPhp\MultiRepo\Cli\Output;
 use Webware\AsciidocPhp\MultiRepo\Config\SiteConfig;
 use Webware\AsciidocPhp\MultiRepo\Discovery\DiscoveryFactory;
-use Webware\AsciidocPhp\MultiRepo\Http\HttpResponse;
 use Webware\AsciidocPhp\MultiRepo\Source\RepositoryFetcher;
 use Webware\AsciidocPhp\MultiRepo\Source\SourceCollector;
 use Webware\AsciidocPhp\MultiRepo\Support\Filesystem;
@@ -21,6 +20,7 @@ use Webware\AsciidocPhp\MultiRepo\Support\Json;
 use Webware\AsciidocPhp\MultiRepo\Support\Path;
 use WebwareTest\AsciidocPhp\MultiRepo\Support\CapturedOutput;
 use WebwareTest\AsciidocPhp\MultiRepo\Support\SourceFixture;
+use WebwareTest\AsciidocPhp\MultiRepo\Support\StubHttpResponse;
 use WebwareTest\AsciidocPhp\MultiRepo\Support\StubHttpTransport;
 use WebwareTest\AsciidocPhp\MultiRepo\Support\TempDirectoryTrait;
 
@@ -57,7 +57,7 @@ final class FetchCommandTest extends TestCase
         $exit = $this->executeCommand(
             manifest : null,
             config   : SourceFixture::config(),
-            transport: new StubHttpTransport(['properties/values' => new HttpResponse(401, '{}')]),
+            transport: new StubHttpTransport(['properties/values' => StubHttpResponse::create(401, '{}')]),
         );
 
         self::assertSame(ExitCode::DiscoveryError, $exit);
@@ -304,7 +304,7 @@ final class FetchCommandTest extends TestCase
     private function collidingTransport(): StubHttpTransport
     {
         return new StubHttpTransport([
-            'properties/values'   => new HttpResponse(
+            'properties/values'   => StubHttpResponse::create(
                 200,
                 (string) json_encode([
                     [
@@ -321,7 +321,7 @@ final class FetchCommandTest extends TestCase
                     ],
                 ]),
             ),
-            'search/repositories' => new HttpResponse(200, (string) json_encode(['items' => []])),
+            'search/repositories' => StubHttpResponse::create(200, (string) json_encode(['items' => []])),
         ]);
     }
 

@@ -14,9 +14,9 @@ use Webware\AsciidocPhp\MultiRepo\Cli\Output;
 use Webware\AsciidocPhp\MultiRepo\Cli\ProjectFilter;
 use Webware\AsciidocPhp\MultiRepo\Config\SiteConfig;
 use Webware\AsciidocPhp\MultiRepo\Discovery\DiscoveryFactory;
-use Webware\AsciidocPhp\MultiRepo\Http\HttpResponse;
 use WebwareTest\AsciidocPhp\MultiRepo\Support\CapturedOutput;
 use WebwareTest\AsciidocPhp\MultiRepo\Support\SourceFixture;
+use WebwareTest\AsciidocPhp\MultiRepo\Support\StubHttpResponse;
 use WebwareTest\AsciidocPhp\MultiRepo\Support\StubHttpTransport;
 
 use function explode;
@@ -171,7 +171,7 @@ final class DiscoverCommandTest extends TestCase
     private function collidingTransport(): StubHttpTransport
     {
         return new StubHttpTransport([
-            'properties/values'   => new HttpResponse(
+            'properties/values'   => StubHttpResponse::create(
                 200,
                 (string) json_encode([
                     [
@@ -188,7 +188,7 @@ final class DiscoverCommandTest extends TestCase
                     ],
                 ]),
             ),
-            'search/repositories' => new HttpResponse(200, (string) json_encode(['items' => []])),
+            'search/repositories' => StubHttpResponse::create(200, (string) json_encode(['items' => []])),
         ]);
     }
 
@@ -247,7 +247,7 @@ final class DiscoverCommandTest extends TestCase
     private function unauthorisedTransport(): StubHttpTransport
     {
         return new StubHttpTransport([
-            'properties/values' => new HttpResponse(401, '{"message":"Bad credentials"}'),
+            'properties/values' => StubHttpResponse::create(401, '{"message":"Bad credentials"}'),
         ]);
     }
 }

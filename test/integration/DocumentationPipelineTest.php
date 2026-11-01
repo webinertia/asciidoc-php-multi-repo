@@ -7,13 +7,14 @@ namespace WebwareTestIntegration\AsciidocPhp\MultiRepo;
 use Override;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
 use Webware\AsciidocPhp\MultiRepo\Config\SiteConfig;
 use Webware\AsciidocPhp\MultiRepo\Config\SiteConfigLoader;
 use Webware\AsciidocPhp\MultiRepo\Discovery\DiscoveryFactory;
 use Webware\AsciidocPhp\MultiRepo\Discovery\ManifestDiscovery;
-use Webware\AsciidocPhp\MultiRepo\Http\HttpResponse;
-use Webware\AsciidocPhp\MultiRepo\Http\HttpTransportInterface;
 use Webware\AsciidocPhp\MultiRepo\Report\ReasonCode;
 use Webware\AsciidocPhp\MultiRepo\Source\PageEnumerator;
 use Webware\AsciidocPhp\MultiRepo\Source\PreparedSource;
@@ -307,13 +308,15 @@ final class DocumentationPipelineTest extends TestCase
         );
     }
 
-    private function networkMustNotBeUsed(): HttpTransportInterface
+    private function networkMustNotBeUsed(): ClientInterface
     {
-        return new class implements HttpTransportInterface {
+        return new class implements ClientInterface {
             #[Override]
-            public function get(string $url, array $_headers = []): HttpResponse
+            public function sendRequest(RequestInterface $request): ResponseInterface
             {
-                throw new RuntimeException("The fixture pipeline opened a connection to {$url}.");
+                throw new RuntimeException(
+                    'The fixture pipeline opened a connection to ' . (string) $request->getUri(),
+                );
             }
         };
     }

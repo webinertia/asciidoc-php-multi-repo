@@ -4,13 +4,20 @@ declare(strict_types=1);
 
 namespace WebwareTest\AsciidocPhp\MultiRepo\Http;
 
+use Laminas\Diactoros\RequestFactory;
+use Laminas\Diactoros\StreamFactory;
+use Laminas\Diactoros\Uri;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\RequestInterface;
 use Webware\AsciidocPhp\MultiRepo\Http\CurlHttpTransport;
 use Webware\AsciidocPhp\MultiRepo\Http\HttpException;
+use WebwareTest\AsciidocPhp\MultiRepo\Support\UnsafeRequest;
+use WebwareTest\AsciidocPhp\MultiRepo\Support\UnsafeUri;
 
+use function array_map;
 use function fclose;
 use function sprintf;
 use function str_repeat;
@@ -23,7 +30,7 @@ use function stream_socket_server;
 use function strlen;
 
 #[CoversClass(CurlHttpTransport::class)]
-#[CoversMethod(CurlHttpTransport::class, 'get')]
+#[CoversMethod(CurlHttpTransport::class, 'sendRequest')]
 final class CurlHttpTransportTest extends TestCase
 {
     /**
@@ -161,42 +168,32 @@ final class CurlHttpTransportTest extends TestCase
     #[Test]
     public function cleanHeadersReachTheWireUnchanged(): void
     {
-        $server = stream_socket_server('tcp://127.0.0.1:0', $errno, $error);
+        $request = new RequestFactory()
+            ->createRequest('GET', self::CLOSED_PORT)
+            ->withHeader('Accept', 'application/vnd.github+json')
+            ->withHeader('X-Trace-Id', 'trace-123');
 
-        if (false === $server) {
-            $this->fail(sprintf('Unable to listen on a loopback port: %s (%d).', $error, $errno));
-        }
+        $captured = $this->capturedRequest($request);
 
-        $address = (string) stream_socket_get_name($server, remote: false);
-        $failure = null;
+        $this->assertStringContainsString("Accept: application/vnd.github+json\r\n", $captured);
+        $this->assertStringContainsString("X-Trace-Id: trace-123\r\n", $captured);
+        $this->assertStringContainsString("User-Agent: webware-asciidoc-php-multi-repo\r\n", $captured);
+    }
 
-        try {
-            new CurlHttpTransport(0.25)->get(sprintf('http://%s/', $address), [
-                'Accept'     => 'application/vnd.github+json',
-                'X-Trace-Id' => 'trace-123',
-            ]);
-        } catch (HttpException $exception) {
-            $failure = $exception;
-        }
+    /**
+     * PSR-18 hands the client a whole request, so the method and the body have to be honoured too.
+     */
+    #[Test]
+    public function theMethodAndBodyOfTheRequestReachTheWire(): void
+    {
+        $request = new RequestFactory()
+            ->createRequest('POST', self::CLOSED_PORT)
+            ->withBody(new StreamFactory()->createStream('payload-123'));
 
-        $connection = stream_socket_accept($server, timeout: 5);
+        $captured = $this->capturedRequest($request);
 
-        if (false === $connection) {
-            $this->fail('The transport never opened a connection to the listener.');
-        }
-
-        stream_set_timeout($connection, seconds: 5);
-        $request = (string) stream_get_contents($connection);
-        fclose($connection);
-
-        $this->assertInstanceOf(
-            HttpException::class,
-            $failure,
-            'The listener never answers, so the request must end in a transport failure.',
-        );
-        $this->assertStringContainsString("Accept: application/vnd.github+json\r\n", $request);
-        $this->assertStringContainsString("X-Trace-Id: trace-123\r\n", $request);
-        $this->assertStringContainsString("User-Agent: webware-asciidoc-php-multi-repo\r\n", $request);
+        $this->assertStringStartsWith('POST / HTTP/1.1', $captured);
+        $this->assertStringContainsString('payload-123', $captured);
     }
 
     /**
@@ -220,12 +217,63 @@ final class CurlHttpTransportTest extends TestCase
     }
 
     /**
+     * A loopback listener captures the bytes the transport writes. It never answers, so the request
+     * must end in a transport failure rather than a response.
+     */
+    private function capturedRequest(RequestInterface $request): string
+    {
+        $server = stream_socket_server('tcp://127.0.0.1:0', $errno, $error);
+
+        if (false === $server) {
+            $this->fail(sprintf('Unable to listen on a loopback port: %s (%d).', $error, $errno));
+        }
+
+        $address = (string) stream_socket_get_name($server, remote: false);
+        $failure = null;
+
+        try {
+            new CurlHttpTransport(0.25)->sendRequest(
+                $request->withUri(new Uri(sprintf('http://%s/', $address))),
+            );
+        } catch (HttpException $exception) {
+            $failure = $exception;
+        }
+
+        $connection = stream_socket_accept($server, timeout: 5);
+
+        if (false === $connection) {
+            $this->fail('The transport never opened a connection to the listener.');
+        }
+
+        stream_set_timeout($connection, seconds: 5);
+        $captured = (string) stream_get_contents($connection);
+        fclose($connection);
+        fclose($server);
+
+        $this->assertInstanceOf(
+            HttpException::class,
+            $failure,
+            'The listener never answers, so the request must end in a transport failure.',
+        );
+
+        return $captured;
+    }
+
+    /**
+     * A request built by a permissive message implementation, so the transport's own guard runs
+     * instead of the PSR-7 layer rejecting the bytes first.
+     *
      * @param array<string, string> $headers
      */
     private function rejectionOf(string $url, array $headers): HttpException
     {
+        $request = new UnsafeRequest(
+            new UnsafeUri($url),
+            array_map(static fn(string $value): array => [$value], $headers),
+        );
+
         try {
-            new CurlHttpTransport(0.25)->get($url, $headers);
+            new CurlHttpTransport(0.25)->sendRequest($request);
         } catch (HttpException $exception) {
             if (str_starts_with($exception->getMessage(), 'Refusing to send a request')) {
                 return $exception;

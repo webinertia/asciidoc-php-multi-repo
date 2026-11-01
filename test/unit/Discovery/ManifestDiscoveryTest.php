@@ -7,6 +7,9 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Discovery;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Webware\AsciidocPhp\MultiRepo\Config\Manifest;
 use Webware\AsciidocPhp\MultiRepo\Config\ManifestEntry;
 use Webware\AsciidocPhp\MultiRepo\Config\ManifestLoader;
@@ -15,8 +18,6 @@ use Webware\AsciidocPhp\MultiRepo\Discovery\DiscoveryFactory;
 use Webware\AsciidocPhp\MultiRepo\Discovery\ManifestDiscovery;
 use Webware\AsciidocPhp\MultiRepo\Discovery\SlugException;
 use Webware\AsciidocPhp\MultiRepo\Http\HttpException;
-use Webware\AsciidocPhp\MultiRepo\Http\HttpResponse;
-use Webware\AsciidocPhp\MultiRepo\Http\HttpTransportInterface;
 use WebwareTest\AsciidocPhp\MultiRepo\Support\SourceFixture;
 
 use function array_map;
@@ -100,8 +101,8 @@ final class ManifestDiscoveryTest extends TestCase
 
     public function testManifestDiscoveryNeverTouchesTheNetwork(): void
     {
-        $transport = new class implements HttpTransportInterface {
-            public function get(string $url, array $headers = []): HttpResponse
+        $transport = new class implements ClientInterface {
+            public function sendRequest(RequestInterface $request): ResponseInterface
             {
                 throw new HttpException('The transport must not be used by manifest discovery.');
             }

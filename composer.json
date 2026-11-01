@@ -61,6 +61,10 @@
         "test-coverage": "phpunit --colors=always --coverage-clover clover.xml --coverage-text",
         "test-integration": "phpunit --no-coverage --colors=always --testsuite \"integration test\"",
         "mutation-test": "infection",
-        "test-all": "@test && @test-integration && @mutation-test"
+        "test-all": [
+            "@test",
+            "@test-integration",
+            "@mutation-test"
+        ]
     }
 }

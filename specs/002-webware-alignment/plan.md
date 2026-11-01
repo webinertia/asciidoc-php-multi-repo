@@ -122,11 +122,19 @@ test/
 └── fixtures/      # fixture documents, unchanged
 ```
 
-The former `Contract` suite is mapped onto `integration` because the preset defines exactly two
-suites. Its tests assert documentation and schema conformance, so they are contract tests running
-under the `integration test` name; no third suite is invented. Because the layout now matches the
-preset, deviations D-1, D-2, D-3 and D-7 from the earlier draft disappear, and the
-`WARN Failed to walk /app/test` that the mismatch produced no longer appears.
+The former `Contract` suite is mapped onto `unit test`, not `integration test`. Both
+`ContractDocumentationTest` and `SchemaContractTest` read a committed artifact and compare it to
+code: `contracts/cli.md` against the registered commands, options and exit codes, and the published
+schemas against `SchemaValidator`. No composed pipeline and no external boundary is exercised, so
+they are unit-level consistency checks. For calibration, integration suites elsewhere in the fleet
+hold `ConfigProviderWiringTest`, `ThemeResolutionTest`, `NavigationRenderingTest` and
+`AssetHelperTest`, so `integration` means composed, wiring or rendering behaviour.
+
+`test/integration/` is therefore empty and carries a `.gitkeep`. The suite stays defined because the
+preset requires the name `integration test`. No third suite is invented and no filler test is added.
+
+Because the layout now matches the preset, deviations D-1, D-2, D-3 and D-7 from the earlier draft
+disappear, and the `WARN Failed to walk /app/test` that the mismatch produced no longer appears.
 
 ## Reference Mechanics (required workflow contract)
 
@@ -169,14 +177,17 @@ Consumer obligations derived from the contract, all satisfied by this plan:
   `templates/plan-template.md` Phases 1 and 2.
 - `composer.lock` is committed (Phase 1).
 - `mago.toml` is present (Phase 3).
-- Every configured suite contains at least one test; the two suites already do.
+- The `unit test` suite contains 308 tests. The `integration test` suite is empty and is expected to
+  be: the package has no composed pipeline or external boundary to exercise yet, so
+  `composer test-integration` exits 1 with `No tests executed!`. That leg is never reached by the
+  required workflow while `run_integration` is `false`.
 
 ## Package Parameters
 
 | Parameter | Value | Source |
 |---|---|---|
 | `php_versions` | `["8.4", "8.5"]` | `require.php` `~8.4.0 || ~8.5.0` |
-| `run_integration` | `false` | The second suite is a contract suite mapped onto `integration test` for the preset's two-suite convention; it needs no external service and `composer test` already runs it |
+| `run_integration` | `false` | The package has no true integration tests yet; the former contract tests are unit-level consistency checks and live in `unit test`. Group 2 and Group 3 populate the suite as composed behaviour lands |
 | `integration_php_version` | `""` | Integration disabled |
 | `enable_codecov` | `true` | Coverage is produced by pcov in the container and on CI |
 | `enable_infection` | `true` | Infection config ships with this feature |
@@ -186,11 +197,11 @@ Consumer obligations derived from the contract, all satisfied by this plan:
 
 ## Deviations from the canonical artifacts
 
-Each deviation is required by this package's actual layout or by the constitution. The PR body
-repeats this list. Deviations D-1, D-2, D-3 and D-7 from the earlier draft of this plan are gone:
-they existed only because the test directory was named `tests/` and the suites were named
-`unit test` and `contract test`. The layout was renamed to the preset convention, so those
-accommodations are no longer deviations.
+Each deviation is required by this package's actual layout, by the constitution, or by a defect in
+the preset. The PR body repeats this list. The original D-1, D-2 and D-3 (plural `tests` directory,
+`contract test` suite name, and old test namespace) are gone: the test layout was renamed to the
+preset convention, so those accommodations are no longer deviations. The list is renumbered from
+D-1.
 
 - **D-1 README badges.** The artifact opens with Packagist PHP-version and latest-version badges
   and a License badge. `webware/asciidoc-php-multi-repo` is not published on Packagist (the package
@@ -229,12 +240,28 @@ accommodations are no longer deviations.
   `["test", "bench"]` and this package now uses `test/`.
 - **D-5 `composer test` stays unscoped.** `templates/plan-template.md` Phase 1 defines `test` as
   `phpunit --no-coverage --colors=always --testsuite "unit test"`. This package keeps the existing
-  unscoped form, `phpunit --no-coverage --colors=always`, so both suites run on every matrix leg.
-  That is what makes `run_integration: false` safe: if `test` were scoped to `unit test`, the
-  contract suite would run only on the coverage leg, and the required workflow would need
-  `run_integration: true` to cover it. `composer test-all` from the preset is shipped as well and
-  runs `test`, `test-integration` and `mutation-test` in sequence. The alternative is one line in
-  `composer.json` plus one value in `webware-ci.json` if the centre prefers the scoped form.
+  unscoped form, `phpunit --no-coverage --colors=always`, as the brief requires. With the contract
+  tests now inside `unit test` the practical effect equals the scoped form today, and when
+  `integration test` gains real tests the unscoped form will run them on every matrix leg without a
+  `run_integration` flip. The alternative is one line in `composer.json` plus one value in
+  `webware-ci.json` if the centre prefers the scoped form.
+- **D-6 `test-all` is declared as an array, not a `&&`-joined string.** `templates/plan-template.md`
+  defines `test-all` as `"@test && @test-integration && @mutation-test"`. Composer 2.11.1 does not
+  chain `@script` references inside a single string: the definition renders as `echo AAA '&&'
+  '@b'`, so `composer test-all` fails immediately with `Test file "&&" not found` and exit 2. This
+  was reproduced in a scratch project. Declaring the same three references as a JSON array runs
+  them in sequence and stops at the first failure, which is the intent. This is a preset defect
+  worth fixing in `webware-tools`; the array form is the local workaround.
+- **D-7 The `integration test` suite is empty, so `composer test-integration` exits 1.** The preset
+  requires a suite named exactly `integration test`, so it stays defined, and `test/integration/`
+  stays present with a `.gitkeep`. No filler test is added. PHPUnit 13.4.5 fails an empty suite by
+  default: `composer test-integration` prints `No tests executed!` and exits 1, and
+  `composer test-all` fails on that leg. The cause is the empty-suite default, not the
+  `failOnWarning` or `failOnRisky` strict flags; `--do-not-fail-on-empty-test-suite` is the only
+  switch that changes it. The required workflow never runs the leg while `run_integration` is
+  `false`, so CI is unaffected, and the red script is the truthful signal that the package has no
+  integration tests yet. Adding the flag to the script would be a deviation from the preset's script
+  definition, so it is raised for a decision rather than applied.
 
 ## Implementation Phases
 
@@ -267,9 +294,11 @@ accommodations are no longer deviations.
   makes the mutation job fail whenever the host is unreachable and silently pins a schema series
   that drifts from the installed PHPUnit.
 - Keep suites `unit test` over `test/unit` and `integration test` over `test/integration`. The
-  former `contract test` suite is mapped onto `integration test` because the preset defines exactly
-  two suites; the tests themselves are documentation and schema contract tests, not network
-  integration tests, and that mapping is stated in the PR body rather than hidden.
+  former `contract test` suite is mapped onto `unit test`, not `integration test`: both files read a
+  committed artifact and compare it to code, with no composed pipeline and no external boundary, so
+  they are unit-level consistency checks. `test/integration/` stays present with a `.gitkeep` so the
+  suite resolves, and no third suite is invented. The mapping is stated in the PR body rather than
+  hidden.
 - Keep `failOnNotice`, `failOnWarning`, `failOnRisky`; add `failOnDeprecation` from the artifact.
 - `<source restrictNotices="true" ignoreIndirectDeprecations="true">` including `src`.
 - Adding `requireCoverageMetadata` means every test class needs `#[CoversClass]` or
@@ -304,8 +333,8 @@ accommodations are no longer deviations.
   findings in the baseline are exactly the class of issue that `treatPhpDocTypesAsCertain: false`
   suppressed, so removing the relaxation is a net tightening rather than a swap.
 - `contracts/cli.md` is edited in the same commit as any change that adds or alters a flag, command
-  or exit code, because `test/integration/ContractDocumentationTest.php` fails otherwise. This
-  feature does not intend to change the CLI contract; the rename in D-3 is class-level only.
+  or exit code, because `test/unit/ContractDocumentationTest.php` fails otherwise. This feature does
+  not intend to change the CLI contract; the rename in D-3 is class-level only.
 
 ### Phase 4: Legacy static analysis removal
 

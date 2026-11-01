@@ -27,13 +27,18 @@ run in the container; no host PHP is used.
   `templates/plan-template.md` Phase 1
 - [x] T003a Rename the test layout to the preset convention: `tests/` to `test/`,
   `tests/Unit/` to `test/unit/`, `tests/Contract/` to `test/integration/`, and rewrite the
-  namespaces in all 30 test files. The `Contract` suite is mapped onto `integration` because the
-  preset defines exactly two suites; the tests are documentation and schema contract tests, not
-  network integration tests, and the PR body states that rather than inventing a third suite. This
-  removes the former deviations D-1, D-2, D-3 and D-7 and the `WARN Failed to walk /app/test`
+  namespaces in all 30 test files. The `Contract` suite is then mapped onto `unit test`, not
+  `integration test`: both files read a committed artifact and compare it to code, with no composed
+  pipeline and no external boundary, so they are unit-level consistency checks. This removes the
+  former deviations D-1, D-2, D-3 and D-7 and the `WARN Failed to walk /app/test`
+- [x] T003b Move `ContractDocumentationTest` and `SchemaContractTest` from `test/integration/` to
+  `test/unit/`, change their namespace to `WebwareTest\AsciidocPhpMultiRepo`, and add
+  `test/integration/.gitkeep` so the empty `integration test` suite still resolves. No filler test
+  is added. See Deviation D-7 for the resulting `composer test-integration` exit code
 - [x] T004 Define scripts `test` (all suites, unchanged; see Deviation D-5), `test-coverage`
   (clover plus text), `test-integration` (testsuite `integration test`), `mutation-test`
-  (`infection`), and the preset's `test-all` alias (`@test && @test-integration && @mutation-test`).
+  (`infection`), and `test-all` as the array `["@test", "@test-integration", "@mutation-test"]`
+  rather than the preset's `&&`-joined string (Deviation D-6).
   Remove the legacy `sa` and `check-all` scripts: `templates/plan-template.md` Phase 1 says "No
   PHPStan package, no PHPStan script; remove legacy `check-all`/`cs-check`/`cs-fix`/`sa` scripts",
   and the preset README invokes the four `mago` commands directly. No wrapper is shipped in their
@@ -49,7 +54,9 @@ run in the container; no host PHP is used.
   suites: `unit test` over `test/unit` and `integration test` over `test/integration`. Keep
   `<source>` over `src`
 - [x] T007 Add `#[CoversClass]` (or `#[CoversMethod]`) to every test class so
-  `requireCoverageMetadata` holds. Both suites already contain tests, so no scaffolding is needed
+  `requireCoverageMetadata` holds. The `unit test` suite holds all 308 tests; the `integration test`
+  suite is empty and stays empty, because the package has no composed pipeline to exercise. No
+  scaffolding test is invented to fill it (Deviation D-7)
 
 ## Phase 3: Mago tooling
 
@@ -145,8 +152,11 @@ run in the container; no host PHP is used.
 ## Verification
 
 - [x] T024 Run the full local check inside the container: `mago format --check`, `mago lint`,
-  `mago analyze`, `mago guard`, `composer test`, `composer test-integration`. Report the test count
-  and assertion count, and the Mago and PHP versions the image installed
+  `mago analyze`, `mago guard`, `composer test`, `composer test-coverage`. Report the test count and
+  assertion count, and the Mago and PHP versions the image installed. `composer test-integration` is
+  run as well and is expected to exit 1 with `No tests executed!`, because the suite is empty
+  (Deviation D-7); that result is reported as measured rather than worked around. The required
+  workflow does not run that leg while `run_integration` is `false`
 - [x] T025 Verify the ignore/track boundary: `git check-ignore mago.bat` reports nothing and
   `git ls-files --error-unmatch mago.bat` succeeds, so the Windows shim is tracked;
   `git ls-files .specify` lists files, so the spec-kit scaffolding and installed preset stay

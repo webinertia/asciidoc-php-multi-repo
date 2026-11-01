@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace WebwareTestIntegration\AsciidocPhpMultiRepo;
+namespace WebwareTest\AsciidocPhpMultiRepo;
 
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;

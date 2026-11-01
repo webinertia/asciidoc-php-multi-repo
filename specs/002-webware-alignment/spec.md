@@ -115,10 +115,19 @@ the host.
 
 ### Edge Cases
 
-- The package has no integration suite in the network sense. The preset defines exactly two suites,
-  so the former `contract test` suite is mapped onto `integration test` and lives in
-  `test/integration`. `run_integration` stays `false` because the suite needs no external service
-  and `composer test` already executes it; flipping it on would run the same tests twice.
+- The former `contract test` suite is mapped onto `unit test`, not `integration test`. Both files
+  read a committed artifact and compare it to code (`contracts/cli.md` against the registered
+  commands, options and exit codes; the published schemas against `SchemaValidator`). No composed
+  pipeline and no external boundary is exercised, so they are unit-level consistency checks. In
+  this ecosystem `integration` means composed, wiring or rendering behaviour.
+- `test/integration/` is therefore empty. The preset requires the suite to be named exactly
+  `integration test`, so the suite stays defined and the directory is kept with a `.gitkeep`.
+  `run_integration` stays `false` because the package has no true integration tests yet; Group 2
+  and Group 3 populate the suite as composed behaviour lands.
+- An empty suite is a PHPUnit failure: `composer test-integration` exits 1 with `No tests
+  executed!`, and `composer test-all` fails on that leg. This is the truthful result of having no
+  integration tests, not a misconfiguration. No filler test is added to silence it. The required
+  workflow never runs the leg while `run_integration` is `false`, so CI is unaffected.
 - `composer sa` and `composer check-all` are removed. The preset plan template removes the legacy
   `check-all`/`cs-check`/`cs-fix`/`sa` scripts and invokes the four `mago` commands directly, so no
   convenience wrapper is shipped.
@@ -133,8 +142,11 @@ the host.
   package's CI values, and MUST NOT carry a wrapper workflow. The file MUST carry no Mago version
   literal.
 - **FR-002**: `composer.json` MUST keep the existing `test` script unchanged, MUST drop the legacy
-  `sa` and `check-all` scripts, and MUST add `test-coverage`, `test-integration` and
-  `mutation-test` scripts that the required workflow invokes.
+  `sa` and `check-all` scripts, and MUST add `test-coverage`, `test-integration`, `mutation-test`
+  and `test-all` scripts that the preset plan template defines. `test-all` MUST be declared as an
+  array of `@script` references rather than the template's `&&`-joined string, because Composer
+  2.11.1 does not chain `@script` references inside a single string and renders the trailing
+  `&& @test-integration` as arguments to the first script.
 - **FR-003**: `phpunit.xml.dist` MUST use the PHPUnit 13.1 schema, keep the strict flags
   (`failOnNotice`, `failOnWarning`, `failOnRisky`), and keep both suites (`unit test` ->
   `test/unit`, `integration test` -> `test/integration`).

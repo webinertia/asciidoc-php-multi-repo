@@ -43,6 +43,16 @@ final class TocExtractorTest extends TestCase
         == Another second level heading
         ADOC;
 
+    public function testAnEntryExposesItsLevelIdAndTitle(): void
+    {
+        $entries = new TocExtractor()->extract($this->document("= Title\n\n== First & <second>\n\nText.\n"), [2]);
+
+        self::assertCount(1, $entries);
+        self::assertSame(2, $entries[0]->level());
+        self::assertSame('_first_second', $entries[0]->id());
+        self::assertSame('First & <second>', $entries[0]->title());
+    }
+
     public function testAnH1OnlyPageYieldsAnEmptyTableOfContents(): void
     {
         $entries = new TocExtractor()->extract(

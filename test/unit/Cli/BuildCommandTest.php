@@ -22,6 +22,7 @@ use WebwareTest\AsciidocPhp\MultiRepo\Support\StubHttpResponse;
 use WebwareTest\AsciidocPhp\MultiRepo\Support\StubHttpTransport;
 use WebwareTest\AsciidocPhp\MultiRepo\Support\TempDirectoryTrait;
 
+use function file_get_contents;
 use function file_put_contents;
 use function is_file;
 use function json_encode;
@@ -95,6 +96,20 @@ final class BuildCommandTest extends TestCase
         self::assertStringNotContainsString('page(s)', $this->captured->stdout);
     }
 
+    public function testANonOnboardedProjectIsSkipped(): void
+    {
+        $manifest = $this->writeManifest([
+            $this->entry('draft', SourceFixture::path('org/versioned'), onboarded: false),
+        ]);
+
+        $exit = $this->build(['draft'], verbose: true, manifest: $manifest);
+
+        self::assertSame(ExitCode::Success, $exit);
+        self::assertStringContainsString('draft: not onboarded, skipped', $this->captured->stderr);
+        self::assertStringNotContainsString('page(s)', $this->captured->stdout);
+        self::assertFalse(is_file(Path::join($this->tempDirectory, 'site', 'draft', 'v1', 'index.html')));
+    }
+
     public function testAnUnauthorisedDiscoveryExitsThree(): void
     {
         $exit = $this->discover($this->unauthorisedTransport());
@@ -157,12 +172,59 @@ final class BuildCommandTest extends TestCase
         self::assertSame('', $this->captured->stdout);
     }
 
+    public function testTheBasePathOptionOverridesTheConfiguredBasePath(): void
+    {
+        $out = Path::join($this->tempDirectory, 'site');
+
+        $exit = new BuildCommand()->execute(
+            new Options(
+                command : 'build',
+                projects: ['versioned'],
+                manifest: SourceFixture::path('manifest.json'),
+                out     : $out,
+                cache   : Path::join($this->tempDirectory, 'cache'),
+                basePath: '/handbook/',
+            ),
+            $this->config(),
+            $this->makeOutput(),
+        );
+
+        $html = (string) file_get_contents(Path::join($out, 'versioned', 'v1', 'index.html'));
+
+        self::assertSame(ExitCode::Success, $exit);
+        self::assertStringContainsString('href="/handbook/assets/site.', $html);
+        self::assertStringNotContainsString('href="/assets/site.', $html);
+    }
+
     public function testTheCommandNameAndSummaryAreSet(): void
     {
         $command = new BuildCommand();
 
         self::assertSame('build', $command->name());
         self::assertNotSame('', $command->summary());
+    }
+
+    public function testTheConfiguredDirectoriesAreUsedWhenNoOptionOverridesThem(): void
+    {
+        $out = Path::join($this->tempDirectory, 'configured-site');
+
+        $exit = new BuildCommand()->execute(
+            new Options(
+                command : 'build',
+                projects: ['versioned'],
+                manifest: SourceFixture::path('manifest.json'),
+            ),
+            $this->config(['output' => [
+                'directory'      => $out,
+                'cacheDirectory' => Path::join($this->tempDirectory, 'configured-cache'),
+                'reportPath'     => Path::join($this->tempDirectory, 'report.json'),
+            ]]),
+            $this->makeOutput(),
+        );
+
+        self::assertSame(ExitCode::Success, $exit);
+        self::assertStringContainsString("output directory: {$out}", $this->captured->stdout);
+        self::assertTrue(is_file(Path::join($out, 'versioned', 'v1', 'index.html')));
     }
 
     public function testTheVerboseOutputNamesEveryRenderedPage(): void
@@ -232,9 +294,12 @@ final class BuildCommandTest extends TestCase
         ]);
     }
 
-    private function config(): SiteConfig
+    /**
+     * @param array<string, mixed> $overrides shallow-merged into the fixture document
+     */
+    private function config(array $overrides = []): SiteConfig
     {
-        return SourceFixture::config();
+        return SourceFixture::config($overrides);
     }
 
     private function discover(StubHttpTransport $transport): ExitCode
@@ -253,13 +318,14 @@ final class BuildCommandTest extends TestCase
     /**
      * @return array<string, mixed>
      */
-    private function entry(string $name, string $path, bool $archived = false): array
+    private function entry(string $name, string $path, bool $archived = false, bool $onboarded = true): array
     {
         return [
             'name'          => $name,
             'slug'          => $name,
             'defaultBranch' => 'main',
             'archived'      => $archived,
+            'onboarded'     => $onboarded,
             'path'          => $path,
         ];
     }

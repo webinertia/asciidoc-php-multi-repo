@@ -176,6 +176,29 @@ final class PageRendererTest extends TestCase
         self::assertStringNotContainsString('href="/versioned', $html);
     }
 
+    public function testEveryDocumentedSafeModeIsAccepted(): void
+    {
+        $repository = $this->fixtureRepository('versioned');
+        $version    = $this->fixtureVersion();
+        $source     = $this->source('versioned', 'docs/v1/index.adoc');
+
+        foreach (['unsafe', 'server'] as $mode) {
+            $page = new PageRenderer()->render(
+                $this->configWithSafeMode($mode),
+                $repository,
+                $version,
+                $source,
+            );
+
+            self::assertStringContainsString(
+                'This is the version 1 guide.',
+                $page->html(),
+                "Safe mode \"{$mode}\" should still resolve the include.",
+            );
+            self::assertSame('Versioned Project', $page->title());
+        }
+    }
+
     public function testEveryIncludeIsCheckedNotJustTheFirst(): void
     {
         $directory = $this->createTempDirectory();

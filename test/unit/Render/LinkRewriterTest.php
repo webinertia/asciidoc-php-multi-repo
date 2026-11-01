@@ -45,6 +45,28 @@ final class LinkRewriterTest extends TestCase
         self::assertSame('/project/v2/usage-examples.html', $url);
     }
 
+    public function testAnAnchorWithASingleQuotedHrefIsLeftAlone(): void
+    {
+        self::assertSame(
+            "<a href='one.adoc'>One</a>",
+            new LinkRewriter()->rewrite("<a href='one.adoc'>One</a>", self::PAGE, '/docs/'),
+        );
+    }
+
+    public function testAnAnchorWithoutAnHrefIsLeftAlone(): void
+    {
+        $rewriter = new LinkRewriter();
+
+        self::assertSame(
+            '<a name="top">Top</a>',
+            $rewriter->rewrite('<a name="top">Top</a>', self::PAGE, '/docs/'),
+        );
+        self::assertSame(
+            '<a id="end">End</a>',
+            $rewriter->rewrite('<a id="end">End</a>', self::PAGE, '/docs/'),
+        );
+    }
+
     public function testAnEmptyRelBecomesNoopenerRatherThanAnEmptyToken(): void
     {
         self::assertSame(
@@ -73,6 +95,22 @@ final class LinkRewriterTest extends TestCase
             '<a href="https://example.com" rel="external noopener">External</a>',
             new LinkRewriter()->rewrite('<a href="https://example.com" REL="external">External</a>', self::PAGE, '/'),
         );
+    }
+
+    public function testAnExternalUrlIsReturnedUnchangedByTheUrlRewriter(): void
+    {
+        $rewriter = new LinkRewriter();
+
+        self::assertSame('https://example.com/page.adoc', $rewriter->rewriteUrl(
+            'https://example.com/page.adoc',
+            self::PAGE,
+            '/docs/',
+        ));
+        self::assertSame('//cdn.example.com/x.adoc', $rewriter->rewriteUrl(
+            '//cdn.example.com/x.adoc',
+            self::PAGE,
+            '/docs/',
+        ));
     }
 
     public function testAnInPageFragmentIsLeftAlone(): void

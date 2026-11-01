@@ -7,6 +7,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Render;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use Webware\AsciidocPhp\MultiRepo\Render\PageContext;
 use Webware\AsciidocPhp\MultiRepo\Render\PageShell;
 use Webware\AsciidocPhp\MultiRepo\Render\TocEntry;
@@ -64,6 +65,20 @@ final class PageShellTest extends TestCase
         }
     }
 
+    public function testAMissingTemplateIsReported(): void
+    {
+        $directory = $this->createTempDirectory();
+
+        try {
+            $this->expectException(RuntimeException::class);
+            $this->expectExceptionMessage("Template \"page.php\" is missing from \"{$directory}\".");
+
+            new PageShell($directory)->render($this->context());
+        } finally {
+            $this->removeTempDirectory($directory);
+        }
+    }
+
     public function testAnOmittedTemplateDirectoryFallsBackToTheShippedTemplates(): void
     {
         $directory = new PageShell(null)->templateDirectory();
@@ -94,6 +109,12 @@ final class PageShellTest extends TestCase
         $html = new PageShell()->render($this->context(body: $body));
 
         self::assertStringContainsString($body, $html);
+    }
+
+    public function testTheContextExposesItsPageTitle(): void
+    {
+        self::assertSame('Usage examples', $this->context()->pageTitle());
+        self::assertSame('Rendered & escaped', $this->context(pageTitle: 'Rendered & escaped')->pageTitle());
     }
 
     public function testTheShellCarriesEveryDocumentedElement(): void

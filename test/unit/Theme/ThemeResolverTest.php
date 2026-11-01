@@ -7,6 +7,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Theme;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use Webware\AsciidocPhp\MultiRepo\Config\ThemeConfig;
 use Webware\AsciidocPhp\MultiRepo\Theme\AssetHasher;
 use Webware\AsciidocPhp\MultiRepo\Theme\ThemeResolver;
@@ -54,6 +55,16 @@ final class ThemeResolverTest extends TestCase
         self::assertSame([], $this->lightColorsFrom(":root {\n    color: red;\n}\n"));
     }
 
+    public function testAMissingStylesheetIsReported(): void
+    {
+        $directory = $this->createTempDirectory();
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage("Asset \"site.css\" is missing from \"{$directory}\".");
+
+        new ThemeResolver(cssDirectory: $directory)->lightColors();
+    }
+
     public function testAnUnterminatedTokenBlockYieldsNoTokens(): void
     {
         $css = ":root {\n    --color-link: #6a49c9;\n" . str_repeat("    --padding-token: 1;\n", 8);
@@ -68,6 +79,11 @@ final class ThemeResolverTest extends TestCase
         self::assertSame('/assets/site.css', $resolver->assetUrl('/', 'site.css'));
         self::assertSame('/docs/assets/site.css', $resolver->assetUrl('/docs/', 'site.css'));
         self::assertSame('/docs/assets/site.css', $resolver->assetUrl('/docs', 'site.css'));
+    }
+
+    public function testAStylesheetWithoutTheSelectorYieldsNoTokens(): void
+    {
+        self::assertSame([], $this->lightColorsFrom("body {\n    --color-link: #6a49c9;\n}\n"));
     }
 
     public function testOneChangedByteChangesThePublishedName(): void
@@ -113,6 +129,18 @@ final class ThemeResolverTest extends TestCase
         self::assertSame(ThemeConfig::DEFAULT_ACCENT, $resolver->accent('javascript:alert(1)'));
         self::assertStringContainsString('--color-accent: #123abc;', $resolver->accentCss('#123abc'));
         self::assertNotSame($resolver->accentName('#123abc'), $resolver->accentName('#abcdef'));
+    }
+
+    public function testTheHasherIsExposed(): void
+    {
+        $resolver = new ThemeResolver();
+
+        self::assertSame($resolver->siteName(), $resolver->hasher()->hashedName('site', 'css', $resolver->siteCss()));
+        self::assertSame($resolver->themeScriptName(), $resolver->hasher()->hashedName(
+            'theme',
+            'js',
+            $resolver->themeScript(),
+        ));
     }
 
     public function testTheModeAndTheInitialPaintComeFromTheThemeConfig(): void

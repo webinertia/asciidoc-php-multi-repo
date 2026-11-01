@@ -252,16 +252,25 @@ D-1.
   was reproduced in a scratch project. Declaring the same three references as a JSON array runs
   them in sequence and stops at the first failure, which is the intent. This is a preset defect
   worth fixing in `webware-tools`; the array form is the local workaround.
-- **D-7 The `integration test` suite is empty, so `composer test-integration` exits 1.** The preset
-  requires a suite named exactly `integration test`, so it stays defined, and `test/integration/`
-  stays present with a `.gitkeep`. No filler test is added. PHPUnit 13.4.5 fails an empty suite by
-  default: `composer test-integration` prints `No tests executed!` and exits 1, and
-  `composer test-all` fails on that leg. The cause is the empty-suite default, not the
-  `failOnWarning` or `failOnRisky` strict flags; `--do-not-fail-on-empty-test-suite` is the only
-  switch that changes it. The required workflow never runs the leg while `run_integration` is
-  `false`, so CI is unaffected, and the red script is the truthful signal that the package has no
-  integration tests yet. Adding the flag to the script would be a deviation from the preset's script
-  definition, so it is raised for a decision rather than applied.
+- **D-7 The `integration test` suite is empty, so `composer test-integration` exits 1.** Resolved by
+  owner ruling, not open. The owner directed that a single test of the coupling to
+  `webware/asciidoc-php` be written, and that an empty suite failing is acceptable until then:
+  "I am aware that one test is required or the suite fails. Thats fine" and "Add a single
+  integration test. There will need to be integration test to test the coupling between the two
+  components anyway." That test cannot be written at this commit. `composer.json` requires
+  `webware/asciidoc-php: ^0.1`, but the dependency namespace appears nowhere in `src`, `bin` or
+  `test`; all 46 files under `src/` are CLI plumbing, configuration parsing, JSON, path handling or
+  process execution, and `src/Cli/Commands/BuildCommand.php` is a `StubCommand` carrying only
+  `name()` and `summary()`. There is no resolved document, no render stage and no call site, so a
+  test written now would exercise the converter rather than the coupling, and would pass unchanged
+  if this package were deleted. The ruling's own hard stop therefore applies: the suite is left
+  empty rather than inventing a seam or a placeholder. The preset requires a suite named exactly
+  `integration test`, so it stays defined, and `test/integration/` stays present with a `.gitkeep`.
+  No filler test is added. `composer test-integration` prints `No tests executed!` and exits 1, and
+  `composer test-all` fails on that leg. The cause is the empty-suite default under an explicit
+  `--testsuite` selection, not the `failOnWarning` or `failOnRisky` strict flags.
+  `--do-not-fail-on-empty-test-suite` is not applied: an earlier ruling added it, and the owner
+  ruling above supersedes that ruling, so the script carries the preset's original definition.
 
 ## Implementation Phases
 

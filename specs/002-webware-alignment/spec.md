@@ -48,7 +48,7 @@ Filled from this package's `composer.json` and the new `mago.toml`.
 | `php_versions` | `["8.4", "8.5"]` |
 | `require.php` | `~8.4.1 \|\| ~8.5.0` |
 | `config.platform.php` | `8.4.99` |
-| `run_integration` | `false` (the second suite is a contract suite, see the suite mapping note) |
+| `run_integration` | `false` (no true integration tests yet, see the suite mapping note) |
 | `integration_php_version` | `""` (empty; `run_integration` is false) |
 | `enable_codecov` | `true` |
 | `enable_infection` | `true` |
@@ -124,10 +124,17 @@ the host.
   `integration test`, so the suite stays defined and the directory is kept with a `.gitkeep`.
   `run_integration` stays `false` because the package has no true integration tests yet; Group 2
   and Group 3 populate the suite as composed behaviour lands.
+- The owner directed that one integration test be written for the coupling between this package and
+  the `webware/asciidoc-php` converter, and that an empty suite failing is acceptable until then.
+  That test is blocked. The dependency is required in `composer.json` but referenced nowhere in
+  `src`, `bin` or `test`, and the command that would drive rendering is a `StubCommand`. Group 1 has
+  no seam where a resolved document reaches the converter, so no test is written and no seam or
+  placeholder is invented.
 - An empty suite is a PHPUnit failure: `composer test-integration` exits 1 with `No tests
   executed!`, and `composer test-all` fails on that leg. This is the truthful result of having no
-  integration tests, not a misconfiguration. No filler test is added to silence it. The required
-  workflow never runs the leg while `run_integration` is `false`, so CI is unaffected.
+  integration tests, not a misconfiguration. No filler test is added to silence it, and
+  `--do-not-fail-on-empty-test-suite` is not applied. The required workflow never runs the leg while
+  `run_integration` is `false`, so CI is unaffected.
 - `composer sa` and `composer check-all` are removed. The preset plan template removes the legacy
   `check-all`/`cs-check`/`cs-fix`/`sa` scripts and invokes the four `mago` commands directly, so no
   convenience wrapper is shipped.
@@ -207,5 +214,6 @@ the host.
 
 - The required workflow keeps its documented `webware-ci.json` keys unless a deliberate change
   records otherwise.
-- The contract suite is not an integration suite, so `run_integration` is `false`.
+- The contract suite is not an integration suite, so it lives in `unit test`, and `run_integration`
+  is `false` until a genuine composed test exists.
 - Test scaffolding (not full test coverage) is sufficient for alignment scope.

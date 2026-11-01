@@ -30,7 +30,7 @@ run in the container; no host PHP is used.
   namespaces in all 30 test files. The `Contract` suite is then mapped onto `unit test`, not
   `integration test`: both files read a committed artifact and compare it to code, with no composed
   pipeline and no external boundary, so they are unit-level consistency checks. This removes the
-  former deviations D-1, D-2, D-3 and D-7 and the `WARN Failed to walk /app/test`
+  former deviations D-1, D-2 and D-3 and the `WARN Failed to walk /app/test`
 - [x] T003b Move `ContractDocumentationTest` and `SchemaContractTest` from `test/integration/` to
   `test/unit/`, change their namespace to `WebwareTest\AsciidocPhpMultiRepo`, and add
   `test/integration/.gitkeep` so the empty `integration test` suite still resolves. No filler test
@@ -55,8 +55,11 @@ run in the container; no host PHP is used.
   `<source>` over `src`
 - [x] T007 Add `#[CoversClass]` (or `#[CoversMethod]`) to every test class so
   `requireCoverageMetadata` holds. The `unit test` suite holds all 308 tests; the `integration test`
-  suite is empty and stays empty, because the package has no composed pipeline to exercise. No
-  scaffolding test is invented to fill it (Deviation D-7)
+  suite is empty and stays empty, because the package has no composed pipeline to exercise. The
+  owner directed that one coupling test against `webware/asciidoc-php` be written, but the hard stop
+  applies: the dependency is required in `composer.json` and referenced nowhere in `src`, `bin` or
+  `test`, and `BuildCommand` is a `StubCommand`, so there is no seam to drive. No scaffolding test
+  is invented to fill the suite and no seam is invented to justify one (Deviation D-7)
 
 ## Phase 3: Mago tooling
 
@@ -155,7 +158,9 @@ run in the container; no host PHP is used.
   `mago analyze`, `mago guard`, `composer test`, `composer test-coverage`. Report the test count and
   assertion count, and the Mago and PHP versions the image installed. `composer test-integration` is
   run as well and is expected to exit 1 with `No tests executed!`, because the suite is empty
-  (Deviation D-7); that result is reported as measured rather than worked around. The required
+  (Deviation D-7); that result is reported as measured rather than worked around. The owner directed
+  that a single coupling test be written, and the hard stop blocked it because Group 1 exposes no
+  seam where a resolved document reaches `webware/asciidoc-php`. The required
   workflow does not run that leg while `run_integration` is `false`
 - [x] T025 Verify the ignore/track boundary: `git check-ignore mago.bat` reports nothing and
   `git ls-files --error-unmatch mago.bat` succeeds, so the Windows shim is tracked;

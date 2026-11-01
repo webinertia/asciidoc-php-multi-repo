@@ -44,6 +44,22 @@ final class CommandStubTest extends TestCase
         ];
     }
 
+    /**
+     * The commands that rendering will implement are still stubs. `discover` and `fetch` are not.
+     *
+     * @return array<string, array{string}>
+     */
+    public static function unimplementedCommands(): array
+    {
+        return [
+            'build'    => ['build'],
+            'watch'    => ['watch'],
+            'serve'    => ['serve'],
+            'validate' => ['validate'],
+            'clean'    => ['clean'],
+        ];
+    }
+
     #[DataProvider('contractCommands')]
     public function testEveryContractCommandIsRegistered(string $name): void
     {
@@ -61,7 +77,7 @@ final class CommandStubTest extends TestCase
         self::assertNotSame('', $this->command($name)->summary());
     }
 
-    #[DataProvider('contractCommands')]
+    #[DataProvider('unimplementedCommands')]
     public function testStubReturnsInternalErrorAndSaysItIsNotImplemented(string $name): void
     {
         $command = $this->command($name);
@@ -83,6 +99,12 @@ final class CommandStubTest extends TestCase
 
         self::assertSame($names, array_values(array_unique($names)));
         self::assertCount(7, $names);
+    }
+
+    #[DataProvider('unimplementedCommands')]
+    public function testTheUnimplementedCommandsAreStubs(string $name): void
+    {
+        self::assertInstanceOf(StubCommand::class, $this->command($name));
     }
 
     protected function setUp(): void

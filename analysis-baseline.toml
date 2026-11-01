@@ -277,6 +277,18 @@ message = 'Potentially unhandled exception `InvalidArgumentException` in `Webwar
 count = 1
 
 [[issues]]
+file = "src/Discovery/GitHubPropertyValues.php"
+code = "mixed-assignment"
+message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
+count = 5
+
+[[issues]]
+file = "src/Discovery/GitHubRepositoryMetadata.php"
+code = "mixed-assignment"
+message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
+count = 5
+
+[[issues]]
 file = "src/Support/Filesystem.php"
 code = "missing-constant-type"
 message = "Class constant `SORT_STRING` is missing a type hint."

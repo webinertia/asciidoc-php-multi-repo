@@ -5,12 +5,36 @@ declare(strict_types=1);
 namespace WebwareTest\AsciidocPhpMultiRepo\Config;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhpMultiRepo\Config\ProjectOverride;
 
 #[CoversClass(ProjectOverride::class)]
 final class ProjectOverrideTest extends TestCase
 {
+    /**
+     * @return array<string, array{array<string, mixed>}>
+     */
+    public static function singleFields(): array
+    {
+        return [
+            'accent'      => [['accent' => '#05a578']],
+            'description' => [['description' => 'Message bus abstractions.']],
+            'order'       => [['order' => 10]],
+            'slug'        => [['slug' => 'message-bus']],
+            'title'       => [['title' => 'Message Bus']],
+        ];
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    #[DataProvider('singleFields')]
+    public function testASingleFieldMakesTheOverrideNonEmpty(array $data): void
+    {
+        self::assertFalse(ProjectOverride::fromArray($data)->isEmpty());
+    }
+
     public function testEmptyIsEmpty(): void
     {
         self::assertTrue(ProjectOverride::empty()->isEmpty());

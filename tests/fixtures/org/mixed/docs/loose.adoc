@@ -1,0 +1,3 @@
+== Loose page
+
+A page outside any version directory.

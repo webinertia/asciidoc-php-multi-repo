@@ -1,0 +1,72 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/webinertia/asciidoc-php-multi-repo/main/specs/001-multi-repo-docs-site/contracts/search-index.schema.json",
+    "title": "Documentation Search Index",
+    "description": "One document per project covering all of that project's published versions.",
+    "type": "object",
+    "required": ["schemaVersion", "project", "versions"],
+    "additionalProperties": false,
+    "properties": {
+        "schemaVersion": {
+            "type": "integer",
+            "const": 1
+        },
+        "project": {
+            "type": "object",
+            "required": ["slug", "title"],
+            "additionalProperties": false,
+            "properties": {
+                "slug": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+                "title": { "type": "string", "minLength": 1 }
+            }
+        },
+        "versions": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "$ref": "#/$defs/searchVersion" }
+        }
+    },
+    "$defs": {
+        "searchVersion": {
+            "type": "object",
+            "required": ["label", "latest", "url", "pages"],
+            "additionalProperties": false,
+            "properties": {
+                "label": {
+                    "type": "string",
+                    "pattern": "^(v[1-9][0-9]*|latest)$"
+                },
+                "latest": { "type": "boolean" },
+                "url": { "type": "string", "minLength": 1 },
+                "pages": {
+                    "type": "array",
+                    "items": { "$ref": "#/$defs/searchPage" }
+                }
+            }
+        },
+        "searchPage": {
+            "type": "object",
+            "required": ["url", "title", "headings", "text"],
+            "additionalProperties": false,
+            "properties": {
+                "url": { "type": "string", "minLength": 1 },
+                "title": { "type": "string", "minLength": 1 },
+                "headings": {
+                    "type": "array",
+                    "items": { "$ref": "#/$defs/heading" }
+                },
+                "text": { "type": "string" }
+            }
+        },
+        "heading": {
+            "type": "object",
+            "required": ["id", "title", "level"],
+            "additionalProperties": false,
+            "properties": {
+                "id": { "type": "string", "minLength": 1 },
+                "title": { "type": "string", "minLength": 1 },
+                "level": { "type": "integer", "minimum": 1, "maximum": 6 }
+            }
+        }
+    }
+}

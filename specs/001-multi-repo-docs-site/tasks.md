@@ -29,80 +29,80 @@ disjoint files. A task without `[P]` must follow the task above it in the same g
 
 ## Phase 1: Setup (Group 1)
 
-- [ ] T001 Create the package manifest: `composer.json` with name `webware/asciidoc-php-multi-repo`,
+- [X] T001 Create the package manifest: `composer.json` with name `webware/asciidoc-php-multi-repo`,
   PHP constraint `~8.4.0 || ~8.5.0`, autoload `Webware\AsciidocPhpMultiRepo\` from `src/`, the binary
   `bin/asciidoc-php-multi-repo`, `require` on `webware/asciidoc-php`, `ext-json`, `ext-curl`,
   `ext-mbstring`, and dev requirements `phpunit/phpunit` and `phpstan/phpstan`. Acceptance: running
   `composer validate --strict` succeeds and `composer install` completes on PHP 8.4.
-- [ ] T002 [P] Add `phpunit.xml.dist`, `phpstan.neon` at level 10 with `src/` and `bin/` analysed, and
+- [X] T002 [P] Add `phpunit.xml.dist`, `phpstan.neon` at level 10 with `src/` and `bin/` analysed, and
   Composer scripts `test` and `sa`. Acceptance: `composer test` runs zero tests and exits 0;
   `composer sa` reports no errors on the empty skeleton.
-- [ ] T003 [P] Add `.gitignore` covering `vendor/`, `build/`, `.cache/`, and PHPUnit caches.
+- [X] T003 [P] Add `.gitignore` covering `vendor/`, `build/`, `.cache/`, and PHPUnit caches.
   Acceptance: a build into `build/site` and a cache in `.cache/multi-repo` leave `git status` clean.
-- [ ] T004 Create `src/Support/Path.php` with separator-agnostic `join()`, `normalise()`,
+- [X] T004 Create `src/Support/Path.php` with separator-agnostic `join()`, `normalise()`,
   `relativeTo()`, `withExtension()`, and `toUrlPath()`. Acceptance: unit tests cover Windows and
   POSIX inputs, mixed separators, `..` segments, and trailing separators; no test uses a hard-coded
   separator.
-- [ ] T005 Create `src/Support/ProcessRunner.php` wrapping `proc_open` with an argument array, captured
+- [X] T005 Create `src/Support/ProcessRunner.php` wrapping `proc_open` with an argument array, captured
   stdout and stderr, a timeout, and a non-zero-exit exception carrying both streams. Acceptance:
   tests prove no shell interpolation occurs (an argument containing a space and a quote reaches the
   child verbatim) and that a failing command raises with stderr preserved.
-- [ ] T006 [P] Create `src/Support/Filesystem.php` with atomic write (temp file plus rename in the same
+- [X] T006 [P] Create `src/Support/Filesystem.php` with atomic write (temp file plus rename in the same
   directory), write-only-if-changed, recursive scan returning sorted paths, and a SHA-256 file hash.
   Acceptance: writing identical bytes leaves the file modification time unchanged; a partial write
   failure leaves no temp file behind.
-- [ ] T007 [P] Create `src/Support/Json.php` with deterministic encode (fixed flags, no escaped
+- [X] T007 [P] Create `src/Support/Json.php` with deterministic encode (fixed flags, no escaped
   slashes, four-space indent for reports and compact for indexes) and decode with error mapping.
   Acceptance: encoding the same array twice yields identical bytes; invalid JSON raises a typed
   exception naming the path and byte offset.
-- [ ] T008 Create `src/Config/SiteConfig.php`, `ProjectOverride.php`, `ThemeConfig.php`,
+- [X] T008 Create `src/Config/SiteConfig.php`, `ProjectOverride.php`, `ThemeConfig.php`,
   `BuildConfig.php` as immutable value objects with named constructors and accessors. Acceptance:
   every accessor is covered by a test; no setter exists.
-- [ ] T009 Create `src/Config/SchemaValidator.php`, a dependency-free JSON Schema subset validator
+- [X] T009 Create `src/Config/SchemaValidator.php`, a dependency-free JSON Schema subset validator
   supporting `type`, `required`, `properties`, `additionalProperties`, `enum`, `pattern`,
   `minimum`, `maximum`, `items`, and `$ref` to local definitions. Acceptance: unit tests cover a pass
   case and one failing case per keyword; unknown keywords raise rather than pass silently.
-- [ ] T010 Create `config/site.schema.json` matching `contracts/site.schema.json` and wire
+- [X] T010 Create `config/site.schema.json` matching `contracts/site.schema.json` and wire
   `src/Config/SiteConfigLoader.php` to load, decode, validate, apply defaults, and resolve relative
   paths against the config file's directory. Acceptance: a config in a temp directory resolves output
   paths relative to itself regardless of the process working directory; an unknown top-level key
   fails with a message naming the key and its JSON pointer.
-- [ ] T011 [P] Add `tests/fixtures/org/` with one directory per fixture repository: `versioned`
+- [X] T011 [P] Add `tests/fixtures/org/` with one directory per fixture repository: `versioned`
   (`docs/v1`, `docs/v2`, entry pages, a nested directory, a second page), `unversioned` (`docs/` with
   `index.adoc`), `markdown-only` (`docs/v1/*.md`), `missing-entry` (`docs/v1/other.adoc`),
   `broken-include` (`docs/v1/index.adoc` including a missing file), `archived`, and `mixed`
   (version dirs plus a loose `.adoc`). Acceptance: a test enumerates the fixtures and asserts the
   expected set, so a later accidental deletion fails a test rather than silently weakening coverage.
-- [ ] T012 Create `tests/fixtures/manifest.json` describing the fixture organization in the offline
+- [X] T012 Create `tests/fixtures/manifest.json` describing the fixture organization in the offline
   manifest format, including slug, default branch, and archived flag. Acceptance: the manifest parses
   through `Config\` validation and lists exactly the fixture directories on disk.
 
 ## Phase 2: Foundational CLI and contracts (Group 1)
 
-- [ ] T013 Create `src/Cli/ExitCode.php` as an enum with `Success = 0`, `Degraded = 1`,
+- [X] T013 Create `src/Cli/ExitCode.php` as an enum with `Success = 0`, `Degraded = 1`,
   `ConfigError = 2`, `DiscoveryError = 3`, `InternalError = 4`, plus a `fromBuildReport()` mapping.
   Acceptance: a table-driven test maps every project-status combination to the documented code,
   including all-`skipped` mapping to 0 and any `partial` mapping to 1.
-- [ ] T014 Create `src/Cli/Options.php` as an immutable parsed-options object and
+- [X] T014 Create `src/Cli/Options.php` as an immutable parsed-options object and
   `src/Cli/Application.php` with global flag parsing, subcommand dispatch, `--help`, and `--version`.
   Acceptance: unknown flags exit 2 with usage on stderr; `--help` exits 0 and lists every documented
   flag; parsing is covered by tests for each flag and for repeatable flags.
-- [ ] T015 Create `src/Cli/Output.php` for stderr progress, stdout summary, `-q`, `-v`, `-t`, and
+- [X] T015 Create `src/Cli/Output.php` for stderr progress, stdout summary, `-q`, `-v`, `-t`, and
   `--no-color` with colour disabled automatically when not a TTY. Acceptance: in quiet mode only
   errors reach stderr and the summary still reaches stdout; a non-TTY run emits no ANSI escapes.
-- [ ] T016 Create `bin/asciidoc-php-multi-repo` that requires the Composer autoloader from either
+- [X] T016 Create `bin/asciidoc-php-multi-repo` that requires the Composer autoloader from either
   `vendor/autoload.php` or the installed package location, builds argv, and exits with
   `Application::run()`'s code. Acceptance: invoking the binary with no arguments prints usage and
   exits 2; invoking it from a different working directory resolves the same config when `-c` is
   absolute.
-- [ ] T017 Add the stub subcommands `discover`, `fetch`, `build`, `watch`, `serve`, `validate`, and
+- [X] T017 Add the stub subcommands `discover`, `fetch`, `build`, `watch`, `serve`, `validate`, and
   `clean` as classes in `src/Cli/Command/` that parse their options and exit 4 with a "not
   implemented" message. Acceptance: `--help` lists all seven; each stub is reachable and returns 4.
-- [ ] T018 Write `contracts/cli.md`, `contracts/report.schema.json`,
+- [X] T018 Write `contracts/cli.md`, `contracts/report.schema.json`,
   `contracts/search-index.schema.json`, and `contracts/site.schema.json` in this directory. Acceptance:
   `composer validate` passes on the schema files' JSON syntax; a test loads each schema through
   `SchemaValidator` and validates a minimal conforming document.
-- [ ] T019 Add `tests/Contract/ContractDocumentationTest.php` asserting that every flag named in
+- [X] T019 Add `tests/Contract/ContractDocumentationTest.php` asserting that every flag named in
   `contracts/cli.md` is accepted by `Application` and that every exit code in the document exists in
   `ExitCode`. Acceptance: removing a flag from the code without updating the document fails the test.
 

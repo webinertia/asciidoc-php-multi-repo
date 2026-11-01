@@ -1,0 +1,49 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use Webware\AsciidocPhpMultiRepo\Cli\Application;
+use Webware\AsciidocPhpMultiRepo\Cli\ExitCode;
+use Webware\AsciidocPhpMultiRepo\Cli\Output;
+
+// Two locations: a checkout of this package, and the vendor tree of a consumer that installed it.
+$autoloaders = [
+    __DIR__ . '/../vendor/autoload.php',
+    __DIR__ . '/../../../autoload.php',
+];
+
+$autoloaded = false;
+
+foreach ($autoloaders as $autoloader) {
+    if (is_file($autoloader)) {
+        require $autoloader;
+        $autoloaded = true;
+
+        break;
+    }
+}
+
+if (! $autoloaded) {
+    $stream = fopen('php://stderr', 'wb');
+
+    if ($stream !== false) {
+        fwrite($stream, Application::NAME . ": unable to locate the Composer autoloader\n");
+    }
+
+    exit(ExitCode::InternalError->value);
+}
+
+$arguments = [];
+
+if (isset($_SERVER['argv']) && is_array($_SERVER['argv'])) {
+    foreach ($_SERVER['argv'] as $argument) {
+        if (is_string($argument)) {
+            $arguments[] = $argument;
+        }
+    }
+}
+
+$application = new Application(interactive: Output::stderrIsTty());
+
+exit($application->run($arguments));

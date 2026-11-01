@@ -1,0 +1,115 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/webinertia/asciidoc-php-multi-repo/main/specs/001-multi-repo-docs-site/contracts/report.schema.json",
+    "title": "Multi-Repo Documentation Site Build Report",
+    "description": "Machine-readable outcome of one build, validate, or fetch run.",
+    "type": "object",
+    "required": ["schemaVersion", "generatedBy", "projects", "totals", "exitCode"],
+    "additionalProperties": false,
+    "properties": {
+        "schemaVersion": {
+            "type": "integer",
+            "const": 1
+        },
+        "generatedBy": {
+            "type": "object",
+            "required": ["name", "version"],
+            "additionalProperties": false,
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "const": "webware/asciidoc-php-multi-repo"
+                },
+                "version": {
+                    "type": "string",
+                    "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+"
+                }
+            }
+        },
+        "projects": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/projectResult" }
+        },
+        "totals": {
+            "type": "object",
+            "required": ["ok", "partial", "failed", "skipped", "pages", "renderedPages"],
+            "additionalProperties": false,
+            "properties": {
+                "ok": { "type": "integer", "minimum": 0 },
+                "partial": { "type": "integer", "minimum": 0 },
+                "failed": { "type": "integer", "minimum": 0 },
+                "skipped": { "type": "integer", "minimum": 0 },
+                "pages": { "type": "integer", "minimum": 0 },
+                "renderedPages": { "type": "integer", "minimum": 0 }
+            }
+        },
+        "exitCode": {
+            "type": "integer",
+            "enum": [0, 1, 2, 3, 4]
+        }
+    },
+    "$defs": {
+        "projectResult": {
+            "type": "object",
+            "required": ["repository", "slug", "status", "versions", "pageCount", "renderedPageCount", "errors", "fetchAttempts"],
+            "additionalProperties": false,
+            "properties": {
+                "repository": { "type": "string", "minLength": 1 },
+                "slug": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+                "title": { "type": "string" },
+                "status": {
+                    "type": "string",
+                    "enum": ["ok", "partial", "failed", "skipped"]
+                },
+                "revision": {
+                    "type": ["string", "null"],
+                    "pattern": "^[0-9a-f]{40}$"
+                },
+                "versions": {
+                    "type": "array",
+                    "items": { "type": "string", "pattern": "^(v[1-9][0-9]*|latest)$" }
+                },
+                "pageCount": { "type": "integer", "minimum": 0 },
+                "renderedPageCount": { "type": "integer", "minimum": 0 },
+                "fetchAttempts": { "type": "integer", "minimum": 0 },
+                "errors": {
+                    "type": "array",
+                    "items": { "$ref": "#/$defs/buildError" }
+                },
+                "warnings": {
+                    "type": "array",
+                    "items": { "$ref": "#/$defs/buildError" }
+                }
+            }
+        },
+        "buildError": {
+            "type": "object",
+            "required": ["reasonCode", "message"],
+            "additionalProperties": false,
+            "properties": {
+                "reasonCode": {
+                    "type": "string",
+                    "enum": [
+                        "no-asciidoc-sources",
+                        "missing-entry",
+                        "fetch-failed",
+                        "archived",
+                        "include-outside-root",
+                        "toc-target-missing",
+                        "invalid-encoding",
+                        "render-failed",
+                        "config-error",
+                        "discovery-failed"
+                    ]
+                },
+                "version": {
+                    "type": ["string", "null"],
+                    "pattern": "^(v[1-9][0-9]*|latest)$"
+                },
+                "path": { "type": ["string", "null"] },
+                "message": { "type": "string", "minLength": 1 },
+                "correctiveAction": { "type": ["string", "null"] }
+            }
+        }
+    }
+}

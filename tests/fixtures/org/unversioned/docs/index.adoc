@@ -1,0 +1,3 @@
+= Unversioned Project
+
+This project keeps its documentation at docs/index.adoc.

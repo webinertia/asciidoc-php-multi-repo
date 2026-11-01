@@ -136,7 +136,7 @@ final class ProcessRunner
 
             $status = proc_get_status($process);
 
-            if (false === $status['running']) {
+            if (! $status['running']) {
                 $exitCode = (int) $status['exitcode'];
                 break;
             }
@@ -182,7 +182,7 @@ final class ProcessRunner
         while (microtime(true) < $deadline) {
             $status = proc_get_status($process);
 
-            if (false === $status['running']) {
+            if (! $status['running']) {
                 return (int) $status['exitcode'];
             }
 

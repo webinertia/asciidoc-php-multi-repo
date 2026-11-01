@@ -55,12 +55,17 @@ run in the container; no host PHP is used.
   Mago on Windows: it prefixes `PHP_BINARY` to the static analysis executable and PHP then reports
   a parse error inside the Rust binary. Harmless elsewhere, because `ExecutableFinder` skips
   non-executable files and the real `mago` on `PATH` wins. See webinertia/webware-tools issue 59
-- [x] T009 Create empty `lint-baseline.toml` and `analysis-baseline.toml` by running
-  `mago lint --generate-baseline --baseline lint-baseline.toml` and the analyzer equivalent
-- [x] T010 Fix pass: run `mago format`, `mago lint`, `mago analyze`, `mago guard`; fix findings in
-  `src/` and `tests/`. Guard findings are fixed in source, never suppressed or narrowed. The
-  remediation is Deviation D-6: move `Cli\Command` to `Cli\Commands` and rename
-  `interface Command` to `interface CommandInterface`
+- [x] T009 Generate `lint-baseline.toml` and `analysis-baseline.toml` with
+  `mago lint --generate-baseline --baseline lint-baseline.toml` and the analyzer equivalent, after
+  the fix pass, never by hand. They carry the onboarding remainder: 942 lint findings in 372
+  entries and 114 analyzer findings in 80 entries, broken down by rule in the PR body as the
+  burndown list
+- [x] T010 Fix pass: run `mago format`, then the safe `mago lint --fix` and `mago analyze --fix`,
+  then `mago guard`. Guard findings are fixed in source, never suppressed or narrowed; the
+  remediation is Deviation D-6 (move `Cli\Command` to `Cli\Commands` and rename
+  `interface Command` to `interface CommandInterface`). Never run `--potentially-unsafe` or
+  `--unsafe`. The safe fixer clears the redundant-cast, fully-qualified-global-class-like and
+  redundant-import families; everything else is baselined in T009 rather than suppressed inline
 - [x] T010a After all four gates are clean, delete `phpstan.neon`, remove `phpstan/phpstan` from
   `require-dev` and confirm no PHPStan reference survives in `composer.json`
 

@@ -74,12 +74,6 @@ count = 1
 
 [[issues]]
 file = "src/Cli/OptionsParser.php"
-code = "no-fully-qualified-global-class-like"
-message = "Fully-qualified class-like reference detected."
-count = 3
-
-[[issues]]
-file = "src/Cli/OptionsParser.php"
 code = "no-insecure-comparison"
 message = "Insecure comparison of sensitive data."
 count = 2
@@ -430,12 +424,6 @@ count = 3
 file = "src/Support/Path.php"
 code = "no-isset"
 message = "Use of the `isset` construct."
-count = 1
-
-[[issues]]
-file = "src/Support/Path.php"
-code = "no-redundant-use"
-message = "Unused import: `array_merge`."
 count = 1
 
 [[issues]]

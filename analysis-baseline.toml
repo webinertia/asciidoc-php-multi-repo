@@ -134,12 +134,6 @@ count = 1
 
 [[issues]]
 file = "src/Config/SchemaValidator.php"
-code = "redundant-cast"
-message = "Redundant cast to `(string)`: the expression already has this type."
-count = 1
-
-[[issues]]
-file = "src/Config/SchemaValidator.php"
 code = "unhandled-thrown-type"
 message = 'Potentially unhandled exception `Webware\AsciidocPhpMultiRepo\Config\SchemaException` in `Webware\AsciidocPhpMultiRepo\Config\SchemaValidator::arrayErrors`.'
 count = 1
@@ -455,12 +449,6 @@ file = "src/Support/ProcessRunner.php"
 code = "possibly-undefined-int-array-index"
 message = "Possibly undefined array key 2 accessed on `array{0?: resource, 1?: resource, 2?: resource}`."
 count = 1
-
-[[issues]]
-file = "src/Support/ProcessRunner.php"
-code = "redundant-comparison"
-message = "Avoid direct comparison with boolean literals."
-count = 2
 
 [[issues]]
 file = "src/Support/ProcessRunner.php"

@@ -116,8 +116,6 @@ final class SchemaValidator
     private function assertKnownKeywords(array $schema, string $pointer): void
     {
         foreach (array_keys($schema) as $keyword) {
-            $keyword = (string) $keyword;
-
             if (in_array($keyword, self::ANNOTATION_KEYWORDS, true)) {
                 continue;
             }

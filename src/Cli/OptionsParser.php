@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Webware\AsciidocPhpMultiRepo\Cli;
 
+use SensitiveParameter;
+
 use function count;
 use function in_array;
 use function preg_match;
@@ -176,7 +178,7 @@ final class OptionsParser
      * @throws UsageException
      */
     private function applyShortOption(
-        #[\SensitiveParameter]
+        #[SensitiveParameter]
         string $token,
         array $arguments,
         int &$index,
@@ -230,7 +232,7 @@ final class OptionsParser
      * @throws UsageException
      */
     private function parseLongOption(
-        #[\SensitiveParameter]
+        #[SensitiveParameter]
         string $token,
         array $arguments,
         int &$index,
@@ -288,7 +290,7 @@ final class OptionsParser
      * @throws UsageException
      */
     private function parseShortOption(
-        #[\SensitiveParameter]
+        #[SensitiveParameter]
         string $token,
         array $arguments,
         int &$index,

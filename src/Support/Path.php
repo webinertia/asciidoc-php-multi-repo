@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webware\AsciidocPhpMultiRepo\Support;
 
 use function array_fill;
-use function array_merge;
 use function array_pop;
 use function array_slice;
 use function count;

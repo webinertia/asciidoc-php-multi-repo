@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Cli;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Cli;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Webware\AsciidocPhpMultiRepo\Cli\Options;
+use Webware\AsciidocPhp\MultiRepo\Cli\Options;
 
 #[CoversClass(Options::class)]
 final class OptionsTest extends TestCase

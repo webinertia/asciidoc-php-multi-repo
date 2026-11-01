@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Webware\AsciidocPhpMultiRepo\Config;
+namespace Webware\AsciidocPhp\MultiRepo\Config;
 
-use Webware\AsciidocPhpMultiRepo\Support\Path;
+use Webware\AsciidocPhp\MultiRepo\Support\Path;
 
 use function dirname;
 use function is_string;

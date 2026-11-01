@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Support;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Support;
 
 use Closure;
 

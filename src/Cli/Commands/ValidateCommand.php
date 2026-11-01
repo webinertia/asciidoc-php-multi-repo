@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webware\AsciidocPhpMultiRepo\Cli\Commands;
+namespace Webware\AsciidocPhp\MultiRepo\Cli\Commands;
 
 use Override;
 

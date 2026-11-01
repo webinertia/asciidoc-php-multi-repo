@@ -111,14 +111,14 @@ Delivered by `tyrsson-container-stack` and verified here, not re-created: `Docke
 ### Test layout (renamed by this feature)
 
 The package shipped `tests/Unit` and `tests/Contract` with the namespace
-`Webware\AsciidocPhpMultiRepo\Test\`. The preset convention is singular `test` with two suites, so
+`Webware\AsciidocPhp\MultiRepo\Test\`. The preset convention is singular `test` with two suites, so
 the tree becomes:
 
 ```text
 test/
-├── unit/          # WebwareTest\AsciidocPhpMultiRepo\ -> unit test suite
+├── unit/          # WebwareTest\AsciidocPhp\MultiRepo\ -> unit test suite
 │   └── Support/   # support test cases and shared test doubles
-├── integration/   # WebwareTestIntegration\AsciidocPhpMultiRepo\ -> integration test suite
+├── integration/   # WebwareTestIntegration\AsciidocPhp\MultiRepo\ -> integration test suite
 └── fixtures/      # fixture documents, unchanged
 ```
 
@@ -173,7 +173,7 @@ Consumer obligations derived from the contract, all satisfied by this plan:
   `integration test`, matching the preset's two-suite convention; `test` runs every suite and
   `test-integration` targets `integration test`.
 - The test layout is conformant: `test/unit` and `test/integration`, namespaces
-  `WebwareTest\AsciidocPhpMultiRepo\` and `WebwareTestIntegration\AsciidocPhpMultiRepo\`, matching
+  `WebwareTest\AsciidocPhp\MultiRepo\` and `WebwareTestIntegration\AsciidocPhp\MultiRepo\`, matching
   `templates/plan-template.md` Phases 1 and 2.
 - `composer.lock` is committed (Phase 1).
 - `mago.toml` is present (Phase 3).
@@ -225,8 +225,8 @@ D-1.
   `*Command`, implementing `Webware\MessageBus\Command\NamedCommandInterface`) and requires
   interfaces to be named `*Interface`. This package's CLI subcommands are neither bus commands nor
   Symfony console commands, so satisfying either bucket would add a dependency this library must not
-  carry. The namespace moves from `Webware\AsciidocPhpMultiRepo\Cli\Command` to
-  `Webware\AsciidocPhpMultiRepo\Cli\Commands`, and `interface Command` is renamed to
+  carry. The namespace moves from `Webware\AsciidocPhp\MultiRepo\Cli\Command` to
+  `Webware\AsciidocPhp\MultiRepo\Cli\Commands`, and `interface Command` is renamed to
   `interface CommandInterface`. No class is renamed, no behaviour changes, and `contracts/cli.md`
   is untouched because it documents flags, commands and exit codes, not class names.
 - **D-4 `mago.toml` source paths name the CLI entry point.** The artifact ships

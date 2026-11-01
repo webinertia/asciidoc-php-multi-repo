@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webware\AsciidocPhpMultiRepo\Support;
+namespace Webware\AsciidocPhp\MultiRepo\Support;
 
 /**
  * The first structural problem found while scanning a JSON document.

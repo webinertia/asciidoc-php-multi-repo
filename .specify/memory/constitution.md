@@ -107,7 +107,7 @@ this contract. Silent changes break publishing without any visible error at the 
 - Runtime dependencies: `webware/asciidoc-php`, plus `ext-json` and `ext-curl`. Development
   dependencies follow the Webware alignment standard (PHPUnit 13, Mago, Infection, PHPBench).
 - The package name is `webware/asciidoc-php-multi-repo`; the namespace root is
-  `Webware\AsciidocPhpMultiRepo\`.
+  `Webware\AsciidocPhp\MultiRepo\`.
 - Docker Compose in this repository is the supported runtime path and is independent of the
   converter repository's compose file.
 - Static hosting constraints apply: no server-side redirects, no server-side includes, a

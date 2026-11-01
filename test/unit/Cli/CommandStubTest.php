@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Cli;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Cli;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Webware\AsciidocPhpMultiRepo\Cli\Application;
-use Webware\AsciidocPhpMultiRepo\Cli\Commands\CommandInterface;
-use Webware\AsciidocPhpMultiRepo\Cli\Commands\StubCommand;
-use Webware\AsciidocPhpMultiRepo\Cli\ExitCode;
-use Webware\AsciidocPhpMultiRepo\Cli\Options;
-use Webware\AsciidocPhpMultiRepo\Cli\Output;
-use Webware\AsciidocPhpMultiRepo\Config\SiteConfigLoader;
-use Webware\AsciidocPhpMultiRepo\Support\Path;
-use WebwareTest\AsciidocPhpMultiRepo\Support\CapturedOutput;
+use Webware\AsciidocPhp\MultiRepo\Cli\Application;
+use Webware\AsciidocPhp\MultiRepo\Cli\Commands\CommandInterface;
+use Webware\AsciidocPhp\MultiRepo\Cli\Commands\StubCommand;
+use Webware\AsciidocPhp\MultiRepo\Cli\ExitCode;
+use Webware\AsciidocPhp\MultiRepo\Cli\Options;
+use Webware\AsciidocPhp\MultiRepo\Cli\Output;
+use Webware\AsciidocPhp\MultiRepo\Config\SiteConfigLoader;
+use Webware\AsciidocPhp\MultiRepo\Support\Path;
+use WebwareTest\AsciidocPhp\MultiRepo\Support\CapturedOutput;
 
 use function array_map;
 use function array_unique;
@@ -44,6 +44,22 @@ final class CommandStubTest extends TestCase
         ];
     }
 
+    /**
+     * The commands that rendering will implement are still stubs. `discover` and `fetch` are not.
+     *
+     * @return array<string, array{string}>
+     */
+    public static function unimplementedCommands(): array
+    {
+        return [
+            'build'    => ['build'],
+            'watch'    => ['watch'],
+            'serve'    => ['serve'],
+            'validate' => ['validate'],
+            'clean'    => ['clean'],
+        ];
+    }
+
     #[DataProvider('contractCommands')]
     public function testEveryContractCommandIsRegistered(string $name): void
     {
@@ -61,7 +77,7 @@ final class CommandStubTest extends TestCase
         self::assertNotSame('', $this->command($name)->summary());
     }
 
-    #[DataProvider('contractCommands')]
+    #[DataProvider('unimplementedCommands')]
     public function testStubReturnsInternalErrorAndSaysItIsNotImplemented(string $name): void
     {
         $command = $this->command($name);
@@ -83,6 +99,12 @@ final class CommandStubTest extends TestCase
 
         self::assertSame($names, array_values(array_unique($names)));
         self::assertCount(7, $names);
+    }
+
+    #[DataProvider('unimplementedCommands')]
+    public function testTheUnimplementedCommandsAreStubs(string $name): void
+    {
+        self::assertInstanceOf(StubCommand::class, $this->command($name));
     }
 
     protected function setUp(): void

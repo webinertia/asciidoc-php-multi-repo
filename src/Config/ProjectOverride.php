@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webware\AsciidocPhpMultiRepo\Config;
+namespace Webware\AsciidocPhp\MultiRepo\Config;
 
 /**
  * One entry of the `projects` map. Every field is optional: an override refines a discovered

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webware\AsciidocPhpMultiRepo\Config;
+namespace Webware\AsciidocPhp\MultiRepo\Config;
 
 /**
  * The `output` section. Every path here is absolute once the loader has resolved it against the

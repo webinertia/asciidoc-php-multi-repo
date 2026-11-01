@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Config;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Config;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Webware\AsciidocPhpMultiRepo\Config\RenderSection;
+use Webware\AsciidocPhp\MultiRepo\Config\RenderSection;
 
 #[CoversClass(RenderSection::class)]
 final class RenderSectionTest extends TestCase

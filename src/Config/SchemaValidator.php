@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webware\AsciidocPhpMultiRepo\Config;
+namespace Webware\AsciidocPhp\MultiRepo\Config;
 
 use function array_diff;
 use function array_is_list;

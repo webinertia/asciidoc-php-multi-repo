@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Support;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Support;
 
-use Webware\AsciidocPhpMultiRepo\Cli\Commands\CommandInterface;
-use Webware\AsciidocPhpMultiRepo\Cli\ExitCode;
-use Webware\AsciidocPhpMultiRepo\Cli\Options;
-use Webware\AsciidocPhpMultiRepo\Cli\Output;
-use Webware\AsciidocPhpMultiRepo\Config\SiteConfig;
+use Webware\AsciidocPhp\MultiRepo\Cli\Commands\CommandInterface;
+use Webware\AsciidocPhp\MultiRepo\Cli\ExitCode;
+use Webware\AsciidocPhp\MultiRepo\Cli\Options;
+use Webware\AsciidocPhp\MultiRepo\Cli\Output;
+use Webware\AsciidocPhp\MultiRepo\Config\SiteConfig;
 
 /**
  * A command that records what the application handed it and returns a chosen exit code.

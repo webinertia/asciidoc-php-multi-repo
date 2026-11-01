@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webware\AsciidocPhpMultiRepo\Cli;
+namespace Webware\AsciidocPhp\MultiRepo\Cli;
 
 /**
  * Immutable result of parsing the command line. Defaults are applied here so downstream code never

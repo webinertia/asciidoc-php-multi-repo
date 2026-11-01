@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo;
+namespace WebwareTest\AsciidocPhp\MultiRepo;
 
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Webware\AsciidocPhpMultiRepo\Config\SchemaValidator;
-use Webware\AsciidocPhpMultiRepo\Support\Json;
-use Webware\AsciidocPhpMultiRepo\Support\Path;
+use Webware\AsciidocPhp\MultiRepo\Config\SchemaValidator;
+use Webware\AsciidocPhp\MultiRepo\Support\Json;
+use Webware\AsciidocPhp\MultiRepo\Support\Path;
 
 use function dirname;
 use function file_get_contents;

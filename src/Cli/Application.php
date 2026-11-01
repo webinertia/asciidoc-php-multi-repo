@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Webware\AsciidocPhpMultiRepo\Cli;
+namespace Webware\AsciidocPhp\MultiRepo\Cli;
 
 use Closure;
 use Throwable;
-use Webware\AsciidocPhpMultiRepo\Cli\Commands\BuildCommand;
-use Webware\AsciidocPhpMultiRepo\Cli\Commands\CleanCommand;
-use Webware\AsciidocPhpMultiRepo\Cli\Commands\CommandInterface;
-use Webware\AsciidocPhpMultiRepo\Cli\Commands\DiscoverCommand;
-use Webware\AsciidocPhpMultiRepo\Cli\Commands\FetchCommand;
-use Webware\AsciidocPhpMultiRepo\Cli\Commands\ServeCommand;
-use Webware\AsciidocPhpMultiRepo\Cli\Commands\ValidateCommand;
-use Webware\AsciidocPhpMultiRepo\Cli\Commands\WatchCommand;
-use Webware\AsciidocPhpMultiRepo\Config\ConfigException;
-use Webware\AsciidocPhpMultiRepo\Config\SiteConfigLoader;
+use Webware\AsciidocPhp\MultiRepo\Cli\Commands\BuildCommand;
+use Webware\AsciidocPhp\MultiRepo\Cli\Commands\CleanCommand;
+use Webware\AsciidocPhp\MultiRepo\Cli\Commands\CommandInterface;
+use Webware\AsciidocPhp\MultiRepo\Cli\Commands\DiscoverCommand;
+use Webware\AsciidocPhp\MultiRepo\Cli\Commands\FetchCommand;
+use Webware\AsciidocPhp\MultiRepo\Cli\Commands\ServeCommand;
+use Webware\AsciidocPhp\MultiRepo\Cli\Commands\ValidateCommand;
+use Webware\AsciidocPhp\MultiRepo\Cli\Commands\WatchCommand;
+use Webware\AsciidocPhp\MultiRepo\Config\ConfigException;
+use Webware\AsciidocPhp\MultiRepo\Config\SiteConfigLoader;
 
 use function array_slice;
 use function implode;

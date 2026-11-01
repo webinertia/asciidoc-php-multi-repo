@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Config;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Config;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Webware\AsciidocPhpMultiRepo\Config\ProjectOverride;
-use Webware\AsciidocPhpMultiRepo\Config\SiteConfig;
-use Webware\AsciidocPhpMultiRepo\Support\Path;
+use Webware\AsciidocPhp\MultiRepo\Config\ProjectOverride;
+use Webware\AsciidocPhp\MultiRepo\Config\SiteConfig;
+use Webware\AsciidocPhp\MultiRepo\Support\Path;
 
 use function sys_get_temp_dir;
 

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Config;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Config;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Webware\AsciidocPhpMultiRepo\Config\SchemaException;
-use Webware\AsciidocPhpMultiRepo\Config\SchemaValidator;
+use Webware\AsciidocPhp\MultiRepo\Config\SchemaException;
+use Webware\AsciidocPhp\MultiRepo\Config\SchemaValidator;
 
 #[CoversClass(SchemaValidator::class)]
 final class SchemaValidatorTest extends TestCase

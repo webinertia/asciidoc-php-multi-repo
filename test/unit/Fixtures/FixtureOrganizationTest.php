@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Fixtures;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Fixtures;
 
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
-use Webware\AsciidocPhpMultiRepo\Config\ManifestLoader;
-use Webware\AsciidocPhpMultiRepo\Config\SourceSection;
-use Webware\AsciidocPhpMultiRepo\Support\Filesystem;
-use Webware\AsciidocPhpMultiRepo\Support\Path;
+use Webware\AsciidocPhp\MultiRepo\Config\ManifestLoader;
+use Webware\AsciidocPhp\MultiRepo\Config\SourceSection;
+use Webware\AsciidocPhp\MultiRepo\Support\Filesystem;
+use Webware\AsciidocPhp\MultiRepo\Support\Path;
 
 use function array_unique;
 use function array_values;

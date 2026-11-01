@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Webware\AsciidocPhpMultiRepo\Cli\Commands;
+namespace Webware\AsciidocPhp\MultiRepo\Cli\Commands;
 
-use Webware\AsciidocPhpMultiRepo\Cli\ExitCode;
-use Webware\AsciidocPhpMultiRepo\Cli\Options;
-use Webware\AsciidocPhpMultiRepo\Cli\Output;
-use Webware\AsciidocPhpMultiRepo\Config\SiteConfig;
+use Webware\AsciidocPhp\MultiRepo\Cli\ExitCode;
+use Webware\AsciidocPhp\MultiRepo\Cli\Options;
+use Webware\AsciidocPhp\MultiRepo\Cli\Output;
+use Webware\AsciidocPhp\MultiRepo\Config\SiteConfig;
 
 /**
  * One subcommand of the CLI. The command receives already parsed options and an already validated

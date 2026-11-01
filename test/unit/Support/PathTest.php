@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Support;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Support;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Webware\AsciidocPhpMultiRepo\Support\Path;
+use Webware\AsciidocPhp\MultiRepo\Support\Path;
 
 #[CoversClass(Path::class)]
 final class PathTest extends TestCase

@@ -9,13 +9,13 @@ count = 1
 [[issues]]
 file = "src/Cli/Commands/CommandInterface.php"
 code = "missing-api-or-internal"
-message = 'Interface `Webware\AsciidocPhpMultiRepo\Cli\Commands\CommandInterface` is missing an `@api` or `@internal` annotation.'
+message = 'Interface `Webware\AsciidocPhp\MultiRepo\Cli\Commands\CommandInterface` is missing an `@api` or `@internal` annotation.'
 count = 1
 
 [[issues]]
 file = "src/Cli/Commands/StubCommand.php"
 code = "missing-api-or-internal"
-message = 'Abstract class `Webware\AsciidocPhpMultiRepo\Cli\Commands\StubCommand` is missing an `@api` or `@internal` annotation.'
+message = 'Abstract class `Webware\AsciidocPhp\MultiRepo\Cli\Commands\StubCommand` is missing an `@api` or `@internal` annotation.'
 count = 1
 
 [[issues]]
@@ -45,19 +45,19 @@ count = 2
 [[issues]]
 file = "src/Cli/OptionsParser.php"
 code = "possibly-null-argument"
-message = 'Argument #1 of method `Webware\AsciidocPhpMultiRepo\Cli\OptionsParser::parseLongOption` is possibly `null`, but parameter type `string` does not accept it.'
+message = 'Argument #1 of method `Webware\AsciidocPhp\MultiRepo\Cli\OptionsParser::parseLongOption` is possibly `null`, but parameter type `string` does not accept it.'
 count = 1
 
 [[issues]]
 file = "src/Cli/OptionsParser.php"
 code = "possibly-null-argument"
-message = 'Argument #1 of method `Webware\AsciidocPhpMultiRepo\Cli\OptionsParser::parseShortOption` is possibly `null`, but parameter type `string` does not accept it.'
+message = 'Argument #1 of method `Webware\AsciidocPhp\MultiRepo\Cli\OptionsParser::parseShortOption` is possibly `null`, but parameter type `string` does not accept it.'
 count = 1
 
 [[issues]]
 file = "src/Cli/OptionsParser.php"
 code = "possibly-null-argument"
-message = 'Argument #1 of method `Webware\AsciidocPhpMultiRepo\Cli\UsageException::unexpectedArgument` is possibly `null`, but parameter type `string` does not accept it.'
+message = 'Argument #1 of method `Webware\AsciidocPhp\MultiRepo\Cli\UsageException::unexpectedArgument` is possibly `null`, but parameter type `string` does not accept it.'
 count = 1
 
 [[issues]]
@@ -87,7 +87,7 @@ count = 4
 [[issues]]
 file = "src/Config/DocumentReader.php"
 code = "possibly-undefined-int-array-index"
-message = 'Possibly undefined array index accessed on `list<Webware\AsciidocPhpMultiRepo\Config\ValidationError>`.'
+message = 'Possibly undefined array index accessed on `list<Webware\AsciidocPhp\MultiRepo\Config\ValidationError>`.'
 count = 1
 
 [[issues]]
@@ -117,7 +117,7 @@ count = 1
 [[issues]]
 file = "src/Config/ManifestLoader.php"
 code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Webware\AsciidocPhpMultiRepo\Config\ConfigException` in `Webware\AsciidocPhpMultiRepo\Config\ManifestLoader::assertSupportedSchemaVersion`.'
+message = 'Potentially unhandled exception `Webware\AsciidocPhp\MultiRepo\Config\ConfigException` in `Webware\AsciidocPhp\MultiRepo\Config\ManifestLoader::assertSupportedSchemaVersion`.'
 count = 1
 
 [[issues]]
@@ -141,61 +141,61 @@ count = 1
 [[issues]]
 file = "src/Config/SchemaValidator.php"
 code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Webware\AsciidocPhpMultiRepo\Config\SchemaException` in `Webware\AsciidocPhpMultiRepo\Config\SchemaValidator::arrayErrors`.'
+message = 'Potentially unhandled exception `Webware\AsciidocPhp\MultiRepo\Config\SchemaException` in `Webware\AsciidocPhp\MultiRepo\Config\SchemaValidator::arrayErrors`.'
 count = 1
 
 [[issues]]
 file = "src/Config/SchemaValidator.php"
 code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Webware\AsciidocPhpMultiRepo\Config\SchemaException` in `Webware\AsciidocPhpMultiRepo\Config\SchemaValidator::assertKnownKeywords`.'
+message = 'Potentially unhandled exception `Webware\AsciidocPhp\MultiRepo\Config\SchemaException` in `Webware\AsciidocPhp\MultiRepo\Config\SchemaValidator::assertKnownKeywords`.'
 count = 1
 
 [[issues]]
 file = "src/Config/SchemaValidator.php"
 code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Webware\AsciidocPhpMultiRepo\Config\SchemaException` in `Webware\AsciidocPhpMultiRepo\Config\SchemaValidator::enumErrors`.'
+message = 'Potentially unhandled exception `Webware\AsciidocPhp\MultiRepo\Config\SchemaException` in `Webware\AsciidocPhp\MultiRepo\Config\SchemaValidator::enumErrors`.'
 count = 1
 
 [[issues]]
 file = "src/Config/SchemaValidator.php"
 code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Webware\AsciidocPhpMultiRepo\Config\SchemaException` in `Webware\AsciidocPhpMultiRepo\Config\SchemaValidator::numberErrors`.'
+message = 'Potentially unhandled exception `Webware\AsciidocPhp\MultiRepo\Config\SchemaException` in `Webware\AsciidocPhp\MultiRepo\Config\SchemaValidator::numberErrors`.'
 count = 1
 
 [[issues]]
 file = "src/Config/SchemaValidator.php"
 code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Webware\AsciidocPhpMultiRepo\Config\SchemaException` in `Webware\AsciidocPhpMultiRepo\Config\SchemaValidator::objectErrors`.'
+message = 'Potentially unhandled exception `Webware\AsciidocPhp\MultiRepo\Config\SchemaException` in `Webware\AsciidocPhp\MultiRepo\Config\SchemaValidator::objectErrors`.'
 count = 1
 
 [[issues]]
 file = "src/Config/SchemaValidator.php"
 code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Webware\AsciidocPhpMultiRepo\Config\SchemaException` in `Webware\AsciidocPhpMultiRepo\Config\SchemaValidator::resolveReference`.'
+message = 'Potentially unhandled exception `Webware\AsciidocPhp\MultiRepo\Config\SchemaException` in `Webware\AsciidocPhp\MultiRepo\Config\SchemaValidator::resolveReference`.'
 count = 1
 
 [[issues]]
 file = "src/Config/SchemaValidator.php"
 code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Webware\AsciidocPhpMultiRepo\Config\SchemaException` in `Webware\AsciidocPhpMultiRepo\Config\SchemaValidator::stringErrors`.'
+message = 'Potentially unhandled exception `Webware\AsciidocPhp\MultiRepo\Config\SchemaException` in `Webware\AsciidocPhp\MultiRepo\Config\SchemaValidator::stringErrors`.'
 count = 1
 
 [[issues]]
 file = "src/Config/SchemaValidator.php"
 code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Webware\AsciidocPhpMultiRepo\Config\SchemaException` in `Webware\AsciidocPhpMultiRepo\Config\SchemaValidator::subSchema`.'
+message = 'Potentially unhandled exception `Webware\AsciidocPhp\MultiRepo\Config\SchemaException` in `Webware\AsciidocPhp\MultiRepo\Config\SchemaValidator::subSchema`.'
 count = 1
 
 [[issues]]
 file = "src/Config/SchemaValidator.php"
 code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Webware\AsciidocPhpMultiRepo\Config\SchemaException` in `Webware\AsciidocPhpMultiRepo\Config\SchemaValidator::typeErrors`.'
+message = 'Potentially unhandled exception `Webware\AsciidocPhp\MultiRepo\Config\SchemaException` in `Webware\AsciidocPhp\MultiRepo\Config\SchemaValidator::typeErrors`.'
 count = 1
 
 [[issues]]
 file = "src/Config/SchemaValidator.php"
 code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Webware\AsciidocPhpMultiRepo\Config\SchemaException` in `Webware\AsciidocPhpMultiRepo\Config\SchemaValidator::validateNode`.'
+message = 'Potentially unhandled exception `Webware\AsciidocPhp\MultiRepo\Config\SchemaException` in `Webware\AsciidocPhp\MultiRepo\Config\SchemaValidator::validateNode`.'
 count = 1
 
 [[issues]]
@@ -207,7 +207,7 @@ count = 1
 [[issues]]
 file = "src/Config/SiteConfigLoader.php"
 code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Webware\AsciidocPhpMultiRepo\Config\ConfigException` in `Webware\AsciidocPhpMultiRepo\Config\SiteConfigLoader::assertSupportedSchemaVersion`.'
+message = 'Potentially unhandled exception `Webware\AsciidocPhp\MultiRepo\Config\ConfigException` in `Webware\AsciidocPhp\MultiRepo\Config\SiteConfigLoader::assertSupportedSchemaVersion`.'
 count = 1
 
 [[issues]]
@@ -225,56 +225,68 @@ count = 1
 [[issues]]
 file = "src/Config/Values.php"
 code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `InvalidArgumentException` in `Webware\AsciidocPhpMultiRepo\Config\Values::asString`.'
+message = 'Potentially unhandled exception `InvalidArgumentException` in `Webware\AsciidocPhp\MultiRepo\Config\Values::asString`.'
 count = 1
 
 [[issues]]
 file = "src/Config/Values.php"
 code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `InvalidArgumentException` in `Webware\AsciidocPhpMultiRepo\Config\Values::boolean`.'
+message = 'Potentially unhandled exception `InvalidArgumentException` in `Webware\AsciidocPhp\MultiRepo\Config\Values::boolean`.'
 count = 1
 
 [[issues]]
 file = "src/Config/Values.php"
 code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `InvalidArgumentException` in `Webware\AsciidocPhpMultiRepo\Config\Values::integerList`.'
+message = 'Potentially unhandled exception `InvalidArgumentException` in `Webware\AsciidocPhp\MultiRepo\Config\Values::integerList`.'
 count = 1
 
 [[issues]]
 file = "src/Config/Values.php"
 code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `InvalidArgumentException` in `Webware\AsciidocPhpMultiRepo\Config\Values::integer`.'
+message = 'Potentially unhandled exception `InvalidArgumentException` in `Webware\AsciidocPhp\MultiRepo\Config\Values::integer`.'
 count = 1
 
 [[issues]]
 file = "src/Config/Values.php"
 code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `InvalidArgumentException` in `Webware\AsciidocPhpMultiRepo\Config\Values::optionalInteger`.'
+message = 'Potentially unhandled exception `InvalidArgumentException` in `Webware\AsciidocPhp\MultiRepo\Config\Values::optionalInteger`.'
 count = 1
 
 [[issues]]
 file = "src/Config/Values.php"
 code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `InvalidArgumentException` in `Webware\AsciidocPhpMultiRepo\Config\Values::requiredString`.'
+message = 'Potentially unhandled exception `InvalidArgumentException` in `Webware\AsciidocPhp\MultiRepo\Config\Values::requiredString`.'
 count = 1
 
 [[issues]]
 file = "src/Config/Values.php"
 code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `InvalidArgumentException` in `Webware\AsciidocPhpMultiRepo\Config\Values::sectionMap`.'
+message = 'Potentially unhandled exception `InvalidArgumentException` in `Webware\AsciidocPhp\MultiRepo\Config\Values::sectionMap`.'
 count = 1
 
 [[issues]]
 file = "src/Config/Values.php"
 code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `InvalidArgumentException` in `Webware\AsciidocPhpMultiRepo\Config\Values::section`.'
+message = 'Potentially unhandled exception `InvalidArgumentException` in `Webware\AsciidocPhp\MultiRepo\Config\Values::section`.'
 count = 1
 
 [[issues]]
 file = "src/Config/Values.php"
 code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `InvalidArgumentException` in `Webware\AsciidocPhpMultiRepo\Config\Values::stringList`.'
+message = 'Potentially unhandled exception `InvalidArgumentException` in `Webware\AsciidocPhp\MultiRepo\Config\Values::stringList`.'
 count = 1
+
+[[issues]]
+file = "src/Discovery/GitHubPropertyValues.php"
+code = "mixed-assignment"
+message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
+count = 5
+
+[[issues]]
+file = "src/Discovery/GitHubRepositoryMetadata.php"
+code = "mixed-assignment"
+message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
+count = 5
 
 [[issues]]
 file = "src/Support/Filesystem.php"
@@ -285,25 +297,25 @@ count = 1
 [[issues]]
 file = "src/Support/Filesystem.php"
 code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `RuntimeException` in `Webware\AsciidocPhpMultiRepo\Support\Filesystem::ensureDirectory`.'
+message = 'Potentially unhandled exception `RuntimeException` in `Webware\AsciidocPhp\MultiRepo\Support\Filesystem::ensureDirectory`.'
 count = 1
 
 [[issues]]
 file = "src/Support/Filesystem.php"
 code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `RuntimeException` in `Webware\AsciidocPhpMultiRepo\Support\Filesystem::hash`.'
+message = 'Potentially unhandled exception `RuntimeException` in `Webware\AsciidocPhp\MultiRepo\Support\Filesystem::hash`.'
 count = 1
 
 [[issues]]
 file = "src/Support/Filesystem.php"
 code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `RuntimeException` in `Webware\AsciidocPhpMultiRepo\Support\Filesystem::read`.'
+message = 'Potentially unhandled exception `RuntimeException` in `Webware\AsciidocPhp\MultiRepo\Support\Filesystem::read`.'
 count = 1
 
 [[issues]]
 file = "src/Support/Filesystem.php"
 code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `RuntimeException` in `Webware\AsciidocPhpMultiRepo\Support\Filesystem::writeAtomic`.'
+message = 'Potentially unhandled exception `RuntimeException` in `Webware\AsciidocPhp\MultiRepo\Support\Filesystem::writeAtomic`.'
 count = 1
 
 [[issues]]
@@ -333,13 +345,13 @@ count = 1
 [[issues]]
 file = "src/Support/Json.php"
 code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Webware\AsciidocPhpMultiRepo\Support\JsonDecodeException` in `Webware\AsciidocPhpMultiRepo\Support\Json::decodeObject`.'
+message = 'Potentially unhandled exception `Webware\AsciidocPhp\MultiRepo\Support\JsonDecodeException` in `Webware\AsciidocPhp\MultiRepo\Support\Json::decodeObject`.'
 count = 1
 
 [[issues]]
 file = "src/Support/Json.php"
 code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Webware\AsciidocPhpMultiRepo\Support\JsonDecodeException` in `Webware\AsciidocPhpMultiRepo\Support\Json::decode`.'
+message = 'Potentially unhandled exception `Webware\AsciidocPhp\MultiRepo\Support\JsonDecodeException` in `Webware\AsciidocPhp\MultiRepo\Support\Json::decode`.'
 count = 1
 
 [[issues]]
@@ -471,17 +483,17 @@ count = 1
 [[issues]]
 file = "src/Support/ProcessRunner.php"
 code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `InvalidArgumentException` in `Webware\AsciidocPhpMultiRepo\Support\ProcessRunner::run`.'
+message = 'Potentially unhandled exception `InvalidArgumentException` in `Webware\AsciidocPhp\MultiRepo\Support\ProcessRunner::run`.'
 count = 1
 
 [[issues]]
 file = "src/Support/ProcessRunner.php"
 code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `RuntimeException` in `Webware\AsciidocPhpMultiRepo\Support\ProcessRunner::run`.'
+message = 'Potentially unhandled exception `RuntimeException` in `Webware\AsciidocPhp\MultiRepo\Support\ProcessRunner::run`.'
 count = 1
 
 [[issues]]
 file = "src/Support/ProcessRunner.php"
 code = "unhandled-thrown-type"
-message = 'Potentially unhandled exception `Webware\AsciidocPhpMultiRepo\Support\ProcessFailedException` in `Webware\AsciidocPhpMultiRepo\Support\ProcessRunner::mustRun`.'
+message = 'Potentially unhandled exception `Webware\AsciidocPhp\MultiRepo\Support\ProcessFailedException` in `Webware\AsciidocPhp\MultiRepo\Support\ProcessRunner::mustRun`.'
 count = 1

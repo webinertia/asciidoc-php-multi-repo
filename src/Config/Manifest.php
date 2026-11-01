@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webware\AsciidocPhpMultiRepo\Config;
+namespace Webware\AsciidocPhp\MultiRepo\Config;
 
 /**
  * The offline discovery manifest: a repository list that replaces organization

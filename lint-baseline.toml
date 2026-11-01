@@ -277,6 +277,24 @@ message = "Class has too many methods."
 count = 1
 
 [[issues]]
+file = "src/Discovery/DiscoveredRepository.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
+file = "src/Source/FetchedRepository.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
+file = "src/Source/RepositorySources.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
 file = "src/Support/Filesystem.php"
 code = "ambiguous-constant-access"
 message = "Ambiguous constant access detected."
@@ -487,6 +505,102 @@ message = "Unsafe use of error control operator `@`."
 count = 2
 
 [[issues]]
+file = "test/integration/DocumentationPipelineTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 39
+
+[[issues]]
+file = "test/integration/DocumentationPipelineTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testABrokenIncludeStillReachesSourcePreparation`."
+count = 1
+
+[[issues]]
+file = "test/integration/DocumentationPipelineTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAMarkdownOnlyProjectIsRejectedAfterVersionDetection`."
+count = 1
+
+[[issues]]
+file = "test/integration/DocumentationPipelineTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAPageInANestedDirectoryKeepsItsVersion`."
+count = 1
+
+[[issues]]
+file = "test/integration/DocumentationPipelineTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAPageOutsideEveryVersionDirectoryIsReportedAsAWarning`."
+count = 1
+
+[[issues]]
+file = "test/integration/DocumentationPipelineTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAProjectWithoutAnEntryPageIsReportedAsMissingEntry`."
+count = 1
+
+[[issues]]
+file = "test/integration/DocumentationPipelineTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testDiscoverySelectsTheOnboardedFixtureProjects`."
+count = 1
+
+[[issues]]
+file = "test/integration/DocumentationPipelineTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testEveryDiscoveredProjectResolvesToItsLocalFixture`."
+count = 1
+
+[[issues]]
+file = "test/integration/DocumentationPipelineTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testEveryEnumeratedPageIsPreparedAsAsciiDoc`."
+count = 1
+
+[[issues]]
+file = "test/integration/DocumentationPipelineTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testEveryFetchedProjectCarriesAContentDigestRevision`."
+count = 1
+
+[[issues]]
+file = "test/integration/DocumentationPipelineTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheEntryPageOfEveryVersionIsEnumerated`."
+count = 1
+
+[[issues]]
+file = "test/integration/DocumentationPipelineTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheExcludedArchivedProjectNeverReachesThePipeline`."
+count = 1
+
+[[issues]]
+file = "test/integration/DocumentationPipelineTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testThePreparedTextIsTheNormalisedFileOnDisk`."
+count = 1
+
+[[issues]]
+file = "test/integration/DocumentationPipelineTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheUnversionedProjectFallsBackToTheDocumentationDirectory`."
+count = 1
+
+[[issues]]
+file = "test/integration/DocumentationPipelineTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheVersionedProjectSelectsItsVersionDirectories`."
+count = 1
+
+[[issues]]
+file = "test/integration/DocumentationPipelineTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheWholeFixtureSetIsAccountedFor`."
+count = 1
+
+[[issues]]
 file = "test/unit/Cli/ApplicationTest.php"
 code = "ambiguous-constant-access"
 message = "Ambiguous constant access detected."
@@ -628,7 +742,7 @@ count = 1
 file = "test/unit/Cli/CommandStubTest.php"
 code = "assertion-style"
 message = "Inconsistent assertions style."
-count = 7
+count = 8
 
 [[issues]]
 file = "test/unit/Cli/CommandStubTest.php"
@@ -658,6 +772,84 @@ count = 1
 file = "test/unit/Cli/CommandStubTest.php"
 code = "prefer-test-attribute"
 message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheRegistryHasNoDuplicateNames`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/CommandStubTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheUnimplementedCommandsAreStubs`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/DiscoverCommandTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 23
+
+[[issues]]
+file = "test/unit/Cli/DiscoverCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testADiscoveryFailureExitsThree`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/DiscoverCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testADiscoveryFailureNamesTheOrganizationAndProperty`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/DiscoverCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAMissingTokenExitsThree`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/DiscoverCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testASlugCollisionExitsTwo`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/DiscoverCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testNothingElseIsWrittenToStandardOutput`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/DiscoverCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheCommandNameAndSummaryAreSet`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/DiscoverCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheExcludedRepositoryIsNotPrinted`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/DiscoverCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheFixtureManifestIsPrintedInSlugOrder`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/DiscoverCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheProjectFilterAcceptsTheSlug`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/DiscoverCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheProjectFilterCanSelectNothing`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/DiscoverCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheProjectFilterSelectsOneRepository`."
 count = 1
 
 [[issues]]
@@ -706,6 +898,126 @@ count = 1
 file = "test/unit/Cli/ExitCodeTest.php"
 code = "prefer-test-attribute"
 message = "Use `#[Test]` attribute instead of `test` prefix on method `testLabelsMatchTheContractNames`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/FetchCommandTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 43
+
+[[issues]]
+file = "test/unit/Cli/FetchCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testADiscoveryFailureExitsThreeAndWritesNoManifest`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/FetchCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAHealthyRepositoryIsRecordedWithoutAnError`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/FetchCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testALocalPathThatDoesNotExistIsRecordedWithNoAsciidocSources`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/FetchCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAMarkdownOnlyRepositoryIsRecordedWithNoAsciidocSources`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/FetchCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testARepositoryThatIsNotOnboardedIsAnnouncedAndDoesNotStopTheLoop`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/FetchCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testARepositoryThatIsNotOnboardedIsSkippedEntirely`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/FetchCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testARepositoryWhoseFetchFailsIsReportedWithAnUnknownRevision`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/FetchCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testARepositoryWithoutAnEntryPageIsRecordedWithMissingEntry`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/FetchCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAResolvedRepositoryRecordsItsRevisionAndDocumentationPath`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/FetchCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testASlugCollisionExitsTwoAndWritesNoManifest`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/FetchCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAnArchivedRepositoryIsRecordedWithTheArchivedReasonCode`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/FetchCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheCacheManifestCarriesOneEntryPerOnboardedRepository`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/FetchCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheCacheManifestDeclaresItsSchemaVersion`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/FetchCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheCacheManifestIsRewrittenOnASecondRun`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/FetchCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheCommandNameAndSummaryAreSet`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/FetchCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheFixtureManifestIsFetchedSuccessfully`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/FetchCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheProblemsAreReportedOnTheErrorStreamWithTheirReasonCode`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/FetchCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheProjectFilterLimitsTheCacheManifest`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/FetchCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheSummaryGoesToStandardOutput`."
 count = 1
 
 [[issues]]
@@ -832,7 +1144,7 @@ count = 1
 file = "test/unit/Cli/OutputTest.php"
 code = "assertion-style"
 message = "Inconsistent assertions style."
-count = 23
+count = 28
 
 [[issues]]
 file = "test/unit/Cli/OutputTest.php"
@@ -885,6 +1197,18 @@ count = 1
 [[issues]]
 file = "test/unit/Cli/OutputTest.php"
 code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheDefaultFlagsAreOff`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/OutputTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheEnvironmentFallbackIsUsedOnlyWhenNoneIsSupplied`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/OutputTest.php"
+code = "prefer-test-attribute"
 message = "Use `#[Test]` attribute instead of `test` prefix on method `testTimingRequiresTimings`."
 count = 1
 
@@ -892,6 +1216,36 @@ count = 1
 file = "test/unit/Cli/OutputTest.php"
 code = "prefer-test-attribute"
 message = "Use `#[Test]` attribute instead of `test` prefix on method `testUsageReachesStandardErrorEvenWhenQuiet`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/ProjectFilterTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 6
+
+[[issues]]
+file = "test/unit/Cli/ProjectFilterTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAProjectIsMatchedByItsName`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/ProjectFilterTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAProjectIsMatchedByItsSlug`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/ProjectFilterTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAnUnrelatedProjectIsDropped`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/ProjectFilterTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testWithoutAFilterEveryProjectIsKept`."
 count = 1
 
 [[issues]]
@@ -1084,7 +1438,13 @@ count = 1
 file = "test/unit/Config/ProjectOverrideTest.php"
 code = "assertion-style"
 message = "Inconsistent assertions style."
-count = 13
+count = 14
+
+[[issues]]
+file = "test/unit/Config/ProjectOverrideTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testASingleFieldMakesTheOverrideNonEmpty`."
+count = 1
 
 [[issues]]
 file = "test/unit/Config/ProjectOverrideTest.php"
@@ -1675,6 +2035,324 @@ message = "Use `#[Test]` attribute instead of `test` prefix on method `testEvery
 count = 1
 
 [[issues]]
+file = "test/unit/Discovery/GitHubLinkHeaderTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 3
+
+[[issues]]
+file = "test/unit/Discovery/GitHubLinkHeaderTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAHeaderWithoutANextRelationHasNoNextPage`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/GitHubLinkHeaderTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testANullHeaderHasNoNextPage`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/GitHubLinkHeaderTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheNextRelationIsExtracted`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/GitHubPropertyDiscoveryTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 23
+
+[[issues]]
+file = "test/unit/Discovery/GitHubPropertyDiscoveryTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testABooleanPropertyValueIsAccepted`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/GitHubPropertyDiscoveryTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAMissingTokenEnvironmentVariableIsReportedByName`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/GitHubPropertyDiscoveryTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testARepositoryMissingFromTheSearchFallsBackToTheDefaults`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/GitHubPropertyDiscoveryTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAnExcludedRepositoryIsDropped`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/GitHubPropertyDiscoveryTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAnInvalidJsonBodyIsReportedAsADiscoveryFailure`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/GitHubPropertyDiscoveryTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testOnlyTheConfiguredOnboardValueIsOnboarded`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/GitHubPropertyDiscoveryTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheApiBaseIsHonoured`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/GitHubPropertyDiscoveryTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheDefaultBranchAndArchivedFlagComeFromTheRepositorySearch`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/GitHubPropertyDiscoveryTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheOnboardedRepositoriesAreDiscoveredAcrossTwoPages`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/GitHubPropertyDiscoveryTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheTokenNeverAppearsInAFailureMessage`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/GitHubPropertyDiscoveryTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheTokenNeverAppearsWhenTheTransportItselfFails`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/GitHubPropertyDiscoveryTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheTokenTravelsAsABearerHeader`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/GitHubPropertyDiscoveryTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTwoPagesProduceTheSameSetAsOnePage`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/ManifestDiscoveryTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 17
+
+[[issues]]
+file = "test/unit/Discovery/ManifestDiscoveryTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testACollisionBetweenOnboardedProjectsIsRejected`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/ManifestDiscoveryTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAConfiguredSlugOverrideWins`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/ManifestDiscoveryTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testANonOnboardedProjectIsIgnoredByTheCollisionCheck`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/ManifestDiscoveryTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testASlugOverrideIsNormalised`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/ManifestDiscoveryTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAnExcludedRepositoryIsDropped`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/ManifestDiscoveryTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAnOverrideWithoutASlugLeavesTheSlugAlone`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/ManifestDiscoveryTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testEveryEntryKeepsItsLocalPath`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/ManifestDiscoveryTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testManifestDiscoveryNeverTouchesTheNetwork`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/ManifestDiscoveryTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheDefaultBranchComesFromTheManifest`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/ManifestDiscoveryTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheFixtureManifestProducesTheOnboardedProjectSet`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/ManifestDiscoveryTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheManifestPathIsResolvedByTheLoader`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/ManifestDiscoveryTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheManifestSlugWinsOverTheRepositoryName`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/ManifestDiscoveryTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheOnboardedFlagComesFromTheManifest`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/ManifestDiscoveryTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheProjectsAreSortedBySlug`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/OnboardValueTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 6
+
+[[issues]]
+file = "test/unit/Discovery/OnboardValueTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testABooleanTrueMatchesTheConfiguredString`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/OnboardValueTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testANonScalarValueNeverMatches`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/OnboardValueTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAValueIsComparedCaseInsensitivelyAndTrimmed`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/OnboardValueTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheConfiguredValueIsTrimmedAndLowercased`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/SlugCollisionDetectorTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 10
+
+[[issues]]
+file = "test/unit/Discovery/SlugCollisionDetectorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testACollisionNamesBothRepositoriesAndTheSlug`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/SlugCollisionDetectorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAnEmptySetPasses`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/SlugCollisionDetectorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testDistinctSlugsPass`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/SlugCollisionDetectorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheFirstDuplicateIsReported`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/SlugCollisionDetectorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheMessageNamesTheRemedy`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/SlugCollisionDetectorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testThreeRepositoriesSharingASlugStillRaise`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/SlugNormalizerTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 10
+
+[[issues]]
+file = "test/unit/Discovery/SlugNormalizerTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testANameWithNoUsableCharacterIsRejected`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/SlugNormalizerTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testANonAsciiNameCollapsesToSeparators`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/SlugNormalizerTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAnEmptyNameIsRejected`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/SlugNormalizerTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testPunctuationVariantsCannotMoveTheUrl`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/SlugNormalizerTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheNameIsReducedToALowercaseHyphenatedSlug`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/SlugNormalizerTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheResultContainsOnlyLowercaseAsciiAndHyphens`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/SlugNormalizerTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheResultNeverStartsWithOrEndsWithAHyphen`."
+count = 1
+
+[[issues]]
 file = "test/unit/Fixtures/FixtureOrganizationTest.php"
 code = "assertion-style"
 message = "Inconsistent assertions style."
@@ -1771,6 +2449,42 @@ message = "Use `#[Test]` attribute instead of `test` prefix on method `testVersi
 count = 1
 
 [[issues]]
+file = "test/unit/Report/ReasonCodeTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 5
+
+[[issues]]
+file = "test/unit/Report/ReasonCodeTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testEnumMatchesThePublishedSchemaExactly`."
+count = 1
+
+[[issues]]
+file = "test/unit/Report/ReasonCodeTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testEveryCaseIsReachableFromItsValue`."
+count = 1
+
+[[issues]]
+file = "test/unit/Report/ReasonCodeTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testLabelIsTheSchemaValue`."
+count = 1
+
+[[issues]]
+file = "test/unit/Report/ReasonCodeTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheEnumCarriesNoDuplicateValue`."
+count = 1
+
+[[issues]]
+file = "test/unit/Report/ReasonCodeTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheSchemaEnumIsNonEmpty`."
+count = 1
+
+[[issues]]
 file = "test/unit/SchemaContractTest.php"
 code = "assertion-style"
 message = "Inconsistent assertions style."
@@ -1804,6 +2518,558 @@ count = 1
 file = "test/unit/SchemaContractTest.php"
 code = "prefer-test-attribute"
 message = "Use `#[Test]` attribute instead of `test` prefix on method `testThePackagedSiteSchemaIsThePublishedCopy`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/FetchedRepositoryTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 14
+
+[[issues]]
+file = "test/unit/Source/FetchedRepositoryTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testADirectoryPrefixMatchIsNotEnough`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/FetchedRepositoryTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAnEmptyFileListHasNoDocumentation`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/FetchedRepositoryTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testDocumentationIsAbsentWhenNothingSitsBelowTheDirectory`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/FetchedRepositoryTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testDocumentationIsPresentWhenAFileSitsBelowTheDirectory`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/FetchedRepositoryTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testOneAttemptAndAnUpdatedWorktreeAreTheDefaults`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/FetchedRepositoryTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheDocumentationPathIsJoinedOntoTheRoot`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/FetchedRepositoryTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheRecordedFieldsAreReturned`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/PageEnumeratorTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 31
+
+[[issues]]
+file = "test/unit/Source/PageEnumeratorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAMissingEntryNamesTheCandidates`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/PageEnumeratorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testANestedPartialIsDroppedEvenWithNoExcludePatterns`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/PageEnumeratorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testANonAsciiDocFileDoesNotStopTheScan`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/PageEnumeratorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAPartialDoesNotStopTheScan`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/PageEnumeratorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testASingleStarDoesNotCrossDirectories`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/PageEnumeratorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAVersionWithoutAsciiDocFailsWithNoAsciidocSources`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/PageEnumeratorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAnExcludePatternIsMatchedInsideTheVersionOnly`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/PageEnumeratorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testBothAsciiDocExtensionsAreAccepted`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/PageEnumeratorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testPagesOfAnotherVersionAreExcluded`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/PageEnumeratorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheAbsolutePathIsAnchoredAtTheRepositoryRoot`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/PageEnumeratorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheConfiguredExcludePatternsApply`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/PageEnumeratorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheEntryPageIsTheFirstConfiguredCandidateThatExists`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/PageEnumeratorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheEntryPageMustBeAtTheRootOfTheVersion`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/PageEnumeratorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheVersionedFixtureEnumeratesItsExactPages`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/PageEnumeratorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testUnderscorePrefixedFilesAreDropped`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/RepositoryFetcherTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 35
+
+[[issues]]
+file = "test/unit/Source/RepositoryFetcherTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testALocalGitRepositoryReportsItsCommit`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/RepositoryFetcherTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testALocalPathIsUsedInPlace`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/RepositoryFetcherTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAPlainDirectoryReportsAContentDigest`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/RepositoryFetcherTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testARemoteIsClonedIntoTheCacheDirectory`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/RepositoryFetcherTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testARepositoryWithoutDocumentationIsStillFetched`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/RepositoryFetcherTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testARetryCountBelowOneIsClampedToOne`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/RepositoryFetcherTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testASecondFetchOfAnUnchangedRevisionDoesNotCheckOutAgain`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/RepositoryFetcherTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAnUnreachableRemoteFailsWithTheFetchFailedReasonCode`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/RepositoryFetcherTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheConfiguredRetryCountIsUsed`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/RepositoryFetcherTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheContentDigestChangesWithTheContent`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/RepositoryFetcherTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheContentDigestIsStableAcrossFetches`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/RepositoryFetcherTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheDefaultRefIsTheRepositoryDefaultBranch`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/RepositoryFetcherTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheDocumentationDirectoryComesFromTheConfiguration`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/RepositoryFetcherTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheGitMetadataDirectoryIsNotPartOfTheFileList`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/RepositoryFetcherTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheRefArgumentOverridesTheDefaultBranch`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/RepositoryFetcherTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheRemoteUrlIsBuiltFromTheOrganizationAndRepositoryName`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/RepositorySourcesTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 25
+
+[[issues]]
+file = "test/unit/Source/RepositorySourcesTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAFailureCarriesTheReasonCodeAndIsNotSuccessful`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/RepositorySourcesTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAFailureKeepsTheFetchItGotThatFarWith`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/RepositorySourcesTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAWarningAloneDoesNotMakeTheResultUnsuccessful`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/RepositorySourcesTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAnEmptyResultIsSuccessful`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/RepositorySourcesTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testEveryStageOutputIsKept`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/RepositorySourcesTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheDocumentationPathIsNullWhenTheDirectoryIsAbsent`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/RepositorySourcesTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheDocumentationPathIsReportedWhenTheDirectoryExists`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/RepositorySourcesTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheRepositoryIsAlwaysAvailable`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/SourceErrorTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 13
+
+[[issues]]
+file = "test/unit/Source/SourceErrorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testEveryDetailIsAvailable`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/SourceErrorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheArrayKeepsEveryKeyWhenTheDetailsAreAbsent`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/SourceErrorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheArrayShapeMatchesTheReportSchema`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/SourceErrorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheExceptionCarriesTheErrorItWasBuiltFrom`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/SourceErrorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheExceptionMessageIsTheErrorMessage`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/SourceErrorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheOptionalDetailsDefaultToNull`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/SourceExceptionTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 5
+
+[[issues]]
+file = "test/unit/Source/SourceExceptionTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testThePreviousExceptionIsKept`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/SourceExceptionTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheReportableErrorIsCarried`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/SourceFormatTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 10
+
+[[issues]]
+file = "test/unit/Source/SourceFormatTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testOnlyAsciiDocIsAccepted`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/SourceFormatTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheEnumValueIsTheLowercaseFormatName`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/SourceFormatTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheExtensionComesFromTheLastDot`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/SourceFormatTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheExtensionIsLowercasedAndKeepsTheDot`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/SourceFormatTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheFormatComesFromTheExtension`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/SourcePreparerTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 24
+
+[[issues]]
+file = "test/unit/Source/SourcePreparerTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testALeadingByteOrderMarkIsRemoved`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/SourcePreparerTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testALoneCarriageReturnIsNormalisedToLf`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/SourcePreparerTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAMarkdownPageIsRejectedBeforeItIsRead`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/SourcePreparerTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAWellFormedPageIsReturnedUnchanged`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/SourcePreparerTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAnAsciidocExtensionInUpperCaseIsAccepted`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/SourcePreparerTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAnUnknownExtensionIsRejected`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/SourcePreparerTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testCrlfIsNormalisedToLf`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/SourcePreparerTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testInvalidUtf8IsRejectedNamingThePath`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/SourcePreparerTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheHashCoversTheNormalisedText`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/SourcePreparerTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testThePreparedSourceKeepsThePageItCameFrom`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/VersionDetectorTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 28
+
+[[issues]]
+file = "test/unit/Source/VersionDetectorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAConfiguredVersionPatternReplacesTheDefault`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/VersionDetectorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAFileOutsideEveryVersionDirectoryWarnsInsteadOfVanishing`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/VersionDetectorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAFileOutsideTheDocumentationDirectoryDoesNotStopTheScan`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/VersionDetectorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testALabelWithoutThePrefixIsNumberedFromItsFirstCharacter`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/VersionDetectorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAPatternDelimiterInsideTheVersionPatternIsEscaped`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/VersionDetectorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testASubdirectoryThatDoesNotMatchIsNotAVersion`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/VersionDetectorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAVersionDefaultsToNumberZero`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/VersionDetectorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAVersionDirectoryIsTheDocumentationDirectoryPlusTheLabel`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/VersionDetectorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAnUnversionedRepositoryProducesNoWarning`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/VersionDetectorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testLabelsFollowTheVersionPattern`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/VersionDetectorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testPathsOutsideTheDocumentationDirectoryAreIgnored`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/VersionDetectorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheConfiguredDocumentationDirectoryIsHonoured`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/VersionDetectorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheUnversionedDirectoryIsLatestAndIsTheDocumentationDirectory`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/VersionDetectorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testVersionsSortNumericallyNotLexically`."
 count = 1
 
 [[issues]]

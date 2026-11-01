@@ -3,8 +3,8 @@
 **Input**: `specs/002-webware-alignment/spec.md`, `plan.md`
 
 Package parameters are already applied throughout: PHP versions `8.4` and `8.5`, test roots
-`test/unit` and `test/integration`, namespaces `WebwareTest\AsciidocPhpMultiRepo\` (unit) and
-`WebwareTestIntegration\AsciidocPhpMultiRepo\` (integration). The MSI gates are 95 and are not a
+`test/unit` and `test/integration`, namespaces `WebwareTest\AsciidocPhp\MultiRepo\` (unit) and
+`WebwareTestIntegration\AsciidocPhp\MultiRepo\` (integration). The MSI gates are 95 and are not a
 package parameter.
 
 Branch base: `1.0.x`. The container work landed as PR #3 and `1.0.x` now carries `Dockerfile`,
@@ -22,8 +22,8 @@ run in the container; no host PHP is used.
   `phpbench/phpbench: ^1.7`, `roave/backward-compatibility-check: ^8.21.0`,
   `roave/security-advisories: dev-master`. Add `config.allow-plugins` for
   `infection/extension-installer`. Do not remove `phpstan/phpstan` yet (T010a)
-- [x] T003 Verify `autoload-dev` maps `WebwareTest\AsciidocPhpMultiRepo\` to `test/unit/` and
-  `WebwareTestIntegration\AsciidocPhpMultiRepo\` to `test/integration/`, matching
+- [x] T003 Verify `autoload-dev` maps `WebwareTest\AsciidocPhp\MultiRepo\` to `test/unit/` and
+  `WebwareTestIntegration\AsciidocPhp\MultiRepo\` to `test/integration/`, matching
   `templates/plan-template.md` Phase 1
 - [x] T003a Rename the test layout to the preset convention: `tests/` to `test/`,
   `tests/Unit/` to `test/unit/`, `tests/Contract/` to `test/integration/`, and rewrite the
@@ -32,7 +32,7 @@ run in the container; no host PHP is used.
   pipeline and no external boundary, so they are unit-level consistency checks. This removes the
   former deviations D-1, D-2 and D-3 and the `WARN Failed to walk /app/test`
 - [x] T003b Move `ContractDocumentationTest` and `SchemaContractTest` from `test/integration/` to
-  `test/unit/`, change their namespace to `WebwareTest\AsciidocPhpMultiRepo`, and add
+  `test/unit/`, change their namespace to `WebwareTest\AsciidocPhp\MultiRepo`, and add
   `test/integration/.gitkeep` so the empty `integration test` suite still resolves. No filler test
   is added. See Deviation D-7 for the resulting `composer test-integration` exit code
 - [x] T004 Define scripts `test` (all suites, unchanged; see Deviation D-5), `test-coverage`

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Config;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Config;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Webware\AsciidocPhpMultiRepo\Config\OrganizationSection;
+use Webware\AsciidocPhp\MultiRepo\Config\OrganizationSection;
 
 #[CoversClass(OrganizationSection::class)]
 final class OrganizationSectionTest extends TestCase

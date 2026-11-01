@@ -2,15 +2,18 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Cli;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Cli;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Webware\AsciidocPhpMultiRepo\Cli\Options;
-use Webware\AsciidocPhpMultiRepo\Cli\Output;
-use WebwareTest\AsciidocPhpMultiRepo\Support\CapturedOutput;
+use Webware\AsciidocPhp\MultiRepo\Cli\Options;
+use Webware\AsciidocPhp\MultiRepo\Cli\Output;
+use WebwareTest\AsciidocPhp\MultiRepo\Support\CapturedOutput;
 
+use function getenv;
+use function is_string;
+use function putenv;
 use function str_contains;
 
 #[CoversClass(Output::class)]
@@ -50,13 +53,14 @@ final class OutputTest extends TestCase
         $plain = $this->makeOutput();
         $plain->error('missing entry');
 
-        self::assertStringNotContainsString("\033[", $this->captured->stderr);
+        self::assertSame("error: missing entry\n", $this->captured->stderr);
+
+        $this->captured = new CapturedOutput();
 
         $coloured = $this->makeOutput(color: true);
         $coloured->error('missing entry');
 
-        self::assertStringContainsString("\033[31m", $this->captured->stderr);
-        self::assertStringContainsString("\033[0m", $this->captured->stderr);
+        self::assertSame("\033[31merror: missing entry\n\033[0m", $this->captured->stderr);
     }
 
     public function testDetailRequiresVerbose(): void
@@ -129,6 +133,35 @@ final class OutputTest extends TestCase
 
         self::assertSame("1 ok, 0 failed\n", $this->captured->stdout);
         self::assertSame('', $this->captured->stderr);
+    }
+
+    public function testTheDefaultFlagsAreOff(): void
+    {
+        $output = new Output(
+            stdout: $this->captured->stdoutWriter(),
+            stderr: $this->captured->stderrWriter(),
+        );
+
+        $output->timing('render', 1.0);
+
+        self::assertFalse($output->isQuiet());
+        self::assertFalse($output->isVerbose());
+        self::assertFalse($output->usesColour());
+        self::assertSame('', $this->captured->stderr);
+    }
+
+    public function testTheEnvironmentFallbackIsUsedOnlyWhenNoneIsSupplied(): void
+    {
+        $previous = getenv('NO_COLOR');
+
+        putenv('NO_COLOR=1');
+
+        try {
+            self::assertSame('1', Output::noColorEnvironment());
+            self::assertTrue(Output::forCli(new Options(), true, '')->usesColour());
+        } finally {
+            putenv(is_string($previous) ? "NO_COLOR={$previous}" : 'NO_COLOR');
+        }
     }
 
     public function testTimingRequiresTimings(): void

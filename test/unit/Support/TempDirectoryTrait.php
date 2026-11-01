@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Support;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Support;
 
-use Webware\AsciidocPhpMultiRepo\Support\Filesystem;
-use Webware\AsciidocPhpMultiRepo\Support\Path;
+use Webware\AsciidocPhp\MultiRepo\Support\Filesystem;
+use Webware\AsciidocPhp\MultiRepo\Support\Path;
 
 use function bin2hex;
 use function is_dir;

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Webware\AsciidocPhpMultiRepo\Config;
+namespace Webware\AsciidocPhp\MultiRepo\Config;
 
-use Webware\AsciidocPhpMultiRepo\Support\Filesystem;
-use Webware\AsciidocPhpMultiRepo\Support\Json;
-use Webware\AsciidocPhpMultiRepo\Support\JsonDecodeException;
-use Webware\AsciidocPhpMultiRepo\Support\Path;
+use Webware\AsciidocPhp\MultiRepo\Support\Filesystem;
+use Webware\AsciidocPhp\MultiRepo\Support\Json;
+use Webware\AsciidocPhp\MultiRepo\Support\JsonDecodeException;
+use Webware\AsciidocPhp\MultiRepo\Support\Path;
 
 use function getcwd;
 use function sprintf;

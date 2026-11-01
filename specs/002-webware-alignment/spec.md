@@ -58,7 +58,7 @@ Filled from this package's `composer.json` and the new `mago.toml`.
 | Integration container | omitted |
 | Tooling `PHP_VERSION` (Docker) | `8.5.12` (latest 8.5 patch; keep in sync with `require.php`) |
 | Tooling Mago version (Docker) | derived from the central `mago.toml` pin via `composer.lock` (no literal to maintain) |
-| Test autoload namespaces | `WebwareTest\AsciidocPhpMultiRepo\` -> `test/unit/`; `WebwareTestIntegration\AsciidocPhpMultiRepo\` -> `test/integration/` |
+| Test autoload namespaces | `WebwareTest\AsciidocPhp\MultiRepo\` -> `test/unit/`; `WebwareTestIntegration\AsciidocPhp\MultiRepo\` -> `test/integration/` |
 | PHPUnit suites | `unit test` -> `test/unit`; `integration test` -> `test/integration` |
 | Mago source paths | `["src", "test", "bin/asciidoc-php-multi-repo"]` |
 

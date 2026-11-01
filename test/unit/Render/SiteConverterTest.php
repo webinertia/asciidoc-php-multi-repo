@@ -12,7 +12,6 @@ use Webware\AsciidocPhp\Converter\Html5Converter;
 use Webware\AsciidocPhp\Document;
 use Webware\AsciidocPhp\MultiRepo\Render\SiteConverter;
 
-
 use function preg_match_all;
 
 /**

@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6aede25d6f4f388ffc5d9520988442e5",
+    "content-hash": "3c5c103f70de880c3a1ae02a992a6702",
     "packages": [
         {
             "name": "webware/asciidoc-php",
-            "version": "0.1.x-dev",
+            "version": "0.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webinertia/asciidoc-php.git",
-                "reference": "fd8e7c6109406fc4f8ffb2588220ab1d6d2673e0"
+                "reference": "2f174a21fa45a6bd15d7fef53af2fcb2200dd46f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webinertia/asciidoc-php/zipball/fd8e7c6109406fc4f8ffb2588220ab1d6d2673e0",
-                "reference": "fd8e7c6109406fc4f8ffb2588220ab1d6d2673e0",
+                "url": "https://api.github.com/repos/webinertia/asciidoc-php/zipball/2f174a21fa45a6bd15d7fef53af2fcb2200dd46f",
+                "reference": "2f174a21fa45a6bd15d7fef53af2fcb2200dd46f",
                 "shasum": ""
             },
             "require": {
@@ -30,7 +30,6 @@
                 "psr/log": "^3.0",
                 "roave/security-advisories": "dev-master"
             },
-            "default-branch": true,
             "bin": [
                 "bin/asciidoc-php"
             ],
@@ -43,87 +42,34 @@
                     "Webware\\AsciidocPhp\\": "src/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Webware\\AsciidocPhp\\IntegrationTest\\": "test/integration/",
-                    "Webware\\AsciidocPhp\\TestAsset\\": "test/asset/",
-                    "Webware\\AsciidocPhp\\Test\\": "test/unit/"
-                }
-            },
-            "scripts": {
-                "check-all": [
-                    "@sa",
-                    "@test",
-                    "@test-integration"
-                ],
-                "test": [
-                    "phpunit --colors=always --testsuite \"unit test\""
-                ],
-                "test-coverage": [
-                    "phpunit --colors=always --coverage-clover clover.xml"
-                ],
-                "test-integration": [
-                    "phpunit --colors=always --testsuite \"integration test\""
-                ],
-                "sa": [
-                    "vendor/bin/phpstan analyse --memory-limit=256M"
-                ],
-                "sa-gen-baseline": [
-                    "vendor/bin/phpstan analyse --memory-limit=256M --generate-baseline"
-                ],
-                "sa-verbose": [
-                    "vendor/bin/phpstan analyse --memory-limit=256M -vv"
-                ],
-                "upload-coverage": [
-                    "coveralls -v"
-                ],
-                "render": [
-                    "php bin/asciidoc-php -o test/results/full-document.html test/asset/integration/full-document.adoc"
-                ],
-                "render-embedded": [
-                    "php bin/asciidoc-php -s -o test/results/full-document-embedded.html test/asset/integration/full-document.adoc"
-                ],
-                "render-preview": [
-                    "php bin/render-preview test/asset/integration/full-document.adoc test/results/full-document-preview.html"
-                ],
-                "generate-corpus": [
-                    "php bin/generate-benchmark-corpus"
-                ],
-                "benchmark": [
-                    "php bin/benchmark"
-                ],
-                "benchmark-seeds": [
-                    "php bin/benchmark --dir=test/benchmark/seeds"
-                ],
-                "benchmark-json": [
-                    "php bin/benchmark --output=json"
-                ],
-                "benchmark-csv": [
-                    "php bin/benchmark --output=csv"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "BSD-3-Clause"
+                "MIT"
             ],
             "authors": [
                 {
                     "name": "Joey (aka Tyrsson) Smith",
                     "email": "jsmith@webinertia.net",
-                    "homepage": "https://github.com/tyrsson/asciidoc-php/discussions",
+                    "homepage": "https://github.com/webinertia/asciidoc-php",
                     "role": "Developer"
                 }
             ],
-            "description": "A template repository for new PHP projects",
+            "description": "A PHP port of the Asciidoctor toolchain that converts AsciiDoc source files to HTML5",
+            "homepage": "https://github.com/webinertia/asciidoc-php",
             "keywords": [
-                "php",
-                "repository",
-                "template"
+                "HTML5",
+                "asciidoc",
+                "asciidoctor",
+                "converter",
+                "documentation",
+                "static-site"
             ],
             "support": {
-                "source": "https://github.com/webinertia/asciidoc-php/tree/0.1.x",
-                "issues": "https://github.com/webinertia/asciidoc-php/issues"
+                "issues": "https://github.com/webinertia/asciidoc-php/issues",
+                "source": "https://github.com/webinertia/asciidoc-php/tree/0.1.0"
             },
-            "time": "2026-04-23T04:20:47+00:00"
+            "time": "2026-11-01T02:40:02+00:00",
+            "published-time": "2026-11-01T02:44:15+00:00"
         }
     ],
     "packages-dev": [
@@ -2088,9 +2034,7 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "webware/asciidoc-php": 20
-    },
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

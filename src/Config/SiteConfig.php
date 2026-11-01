@@ -31,8 +31,7 @@ final readonly class SiteConfig
         private OutputSection $output,
         private array $projects,
         private string $configPath,
-    ) {
-    }
+    ) {}
 
     /**
      * Builds the value object from a validated document. Relative output paths resolve against the
@@ -69,52 +68,9 @@ final readonly class SiteConfig
         );
     }
 
-    public function schemaVersion(): int
+    public function configDirectory(): string
     {
-        return $this->schemaVersion;
-    }
-
-    public function site(): SiteSection
-    {
-        return $this->site;
-    }
-
-    public function organization(): OrganizationSection
-    {
-        return $this->organization;
-    }
-
-    public function source(): SourceSection
-    {
-        return $this->source;
-    }
-
-    public function render(): RenderSection
-    {
-        return $this->render;
-    }
-
-    public function theme(): ThemeConfig
-    {
-        return $this->theme;
-    }
-
-    public function output(): OutputSection
-    {
-        return $this->output;
-    }
-
-    /**
-     * @return array<string, ProjectOverride>
-     */
-    public function projects(): array
-    {
-        return $this->projects;
-    }
-
-    public function project(string $name): ?ProjectOverride
-    {
-        return $this->projects[$name] ?? null;
+        return dirname($this->configPath);
     }
 
     /**
@@ -125,9 +81,52 @@ final readonly class SiteConfig
         return $this->configPath;
     }
 
-    public function configDirectory(): string
+    public function organization(): OrganizationSection
     {
-        return dirname($this->configPath);
+        return $this->organization;
+    }
+
+    public function output(): OutputSection
+    {
+        return $this->output;
+    }
+
+    public function project(string $name): ?ProjectOverride
+    {
+        return $this->projects[$name] ?? null;
+    }
+
+    /**
+     * @return array<string, ProjectOverride>
+     */
+    public function projects(): array
+    {
+        return $this->projects;
+    }
+
+    public function render(): RenderSection
+    {
+        return $this->render;
+    }
+
+    public function schemaVersion(): int
+    {
+        return $this->schemaVersion;
+    }
+
+    public function site(): SiteSection
+    {
+        return $this->site;
+    }
+
+    public function source(): SourceSection
+    {
+        return $this->source;
+    }
+
+    public function theme(): ThemeConfig
+    {
+        return $this->theme;
     }
 
     public function withSite(SiteSection $site): self

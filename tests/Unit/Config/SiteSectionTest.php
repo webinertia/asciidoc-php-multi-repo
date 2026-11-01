@@ -4,11 +4,46 @@ declare(strict_types=1);
 
 namespace Webware\AsciidocPhpMultiRepo\Test\Unit\Config;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhpMultiRepo\Config\SiteSection;
 
+#[CoversClass(SiteSection::class)]
 final class SiteSectionTest extends TestCase
 {
+    public function testEffectiveHostnameFallsBackToBaseUrlHost(): void
+    {
+        $section = SiteSection::fromArray([
+            'name'    => 'Docs',
+            'baseUrl' => 'https://docs.example.test',
+        ]);
+
+        self::assertSame('docs.example.test', $section->effectiveHostname());
+    }
+
+    public function testEffectiveHostnamePrefersConfiguredHostname(): void
+    {
+        $section = SiteSection::fromArray([
+            'name'     => 'Docs',
+            'baseUrl'  => 'https://example.test',
+            'hostname' => 'docs.example.test',
+        ]);
+
+        self::assertSame('docs.example.test', $section->effectiveHostname());
+    }
+
+    public function testFromArrayAppliesDefaults(): void
+    {
+        $section = SiteSection::fromArray([
+            'name'    => 'Docs',
+            'baseUrl' => 'https://example.test',
+        ]);
+
+        self::assertSame('/', $section->basePath());
+        self::assertNull($section->hostname());
+        self::assertSame('latest', $section->defaultVersionLabel());
+    }
+
     public function testFromArrayReadsEveryField(): void
     {
         $section = SiteSection::fromArray([
@@ -26,16 +61,16 @@ final class SiteSectionTest extends TestCase
         self::assertSame('stable', $section->defaultVersionLabel());
     }
 
-    public function testFromArrayAppliesDefaults(): void
+    public function testIsRootBasePath(): void
     {
-        $section = SiteSection::fromArray([
-            'name'    => 'Docs',
-            'baseUrl' => 'https://example.test',
-        ]);
-
-        self::assertSame('/', $section->basePath());
-        self::assertNull($section->hostname());
-        self::assertSame('latest', $section->defaultVersionLabel());
+        self::assertTrue(SiteSection::fromArray(['name' => 'D', 'baseUrl' => 'https://e.test'])->isRootBasePath());
+        self::assertFalse(
+            SiteSection::fromArray([
+                'name'     => 'D',
+                'baseUrl'  => 'https://e.test',
+                'basePath' => '/docs/',
+            ])->isRootBasePath(),
+        );
     }
 
     public function testNormaliseBasePathAddsBothSlashes(): void
@@ -52,27 +87,6 @@ final class SiteSectionTest extends TestCase
         self::assertSame('/', SiteSection::normaliseBasePath(''));
     }
 
-    public function testEffectiveHostnamePrefersConfiguredHostname(): void
-    {
-        $section = SiteSection::fromArray([
-            'name'     => 'Docs',
-            'baseUrl'  => 'https://example.test',
-            'hostname' => 'docs.example.test',
-        ]);
-
-        self::assertSame('docs.example.test', $section->effectiveHostname());
-    }
-
-    public function testEffectiveHostnameFallsBackToBaseUrlHost(): void
-    {
-        $section = SiteSection::fromArray([
-            'name'    => 'Docs',
-            'baseUrl' => 'https://docs.example.test',
-        ]);
-
-        self::assertSame('docs.example.test', $section->effectiveHostname());
-    }
-
     public function testWithBasePathReturnsANewInstance(): void
     {
         $section = SiteSection::fromArray(['name' => 'Docs', 'baseUrl' => 'https://example.test']);
@@ -81,13 +95,5 @@ final class SiteSectionTest extends TestCase
         self::assertNotSame($section, $updated);
         self::assertSame('/manual/', $updated->basePath());
         self::assertSame('/', $section->basePath());
-    }
-
-    public function testIsRootBasePath(): void
-    {
-        self::assertTrue(SiteSection::fromArray(['name' => 'D', 'baseUrl' => 'https://e.test'])->isRootBasePath());
-        self::assertFalse(
-            SiteSection::fromArray(['name' => 'D', 'baseUrl' => 'https://e.test', 'basePath' => '/docs/'])->isRootBasePath(),
-        );
     }
 }

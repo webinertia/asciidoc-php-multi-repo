@@ -1,0 +1,10 @@
+{
+  "php_versions": {{PHP_VERSIONS}},
+  "run_integration": {{RUN_INTEGRATION}},
+  "integration_php_version": "{{INTEGRATION_PHP_VERSION}}",
+  "enable_codecov": {{ENABLE_CODECOV}},
+  "enable_infection": {{ENABLE_INFECTION}},
+  "coverage_php_version": "{{COVERAGE_PHP_VERSION}}",
+  "min_msi": "{{MIN_MSI}}",
+  "min_covered_msi": "{{MIN_COVERED_MSI}}"
+}

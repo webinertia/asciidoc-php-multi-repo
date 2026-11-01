@@ -17,12 +17,9 @@ final class CapturedOutput
 
     public string $stderr = '';
 
-    /** @return Closure(string): void */
-    public function stdoutWriter(): Closure
+    public function describe(): string
     {
-        return function (string $text): void {
-            $this->stdout .= $text;
-        };
+        return sprintf("stdout:\n%s\nstderr:\n%s", $this->stdout, $this->stderr);
     }
 
     /** @return Closure(string): void */
@@ -33,8 +30,11 @@ final class CapturedOutput
         };
     }
 
-    public function describe(): string
+    /** @return Closure(string): void */
+    public function stdoutWriter(): Closure
     {
-        return sprintf("stdout:\n%s\nstderr:\n%s", $this->stdout, $this->stderr);
+        return function (string $text): void {
+            $this->stdout .= $text;
+        };
     }
 }

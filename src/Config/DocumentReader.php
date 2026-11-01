@@ -21,7 +21,11 @@ final class DocumentReader
         private readonly SchemaValidator $validator = new SchemaValidator(),
         private readonly Json $json = new Json(),
         private readonly Filesystem $filesystem = new Filesystem(),
-    ) {
+    ) {}
+
+    public function absolute(string $path): string
+    {
+        return Path::isAbsolute($path) ? Path::normalise($path) : Path::resolve($this->cwd(), $path);
     }
 
     /**
@@ -66,15 +70,10 @@ final class DocumentReader
         return $this->json->decodeObject($this->filesystem->read($schemaPath), $schemaPath);
     }
 
-    public function absolute(string $path): string
-    {
-        return Path::isAbsolute($path) ? Path::normalise($path) : Path::resolve($this->cwd(), $path);
-    }
-
     private function cwd(): string
     {
         $cwd = getcwd();
 
-        return $cwd === false ? '.' : $cwd;
+        return false === $cwd ? '.' : $cwd;
     }
 }

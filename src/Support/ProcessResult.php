@@ -21,8 +21,7 @@ final readonly class ProcessResult
         private string $stdout,
         private string $stderr,
         private bool $timedOut,
-    ) {
-    }
+    ) {}
 
     /**
      * @return list<string>
@@ -30,31 +29,6 @@ final readonly class ProcessResult
     public function command(): array
     {
         return $this->command;
-    }
-
-    public function exitCode(): int
-    {
-        return $this->exitCode;
-    }
-
-    public function stdout(): string
-    {
-        return $this->stdout;
-    }
-
-    public function stderr(): string
-    {
-        return $this->stderr;
-    }
-
-    public function timedOut(): bool
-    {
-        return $this->timedOut;
-    }
-
-    public function successful(): bool
-    {
-        return ! $this->timedOut && $this->exitCode === 0;
     }
 
     public function describeCommand(): string
@@ -73,5 +47,30 @@ final readonly class ProcessResult
             $this->describeCommand(),
             $this->exitCode,
         );
+    }
+
+    public function exitCode(): int
+    {
+        return $this->exitCode;
+    }
+
+    public function stderr(): string
+    {
+        return $this->stderr;
+    }
+
+    public function stdout(): string
+    {
+        return $this->stdout;
+    }
+
+    public function successful(): bool
+    {
+        return ! $this->timedOut && 0 === $this->exitCode;
+    }
+
+    public function timedOut(): bool
+    {
+        return $this->timedOut;
     }
 }

@@ -4,86 +4,15 @@ declare(strict_types=1);
 
 namespace Webware\AsciidocPhpMultiRepo\Test\Unit\Config;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhpMultiRepo\Config\SchemaException;
 use Webware\AsciidocPhpMultiRepo\Config\SchemaValidator;
 
+#[CoversClass(SchemaValidator::class)]
 final class SchemaValidatorTest extends TestCase
 {
     private SchemaValidator $validator;
-
-    protected function setUp(): void
-    {
-        $this->validator = new SchemaValidator();
-    }
-
-    public function testPassingDocumentProducesNoErrors(): void
-    {
-        $schema = [
-            'type'       => 'object',
-            'required'   => ['name'],
-            'properties' => [
-                'name'  => ['type' => 'string', 'minLength' => 1],
-                'count' => ['type' => 'integer', 'minimum' => 1, 'maximum' => 10],
-                'tags'  => ['type' => 'array', 'minItems' => 1, 'items' => ['type' => 'string']],
-                'mode'  => ['enum' => ['a', 'b']],
-            ],
-        ];
-
-        $result = $this->validator->validate(
-            ['name' => 'Docs', 'count' => 5, 'tags' => ['x'], 'mode' => 'a'],
-            $schema,
-        );
-
-        self::assertTrue($result->isValid());
-        self::assertSame(0, $result->errorCount());
-        self::assertSame([], $result->errors());
-        self::assertSame('', $result->describe());
-    }
-
-    public function testTypeKeywordFails(): void
-    {
-        $result = $this->validator->validate('text', ['type' => 'integer']);
-
-        self::assertFalse($result->isValid());
-        self::assertSame(1, $result->errorCount());
-        self::assertSame('', $result->errors()[0]->pointer());
-        self::assertStringContainsString('integer', $result->errors()[0]->message());
-    }
-
-    public function testTypeListAcceptsAnyListedType(): void
-    {
-        self::assertTrue($this->validator->validate('text', ['type' => ['string', 'null']])->isValid());
-        self::assertTrue($this->validator->validate(null, ['type' => ['string', 'null']])->isValid());
-        self::assertFalse($this->validator->validate(1, ['type' => ['string', 'null']])->isValid());
-    }
-
-    public function testRequiredKeywordFails(): void
-    {
-        $result = $this->validator->validate([], ['type' => 'object', 'required' => ['name']]);
-
-        self::assertFalse($result->isValid());
-        self::assertStringContainsString('"name"', $result->errors()[0]->message());
-    }
-
-    public function testPropertiesKeywordFailsAtTheChildPointer(): void
-    {
-        $result = $this->validator->validate(
-            ['site' => ['name' => 5]],
-            [
-                'type'       => 'object',
-                'properties' => [
-                    'site' => [
-                        'type'       => 'object',
-                        'properties' => ['name' => ['type' => 'string']],
-                    ],
-                ],
-            ],
-        );
-
-        self::assertFalse($result->isValid());
-        self::assertSame('/site/name', $result->errors()[0]->pointer());
-    }
 
     public function testAdditionalPropertiesFalseFails(): void
     {
@@ -113,12 +42,18 @@ final class SchemaValidatorTest extends TestCase
         self::assertFalse($this->validator->validate(['a' => 1], $schema)->isValid());
     }
 
-    public function testEnumKeywordFails(): void
+    public function testAnnotationKeywordsAreIgnored(): void
     {
-        $result = $this->validator->validate('other', ['enum' => ['safe', 'secure']]);
+        $schema = [
+            '$schema'     => 'https://json-schema.org/draft/2020-12/schema',
+            '$id'         => 'https://example.test/schema.json',
+            'title'       => 'Example',
+            'description' => 'An example schema.',
+            'type'        => 'object',
+            'properties'  => ['a' => ['type' => 'string', 'default' => 'x']],
+        ];
 
-        self::assertFalse($result->isValid());
-        self::assertStringContainsString('allowed values', $result->errors()[0]->message());
+        self::assertTrue($this->validator->validate(['a' => 'y'], $schema)->isValid());
     }
 
     public function testConstKeywordFails(): void
@@ -129,6 +64,108 @@ final class SchemaValidatorTest extends TestCase
 
         self::assertFalse($result->isValid());
         self::assertStringContainsString('must equal', $result->errors()[0]->message());
+    }
+
+    public function testEnumKeywordFails(): void
+    {
+        $result = $this->validator->validate('other', ['enum' => ['safe', 'secure']]);
+
+        self::assertFalse($result->isValid());
+        self::assertStringContainsString('allowed values', $result->errors()[0]->message());
+    }
+
+    public function testErrorsAccumulateAcrossProperties(): void
+    {
+        $schema = [
+            'type'       => 'object',
+            'properties' => [
+                'a' => ['type' => 'string'],
+                'b' => ['type' => 'string'],
+            ],
+        ];
+
+        $result = $this->validator->validate(['a' => 1, 'b' => 2], $schema);
+
+        self::assertSame(2, $result->errorCount());
+        self::assertSame('/a', $result->errors()[0]->pointer());
+        self::assertSame('/b', $result->errors()[1]->pointer());
+        self::assertStringContainsString('/a', $result->describe());
+    }
+
+    public function testItemsKeywordFails(): void
+    {
+        $schema = ['type' => 'array', 'items' => ['type' => 'integer']];
+
+        self::assertTrue($this->validator->validate([1, 2], $schema)->isValid());
+
+        $result = $this->validator->validate([1, 'two'], $schema);
+
+        self::assertFalse($result->isValid());
+        self::assertSame('/1', $result->errors()[0]->pointer());
+    }
+
+    public function testMaximumKeywordFails(): void
+    {
+        self::assertTrue($this->validator->validate(6, ['type' => 'integer', 'maximum' => 6])->isValid());
+
+        $result = $this->validator->validate(7, ['type' => 'integer', 'maximum' => 6]);
+
+        self::assertFalse($result->isValid());
+        self::assertStringContainsString('less than or equal to 6', $result->errors()[0]->message());
+    }
+
+    public function testMinimumKeywordFails(): void
+    {
+        self::assertTrue($this->validator->validate(1, ['type' => 'integer', 'minimum' => 1])->isValid());
+
+        $result = $this->validator->validate(0, ['type' => 'integer', 'minimum' => 1]);
+
+        self::assertFalse($result->isValid());
+        self::assertStringContainsString('greater than or equal to 1', $result->errors()[0]->message());
+    }
+
+    public function testMinItemsKeywordFails(): void
+    {
+        self::assertTrue($this->validator->validate([1], ['type' => 'array', 'minItems' => 1])->isValid());
+
+        $result = $this->validator->validate([], ['type' => 'array', 'minItems' => 1]);
+
+        self::assertFalse($result->isValid());
+        self::assertStringContainsString('at least 1 items', $result->errors()[0]->message());
+    }
+
+    public function testMinLengthKeywordFails(): void
+    {
+        self::assertTrue($this->validator->validate('a', ['type' => 'string', 'minLength' => 1])->isValid());
+
+        $result = $this->validator->validate('', ['type' => 'string', 'minLength' => 1]);
+
+        self::assertFalse($result->isValid());
+        self::assertStringContainsString('at least 1 characters', $result->errors()[0]->message());
+    }
+
+    public function testPassingDocumentProducesNoErrors(): void
+    {
+        $schema = [
+            'type'       => 'object',
+            'required'   => ['name'],
+            'properties' => [
+                'name'  => ['type' => 'string', 'minLength' => 1],
+                'count' => ['type' => 'integer', 'minimum' => 1, 'maximum' => 10],
+                'tags'  => ['type' => 'array', 'minItems' => 1, 'items' => ['type' => 'string']],
+                'mode'  => ['enum' => ['a', 'b']],
+            ],
+        ];
+
+        $result = $this->validator->validate(
+            ['name' => 'Docs', 'count' => 5, 'tags' => ['x'], 'mode' => 'a'],
+            $schema,
+        );
+
+        self::assertTrue($result->isValid());
+        self::assertSame(0, $result->errorCount());
+        self::assertSame([], $result->errors());
+        self::assertSame('', $result->describe());
     }
 
     public function testPatternKeywordFails(): void
@@ -149,56 +186,36 @@ final class SchemaValidatorTest extends TestCase
         self::assertFalse($this->validator->validate('docs', ['pattern' => '^(/|/[^\\s]*/)$'])->isValid());
     }
 
-    public function testMinimumKeywordFails(): void
+    public function testPointerEscaping(): void
     {
-        self::assertTrue($this->validator->validate(1, ['type' => 'integer', 'minimum' => 1])->isValid());
+        $schema = [
+            'type'                 => 'object',
+            'properties'           => [],
+            'additionalProperties' => ['type' => 'string'],
+        ];
 
-        $result = $this->validator->validate(0, ['type' => 'integer', 'minimum' => 1]);
+        $result = $this->validator->validate(['a/b~c' => 1], $schema);
 
-        self::assertFalse($result->isValid());
-        self::assertStringContainsString('greater than or equal to 1', $result->errors()[0]->message());
+        self::assertSame('/a~1b~0c', $result->errors()[0]->pointer());
     }
 
-    public function testMaximumKeywordFails(): void
+    public function testPropertiesKeywordFailsAtTheChildPointer(): void
     {
-        self::assertTrue($this->validator->validate(6, ['type' => 'integer', 'maximum' => 6])->isValid());
-
-        $result = $this->validator->validate(7, ['type' => 'integer', 'maximum' => 6]);
+        $result = $this->validator->validate(
+            ['site' => ['name' => 5]],
+            [
+                'type'       => 'object',
+                'properties' => [
+                    'site' => [
+                        'type'       => 'object',
+                        'properties' => ['name' => ['type' => 'string']],
+                    ],
+                ],
+            ],
+        );
 
         self::assertFalse($result->isValid());
-        self::assertStringContainsString('less than or equal to 6', $result->errors()[0]->message());
-    }
-
-    public function testItemsKeywordFails(): void
-    {
-        $schema = ['type' => 'array', 'items' => ['type' => 'integer']];
-
-        self::assertTrue($this->validator->validate([1, 2], $schema)->isValid());
-
-        $result = $this->validator->validate([1, 'two'], $schema);
-
-        self::assertFalse($result->isValid());
-        self::assertSame('/1', $result->errors()[0]->pointer());
-    }
-
-    public function testMinLengthKeywordFails(): void
-    {
-        self::assertTrue($this->validator->validate('a', ['type' => 'string', 'minLength' => 1])->isValid());
-
-        $result = $this->validator->validate('', ['type' => 'string', 'minLength' => 1]);
-
-        self::assertFalse($result->isValid());
-        self::assertStringContainsString('at least 1 characters', $result->errors()[0]->message());
-    }
-
-    public function testMinItemsKeywordFails(): void
-    {
-        self::assertTrue($this->validator->validate([1], ['type' => 'array', 'minItems' => 1])->isValid());
-
-        $result = $this->validator->validate([], ['type' => 'array', 'minItems' => 1]);
-
-        self::assertFalse($result->isValid());
-        self::assertStringContainsString('at least 1 items', $result->errors()[0]->message());
+        self::assertSame('/site/name', $result->errors()[0]->pointer());
     }
 
     public function testRefToLocalDefinitionIsResolved(): void
@@ -223,13 +240,6 @@ final class SchemaValidatorTest extends TestCase
         self::assertSame('/project/slug', $result->errors()[0]->pointer());
     }
 
-    public function testUnresolvableRefRaises(): void
-    {
-        $this->expectException(SchemaException::class);
-
-        $this->validator->validate('x', ['$ref' => '#/$defs/missing']);
-    }
-
     public function testRemoteRefRaises(): void
     {
         $this->expectException(SchemaException::class);
@@ -237,12 +247,29 @@ final class SchemaValidatorTest extends TestCase
         $this->validator->validate('x', ['$ref' => 'https://example.test/schema.json']);
     }
 
-    public function testUnknownKeywordRaises(): void
+    public function testRequiredKeywordFails(): void
     {
-        $this->expectException(SchemaException::class);
-        $this->expectExceptionMessage('Unsupported JSON Schema keyword "oneOf"');
+        $result = $this->validator->validate([], ['type' => 'object', 'required' => ['name']]);
 
-        $this->validator->validate('x', ['oneOf' => []]);
+        self::assertFalse($result->isValid());
+        self::assertStringContainsString('"name"', $result->errors()[0]->message());
+    }
+
+    public function testTypeKeywordFails(): void
+    {
+        $result = $this->validator->validate('text', ['type' => 'integer']);
+
+        self::assertFalse($result->isValid());
+        self::assertSame(1, $result->errorCount());
+        self::assertSame('', $result->errors()[0]->pointer());
+        self::assertStringContainsString('integer', $result->errors()[0]->message());
+    }
+
+    public function testTypeListAcceptsAnyListedType(): void
+    {
+        self::assertTrue($this->validator->validate('text', ['type' => ['string', 'null']])->isValid());
+        self::assertTrue($this->validator->validate(null, ['type' => ['string', 'null']])->isValid());
+        self::assertFalse($this->validator->validate(1, ['type' => ['string', 'null']])->isValid());
     }
 
     public function testUnknownKeywordInNestedSchemaRaises(): void
@@ -255,6 +282,14 @@ final class SchemaValidatorTest extends TestCase
         );
     }
 
+    public function testUnknownKeywordRaises(): void
+    {
+        $this->expectException(SchemaException::class);
+        $this->expectExceptionMessage('Unsupported JSON Schema keyword "oneOf"');
+
+        $this->validator->validate('x', ['oneOf' => []]);
+    }
+
     public function testUnknownTypeRaises(): void
     {
         $this->expectException(SchemaException::class);
@@ -262,48 +297,15 @@ final class SchemaValidatorTest extends TestCase
         $this->validator->validate('x', ['type' => 'widget']);
     }
 
-    public function testAnnotationKeywordsAreIgnored(): void
+    public function testUnresolvableRefRaises(): void
     {
-        $schema = [
-            '$schema'     => 'https://json-schema.org/draft/2020-12/schema',
-            '$id'         => 'https://example.test/schema.json',
-            'title'       => 'Example',
-            'description' => 'An example schema.',
-            'type'        => 'object',
-            'properties'  => ['a' => ['type' => 'string', 'default' => 'x']],
-        ];
+        $this->expectException(SchemaException::class);
 
-        self::assertTrue($this->validator->validate(['a' => 'y'], $schema)->isValid());
+        $this->validator->validate('x', ['$ref' => '#/$defs/missing']);
     }
 
-    public function testErrorsAccumulateAcrossProperties(): void
+    protected function setUp(): void
     {
-        $schema = [
-            'type'       => 'object',
-            'properties' => [
-                'a' => ['type' => 'string'],
-                'b' => ['type' => 'string'],
-            ],
-        ];
-
-        $result = $this->validator->validate(['a' => 1, 'b' => 2], $schema);
-
-        self::assertSame(2, $result->errorCount());
-        self::assertSame('/a', $result->errors()[0]->pointer());
-        self::assertSame('/b', $result->errors()[1]->pointer());
-        self::assertStringContainsString('/a', $result->describe());
-    }
-
-    public function testPointerEscaping(): void
-    {
-        $schema = [
-            'type'                 => 'object',
-            'properties'           => [],
-            'additionalProperties' => ['type' => 'string'],
-        ];
-
-        $result = $this->validator->validate(['a/b~c' => 1], $schema);
-
-        self::assertSame('/a~1b~0c', $result->errors()[0]->pointer());
+        $this->validator = new SchemaValidator();
     }
 }

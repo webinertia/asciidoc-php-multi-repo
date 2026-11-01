@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webware\AsciidocPhpMultiRepo\Test\Unit\Config;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhpMultiRepo\Config\ProjectOverride;
 use Webware\AsciidocPhpMultiRepo\Config\SiteConfig;
@@ -11,8 +12,14 @@ use Webware\AsciidocPhpMultiRepo\Support\Path;
 
 use function sys_get_temp_dir;
 
+#[CoversClass(SiteConfig::class)]
 final class SiteConfigTest extends TestCase
 {
+    private static function configPath(): string
+    {
+        return Path::join(sys_get_temp_dir(), 'site-fixture', 'site.json');
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -40,44 +47,26 @@ final class SiteConfigTest extends TestCase
         ];
     }
 
-    private static function configPath(): string
+    public function testAbsoluteOutputPathsAreKept(): void
     {
-        return Path::join(sys_get_temp_dir(), 'site-fixture', 'site.json');
+        $absolute           = Path::join(sys_get_temp_dir(), 'elsewhere', 'site');
+        $document           = self::document();
+        $document['output'] = ['directory' => $absolute];
+
+        $config = SiteConfig::fromArray($document, self::configPath());
+
+        self::assertSame(Path::normalise($absolute), $config->output()->directory());
     }
 
-    private function config(): SiteConfig
+    public function testConfigPathIsNormalised(): void
     {
-        return SiteConfig::fromArray(self::document(), self::configPath());
-    }
-
-    public function testSchemaVersionIsRead(): void
-    {
-        self::assertSame(1, $this->config()->schemaVersion());
-    }
-
-    public function testSiteSectionIsRead(): void
-    {
-        self::assertSame('Webware Documentation', $this->config()->site()->name());
+        self::assertSame(Path::normalise(self::configPath()), $this->config()->configPath());
+        self::assertSame(Path::join(sys_get_temp_dir(), 'site-fixture'), $this->config()->configDirectory());
     }
 
     public function testOrganizationSectionIsRead(): void
     {
         self::assertSame('doc-target', $this->config()->organization()->propertyName());
-    }
-
-    public function testSourceSectionUsesDefaults(): void
-    {
-        self::assertSame('docs', $this->config()->source()->directory());
-    }
-
-    public function testRenderSectionUsesDefaults(): void
-    {
-        self::assertSame(4, $this->config()->render()->concurrency());
-    }
-
-    public function testThemeSectionUsesDefaults(): void
-    {
-        self::assertSame('webware', $this->config()->theme()->name());
     }
 
     public function testOutputSectionIsResolvedAgainstTheConfigDirectory(): void
@@ -90,6 +79,12 @@ final class SiteConfigTest extends TestCase
         self::assertSame(Path::join($directory, 'reports', 'report.json'), $output->reportPath());
     }
 
+    public function testProjectLookupReturnsNullForUnknownName(): void
+    {
+        self::assertNull($this->config()->project('missing'));
+        self::assertSame(20, $this->config()->project('messagebus-event')?->order());
+    }
+
     public function testProjectsAreReadAndSortedByName(): void
     {
         $projects = $this->config()->projects();
@@ -99,27 +94,29 @@ final class SiteConfigTest extends TestCase
         self::assertSame('Message Bus', $projects['message-bus']->title());
     }
 
-    public function testProjectLookupReturnsNullForUnknownName(): void
+    public function testRenderSectionUsesDefaults(): void
     {
-        self::assertNull($this->config()->project('missing'));
-        self::assertSame(20, $this->config()->project('messagebus-event')?->order());
+        self::assertSame(4, $this->config()->render()->concurrency());
     }
 
-    public function testConfigPathIsNormalised(): void
+    public function testSchemaVersionIsRead(): void
     {
-        self::assertSame(Path::normalise(self::configPath()), $this->config()->configPath());
-        self::assertSame(Path::join(sys_get_temp_dir(), 'site-fixture'), $this->config()->configDirectory());
+        self::assertSame(1, $this->config()->schemaVersion());
     }
 
-    public function testAbsoluteOutputPathsAreKept(): void
+    public function testSiteSectionIsRead(): void
     {
-        $absolute = Path::join(sys_get_temp_dir(), 'elsewhere', 'site');
-        $document = self::document();
-        $document['output'] = ['directory' => $absolute];
+        self::assertSame('Webware Documentation', $this->config()->site()->name());
+    }
 
-        $config = SiteConfig::fromArray($document, self::configPath());
+    public function testSourceSectionUsesDefaults(): void
+    {
+        self::assertSame('docs', $this->config()->source()->directory());
+    }
 
-        self::assertSame(Path::normalise($absolute), $config->output()->directory());
+    public function testThemeSectionUsesDefaults(): void
+    {
+        self::assertSame('webware', $this->config()->theme()->name());
     }
 
     public function testWithSiteReturnsANewInstance(): void
@@ -131,5 +128,10 @@ final class SiteConfigTest extends TestCase
         self::assertSame('/docs/', $updated->site()->basePath());
         self::assertSame('/', $config->site()->basePath());
         self::assertSame($config->configPath(), $updated->configPath());
+    }
+
+    private function config(): SiteConfig
+    {
+        return SiteConfig::fromArray(self::document(), self::configPath());
     }
 }

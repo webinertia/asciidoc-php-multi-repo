@@ -24,11 +24,6 @@ final class ManifestLoader
         $this->schemaPath = $schemaPath ?? Path::join(dirname(__DIR__, 2), 'config', 'manifest.schema.json');
     }
 
-    public function schemaPath(): string
-    {
-        return $this->schemaPath;
-    }
-
     /**
      * @throws ConfigException when the manifest is missing, malformed, or invalid
      */
@@ -60,6 +55,11 @@ final class ManifestLoader
         }
 
         return new Manifest(Manifest::SUPPORTED_SCHEMA_VERSION, $entries, $absolute);
+    }
+
+    public function schemaPath(): string
+    {
+        return $this->schemaPath;
     }
 
     /**

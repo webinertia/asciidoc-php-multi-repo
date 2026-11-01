@@ -19,21 +19,7 @@ final readonly class Manifest
         private int $schemaVersion,
         private array $repositories,
         private string $path,
-    ) {
-    }
-
-    public function schemaVersion(): int
-    {
-        return $this->schemaVersion;
-    }
-
-    /**
-     * @return list<ManifestEntry>
-     */
-    public function repositories(): array
-    {
-        return $this->repositories;
-    }
+    ) {}
 
     /**
      * @return list<string>
@@ -52,5 +38,18 @@ final readonly class Manifest
     public function path(): string
     {
         return $this->path;
+    }
+
+    /**
+     * @return list<ManifestEntry>
+     */
+    public function repositories(): array
+    {
+        return $this->repositories;
+    }
+
+    public function schemaVersion(): int
+    {
+        return $this->schemaVersion;
     }
 }

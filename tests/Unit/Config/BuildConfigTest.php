@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webware\AsciidocPhpMultiRepo\Test\Unit\Config;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhpMultiRepo\Config\BuildConfig;
 use Webware\AsciidocPhpMultiRepo\Config\SiteConfig;
@@ -11,6 +12,7 @@ use Webware\AsciidocPhpMultiRepo\Support\Path;
 
 use function sys_get_temp_dir;
 
+#[CoversClass(BuildConfig::class)]
 final class BuildConfigTest extends TestCase
 {
     private static function siteConfig(): SiteConfig
@@ -24,6 +26,19 @@ final class BuildConfigTest extends TestCase
             ],
             Path::join(sys_get_temp_dir(), 'site-fixture', 'site.json'),
         );
+    }
+
+    public function testAbsoluteOverridePathsAreKept(): void
+    {
+        $absolute = Path::join(sys_get_temp_dir(), 'absolute', 'site');
+
+        $build = BuildConfig::fromSiteConfig(self::siteConfig())
+            ->withOverrides(
+                outputDirectory : $absolute,
+                workingDirectory: sys_get_temp_dir(),
+            );
+
+        self::assertSame(Path::normalise($absolute), $build->outputDirectory());
     }
 
     public function testFromSiteConfigCopiesResolvedValues(): void
@@ -44,12 +59,12 @@ final class BuildConfigTest extends TestCase
         $working = Path::join(sys_get_temp_dir(), 'work');
 
         $build = BuildConfig::fromSiteConfig(self::siteConfig())->withOverrides(
-            outputDirectory: 'out',
-            cacheDirectory: 'cache2',
-            reportPath: 'report2.json',
-            concurrency: 8,
-            basePath: '/manual',
-            full: true,
+            outputDirectory : 'out',
+            cacheDirectory  : 'cache2',
+            reportPath      : 'report2.json',
+            concurrency     : 8,
+            basePath        : '/manual',
+            full            : true,
             workingDirectory: $working,
         );
 
@@ -72,15 +87,5 @@ final class BuildConfigTest extends TestCase
         self::assertSame($original->concurrency(), $updated->concurrency());
         self::assertSame($original->basePath(), $updated->basePath());
         self::assertSame($original->full(), $updated->full());
-    }
-
-    public function testAbsoluteOverridePathsAreKept(): void
-    {
-        $absolute = Path::join(sys_get_temp_dir(), 'absolute', 'site');
-
-        $build = BuildConfig::fromSiteConfig(self::siteConfig())
-            ->withOverrides(outputDirectory: $absolute, workingDirectory: sys_get_temp_dir());
-
-        self::assertSame(Path::normalise($absolute), $build->outputDirectory());
     }
 }

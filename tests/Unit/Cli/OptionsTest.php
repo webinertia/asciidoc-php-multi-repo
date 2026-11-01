@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Webware\AsciidocPhpMultiRepo\Test\Unit\Cli;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhpMultiRepo\Cli\Options;
 
+#[CoversClass(Options::class)]
 final class OptionsTest extends TestCase
 {
     public function testDefaultsMatchTheContract(): void

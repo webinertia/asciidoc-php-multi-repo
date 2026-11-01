@@ -4,11 +4,24 @@ declare(strict_types=1);
 
 namespace Webware\AsciidocPhpMultiRepo\Test\Unit\Config;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhpMultiRepo\Config\RenderSection;
 
+#[CoversClass(RenderSection::class)]
 final class RenderSectionTest extends TestCase
 {
+    public function testFromArrayAppliesDefaults(): void
+    {
+        $section = RenderSection::fromArray([]);
+
+        self::assertSame([2, 3], $section->tocLevels());
+        self::assertSame('safe', $section->safeMode());
+        self::assertSame(4, $section->concurrency());
+        self::assertSame(2000, $section->searchExtractLimit());
+        self::assertFalse($section->syntaxHighlighting());
+    }
+
     public function testFromArrayReadsEveryField(): void
     {
         $section = RenderSection::fromArray([
@@ -24,17 +37,6 @@ final class RenderSectionTest extends TestCase
         self::assertSame(8, $section->concurrency());
         self::assertSame(500, $section->searchExtractLimit());
         self::assertTrue($section->syntaxHighlighting());
-    }
-
-    public function testFromArrayAppliesDefaults(): void
-    {
-        $section = RenderSection::fromArray([]);
-
-        self::assertSame([2, 3], $section->tocLevels());
-        self::assertSame('safe', $section->safeMode());
-        self::assertSame(4, $section->concurrency());
-        self::assertSame(2000, $section->searchExtractLimit());
-        self::assertFalse($section->syntaxHighlighting());
     }
 
     public function testWithConcurrencyReturnsANewInstance(): void

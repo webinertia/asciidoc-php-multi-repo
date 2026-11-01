@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0",
+  "presets": {
+    "webware-alignment": {
+      "version": "0.5.0",
+      "source": "local",
+      "manifest_hash": "sha256:a57c49af5e6ce56ab6e7a1d5e1e91837cd5b2ce98ba835b43d02e423c22e4afc",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {},
+      "registered_skills": {},
+      "installed_at": "2026-11-01T03:10:01.576140+00:00"
+    }
+  }
+}

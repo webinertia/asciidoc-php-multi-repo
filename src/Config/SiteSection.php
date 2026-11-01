@@ -22,8 +22,7 @@ final readonly class SiteSection
         private string $basePath,
         private ?string $hostname,
         private string $defaultVersionLabel,
-    ) {
-    }
+    ) {}
 
     /**
      * @param array<string, mixed> $data
@@ -46,17 +45,7 @@ final readonly class SiteSection
     {
         $trimmed = ltrim(rtrim($basePath, '/'), '/');
 
-        return $trimmed === '' ? '/' : '/' . $trimmed . '/';
-    }
-
-    public function name(): string
-    {
-        return $this->name;
-    }
-
-    public function baseUrl(): string
-    {
-        return $this->baseUrl;
+        return '' === $trimmed ? '/' : "/{$trimmed}/";
     }
 
     public function basePath(): string
@@ -64,9 +53,9 @@ final readonly class SiteSection
         return $this->basePath;
     }
 
-    public function hostname(): ?string
+    public function baseUrl(): string
     {
-        return $this->hostname;
+        return $this->baseUrl;
     }
 
     public function defaultVersionLabel(): string
@@ -79,13 +68,28 @@ final readonly class SiteSection
      */
     public function effectiveHostname(): string
     {
-        if ($this->hostname !== null && $this->hostname !== '') {
+        if (null !== $this->hostname && '' !== $this->hostname) {
             return $this->hostname;
         }
 
         $host = parse_url($this->baseUrl, PHP_URL_HOST);
 
         return is_string($host) ? $host : '';
+    }
+
+    public function hostname(): ?string
+    {
+        return $this->hostname;
+    }
+
+    public function isRootBasePath(): bool
+    {
+        return '/' === $this->basePath;
+    }
+
+    public function name(): string
+    {
+        return $this->name;
     }
 
     public function withBasePath(string $basePath): self
@@ -97,10 +101,5 @@ final readonly class SiteSection
             $this->hostname,
             $this->defaultVersionLabel,
         );
-    }
-
-    public function isRootBasePath(): bool
-    {
-        return $this->basePath === '/';
     }
 }

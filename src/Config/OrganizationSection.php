@@ -22,8 +22,7 @@ final readonly class OrganizationSection
         private string $onboardValue,
         private ?string $tokenEnvVar,
         private array $excludeRepositories,
-    ) {
-    }
+    ) {}
 
     /**
      * @param array<string, mixed> $data
@@ -39,26 +38,6 @@ final readonly class OrganizationSection
         );
     }
 
-    public function name(): string
-    {
-        return $this->name;
-    }
-
-    public function propertyName(): string
-    {
-        return $this->propertyName;
-    }
-
-    public function onboardValue(): string
-    {
-        return $this->onboardValue;
-    }
-
-    public function tokenEnvVar(): ?string
-    {
-        return $this->tokenEnvVar;
-    }
-
     /**
      * @return list<string>
      */
@@ -70,5 +49,25 @@ final readonly class OrganizationSection
     public function excludes(string $repositoryName): bool
     {
         return in_array($repositoryName, $this->excludeRepositories, true);
+    }
+
+    public function name(): string
+    {
+        return $this->name;
+    }
+
+    public function onboardValue(): string
+    {
+        return $this->onboardValue;
+    }
+
+    public function propertyName(): string
+    {
+        return $this->propertyName;
+    }
+
+    public function tokenEnvVar(): ?string
+    {
+        return $this->tokenEnvVar;
     }
 }

@@ -4,12 +4,32 @@ declare(strict_types=1);
 
 namespace Webware\AsciidocPhpMultiRepo\Test\Unit\Cli;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhpMultiRepo\Cli\ExitCode;
 
+#[CoversClass(ExitCode::class)]
 final class ExitCodeTest extends TestCase
 {
+    /**
+     * @return iterable<string, array{list<string>, ExitCode}>
+     */
+    public static function statusCombinations(): iterable
+    {
+        yield 'no projects' => [[], ExitCode::Success];
+        yield 'single ok' => [['ok'], ExitCode::Success];
+        yield 'single skipped' => [['skipped'], ExitCode::Success];
+        yield 'all skipped' => [['skipped', 'skipped', 'skipped'], ExitCode::Success];
+        yield 'ok and skipped' => [['ok', 'skipped', 'ok'], ExitCode::Success];
+        yield 'single partial' => [['partial'], ExitCode::Degraded];
+        yield 'single failed' => [['failed'], ExitCode::Degraded];
+        yield 'partial with ok' => [['ok', 'partial'], ExitCode::Degraded];
+        yield 'failed with skipped' => [['skipped', 'failed'], ExitCode::Degraded];
+        yield 'every status' => [['ok', 'partial', 'failed', 'skipped'], ExitCode::Degraded];
+        yield 'unknown status degrades' => [['unknown'], ExitCode::Degraded];
+    }
+
     public function testDocumentedValues(): void
     {
         self::assertSame(0, ExitCode::Success->value);
@@ -19,40 +39,28 @@ final class ExitCodeTest extends TestCase
         self::assertSame(4, ExitCode::InternalError->value);
     }
 
-    public function testLabelsMatchTheContractNames(): void
+    public function testFromBuildReportDegradesOnAFailedProject(): void
     {
-        self::assertSame('Success', ExitCode::Success->label());
-        self::assertSame('Degraded', ExitCode::Degraded->label());
-        self::assertSame('ConfigError', ExitCode::ConfigError->label());
-        self::assertSame('DiscoveryError', ExitCode::DiscoveryError->label());
-        self::assertSame('InternalError', ExitCode::InternalError->label());
+        $report = [
+            'projects' => [
+                ['repository' => 'a', 'status' => 'ok'],
+                ['repository' => 'b', 'status' => 'failed'],
+            ],
+        ];
+
+        self::assertSame(ExitCode::Degraded, ExitCode::fromBuildReport($report));
     }
 
-    /**
-     * @param list<string> $statuses
-     */
-    #[DataProvider('statusCombinations')]
-    public function testFromProjectStatuses(array $statuses, ExitCode $expected): void
+    public function testFromBuildReportIgnoresEntriesWithoutAStatus(): void
     {
-        self::assertSame($expected, ExitCode::fromProjectStatuses(...$statuses));
-    }
+        $report = [
+            'projects' => [
+                ['repository' => 'a'],
+                ['repository' => 'b', 'status' => 'ok'],
+            ],
+        ];
 
-    /**
-     * @return iterable<string, array{list<string>, ExitCode}>
-     */
-    public static function statusCombinations(): iterable
-    {
-        yield 'no projects'            => [[], ExitCode::Success];
-        yield 'single ok'              => [['ok'], ExitCode::Success];
-        yield 'single skipped'         => [['skipped'], ExitCode::Success];
-        yield 'all skipped'            => [['skipped', 'skipped', 'skipped'], ExitCode::Success];
-        yield 'ok and skipped'         => [['ok', 'skipped', 'ok'], ExitCode::Success];
-        yield 'single partial'         => [['partial'], ExitCode::Degraded];
-        yield 'single failed'          => [['failed'], ExitCode::Degraded];
-        yield 'partial with ok'        => [['ok', 'partial'], ExitCode::Degraded];
-        yield 'failed with skipped'    => [['skipped', 'failed'], ExitCode::Degraded];
-        yield 'every status'           => [['ok', 'partial', 'failed', 'skipped'], ExitCode::Degraded];
-        yield 'unknown status degrades' => [['unknown'], ExitCode::Degraded];
+        self::assertSame(ExitCode::Success, ExitCode::fromBuildReport($report));
     }
 
     public function testFromBuildReportReadsProjectStatuses(): void
@@ -68,32 +76,26 @@ final class ExitCodeTest extends TestCase
         self::assertSame(ExitCode::Success, ExitCode::fromBuildReport($report));
     }
 
-    public function testFromBuildReportDegradesOnAFailedProject(): void
-    {
-        $report = [
-            'projects' => [
-                ['repository' => 'a', 'status' => 'ok'],
-                ['repository' => 'b', 'status' => 'failed'],
-            ],
-        ];
-
-        self::assertSame(ExitCode::Degraded, ExitCode::fromBuildReport($report));
-    }
-
     public function testFromBuildReportToleratesAMissingProjectList(): void
     {
         self::assertSame(ExitCode::Success, ExitCode::fromBuildReport([]));
     }
 
-    public function testFromBuildReportIgnoresEntriesWithoutAStatus(): void
+    /**
+     * @param list<string> $statuses
+     */
+    #[DataProvider('statusCombinations')]
+    public function testFromProjectStatuses(array $statuses, ExitCode $expected): void
     {
-        $report = [
-            'projects' => [
-                ['repository' => 'a'],
-                ['repository' => 'b', 'status' => 'ok'],
-            ],
-        ];
+        self::assertSame($expected, ExitCode::fromProjectStatuses(...$statuses));
+    }
 
-        self::assertSame(ExitCode::Success, ExitCode::fromBuildReport($report));
+    public function testLabelsMatchTheContractNames(): void
+    {
+        self::assertSame('Success', ExitCode::Success->label());
+        self::assertSame('Degraded', ExitCode::Degraded->label());
+        self::assertSame('ConfigError', ExitCode::ConfigError->label());
+        self::assertSame('DiscoveryError', ExitCode::DiscoveryError->label());
+        self::assertSame('InternalError', ExitCode::InternalError->label());
     }
 }

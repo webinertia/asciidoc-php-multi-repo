@@ -14,8 +14,7 @@ final readonly class OutputSection
         private string $directory,
         private string $cacheDirectory,
         private string $reportPath,
-    ) {
-    }
+    ) {}
 
     /**
      * @param array<string, mixed> $data
@@ -29,14 +28,14 @@ final readonly class OutputSection
         );
     }
 
-    public function directory(): string
-    {
-        return $this->directory;
-    }
-
     public function cacheDirectory(): string
     {
         return $this->cacheDirectory;
+    }
+
+    public function directory(): string
+    {
+        return $this->directory;
     }
 
     public function reportPath(): string

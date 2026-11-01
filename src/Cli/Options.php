@@ -38,8 +38,7 @@ final readonly class Options
         public bool $noColor = false,
         public bool $help = false,
         public bool $version = false,
-    ) {
-    }
+    ) {}
 
     public function configPath(): string
     {
@@ -48,6 +47,6 @@ final readonly class Options
 
     public function hasProjectFilter(): bool
     {
-        return $this->projects !== [];
+        return [] !== $this->projects;
     }
 }

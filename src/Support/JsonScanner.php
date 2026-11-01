@@ -29,8 +29,9 @@ final class JsonScanner
 
     private ?string $errorPointer = null;
 
-    public function __construct(private readonly string $json)
-    {
+    public function __construct(
+        private readonly string $json,
+    ) {
         $this->length = strlen($json);
     }
 
@@ -44,7 +45,7 @@ final class JsonScanner
 
         $this->scanValue('');
 
-        if ($this->errorOffset !== null) {
+        if (null !== $this->errorOffset) {
             return new JsonSyntaxLocation($this->errorOffset, $this->errorPointer ?? '');
         }
 
@@ -57,119 +58,24 @@ final class JsonScanner
         return new JsonSyntaxLocation(0, '');
     }
 
-    private function scanValue(string $pointer): void
+    private function childPointer(string $pointer, string $key): string
     {
-        if ($this->errorOffset !== null) {
-            return;
-        }
-
-        if ($this->offset >= $this->length) {
-            $this->fail($pointer, $this->offset);
-
-            return;
-        }
-
-        $character = $this->json[$this->offset];
-
-        if ($character === '{') {
-            $this->scanObject($pointer);
-
-            return;
-        }
-
-        if ($character === '[') {
-            $this->scanArray($pointer);
-
-            return;
-        }
-
-        if ($character === '"') {
-            $this->scanString($pointer);
-
-            return;
-        }
-
-        if ($character === 't') {
-            $this->scanLiteral('true', $pointer);
-
-            return;
-        }
-
-        if ($character === 'f') {
-            $this->scanLiteral('false', $pointer);
-
-            return;
-        }
-
-        if ($character === 'n') {
-            $this->scanLiteral('null', $pointer);
-
-            return;
-        }
-
-        $this->scanNumber($pointer);
+        return $pointer . '/' . strtr($key, ['~' => '~0', '/' => '~1']);
     }
 
-    private function scanObject(string $pointer): void
+    private function fail(string $pointer, int $offset): void
     {
-        $this->offset++;
-        $this->skipWhitespace();
-
-        if ($this->peek() === '}') {
-            $this->offset++;
-
+        if (null !== $this->errorOffset) {
             return;
         }
 
-        while (true) {
-            $this->skipWhitespace();
+        $this->errorOffset  = $offset;
+        $this->errorPointer = $pointer;
+    }
 
-            if ($this->peek() !== '"') {
-                $this->fail($pointer, $this->offset);
-
-                return;
-            }
-
-            $key = $this->scanString($pointer);
-            if ($this->errorOffset !== null) {
-                return;
-            }
-
-            $this->skipWhitespace();
-
-            if ($this->peek() !== ':') {
-                $this->fail($pointer, $this->offset);
-
-                return;
-            }
-
-            $this->offset++;
-            $this->skipWhitespace();
-            $this->scanValue($this->childPointer($pointer, $key));
-
-            if ($this->errorOffset !== null) {
-                return;
-            }
-
-            $this->skipWhitespace();
-            $next = $this->peek();
-
-            if ($next === ',') {
-                $this->offset++;
-
-                continue;
-            }
-
-            if ($next === '}') {
-                $this->offset++;
-
-                return;
-            }
-
-            $this->fail($pointer, $this->offset);
-
-            return;
-        }
+    private function peek(): string
+    {
+        return $this->json[$this->offset] ?? '';
     }
 
     private function scanArray(string $pointer): void
@@ -187,9 +93,9 @@ final class JsonScanner
 
         while (true) {
             $this->skipWhitespace();
-            $this->scanValue($pointer . '/' . $index);
+            $this->scanValue("{$pointer}/{$index}");
 
-            if ($this->errorOffset !== null) {
+            if (null !== $this->errorOffset) {
                 return;
             }
 
@@ -197,13 +103,13 @@ final class JsonScanner
             $this->skipWhitespace();
             $next = $this->peek();
 
-            if ($next === ',') {
+            if (',' === $next) {
                 $this->offset++;
 
                 continue;
             }
 
-            if ($next === ']') {
+            if (']' === $next) {
                 $this->offset++;
 
                 return;
@@ -213,65 +119,6 @@ final class JsonScanner
 
             return;
         }
-    }
-
-    private function scanString(string $pointer): string
-    {
-        $start = $this->offset;
-        $this->offset++;
-        $value = '';
-
-        while ($this->offset < $this->length) {
-            $character = $this->json[$this->offset];
-
-            if ($character === '"') {
-                $this->offset++;
-
-                return $value;
-            }
-
-            if ($character !== '\\') {
-                $value .= $character;
-                $this->offset++;
-
-                continue;
-            }
-
-            $escape = $this->json[$this->offset + 1] ?? '';
-
-            if ($escape === '') {
-                break;
-            }
-
-            if ($escape === 'u') {
-                $hex = substr($this->json, $this->offset + 2, 4);
-                if (strlen($hex) !== 4 || ! ctype_xdigit($hex)) {
-                    $this->fail($pointer, $this->offset);
-
-                    return '';
-                }
-
-                $decoded = mb_chr((int) hexdec($hex));
-                $value  .= $decoded === false ? '' : $decoded;
-                $this->offset += 6;
-
-                continue;
-            }
-
-            $simple = strtr($escape, ['"' => '"', '\\' => '\\', '/' => '/', 'b' => "\x08", 'f' => "\x0c", 'n' => "\n", 'r' => "\r", 't' => "\t"]);
-            if ($simple === $escape) {
-                $this->fail($pointer, $this->offset);
-
-                return '';
-            }
-
-            $value .= $simple;
-            $this->offset += 2;
-        }
-
-        $this->fail($pointer, $start);
-
-        return '';
     }
 
     private function scanLiteral(string $literal, string $pointer): void
@@ -302,35 +149,198 @@ final class JsonScanner
         }
     }
 
-    private function peek(): string
+    private function scanObject(string $pointer): void
     {
-        return $this->json[$this->offset] ?? '';
+        $this->offset++;
+        $this->skipWhitespace();
+
+        if ($this->peek() === '}') {
+            $this->offset++;
+
+            return;
+        }
+
+        while (true) {
+            $this->skipWhitespace();
+
+            if ($this->peek() !== '"') {
+                $this->fail($pointer, $this->offset);
+
+                return;
+            }
+
+            $key = $this->scanString($pointer);
+            if (null !== $this->errorOffset) {
+                return;
+            }
+
+            $this->skipWhitespace();
+
+            if ($this->peek() !== ':') {
+                $this->fail($pointer, $this->offset);
+
+                return;
+            }
+
+            $this->offset++;
+            $this->skipWhitespace();
+            $this->scanValue($this->childPointer($pointer, $key));
+
+            if (null !== $this->errorOffset) {
+                return;
+            }
+
+            $this->skipWhitespace();
+            $next = $this->peek();
+
+            if (',' === $next) {
+                $this->offset++;
+
+                continue;
+            }
+
+            if ('}' === $next) {
+                $this->offset++;
+
+                return;
+            }
+
+            $this->fail($pointer, $this->offset);
+
+            return;
+        }
+    }
+
+    private function scanString(string $pointer): string
+    {
+        $start = $this->offset;
+        $this->offset++;
+        $value = '';
+
+        while ($this->offset < $this->length) {
+            $character = $this->json[$this->offset];
+
+            if ('"' === $character) {
+                $this->offset++;
+
+                return $value;
+            }
+
+            if ('\\' !== $character) {
+                $value .= $character;
+                $this->offset++;
+
+                continue;
+            }
+
+            $escape = $this->json[$this->offset + 1] ?? '';
+
+            if ('' === $escape) {
+                break;
+            }
+
+            if ('u' === $escape) {
+                $hex = substr($this->json, $this->offset + 2, 4);
+                if (strlen($hex) !== 4 || ! ctype_xdigit($hex)) {
+                    $this->fail($pointer, $this->offset);
+
+                    return '';
+                }
+
+                $decoded      = mb_chr((int) hexdec($hex));
+                $value        .= false === $decoded ? '' : $decoded;
+                $this->offset += 6;
+
+                continue;
+            }
+
+            $simple = strtr($escape, [
+                '"'  => '"',
+                '\\' => '\\',
+                '/'  => '/',
+                'b'  => "\x08",
+                'f'  => "\x0c",
+                'n'  => "\n",
+                'r'  => "\r",
+                't'  => "\t",
+            ]);
+            if ($simple === $escape) {
+                $this->fail($pointer, $this->offset);
+
+                return '';
+            }
+
+            $value        .= $simple;
+            $this->offset += 2;
+        }
+
+        $this->fail($pointer, $start);
+
+        return '';
+    }
+
+    private function scanValue(string $pointer): void
+    {
+        if (null !== $this->errorOffset) {
+            return;
+        }
+
+        if ($this->offset >= $this->length) {
+            $this->fail($pointer, $this->offset);
+
+            return;
+        }
+
+        $character = $this->json[$this->offset];
+
+        if ('{' === $character) {
+            $this->scanObject($pointer);
+
+            return;
+        }
+
+        if ('[' === $character) {
+            $this->scanArray($pointer);
+
+            return;
+        }
+
+        if ('"' === $character) {
+            $this->scanString($pointer);
+
+            return;
+        }
+
+        if ('t' === $character) {
+            $this->scanLiteral('true', $pointer);
+
+            return;
+        }
+
+        if ('f' === $character) {
+            $this->scanLiteral('false', $pointer);
+
+            return;
+        }
+
+        if ('n' === $character) {
+            $this->scanLiteral('null', $pointer);
+
+            return;
+        }
+
+        $this->scanNumber($pointer);
     }
 
     private function skipWhitespace(): void
     {
         while ($this->offset < $this->length) {
             $character = $this->json[$this->offset];
-            if ($character !== ' ' && $character !== "\t" && $character !== "\n" && $character !== "\r") {
+            if (' ' !== $character && "\t" !== $character && "\n" !== $character && "\r" !== $character) {
                 return;
             }
 
             $this->offset++;
         }
-    }
-
-    private function childPointer(string $pointer, string $key): string
-    {
-        return $pointer . '/' . strtr($key, ['~' => '~0', '/' => '~1']);
-    }
-
-    private function fail(string $pointer, int $offset): void
-    {
-        if ($this->errorOffset !== null) {
-            return;
-        }
-
-        $this->errorOffset  = $offset;
-        $this->errorPointer = $pointer;
     }
 }

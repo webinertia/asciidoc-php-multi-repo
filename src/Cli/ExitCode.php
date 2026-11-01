@@ -61,11 +61,11 @@ enum ExitCode: int
     public function label(): string
     {
         return match ($this) {
-            self::Success        => 'Success',
-            self::Degraded       => 'Degraded',
-            self::ConfigError    => 'ConfigError',
+            self::Success => 'Success',
+            self::Degraded => 'Degraded',
+            self::ConfigError => 'ConfigError',
             self::DiscoveryError => 'DiscoveryError',
-            self::InternalError  => 'InternalError',
+            self::InternalError => 'InternalError',
         };
     }
 }

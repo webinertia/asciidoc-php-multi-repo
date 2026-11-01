@@ -18,7 +18,11 @@ final readonly class ThemeConfig
         private string $defaultAccent,
         private string $colorMode,
         private string $defaultColorMode,
-    ) {
+    ) {}
+
+    public static function defaults(): self
+    {
+        return new self(self::DEFAULT_NAME, self::DEFAULT_ACCENT, 'system', 'dark');
     }
 
     /**
@@ -34,24 +38,14 @@ final readonly class ThemeConfig
         );
     }
 
-    public static function defaults(): self
+    public function colorMode(): string
     {
-        return new self(self::DEFAULT_NAME, self::DEFAULT_ACCENT, 'system', 'dark');
-    }
-
-    public function name(): string
-    {
-        return $this->name;
+        return $this->colorMode;
     }
 
     public function defaultAccent(): string
     {
         return $this->defaultAccent;
-    }
-
-    public function colorMode(): string
-    {
-        return $this->colorMode;
     }
 
     public function defaultColorMode(): string
@@ -64,6 +58,11 @@ final readonly class ThemeConfig
      */
     public function isBuiltIn(): bool
     {
-        return $this->name === self::DEFAULT_NAME;
+        return self::DEFAULT_NAME === $this->name;
+    }
+
+    public function name(): string
+    {
+        return $this->name;
     }
 }

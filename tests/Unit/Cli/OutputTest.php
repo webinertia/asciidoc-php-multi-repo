@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webware\AsciidocPhpMultiRepo\Test\Unit\Cli;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhpMultiRepo\Cli\Options;
@@ -12,23 +13,87 @@ use Webware\AsciidocPhpMultiRepo\Test\Support\CapturedOutput;
 
 use function str_contains;
 
+#[CoversClass(Output::class)]
 final class OutputTest extends TestCase
 {
     private CapturedOutput $captured;
 
-    protected function setUp(): void
+    /**
+     * @return array<string, array{bool, null|string, bool, bool}>
+     */
+    public static function colourDecisions(): array
     {
-        $this->captured = new CapturedOutput();
+        return [
+            'interactive and clean environment' => [false, null, true, true],
+            'not interactive'                   => [false, null, false, false],
+            'no color flag'                     => [true, null, true, false],
+            'NO_COLOR set'                      => [false, '1', true, false],
+            'NO_COLOR set to empty'             => [false, '', true, true],
+        ];
     }
 
-    public function testSummaryGoesToStandardOutputOnly(): void
+    /**
+     * @param list<string> $flags
+     */
+    #[DataProvider('colourDecisions')]
+    public function testColourEnabledMatrix(
+        bool $noColor,
+        ?string $environment,
+        bool $interactive,
+        bool $expected,
+    ): void {
+        self::assertSame($expected, Output::colourEnabled($noColor, $environment, $interactive));
+    }
+
+    public function testColourIsUsedOnlyWhenEnabled(): void
     {
-        $output = $this->makeOutput();
+        $plain = $this->makeOutput();
+        $plain->error('missing entry');
 
-        $output->summary('1 ok, 0 failed');
+        self::assertStringNotContainsString("\033[", $this->captured->stderr);
 
-        self::assertSame("1 ok, 0 failed\n", $this->captured->stdout);
+        $coloured = $this->makeOutput(color: true);
+        $coloured->error('missing entry');
+
+        self::assertStringContainsString("\033[31m", $this->captured->stderr);
+        self::assertStringContainsString("\033[0m", $this->captured->stderr);
+    }
+
+    public function testDetailRequiresVerbose(): void
+    {
+        $quiet = $this->makeOutput();
+        $quiet->detail('rendering index.adoc');
+
         self::assertSame('', $this->captured->stderr);
+
+        $verbose = $this->makeOutput(verbose: true);
+        $verbose->detail('rendering index.adoc');
+
+        self::assertStringContainsString('rendering index.adoc', $this->captured->stderr);
+    }
+
+    public function testForCliCarriesTheFlagState(): void
+    {
+        $options = new Options(
+            quiet  : true,
+            verbose: true,
+            timings: true,
+            noColor: true,
+        );
+        $output  = Output::forCli($options, true, null);
+
+        self::assertTrue($output->isQuiet());
+        self::assertTrue($output->isVerbose());
+        self::assertFalse($output->usesColour());
+    }
+
+    public function testForCliReadsTheEnvironment(): void
+    {
+        $options = new Options();
+
+        self::assertFalse(Output::forCli($options, false, null)->usesColour());
+        self::assertTrue(Output::forCli($options, true, null)->usesColour());
+        self::assertFalse(Output::forCli($options, true, '1')->usesColour());
     }
 
     public function testProgressGoesToStandardErrorOnly(): void
@@ -56,17 +121,14 @@ final class OutputTest extends TestCase
         self::assertStringContainsString('error: missing entry', $this->captured->stderr);
     }
 
-    public function testDetailRequiresVerbose(): void
+    public function testSummaryGoesToStandardOutputOnly(): void
     {
-        $quiet = $this->makeOutput();
-        $quiet->detail('rendering index.adoc');
+        $output = $this->makeOutput();
 
+        $output->summary('1 ok, 0 failed');
+
+        self::assertSame("1 ok, 0 failed\n", $this->captured->stdout);
         self::assertSame('', $this->captured->stderr);
-
-        $verbose = $this->makeOutput(verbose: true);
-        $verbose->detail('rendering index.adoc');
-
-        self::assertStringContainsString('rendering index.adoc', $this->captured->stderr);
     }
 
     public function testTimingRequiresTimings(): void
@@ -82,62 +144,6 @@ final class OutputTest extends TestCase
         self::assertSame("render: 1.234s\n", $this->captured->stderr);
     }
 
-    public function testColourIsUsedOnlyWhenEnabled(): void
-    {
-        $plain = $this->makeOutput();
-        $plain->error('missing entry');
-
-        self::assertStringNotContainsString("\033[", $this->captured->stderr);
-
-        $coloured = $this->makeOutput(color: true);
-        $coloured->error('missing entry');
-
-        self::assertStringContainsString("\033[31m", $this->captured->stderr);
-        self::assertStringContainsString("\033[0m", $this->captured->stderr);
-    }
-
-    /**
-     * @param list<string> $flags
-     */
-    #[DataProvider('colourDecisions')]
-    public function testColourEnabledMatrix(bool $noColor, ?string $environment, bool $interactive, bool $expected): void
-    {
-        self::assertSame($expected, Output::colourEnabled($noColor, $environment, $interactive));
-    }
-
-    /**
-     * @return array<string, array{bool, null|string, bool, bool}>
-     */
-    public static function colourDecisions(): array
-    {
-        return [
-            'interactive and clean environment' => [false, null, true, true],
-            'not interactive'                   => [false, null, false, false],
-            'no color flag'                     => [true, null, true, false],
-            'NO_COLOR set'                      => [false, '1', true, false],
-            'NO_COLOR set to empty'             => [false, '', true, true],
-        ];
-    }
-
-    public function testForCliReadsTheEnvironment(): void
-    {
-        $options = new Options();
-
-        self::assertFalse(Output::forCli($options, false, null)->usesColour());
-        self::assertTrue(Output::forCli($options, true, null)->usesColour());
-        self::assertFalse(Output::forCli($options, true, '1')->usesColour());
-    }
-
-    public function testForCliCarriesTheFlagState(): void
-    {
-        $options = new Options(quiet: true, verbose: true, timings: true, noColor: true);
-        $output = Output::forCli($options, true, null);
-
-        self::assertTrue($output->isQuiet());
-        self::assertTrue($output->isVerbose());
-        self::assertFalse($output->usesColour());
-    }
-
     public function testUsageReachesStandardErrorEvenWhenQuiet(): void
     {
         $output = $this->makeOutput(quiet: true);
@@ -147,6 +153,11 @@ final class OutputTest extends TestCase
         self::assertTrue(str_contains($this->captured->stderr, 'usage: build'));
     }
 
+    protected function setUp(): void
+    {
+        $this->captured = new CapturedOutput();
+    }
+
     private function makeOutput(
         bool $quiet = false,
         bool $verbose = false,
@@ -154,12 +165,12 @@ final class OutputTest extends TestCase
         bool $color = false,
     ): Output {
         return new Output(
-            quiet: $quiet,
+            quiet  : $quiet,
             verbose: $verbose,
             timings: $timings,
-            color: $color,
-            stdout: $this->captured->stdoutWriter(),
-            stderr: $this->captured->stderrWriter(),
+            color  : $color,
+            stdout : $this->captured->stdoutWriter(),
+            stderr : $this->captured->stderrWriter(),
         );
     }
 }

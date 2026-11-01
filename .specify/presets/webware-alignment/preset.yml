@@ -1,0 +1,43 @@
+schema_version: "1.0"
+
+preset:
+  id: "webware-alignment"
+  name: "Webware Tools Alignment"
+  version: "0.5.0"
+  description: "Aligns a Webware package's CI/CD pipeline and dev tooling with the organization's required CI workflow"
+  author: "Webware"
+
+repository: "https://github.com/webinertia/webware-tools"
+license: "BSD-3-Clause"
+
+requires:
+  speckit_version: ">=0.16.0"
+
+provides:
+  templates:
+    - type: "template"
+      name: "spec-template"
+      file: "templates/spec-template.md"
+      description: "Webware tools alignment spec skeleton with package parameters"
+      replaces: "spec-template"
+    - type: "template"
+      name: "plan-template"
+      file: "templates/plan-template.md"
+      description: "Webware tools alignment plan prefilled with the required-workflow config contract"
+      replaces: "plan-template"
+    - type: "template"
+      name: "tasks-template"
+      file: "templates/tasks-template.md"
+      description: "Webware tools alignment task list T001-T027"
+      replaces: "tasks-template"
+    - type: "template"
+      name: "constitution-template"
+      file: "templates/constitution-template.md"
+      description: "Webware constitution: CI alignment, PHPUnit 13 strict mode, Mago gates"
+      replaces: "constitution-template"
+
+tags:
+  - "ci"
+  - "workflow"
+  - "php"
+  - "tooling"

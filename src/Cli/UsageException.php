@@ -13,9 +13,9 @@ use function sprintf;
  */
 final class UsageException extends RuntimeException
 {
-    public static function unknownOption(string $option): self
+    public static function invalidValue(string $option, string $value, string $expected): self
     {
-        return new self(sprintf('unknown option "%s"', $option));
+        return new self(sprintf('invalid value "%s" for option "%s": expected %s', $value, $option, $expected));
     }
 
     public static function missingValue(string $option): self
@@ -23,14 +23,14 @@ final class UsageException extends RuntimeException
         return new self(sprintf('option "%s" requires a value', $option));
     }
 
+    public static function unexpectedArgument(string $argument): self
+    {
+        return new self(sprintf('unexpected argument "%s"', $argument));
+    }
+
     public static function unexpectedValue(string $option): self
     {
         return new self(sprintf('option "%s" does not take a value', $option));
-    }
-
-    public static function invalidValue(string $option, string $value, string $expected): self
-    {
-        return new self(sprintf('invalid value "%s" for option "%s": expected %s', $value, $option, $expected));
     }
 
     public static function unknownCommand(string $command): self
@@ -38,8 +38,8 @@ final class UsageException extends RuntimeException
         return new self(sprintf('unknown command "%s"', $command));
     }
 
-    public static function unexpectedArgument(string $argument): self
+    public static function unknownOption(string $option): self
     {
-        return new self(sprintf('unexpected argument "%s"', $argument));
+        return new self(sprintf('unknown option "%s"', $option));
     }
 }

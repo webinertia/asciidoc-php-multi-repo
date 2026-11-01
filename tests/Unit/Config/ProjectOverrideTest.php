@@ -4,11 +4,18 @@ declare(strict_types=1);
 
 namespace Webware\AsciidocPhpMultiRepo\Test\Unit\Config;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhpMultiRepo\Config\ProjectOverride;
 
+#[CoversClass(ProjectOverride::class)]
 final class ProjectOverrideTest extends TestCase
 {
+    public function testEmptyIsEmpty(): void
+    {
+        self::assertTrue(ProjectOverride::empty()->isEmpty());
+    }
+
     public function testFromArrayReadsEveryField(): void
     {
         $override = ProjectOverride::fromArray([
@@ -37,10 +44,5 @@ final class ProjectOverrideTest extends TestCase
         self::assertNull($override->accent());
         self::assertNull($override->order());
         self::assertTrue($override->isEmpty());
-    }
-
-    public function testEmptyIsEmpty(): void
-    {
-        self::assertTrue(ProjectOverride::empty()->isEmpty());
     }
 }

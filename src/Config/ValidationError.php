@@ -11,13 +11,14 @@ use function sprintf;
  */
 final readonly class ValidationError
 {
-    public function __construct(private string $pointer, private string $message)
-    {
-    }
+    public function __construct(
+        private string $pointer,
+        private string $message,
+    ) {}
 
-    public function pointer(): string
+    public function describe(): string
     {
-        return $this->pointer;
+        return sprintf('%s: %s', '' === $this->pointer ? '(document)' : $this->pointer, $this->message);
     }
 
     public function message(): string
@@ -25,8 +26,8 @@ final readonly class ValidationError
         return $this->message;
     }
 
-    public function describe(): string
+    public function pointer(): string
     {
-        return sprintf('%s: %s', $this->pointer === '' ? '(document)' : $this->pointer, $this->message);
+        return $this->pointer;
     }
 }

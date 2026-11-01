@@ -24,89 +24,7 @@ use function sprintf;
  */
 final class Values
 {
-    private function __construct()
-    {
-    }
-
-    /**
-     * @param array<string, mixed> $data
-     */
-    public static function string(array $data, string $key, string $default): string
-    {
-        if (! array_key_exists($key, $data)) {
-            return $default;
-        }
-
-        return self::asString($data[$key], $key);
-    }
-
-    /**
-     * @param array<string, mixed> $data
-     */
-    public static function requiredString(array $data, string $key): string
-    {
-        if (! array_key_exists($key, $data)) {
-            throw new InvalidArgumentException(sprintf('Missing required configuration key "%s".', $key));
-        }
-
-        return self::asString($data[$key], $key);
-    }
-
-    /**
-     * @param array<string, mixed> $data
-     */
-    public static function optionalString(array $data, string $key): ?string
-    {
-        if (! array_key_exists($key, $data) || $data[$key] === null) {
-            return null;
-        }
-
-        return self::asString($data[$key], $key);
-    }
-
-    /**
-     * @param array<string, mixed> $data
-     */
-    public static function integer(array $data, string $key, int $default): int
-    {
-        if (! array_key_exists($key, $data)) {
-            return $default;
-        }
-
-        $value = $data[$key];
-
-        if (! is_int($value)) {
-            throw new InvalidArgumentException(sprintf(
-                'Configuration key "%s" must be an integer, got %s.',
-                $key,
-                get_debug_type($value),
-            ));
-        }
-
-        return $value;
-    }
-
-    /**
-     * @param array<string, mixed> $data
-     */
-    public static function optionalInteger(array $data, string $key): ?int
-    {
-        if (! array_key_exists($key, $data) || $data[$key] === null) {
-            return null;
-        }
-
-        $value = $data[$key];
-
-        if (! is_int($value)) {
-            throw new InvalidArgumentException(sprintf(
-                'Configuration key "%s" must be an integer, got %s.',
-                $key,
-                get_debug_type($value),
-            ));
-        }
-
-        return $value;
-    }
+    private function __construct() {}
 
     /**
      * @param array<string, mixed> $data
@@ -132,11 +50,8 @@ final class Values
 
     /**
      * @param array<string, mixed> $data
-     * @param list<string>         $default
-     *
-     * @return list<string>
      */
-    public static function stringList(array $data, string $key, array $default): array
+    public static function integer(array $data, string $key, int $default): int
     {
         if (! array_key_exists($key, $data)) {
             return $default;
@@ -144,23 +59,15 @@ final class Values
 
         $value = $data[$key];
 
-        if (! is_array($value) || ! array_is_list($value)) {
-            throw new InvalidArgumentException(sprintf('Configuration key "%s" must be a list.', $key));
+        if (! is_int($value)) {
+            throw new InvalidArgumentException(sprintf(
+                'Configuration key "%s" must be an integer, got %s.',
+                $key,
+                get_debug_type($value),
+            ));
         }
 
-        $list = [];
-        foreach ($value as $entry) {
-            if (! is_string($entry)) {
-                throw new InvalidArgumentException(sprintf(
-                    'Configuration key "%s" must contain only strings.',
-                    $key,
-                ));
-            }
-
-            $list[] = $entry;
-        }
-
-        return $list;
+        return $value;
     }
 
     /**
@@ -194,6 +101,52 @@ final class Values
         }
 
         return $list;
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    public static function optionalInteger(array $data, string $key): ?int
+    {
+        if (! array_key_exists($key, $data) || null === $data[$key]) {
+            return null;
+        }
+
+        $value = $data[$key];
+
+        if (! is_int($value)) {
+            throw new InvalidArgumentException(sprintf(
+                'Configuration key "%s" must be an integer, got %s.',
+                $key,
+                get_debug_type($value),
+            ));
+        }
+
+        return $value;
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    public static function optionalString(array $data, string $key): ?string
+    {
+        if (! array_key_exists($key, $data) || null === $data[$key]) {
+            return null;
+        }
+
+        return self::asString($data[$key], $key);
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    public static function requiredString(array $data, string $key): string
+    {
+        if (! array_key_exists($key, $data)) {
+            throw new InvalidArgumentException(sprintf('Missing required configuration key "%s".', $key));
+        }
+
+        return self::asString($data[$key], $key);
     }
 
     /**
@@ -241,6 +194,51 @@ final class Values
         }
 
         return $map;
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    public static function string(array $data, string $key, string $default): string
+    {
+        if (! array_key_exists($key, $data)) {
+            return $default;
+        }
+
+        return self::asString($data[$key], $key);
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     * @param list<string>         $default
+     *
+     * @return list<string>
+     */
+    public static function stringList(array $data, string $key, array $default): array
+    {
+        if (! array_key_exists($key, $data)) {
+            return $default;
+        }
+
+        $value = $data[$key];
+
+        if (! is_array($value) || ! array_is_list($value)) {
+            throw new InvalidArgumentException(sprintf('Configuration key "%s" must be a list.', $key));
+        }
+
+        $list = [];
+        foreach ($value as $entry) {
+            if (! is_string($entry)) {
+                throw new InvalidArgumentException(sprintf(
+                    'Configuration key "%s" must contain only strings.',
+                    $key,
+                ));
+            }
+
+            $list[] = $entry;
+        }
+
+        return $list;
     }
 
     private static function asString(mixed $value, string $key): string

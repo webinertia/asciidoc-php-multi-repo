@@ -18,8 +18,7 @@ final readonly class RenderSection
         private int $concurrency,
         private int $searchExtractLimit,
         private bool $syntaxHighlighting,
-    ) {
-    }
+    ) {}
 
     /**
      * @param array<string, mixed> $data
@@ -35,22 +34,14 @@ final readonly class RenderSection
         );
     }
 
-    /**
-     * @return list<int>
-     */
-    public function tocLevels(): array
+    public function concurrency(): int
     {
-        return $this->tocLevels;
+        return $this->concurrency;
     }
 
     public function safeMode(): string
     {
         return $this->safeMode;
-    }
-
-    public function concurrency(): int
-    {
-        return $this->concurrency;
     }
 
     public function searchExtractLimit(): int
@@ -61,6 +52,14 @@ final readonly class RenderSection
     public function syntaxHighlighting(): bool
     {
         return $this->syntaxHighlighting;
+    }
+
+    /**
+     * @return list<int>
+     */
+    public function tocLevels(): array
+    {
+        return $this->tocLevels;
     }
 
     public function withConcurrency(int $concurrency): self

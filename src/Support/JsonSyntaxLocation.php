@@ -9,9 +9,10 @@ namespace Webware\AsciidocPhpMultiRepo\Support;
  */
 final readonly class JsonSyntaxLocation
 {
-    public function __construct(private int $offset, private string $pointer)
-    {
-    }
+    public function __construct(
+        private int $offset,
+        private string $pointer,
+    ) {}
 
     public function offset(): int
     {

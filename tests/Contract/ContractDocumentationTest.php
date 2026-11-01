@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Webware\AsciidocPhpMultiRepo\Test\Contract;
 
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhpMultiRepo\Cli\Application;
-use Webware\AsciidocPhpMultiRepo\Cli\Command\Command;
+use Webware\AsciidocPhpMultiRepo\Cli\Commands\CommandInterface;
 use Webware\AsciidocPhpMultiRepo\Cli\ExitCode;
 use Webware\AsciidocPhpMultiRepo\Support\Path;
 use Webware\AsciidocPhpMultiRepo\Test\Support\CapturedOutput;
@@ -28,20 +29,58 @@ use function trim;
  * Ties the published CLI contract to the code. Every option, command, and exit code in
  * `contracts/cli.md` must exist, and every exit code in the code must be documented.
  */
+#[CoversNothing]
 final class ContractDocumentationTest extends TestCase
 {
     private CapturedOutput $captured;
 
     private string $contract;
 
-    protected function setUp(): void
+    public function testEveryDocumentedCommandIsRegistered(): void
     {
-        $this->captured = new CapturedOutput();
-        $contents       = file_get_contents(Path::join(dirname(__DIR__, 2), 'contracts', 'cli.md'));
+        $registered = array_map(
+            static fn(CommandInterface $command): string => $command->name(),
+            Application::defaultCommands(),
+        );
 
-        self::assertIsString($contents);
+        $documented = $this->documentedCommands();
 
-        $this->contract = $contents;
+        self::assertNotSame([], $documented, 'No commands were found in contracts/cli.md.');
+
+        foreach ($documented as $command) {
+            self::assertContains(
+                $command,
+                $registered,
+                sprintf('Command "%s" is documented but not registered.', $command),
+            );
+        }
+    }
+
+    public function testEveryDocumentedExitCodeMatchesTheEnum(): void
+    {
+        $documented = $this->documentedExitCodes();
+
+        self::assertCount(5, $documented, 'The exit code table must document five codes.');
+
+        foreach ($documented as $name => $code) {
+            $case = ExitCode::from($code);
+
+            self::assertSame($name, $case->label(), sprintf('Exit code %d is documented as "%s".', $code, $name));
+            self::assertSame($code, $case->value);
+        }
+    }
+
+    public function testEveryDocumentedOptionAppearsInTheHelpText(): void
+    {
+        $help = $this->application()->usage();
+
+        foreach ($this->documentedOptions() as $option) {
+            self::assertStringContainsString(
+                $option['flag'],
+                $help,
+                sprintf('Option "%s" is documented but missing from the help text.', $option['flag']),
+            );
+        }
     }
 
     public function testEveryDocumentedOptionIsAccepted(): void
@@ -68,49 +107,6 @@ final class ContractDocumentationTest extends TestCase
         }
     }
 
-    public function testEveryDocumentedOptionAppearsInTheHelpText(): void
-    {
-        $help = $this->application()->usage();
-
-        foreach ($this->documentedOptions() as $option) {
-            self::assertStringContainsString(
-                $option['flag'],
-                $help,
-                sprintf('Option "%s" is documented but missing from the help text.', $option['flag']),
-            );
-        }
-    }
-
-    public function testEveryDocumentedCommandIsRegistered(): void
-    {
-        $registered = array_map(
-            static fn (Command $command): string => $command->name(),
-            Application::defaultCommands(),
-        );
-
-        $documented = $this->documentedCommands();
-
-        self::assertNotSame([], $documented, 'No commands were found in contracts/cli.md.');
-
-        foreach ($documented as $command) {
-            self::assertContains($command, $registered, sprintf('Command "%s" is documented but not registered.', $command));
-        }
-    }
-
-    public function testEveryDocumentedExitCodeMatchesTheEnum(): void
-    {
-        $documented = $this->documentedExitCodes();
-
-        self::assertCount(5, $documented, 'The exit code table must document five codes.');
-
-        foreach ($documented as $name => $code) {
-            $case = ExitCode::from($code);
-
-            self::assertSame($name, $case->label(), sprintf('Exit code %d is documented as "%s".', $code, $name));
-            self::assertSame($code, $case->value);
-        }
-    }
-
     public function testEveryEnumExitCodeIsDocumented(): void
     {
         $documented = $this->documentedExitCodes();
@@ -123,6 +119,66 @@ final class ContractDocumentationTest extends TestCase
             );
             self::assertSame($case->value, $documented[$case->label()]);
         }
+    }
+
+    protected function setUp(): void
+    {
+        $this->captured = new CapturedOutput();
+        $contents       = file_get_contents(Path::join(dirname(__DIR__, 2), 'contracts', 'cli.md'));
+
+        self::assertIsString($contents);
+
+        $this->contract = $contents;
+    }
+
+    private function application(): Application
+    {
+        return new Application(
+            stdout            : $this->captured->stdoutWriter(),
+            stderr            : $this->captured->stderrWriter(),
+            interactive       : false,
+            noColorEnvironment: null,
+            version           : '1.2.3',
+        );
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function documentedCommands(): array
+    {
+        $commands = [];
+
+        foreach ($this->tableRows('Commands') as $row) {
+            $name = trim($row[0] ?? '', ' `');
+
+            if ('' !== $name) {
+                $commands[] = $name;
+            }
+        }
+
+        return $commands;
+    }
+
+    /**
+     * @return array<string, int>
+     */
+    private function documentedExitCodes(): array
+    {
+        $codes = [];
+
+        foreach ($this->tableRows('Exit codes') as $row) {
+            $code = trim($row[0] ?? '');
+            $name = trim($row[1] ?? '');
+
+            if ('' === $code || '' === $name || preg_match('/^[0-9]+$/', $code) !== 1) {
+                continue;
+            }
+
+            $codes[$name] = (int) $code;
+        }
+
+        return $codes;
     }
 
     /**
@@ -146,43 +202,14 @@ final class ContractDocumentationTest extends TestCase
         return $options;
     }
 
-    /**
-     * @return list<string>
-     */
-    private function documentedCommands(): array
+    private function sampleValue(string $flag): string
     {
-        $commands = [];
-
-        foreach ($this->tableRows('Commands') as $row) {
-            $name = trim($row[0] ?? '', " `");
-
-            if ($name !== '') {
-                $commands[] = $name;
-            }
-        }
-
-        return $commands;
-    }
-
-    /**
-     * @return array<string, int>
-     */
-    private function documentedExitCodes(): array
-    {
-        $codes = [];
-
-        foreach ($this->tableRows('Exit codes') as $row) {
-            $code = trim($row[0] ?? '');
-            $name = trim($row[1] ?? '');
-
-            if ($code === '' || $name === '' || preg_match('/^[0-9]+$/', $code) !== 1) {
-                continue;
-            }
-
-            $codes[$name] = (int) $code;
-        }
-
-        return $codes;
+        return match ($flag) {
+            '--concurrency' => '2',
+            '--port'        => '8080',
+            '--ref'         => 'example=main',
+            default         => 'value',
+        };
     }
 
     /**
@@ -207,7 +234,7 @@ final class ContractDocumentationTest extends TestCase
             $cells = array_map('trim', explode('|', trim($line)));
             $cells = array_slice($cells, 1, -1);
 
-            if ($cells === [] || preg_match('/^-+$/', $cells[0]) === 1) {
+            if ([] === $cells || preg_match('/^-+$/', $cells[0]) === 1) {
                 continue;
             }
 
@@ -219,26 +246,5 @@ final class ContractDocumentationTest extends TestCase
         }
 
         return $rows;
-    }
-
-    private function sampleValue(string $flag): string
-    {
-        return match ($flag) {
-            '--concurrency' => '2',
-            '--port'        => '8080',
-            '--ref'         => 'example=main',
-            default         => 'value',
-        };
-    }
-
-    private function application(): Application
-    {
-        return new Application(
-            stdout: $this->captured->stdoutWriter(),
-            stderr: $this->captured->stderrWriter(),
-            interactive: false,
-            noColorEnvironment: null,
-            version: '1.2.3',
-        );
     }
 }

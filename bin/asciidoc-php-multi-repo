@@ -16,18 +16,20 @@ $autoloaders = [
 $autoloaded = false;
 
 foreach ($autoloaders as $autoloader) {
-    if (is_file($autoloader)) {
-        require $autoloader;
-        $autoloaded = true;
-
-        break;
+    if (! is_file($autoloader)) {
+        continue;
     }
+
+    require $autoloader;
+    $autoloaded = true;
+
+    break;
 }
 
 if (! $autoloaded) {
     $stream = fopen('php://stderr', 'wb');
 
-    if ($stream !== false) {
+    if (false !== $stream) {
         fwrite($stream, Application::NAME . ": unable to locate the Composer autoloader\n");
     }
 
@@ -38,9 +40,11 @@ $arguments = [];
 
 if (isset($_SERVER['argv']) && is_array($_SERVER['argv'])) {
     foreach ($_SERVER['argv'] as $argument) {
-        if (is_string($argument)) {
-            $arguments[] = $argument;
+        if (! is_string($argument)) {
+            continue;
         }
+
+        $arguments[] = $argument;
     }
 }
 

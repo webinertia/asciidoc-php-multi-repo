@@ -5,7 +5,7 @@
 /specs/ export-ignore
 /renovate.json export-ignore
 /phpunit.xml.dist export-ignore
-/tests/ export-ignore
+/test/ export-ignore
 /clover.xml export-ignore
 /mago.toml export-ignore
 /mago.bat export-ignore

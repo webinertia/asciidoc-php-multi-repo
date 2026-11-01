@@ -6,8 +6,7 @@ baseline = "lint-baseline.toml"
 
 [analyzer]
 baseline = "analysis-baseline.toml"
-excludes = ["tests", "bench"]
 
 [source]
-paths = ["src", "tests"]
+paths = ["src", "test", "bin/asciidoc-php-multi-repo"]
 includes = ["vendor"]

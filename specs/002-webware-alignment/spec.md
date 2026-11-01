@@ -48,7 +48,7 @@ Filled from this package's `composer.json` and the new `mago.toml`.
 | `php_versions` | `["8.4", "8.5"]` |
 | `require.php` | `~8.4.1 \|\| ~8.5.0` |
 | `config.platform.php` | `8.4.99` |
-| `run_integration` | `false` (the second suite is `contract test`, not an integration suite) |
+| `run_integration` | `false` (the second suite is a contract suite, see the suite mapping note) |
 | `integration_php_version` | `""` (empty; `run_integration` is false) |
 | `enable_codecov` | `true` |
 | `enable_infection` | `true` |
@@ -58,9 +58,9 @@ Filled from this package's `composer.json` and the new `mago.toml`.
 | Integration container | omitted |
 | Tooling `PHP_VERSION` (Docker) | `8.5.12` (latest 8.5 patch; keep in sync with `require.php`) |
 | Tooling Mago version (Docker) | derived from the central `mago.toml` pin via `composer.lock` (no literal to maintain) |
-| Test autoload namespaces | `Webware\AsciidocPhpMultiRepo\Test\` -> `tests/` (both suites live under `tests/`) |
-| PHPUnit suites | `unit test` -> `tests/Unit`; `contract test` -> `tests/Contract` |
-| Mago source paths | `["src", "tests"]` |
+| Test autoload namespaces | `WebwareTest\AsciidocPhpMultiRepo\` -> `test/unit/`; `WebwareTestIntegration\AsciidocPhpMultiRepo\` -> `test/integration/` |
+| PHPUnit suites | `unit test` -> `test/unit`; `integration test` -> `test/integration` |
+| Mago source paths | `["src", "test", "bin/asciidoc-php-multi-repo"]` |
 
 ## User Scenarios & Testing
 
@@ -103,22 +103,25 @@ a `mago` fix pass.
 A developer on Windows with only Docker installed starts the tooling container and runs the test
 suite and all four Mago gates.
 
-**Independent Test**: `docker compose up -d` then `docker compose exec tooling composer check-all`
-succeeds with no native PHP on the host.
+**Independent Test**: `docker compose run --rm tooling mago guard` succeeds with no native PHP on
+the host.
 
 **Acceptance Scenarios**:
 
-1. **Given** a fresh clone and Docker, **When** `docker compose up -d` runs, **Then** the `tooling`
-   service builds and starts.
+1. **Given** a fresh clone and Docker, **When** `docker compose run --rm tooling mago --version`
+   runs, **Then** the `tooling` image builds and starts and the container exits with the version.
 2. **Given** a running container, **When** `mago format --check`, `mago lint`, `mago analyze` and
    `mago guard` run, **Then** each reports zero unbaselined issues.
 
 ### Edge Cases
 
-- The package has no integration suite. `run_integration` is `false`, so the workflow never
-  invokes `composer test-integration`; the contract suite runs inside `composer test` instead.
-- `composer sa` and `composer check-all` predate this feature and are used by the maintainer. They
-  are kept and re-implemented on Mago rather than removed.
+- The package has no integration suite in the network sense. The preset defines exactly two suites,
+  so the former `contract test` suite is mapped onto `integration test` and lives in
+  `test/integration`. `run_integration` stays `false` because the suite needs no external service
+  and `composer test` already executes it; flipping it on would run the same tests twice.
+- `composer sa` and `composer check-all` are removed. The preset plan template removes the legacy
+  `check-all`/`cs-check`/`cs-fix`/`sa` scripts and invokes the four `mago` commands directly, so no
+  convenience wrapper is shipped.
 - Zero tests: PHPUnit 13 errors, and Infection cannot score an empty suite.
 - A guard finding is never baselined. Guard findings are fixed in source.
 
@@ -129,17 +132,19 @@ succeeds with no native PHP on the host.
 - **FR-001**: Repository MUST provide `webware-ci.json` in the repository root carrying the
   package's CI values, and MUST NOT carry a wrapper workflow. The file MUST carry no Mago version
   literal.
-- **FR-002**: `composer.json` MUST keep the existing `test`, `sa` and `check-all` scripts working,
-  re-implement `sa` on Mago, and add `test-coverage`, `test-integration` and `mutation-test`
-  scripts that the required workflow invokes.
+- **FR-002**: `composer.json` MUST keep the existing `test` script unchanged, MUST drop the legacy
+  `sa` and `check-all` scripts, and MUST add `test-coverage`, `test-integration` and
+  `mutation-test` scripts that the required workflow invokes.
 - **FR-003**: `phpunit.xml.dist` MUST use the PHPUnit 13.1 schema, keep the strict flags
   (`failOnNotice`, `failOnWarning`, `failOnRisky`), and keep both suites (`unit test` ->
-  `tests/Unit`, `contract test` -> `tests/Contract`).
+  `test/unit`, `integration test` -> `test/integration`).
 - **FR-004**: `mago.toml` MUST extend `vendor/webware/webware-tools/mago.toml` and define only
-  `php-version`, baseline paths, and source paths matching this package's layout (`src`, `tests`).
-  General settings and general guard rules MUST NOT be duplicated locally.
-- **FR-005**: `lint-baseline.toml` and `analysis-baseline.toml` MUST start empty; entries only for
-  maintainer-approved intentional suppressions.
+  `php-version`, baseline paths, and source paths matching this package's layout (`src`, `test`,
+  `bin/asciidoc-php-multi-repo`). General settings and general guard rules MUST NOT be duplicated
+  locally.
+- **FR-005**: `lint-baseline.toml` and `analysis-baseline.toml` MUST be generated by Mago with
+  `--generate-baseline`, MUST NOT be hand-written or hand-edited, and MUST NOT carry an entry for a
+  finding the safe fixer could have cleared. `mago guard` findings are never baselined.
 - **FR-006**: `infection.json5.dist` MUST configure `source.directories = ["src"]` and
   `staticAnalysisTool: "mago"`.
 - **FR-007**: `codecov.yml` MUST be copied from the preset's `artifacts/codecov.yml`.

@@ -3,8 +3,9 @@
 **Input**: `specs/002-webware-alignment/spec.md`, `plan.md`
 
 Package parameters are already applied throughout: PHP versions `8.4` and `8.5`, test roots
-`tests/Unit` and `tests/Contract`, namespaces `Webware\AsciidocPhpMultiRepo\Test\` (unit and
-contract). The MSI gates are 95 and are not a package parameter.
+`test/unit` and `test/integration`, namespaces `WebwareTest\AsciidocPhpMultiRepo\` (unit) and
+`WebwareTestIntegration\AsciidocPhpMultiRepo\` (integration). The MSI gates are 95 and are not a
+package parameter.
 
 Branch base: `1.0.x`. The container work landed as PR #3 and `1.0.x` now carries `Dockerfile`,
 `compose.yml` and `.dockerignore`, so T019 replaces the transitional `Dockerfile` with the
@@ -21,12 +22,22 @@ run in the container; no host PHP is used.
   `phpbench/phpbench: ^1.7`, `roave/backward-compatibility-check: ^8.21.0`,
   `roave/security-advisories: dev-master`. Add `config.allow-plugins` for
   `infection/extension-installer`. Do not remove `phpstan/phpstan` yet (T010a)
-- [x] T003 Verify `autoload-dev` maps `Webware\AsciidocPhpMultiRepo\Test\` to `tests/`. No
-  `integration` namespace is added: this package has a contract suite, not an integration suite
-- [x] T004 Define scripts `test` (both suites, unchanged), `test-coverage` (clover plus text),
-  `test-integration` (testsuite `contract test`), `mutation-test` (`infection`), move `sa` off
-  PHPStan to Mago (`mago format --check && mago lint && mago analyze && mago guard`) and keep
-  `check-all` (`@sa` then `@test`) so it still means something real
+- [x] T003 Verify `autoload-dev` maps `WebwareTest\AsciidocPhpMultiRepo\` to `test/unit/` and
+  `WebwareTestIntegration\AsciidocPhpMultiRepo\` to `test/integration/`, matching
+  `templates/plan-template.md` Phase 1
+- [x] T003a Rename the test layout to the preset convention: `tests/` to `test/`,
+  `tests/Unit/` to `test/unit/`, `tests/Contract/` to `test/integration/`, and rewrite the
+  namespaces in all 30 test files. The `Contract` suite is mapped onto `integration` because the
+  preset defines exactly two suites; the tests are documentation and schema contract tests, not
+  network integration tests, and the PR body states that rather than inventing a third suite. This
+  removes the former deviations D-1, D-2, D-3 and D-7 and the `WARN Failed to walk /app/test`
+- [x] T004 Define scripts `test` (all suites, unchanged; see Deviation D-5), `test-coverage`
+  (clover plus text), `test-integration` (testsuite `integration test`), `mutation-test`
+  (`infection`), and the preset's `test-all` alias (`@test && @test-integration && @mutation-test`).
+  Remove the legacy `sa` and `check-all` scripts: `templates/plan-template.md` Phase 1 says "No
+  PHPStan package, no PHPStan script; remove legacy `check-all`/`cs-check`/`cs-fix`/`sa` scripts",
+  and the preset README invokes the four `mago` commands directly. No wrapper is shipped in their
+  place
 - [x] T005 Run `composer update` inside the container and commit `composer.lock`
 
 ## Phase 2: phpunit.xml.dist
@@ -35,8 +46,8 @@ run in the container; no host PHP is used.
   `vendor/phpunit/phpunit/phpunit.xsd`, `bootstrap="vendor/autoload.php"`, `colors="true"`,
   `cacheDirectory=".phpunit.cache"`, `requireCoverageMetadata="true"`, and strict flags
   `failOnNotice`, `failOnDeprecation`, `failOnWarning`, `failOnRisky` all `true`. Preserve both
-  suites: `unit test` over `tests/Unit` and `contract test` over `tests/Contract`. Keep
-  `<source>` over `src` (Deviation D-2)
+  suites: `unit test` over `test/unit` and `integration test` over `test/integration`. Keep
+  `<source>` over `src`
 - [x] T007 Add `#[CoversClass]` (or `#[CoversMethod]`) to every test class so
   `requireCoverageMetadata` holds. Both suites already contain tests, so no scaffolding is needed
 
@@ -44,12 +55,16 @@ run in the container; no host PHP is used.
 
 - [x] T008 Create `mago.toml` from the preset's `artifacts/mago.toml`:
   `extends = "vendor/webware/webware-tools/mago.toml"`, `php-version = "8.4.1"`, linter and
-  analyzer baseline paths, `[source] paths = ["src", "tests"]` (Deviation D-1),
-  `includes = ["vendor"]`. No local `version =`, no schema URL, no general settings and no general
-  guard rules: the centre owns them
-- [x] T008b Restate `[analyzer] excludes` as `["tests", "bench"]` in the local `mago.toml`.
-  `mago.toml` array keys replace rather than merge, so the parent's `["test", "bench"]` does not
-  cover this package's `tests/` directory (Deviation D-7)
+  analyzer baseline paths, `[source] paths = ["src", "test", "bin/asciidoc-php-multi-repo"]`
+  (Deviation D-4), `includes = ["vendor"]`. No local `version =`, no schema URL, no general
+  settings and no general guard rules: the centre owns them
+- [x] T008b Keep no local `[analyzer] excludes`. The shared config already excludes
+  `["test", "bench"]`, and after the T003a rename this package's test directory is `test/`, so the
+  parent exclusion applies as written. The former local override (D-7) is deleted
+- [x] T008c Name the CLI entry point explicitly in `[source] paths` rather than adding the `bin`
+  directory. `bin/asciidoc-php-multi-repo` has no `.php` extension, so directory walking discovers
+  nothing; the pre-migration `phpstan.neon` analysed that file, so omitting it would be a coverage
+  loss against the previous state (Deviation D-4)
 - [x] T008a Create `mago.bat` at the repository root by copying the preset's `artifacts/mago.bat`
   verbatim. It is a tracked file, committed with no executable bit. Without it Infection cannot run
   Mago on Windows: it prefixes `PHP_BINARY` to the static analysis executable and PHP then reports
@@ -57,15 +72,17 @@ run in the container; no host PHP is used.
   non-executable files and the real `mago` on `PATH` wins. See webinertia/webware-tools issue 59
 - [x] T009 Generate `lint-baseline.toml` and `analysis-baseline.toml` with
   `mago lint --generate-baseline --baseline lint-baseline.toml` and the analyzer equivalent, after
-  the fix pass, never by hand. They carry the onboarding remainder: 942 lint findings in 372
-  entries and 114 analyzer findings in 80 entries, broken down by rule in the PR body as the
-  burndown list
+  the fix pass, never by hand. They carry the onboarding remainder: 931 lint findings in 361
+  entries and 115 analyzer findings in 81 entries, both `variant = "loose"`, broken down by rule and
+  by area in the PR body as the burndown list. `--remove-outdated-baseline-entries` runs after
+  every move or rename, because the entries are keyed by file path
 - [x] T010 Fix pass: run `mago format`, then the safe `mago lint --fix` and `mago analyze --fix`,
   then `mago guard`. Guard findings are fixed in source, never suppressed or narrowed; the
-  remediation is Deviation D-6 (move `Cli\Command` to `Cli\Commands` and rename
+  remediation is Deviation D-3 (move `Cli\Command` to `Cli\Commands` and rename
   `interface Command` to `interface CommandInterface`). Never run `--potentially-unsafe` or
   `--unsafe`. The safe fixer clears the redundant-cast, fully-qualified-global-class-like and
-  redundant-import families; everything else is baselined in T009 rather than suppressed inline
+  redundant-import families, plus `prefer-early-continue` and `yoda-conditions` in the entry point;
+  everything else is baselined in T009 rather than suppressed inline
 - [x] T010a After all four gates are clean, delete `phpstan.neon`, remove `phpstan/phpstan` from
   `require-dev` and confirm no PHPStan reference survives in `composer.json`
 
@@ -93,15 +110,15 @@ run in the container; no host PHP is used.
   `/mago.bat`: that file is tracked, because Infection needs it on Windows (see
   webinertia/webware-tools issue 59)
 - [x] T017a Merge `.gitattributes` from the preset's `artifacts/gitattributes.txt` with the existing
-  `bin/asciidoc-php-multi-repo text eol=lf` entry, and correct `/test/ export-ignore` to
-  `/tests/ export-ignore` (Deviation D-3)
+  `bin/asciidoc-php-multi-repo text eol=lf` entry. The artifact's `/test/ export-ignore` is kept
+  verbatim because the directory is now `test/`
 
 ## Phase 6: README badges
 
 - [x] T018 Add the badge block from the preset's `artifacts/readme-badges.md` with `ORG`
   `webinertia`, `REPO` `asciidoc-php-multi-repo`, `DEFAULT_BRANCH` `1.0.x`. Only the Required CI
   badge is advertised: the package is not published on Packagist, there is no `LICENSE` file, and
-  no codecov or Stryker report exists for `1.0.x` yet (Deviation D-4). The badge points at
+  no codecov or Stryker report exists for `1.0.x` yet (Deviation D-1). The badge points at
   `required/webinertia/.github/.github/workflows/continuous-integration.yml`, the workflow the
   organization config repository actually ships
 
@@ -111,7 +128,7 @@ run in the container; no host PHP is used.
   (5400 bytes, SHA256 `0b6a454d24fb24e52781b4ae43a3bc2451a5645045c2535508db24c982f90799`): PHP CLI,
   Composer, Mago resolved from the webware-tools pin, `intl`/`pcntl`/`zip`/`pcov`, `WORKDIR /app`.
   `1.0.x` carried a transitional 3111-byte variant with the Mago install stage removed
-  (Deviation D-5)
+  (Deviation D-2)
 - [x] T020 Verify `compose.yml` provides the persistent `tooling` service and bind-mounts the
   repository at `/app`. Owned by the container session; not edited here
 - [x] T021 Verify `.dockerignore` excludes `vendor/`, `.git/`, caches and logs. Owned by the
@@ -119,17 +136,17 @@ run in the container; no host PHP is used.
 - [x] T022 Create `.devcontainer/devcontainer.json` by copying the preset's
   `artifacts/devcontainer.json` (references `compose.yml` via `dockerComposeFile` plus
   `service: tooling`, `workspaceFolder /app`, PHP/Xdebug/EditorConfig extensions)
-- [x] T023 Verify the development environment: `docker compose up -d`, then
-  `docker compose exec tooling composer test` and
-  `docker compose exec tooling mago format --check` succeed with no native PHP toolchain on the
-  host. The tooling container is `command: sleep infinity`, so `docker compose down` follows every
-  session that starts it
+- [x] T023 Verify the development environment with one-off containers, so no long-lived container is
+  left behind: `docker compose run --rm tooling composer test` and
+  `docker compose run --rm tooling mago format --check` succeed with no native PHP toolchain on the
+  host. If `docker compose up -d` is used instead, the tooling container is `command: sleep
+  infinity`, so `docker compose down` must follow in the same session
 
 ## Verification
 
 - [x] T024 Run the full local check inside the container: `mago format --check`, `mago lint`,
-  `mago analyze`, `mago guard`, `composer test`, `composer test-coverage`, `composer sa`,
-  `composer check-all`. Report the test count and assertion count
+  `mago analyze`, `mago guard`, `composer test`, `composer test-integration`. Report the test count
+  and assertion count, and the Mago and PHP versions the image installed
 - [x] T025 Verify the ignore/track boundary: `git check-ignore mago.bat` reports nothing and
   `git ls-files --error-unmatch mago.bat` succeeds, so the Windows shim is tracked;
   `git ls-files .specify` lists files, so the spec-kit scaffolding and installed preset stay

@@ -12,10 +12,10 @@
 
     <testsuites>
         <testsuite name="unit test">
-            <directory>tests/Unit</directory>
+            <directory>test/unit</directory>
         </testsuite>
-        <testsuite name="contract test">
-            <directory>tests/Contract</directory>
+        <testsuite name="integration test">
+            <directory>test/integration</directory>
         </testsuite>
     </testsuites>
     <source restrictNotices="true" ignoreIndirectDeprecations="true">

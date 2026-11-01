@@ -49,22 +49,18 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Webware\\AsciidocPhpMultiRepo\\Test\\": "tests/"
+            "WebwareTest\\AsciidocPhpMultiRepo\\": "test/unit/",
+            "WebwareTestIntegration\\AsciidocPhpMultiRepo\\": "test/integration/"
         }
     },
     "bin": [
         "bin/asciidoc-php-multi-repo"
     ],
     "scripts": {
-        "check-all": [
-            "@sa",
-            "@test"
-        ],
         "test": "phpunit --no-coverage --colors=always",
         "test-coverage": "phpunit --colors=always --coverage-clover clover.xml --coverage-text",
-        "test-integration": "phpunit --no-coverage --colors=always --testsuite \"contract test\"",
+        "test-integration": "phpunit --no-coverage --colors=always --testsuite \"integration test\"",
         "mutation-test": "infection",
-        "test-all": "@test && @test-integration && @mutation-test",
-        "sa": "mago format --check && mago lint && mago analyze && mago guard"
+        "test-all": "@test && @test-integration && @mutation-test"
     }
 }

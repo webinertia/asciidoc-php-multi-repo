@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webware\AsciidocPhpMultiRepo\Source;
+namespace Webware\AsciidocPhp\MultiRepo\Source;
 
 /**
  * One row of the cache manifest: what was fetched, and why it could not be.

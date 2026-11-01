@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Discovery;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Discovery;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\TestCase;
-use Webware\AsciidocPhpMultiRepo\Discovery\DiscoveredRepository;
-use Webware\AsciidocPhpMultiRepo\Discovery\SlugCollisionDetector;
-use Webware\AsciidocPhpMultiRepo\Discovery\SlugException;
+use Webware\AsciidocPhp\MultiRepo\Discovery\DiscoveredRepository;
+use Webware\AsciidocPhp\MultiRepo\Discovery\SlugCollisionDetector;
+use Webware\AsciidocPhp\MultiRepo\Discovery\SlugException;
 
 #[CoversClass(SlugCollisionDetector::class)]
 #[CoversMethod(SlugCollisionDetector::class, 'detect')]

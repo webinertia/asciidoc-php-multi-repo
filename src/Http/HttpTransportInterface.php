@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webware\AsciidocPhpMultiRepo\Http;
+namespace Webware\AsciidocPhp\MultiRepo\Http;
 
 /**
  * The only thing discovery needs from the network, so a test can replace it outright.

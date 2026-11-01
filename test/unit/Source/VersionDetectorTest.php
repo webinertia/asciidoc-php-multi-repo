@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Source;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Source;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Webware\AsciidocPhpMultiRepo\Source\DocVersion;
-use Webware\AsciidocPhpMultiRepo\Source\VersionDetector;
-use WebwareTest\AsciidocPhpMultiRepo\Support\SourceFixture;
+use Webware\AsciidocPhp\MultiRepo\Source\DocVersion;
+use Webware\AsciidocPhp\MultiRepo\Source\VersionDetector;
+use WebwareTest\AsciidocPhp\MultiRepo\Support\SourceFixture;
 
 use function array_map;
 

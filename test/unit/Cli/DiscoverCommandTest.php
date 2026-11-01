@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Cli;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Cli;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\TestCase;
-use Webware\AsciidocPhpMultiRepo\Cli\Commands\DiscoverCommand;
-use Webware\AsciidocPhpMultiRepo\Cli\ExitCode;
-use Webware\AsciidocPhpMultiRepo\Cli\Options;
-use Webware\AsciidocPhpMultiRepo\Cli\Output;
-use Webware\AsciidocPhpMultiRepo\Cli\ProjectFilter;
-use Webware\AsciidocPhpMultiRepo\Config\SiteConfig;
-use Webware\AsciidocPhpMultiRepo\Discovery\DiscoveryFactory;
-use Webware\AsciidocPhpMultiRepo\Http\HttpResponse;
-use WebwareTest\AsciidocPhpMultiRepo\Support\CapturedOutput;
-use WebwareTest\AsciidocPhpMultiRepo\Support\SourceFixture;
-use WebwareTest\AsciidocPhpMultiRepo\Support\StubHttpTransport;
+use Webware\AsciidocPhp\MultiRepo\Cli\Commands\DiscoverCommand;
+use Webware\AsciidocPhp\MultiRepo\Cli\ExitCode;
+use Webware\AsciidocPhp\MultiRepo\Cli\Options;
+use Webware\AsciidocPhp\MultiRepo\Cli\Output;
+use Webware\AsciidocPhp\MultiRepo\Cli\ProjectFilter;
+use Webware\AsciidocPhp\MultiRepo\Config\SiteConfig;
+use Webware\AsciidocPhp\MultiRepo\Discovery\DiscoveryFactory;
+use Webware\AsciidocPhp\MultiRepo\Http\HttpResponse;
+use WebwareTest\AsciidocPhp\MultiRepo\Support\CapturedOutput;
+use WebwareTest\AsciidocPhp\MultiRepo\Support\SourceFixture;
+use WebwareTest\AsciidocPhp\MultiRepo\Support\StubHttpTransport;
 
 use function explode;
 use function json_encode;

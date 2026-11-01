@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Support;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Support;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Webware\AsciidocPhpMultiRepo\Support\Json;
-use Webware\AsciidocPhpMultiRepo\Support\JsonDecodeException;
+use Webware\AsciidocPhp\MultiRepo\Support\Json;
+use Webware\AsciidocPhp\MultiRepo\Support\JsonDecodeException;
 
 use function str_contains;
 use function str_ends_with;

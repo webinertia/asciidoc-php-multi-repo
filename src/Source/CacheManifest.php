@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webware\AsciidocPhpMultiRepo\Source;
+namespace Webware\AsciidocPhp\MultiRepo\Source;
 
 /**
  * The index of what the cache currently holds, one entry per repository in slug order.

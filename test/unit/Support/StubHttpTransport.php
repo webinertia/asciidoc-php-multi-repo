@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Support;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Support;
 
-use Webware\AsciidocPhpMultiRepo\Http\HttpException;
-use Webware\AsciidocPhpMultiRepo\Http\HttpResponse;
-use Webware\AsciidocPhpMultiRepo\Http\HttpTransportInterface;
+use Webware\AsciidocPhp\MultiRepo\Http\HttpException;
+use Webware\AsciidocPhp\MultiRepo\Http\HttpResponse;
+use Webware\AsciidocPhp\MultiRepo\Http\HttpTransportInterface;
 
 use function str_contains;
 

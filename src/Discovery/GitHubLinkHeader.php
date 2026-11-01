@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webware\AsciidocPhpMultiRepo\Discovery;
+namespace Webware\AsciidocPhp\MultiRepo\Discovery;
 
 use function array_key_exists;
 use function explode;

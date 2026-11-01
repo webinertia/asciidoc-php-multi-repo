@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Source;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Source;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\TestCase;
-use Webware\AsciidocPhpMultiRepo\Source\FetchedRepository;
-use Webware\AsciidocPhpMultiRepo\Support\Path;
+use Webware\AsciidocPhp\MultiRepo\Source\FetchedRepository;
+use Webware\AsciidocPhp\MultiRepo\Support\Path;
 
 #[CoversClass(FetchedRepository::class)]
 #[CoversMethod(FetchedRepository::class, 'attempts')]

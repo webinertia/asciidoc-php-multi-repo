@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Webware\AsciidocPhpMultiRepo\Source;
+namespace Webware\AsciidocPhp\MultiRepo\Source;
 
-use Webware\AsciidocPhpMultiRepo\Support\Path;
+use Webware\AsciidocPhp\MultiRepo\Support\Path;
 
 use function str_starts_with;
 

@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Webware\AsciidocPhpMultiRepo\Source;
+namespace Webware\AsciidocPhp\MultiRepo\Source;
 
 use Closure;
-use Webware\AsciidocPhpMultiRepo\Config\SiteConfig;
-use Webware\AsciidocPhpMultiRepo\Discovery\DiscoveredRepository;
-use Webware\AsciidocPhpMultiRepo\Report\ReasonCode;
-use Webware\AsciidocPhpMultiRepo\Support\Filesystem;
-use Webware\AsciidocPhpMultiRepo\Support\Path;
-use Webware\AsciidocPhpMultiRepo\Support\ProcessResult;
-use Webware\AsciidocPhpMultiRepo\Support\ProcessRunner;
+use Webware\AsciidocPhp\MultiRepo\Config\SiteConfig;
+use Webware\AsciidocPhp\MultiRepo\Discovery\DiscoveredRepository;
+use Webware\AsciidocPhp\MultiRepo\Report\ReasonCode;
+use Webware\AsciidocPhp\MultiRepo\Support\Filesystem;
+use Webware\AsciidocPhp\MultiRepo\Support\Path;
+use Webware\AsciidocPhp\MultiRepo\Support\ProcessResult;
+use Webware\AsciidocPhp\MultiRepo\Support\ProcessRunner;
 
 use function is_dir;
 use function max;

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Config;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Config;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Webware\AsciidocPhpMultiRepo\Config\ProjectOverride;
+use Webware\AsciidocPhp\MultiRepo\Config\ProjectOverride;
 
 #[CoversClass(ProjectOverride::class)]
 final class ProjectOverrideTest extends TestCase

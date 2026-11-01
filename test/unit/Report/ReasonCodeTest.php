@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Report;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Report;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\TestCase;
-use Webware\AsciidocPhpMultiRepo\Report\ReasonCode;
-use Webware\AsciidocPhpMultiRepo\Support\Json;
-use Webware\AsciidocPhpMultiRepo\Support\Path;
+use Webware\AsciidocPhp\MultiRepo\Report\ReasonCode;
+use Webware\AsciidocPhp\MultiRepo\Support\Json;
+use Webware\AsciidocPhp\MultiRepo\Support\Path;
 
 use function array_map;
 use function array_unique;

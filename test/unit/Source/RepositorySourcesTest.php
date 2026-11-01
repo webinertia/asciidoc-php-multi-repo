@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Source;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Source;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\TestCase;
-use Webware\AsciidocPhpMultiRepo\Report\ReasonCode;
-use Webware\AsciidocPhpMultiRepo\Source\DocPage;
-use Webware\AsciidocPhpMultiRepo\Source\DocVersion;
-use Webware\AsciidocPhpMultiRepo\Source\FetchedRepository;
-use Webware\AsciidocPhpMultiRepo\Source\PageSet;
-use Webware\AsciidocPhpMultiRepo\Source\PreparedSource;
-use Webware\AsciidocPhpMultiRepo\Source\RepositorySources;
-use Webware\AsciidocPhpMultiRepo\Source\SourceError;
-use Webware\AsciidocPhpMultiRepo\Source\SourceFormat;
-use WebwareTest\AsciidocPhpMultiRepo\Support\SourceFixture;
+use Webware\AsciidocPhp\MultiRepo\Report\ReasonCode;
+use Webware\AsciidocPhp\MultiRepo\Source\DocPage;
+use Webware\AsciidocPhp\MultiRepo\Source\DocVersion;
+use Webware\AsciidocPhp\MultiRepo\Source\FetchedRepository;
+use Webware\AsciidocPhp\MultiRepo\Source\PageSet;
+use Webware\AsciidocPhp\MultiRepo\Source\PreparedSource;
+use Webware\AsciidocPhp\MultiRepo\Source\RepositorySources;
+use Webware\AsciidocPhp\MultiRepo\Source\SourceError;
+use Webware\AsciidocPhp\MultiRepo\Source\SourceFormat;
+use WebwareTest\AsciidocPhp\MultiRepo\Support\SourceFixture;
 
 #[CoversClass(RepositorySources::class)]
 #[CoversMethod(RepositorySources::class, 'documentationPath')]

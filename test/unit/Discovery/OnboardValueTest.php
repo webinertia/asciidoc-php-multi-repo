@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Discovery;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Discovery;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\TestCase;
-use Webware\AsciidocPhpMultiRepo\Discovery\OnboardValue;
+use Webware\AsciidocPhp\MultiRepo\Discovery\OnboardValue;
 
 #[CoversClass(OnboardValue::class)]
 #[CoversMethod(OnboardValue::class, 'matches')]

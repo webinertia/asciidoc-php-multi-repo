@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Cli;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Cli;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Webware\AsciidocPhpMultiRepo\Cli\ExitCode;
+use Webware\AsciidocPhp\MultiRepo\Cli\ExitCode;
 
 #[CoversClass(ExitCode::class)]
 final class ExitCodeTest extends TestCase

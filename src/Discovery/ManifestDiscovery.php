@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Webware\AsciidocPhpMultiRepo\Discovery;
+namespace Webware\AsciidocPhp\MultiRepo\Discovery;
 
 use Override;
-use Webware\AsciidocPhpMultiRepo\Config\Manifest;
-use Webware\AsciidocPhpMultiRepo\Config\SiteConfig;
+use Webware\AsciidocPhp\MultiRepo\Config\Manifest;
+use Webware\AsciidocPhp\MultiRepo\Config\SiteConfig;
 
 /**
  * Discovery backed by the offline manifest.

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Webware\AsciidocPhpMultiRepo\Source;
+namespace Webware\AsciidocPhp\MultiRepo\Source;
 
-use Webware\AsciidocPhpMultiRepo\Discovery\DiscoveredRepository;
+use Webware\AsciidocPhp\MultiRepo\Discovery\DiscoveredRepository;
 
 /**
  * Everything Group 2 learned about one repository, including the problems it found.

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Source;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Source;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Webware\AsciidocPhpMultiRepo\Source\SourceFormat;
+use Webware\AsciidocPhp\MultiRepo\Source\SourceFormat;
 
 #[CoversClass(SourceFormat::class)]
 #[CoversMethod(SourceFormat::class, 'extension')]

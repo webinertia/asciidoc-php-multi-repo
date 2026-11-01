@@ -2,28 +2,28 @@
 
 declare(strict_types=1);
 
-namespace WebwareTestIntegration\AsciidocPhpMultiRepo;
+namespace WebwareTestIntegration\AsciidocPhp\MultiRepo;
 
 use Override;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
-use Webware\AsciidocPhpMultiRepo\Config\SiteConfig;
-use Webware\AsciidocPhpMultiRepo\Config\SiteConfigLoader;
-use Webware\AsciidocPhpMultiRepo\Discovery\DiscoveryFactory;
-use Webware\AsciidocPhpMultiRepo\Discovery\ManifestDiscovery;
-use Webware\AsciidocPhpMultiRepo\Http\HttpResponse;
-use Webware\AsciidocPhpMultiRepo\Http\HttpTransportInterface;
-use Webware\AsciidocPhpMultiRepo\Report\ReasonCode;
-use Webware\AsciidocPhpMultiRepo\Source\PageEnumerator;
-use Webware\AsciidocPhpMultiRepo\Source\PreparedSource;
-use Webware\AsciidocPhpMultiRepo\Source\RepositoryFetcher;
-use Webware\AsciidocPhpMultiRepo\Source\RepositorySources;
-use Webware\AsciidocPhpMultiRepo\Source\SourceCollector;
-use Webware\AsciidocPhpMultiRepo\Source\SourceFormat;
-use Webware\AsciidocPhpMultiRepo\Source\VersionDetector;
-use Webware\AsciidocPhpMultiRepo\Support\Path;
-use WebwareTest\AsciidocPhpMultiRepo\Support\TempDirectoryTrait;
+use Webware\AsciidocPhp\MultiRepo\Config\SiteConfig;
+use Webware\AsciidocPhp\MultiRepo\Config\SiteConfigLoader;
+use Webware\AsciidocPhp\MultiRepo\Discovery\DiscoveryFactory;
+use Webware\AsciidocPhp\MultiRepo\Discovery\ManifestDiscovery;
+use Webware\AsciidocPhp\MultiRepo\Http\HttpResponse;
+use Webware\AsciidocPhp\MultiRepo\Http\HttpTransportInterface;
+use Webware\AsciidocPhp\MultiRepo\Report\ReasonCode;
+use Webware\AsciidocPhp\MultiRepo\Source\PageEnumerator;
+use Webware\AsciidocPhp\MultiRepo\Source\PreparedSource;
+use Webware\AsciidocPhp\MultiRepo\Source\RepositoryFetcher;
+use Webware\AsciidocPhp\MultiRepo\Source\RepositorySources;
+use Webware\AsciidocPhp\MultiRepo\Source\SourceCollector;
+use Webware\AsciidocPhp\MultiRepo\Source\SourceFormat;
+use Webware\AsciidocPhp\MultiRepo\Source\VersionDetector;
+use Webware\AsciidocPhp\MultiRepo\Support\Path;
+use WebwareTest\AsciidocPhp\MultiRepo\Support\TempDirectoryTrait;
 
 use function array_keys;
 use function array_map;

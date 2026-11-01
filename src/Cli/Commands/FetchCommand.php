@@ -2,26 +2,26 @@
 
 declare(strict_types=1);
 
-namespace Webware\AsciidocPhpMultiRepo\Cli\Commands;
+namespace Webware\AsciidocPhp\MultiRepo\Cli\Commands;
 
 use Override;
-use Webware\AsciidocPhpMultiRepo\Cli\ExitCode;
-use Webware\AsciidocPhpMultiRepo\Cli\Options;
-use Webware\AsciidocPhpMultiRepo\Cli\Output;
-use Webware\AsciidocPhpMultiRepo\Cli\ProjectFilter;
-use Webware\AsciidocPhpMultiRepo\Config\ConfigException;
-use Webware\AsciidocPhpMultiRepo\Config\SiteConfig;
-use Webware\AsciidocPhpMultiRepo\Discovery\DiscoveryException;
-use Webware\AsciidocPhpMultiRepo\Discovery\DiscoveryFactory;
-use Webware\AsciidocPhpMultiRepo\Discovery\SlugException;
-use Webware\AsciidocPhpMultiRepo\Report\ReasonCode;
-use Webware\AsciidocPhpMultiRepo\Source\CacheManifest;
-use Webware\AsciidocPhpMultiRepo\Source\CacheManifestEntry;
-use Webware\AsciidocPhpMultiRepo\Source\SourceCollector;
-use Webware\AsciidocPhpMultiRepo\Source\SourceError;
-use Webware\AsciidocPhpMultiRepo\Support\Filesystem;
-use Webware\AsciidocPhpMultiRepo\Support\Json;
-use Webware\AsciidocPhpMultiRepo\Support\Path;
+use Webware\AsciidocPhp\MultiRepo\Cli\ExitCode;
+use Webware\AsciidocPhp\MultiRepo\Cli\Options;
+use Webware\AsciidocPhp\MultiRepo\Cli\Output;
+use Webware\AsciidocPhp\MultiRepo\Cli\ProjectFilter;
+use Webware\AsciidocPhp\MultiRepo\Config\ConfigException;
+use Webware\AsciidocPhp\MultiRepo\Config\SiteConfig;
+use Webware\AsciidocPhp\MultiRepo\Discovery\DiscoveryException;
+use Webware\AsciidocPhp\MultiRepo\Discovery\DiscoveryFactory;
+use Webware\AsciidocPhp\MultiRepo\Discovery\SlugException;
+use Webware\AsciidocPhp\MultiRepo\Report\ReasonCode;
+use Webware\AsciidocPhp\MultiRepo\Source\CacheManifest;
+use Webware\AsciidocPhp\MultiRepo\Source\CacheManifestEntry;
+use Webware\AsciidocPhp\MultiRepo\Source\SourceCollector;
+use Webware\AsciidocPhp\MultiRepo\Source\SourceError;
+use Webware\AsciidocPhp\MultiRepo\Support\Filesystem;
+use Webware\AsciidocPhp\MultiRepo\Support\Json;
+use Webware\AsciidocPhp\MultiRepo\Support\Path;
 
 use function count;
 use function getcwd;

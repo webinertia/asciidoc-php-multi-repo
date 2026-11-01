@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Webware\AsciidocPhpMultiRepo\Discovery;
+namespace Webware\AsciidocPhp\MultiRepo\Discovery;
 
 use Override;
-use Webware\AsciidocPhpMultiRepo\Config\SiteConfig;
+use Webware\AsciidocPhp\MultiRepo\Config\SiteConfig;
 
 use function array_filter;
 use function array_values;

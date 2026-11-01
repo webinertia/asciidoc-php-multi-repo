@@ -44,13 +44,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Webware\\AsciidocPhpMultiRepo\\": "src/"
+            "Webware\\AsciidocPhp\\MultiRepo\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "WebwareTest\\AsciidocPhpMultiRepo\\": "test/unit/",
-            "WebwareTestIntegration\\AsciidocPhpMultiRepo\\": "test/integration/"
+            "WebwareTest\\AsciidocPhp\\MultiRepo\\": "test/unit/",
+            "WebwareTestIntegration\\AsciidocPhp\\MultiRepo\\": "test/integration/"
         }
     },
     "bin": [

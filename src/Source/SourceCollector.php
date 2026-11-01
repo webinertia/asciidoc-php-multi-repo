@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Webware\AsciidocPhpMultiRepo\Source;
+namespace Webware\AsciidocPhp\MultiRepo\Source;
 
-use Webware\AsciidocPhpMultiRepo\Config\SiteConfig;
-use Webware\AsciidocPhpMultiRepo\Discovery\DiscoveredRepository;
-use Webware\AsciidocPhpMultiRepo\Report\ReasonCode;
+use Webware\AsciidocPhp\MultiRepo\Config\SiteConfig;
+use Webware\AsciidocPhp\MultiRepo\Discovery\DiscoveredRepository;
+use Webware\AsciidocPhp\MultiRepo\Report\ReasonCode;
 
 use function sprintf;
 

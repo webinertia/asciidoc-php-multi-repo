@@ -2,27 +2,27 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Cli;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Cli;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\TestCase;
-use Webware\AsciidocPhpMultiRepo\Cli\Commands\FetchCommand;
-use Webware\AsciidocPhpMultiRepo\Cli\ExitCode;
-use Webware\AsciidocPhpMultiRepo\Cli\Options;
-use Webware\AsciidocPhpMultiRepo\Cli\Output;
-use Webware\AsciidocPhpMultiRepo\Config\SiteConfig;
-use Webware\AsciidocPhpMultiRepo\Discovery\DiscoveryFactory;
-use Webware\AsciidocPhpMultiRepo\Http\HttpResponse;
-use Webware\AsciidocPhpMultiRepo\Source\RepositoryFetcher;
-use Webware\AsciidocPhpMultiRepo\Source\SourceCollector;
-use Webware\AsciidocPhpMultiRepo\Support\Filesystem;
-use Webware\AsciidocPhpMultiRepo\Support\Json;
-use Webware\AsciidocPhpMultiRepo\Support\Path;
-use WebwareTest\AsciidocPhpMultiRepo\Support\CapturedOutput;
-use WebwareTest\AsciidocPhpMultiRepo\Support\SourceFixture;
-use WebwareTest\AsciidocPhpMultiRepo\Support\StubHttpTransport;
-use WebwareTest\AsciidocPhpMultiRepo\Support\TempDirectoryTrait;
+use Webware\AsciidocPhp\MultiRepo\Cli\Commands\FetchCommand;
+use Webware\AsciidocPhp\MultiRepo\Cli\ExitCode;
+use Webware\AsciidocPhp\MultiRepo\Cli\Options;
+use Webware\AsciidocPhp\MultiRepo\Cli\Output;
+use Webware\AsciidocPhp\MultiRepo\Config\SiteConfig;
+use Webware\AsciidocPhp\MultiRepo\Discovery\DiscoveryFactory;
+use Webware\AsciidocPhp\MultiRepo\Http\HttpResponse;
+use Webware\AsciidocPhp\MultiRepo\Source\RepositoryFetcher;
+use Webware\AsciidocPhp\MultiRepo\Source\SourceCollector;
+use Webware\AsciidocPhp\MultiRepo\Support\Filesystem;
+use Webware\AsciidocPhp\MultiRepo\Support\Json;
+use Webware\AsciidocPhp\MultiRepo\Support\Path;
+use WebwareTest\AsciidocPhp\MultiRepo\Support\CapturedOutput;
+use WebwareTest\AsciidocPhp\MultiRepo\Support\SourceFixture;
+use WebwareTest\AsciidocPhp\MultiRepo\Support\StubHttpTransport;
+use WebwareTest\AsciidocPhp\MultiRepo\Support\TempDirectoryTrait;
 
 use function array_column;
 use function explode;

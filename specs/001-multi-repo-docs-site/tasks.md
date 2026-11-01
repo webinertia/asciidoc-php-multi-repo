@@ -30,7 +30,7 @@ disjoint files. A task without `[P]` must follow the task above it in the same g
 ## Phase 1: Setup (Group 1)
 
 - [X] T001 Create the package manifest: `composer.json` with name `webware/asciidoc-php-multi-repo`,
-  PHP constraint `~8.4.0 || ~8.5.0`, autoload `Webware\AsciidocPhpMultiRepo\` from `src/`, the binary
+  PHP constraint `~8.4.0 || ~8.5.0`, autoload `Webware\AsciidocPhp\MultiRepo\` from `src/`, the binary
   `bin/asciidoc-php-multi-repo`, `require` on `webware/asciidoc-php`, `ext-json`, `ext-curl`,
   `ext-mbstring`, and dev requirements `phpunit/phpunit` and `phpstan/phpstan`. Acceptance: running
   `composer validate --strict` succeeds and `composer install` completes on PHP 8.4.

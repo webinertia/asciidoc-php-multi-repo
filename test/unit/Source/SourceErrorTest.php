@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Source;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Source;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\TestCase;
-use Webware\AsciidocPhpMultiRepo\Report\ReasonCode;
-use Webware\AsciidocPhpMultiRepo\Source\SourceError;
-use Webware\AsciidocPhpMultiRepo\Source\SourceException;
+use Webware\AsciidocPhp\MultiRepo\Report\ReasonCode;
+use Webware\AsciidocPhp\MultiRepo\Source\SourceError;
+use Webware\AsciidocPhp\MultiRepo\Source\SourceException;
 
 #[CoversClass(SourceError::class)]
 #[CoversMethod(SourceError::class, 'correctiveAction')]

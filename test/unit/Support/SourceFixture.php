@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Support;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Support;
 
 use RuntimeException;
-use Webware\AsciidocPhpMultiRepo\Config\SiteConfig;
-use Webware\AsciidocPhpMultiRepo\Discovery\DiscoveredRepository;
-use Webware\AsciidocPhpMultiRepo\Source\FetchedRepository;
-use Webware\AsciidocPhpMultiRepo\Support\Path;
+use Webware\AsciidocPhp\MultiRepo\Config\SiteConfig;
+use Webware\AsciidocPhp\MultiRepo\Discovery\DiscoveredRepository;
+use Webware\AsciidocPhp\MultiRepo\Source\FetchedRepository;
+use Webware\AsciidocPhp\MultiRepo\Support\Path;
 
 use function dirname;
 use function file_get_contents;

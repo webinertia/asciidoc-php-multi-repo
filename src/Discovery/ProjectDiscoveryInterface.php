@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Webware\AsciidocPhpMultiRepo\Discovery;
+namespace Webware\AsciidocPhp\MultiRepo\Discovery;
 
-use Webware\AsciidocPhpMultiRepo\Config\SiteConfig;
+use Webware\AsciidocPhp\MultiRepo\Config\SiteConfig;
 
 /**
  * The seam between "where the project list comes from" and everything downstream.

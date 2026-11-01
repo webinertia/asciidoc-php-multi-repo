@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Cli;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Cli;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
-use Webware\AsciidocPhpMultiRepo\Cli\Application;
-use Webware\AsciidocPhpMultiRepo\Cli\Commands\CommandInterface;
-use Webware\AsciidocPhpMultiRepo\Cli\ExitCode;
-use Webware\AsciidocPhpMultiRepo\Cli\Options;
-use Webware\AsciidocPhpMultiRepo\Cli\Output;
-use Webware\AsciidocPhpMultiRepo\Config\SiteConfig;
-use Webware\AsciidocPhpMultiRepo\Support\Path;
-use WebwareTest\AsciidocPhpMultiRepo\Support\CapturedOutput;
-use WebwareTest\AsciidocPhpMultiRepo\Support\RecordingCommand;
-use WebwareTest\AsciidocPhpMultiRepo\Support\TempDirectoryTrait;
+use Webware\AsciidocPhp\MultiRepo\Cli\Application;
+use Webware\AsciidocPhp\MultiRepo\Cli\Commands\CommandInterface;
+use Webware\AsciidocPhp\MultiRepo\Cli\ExitCode;
+use Webware\AsciidocPhp\MultiRepo\Cli\Options;
+use Webware\AsciidocPhp\MultiRepo\Cli\Output;
+use Webware\AsciidocPhp\MultiRepo\Config\SiteConfig;
+use Webware\AsciidocPhp\MultiRepo\Support\Path;
+use WebwareTest\AsciidocPhp\MultiRepo\Support\CapturedOutput;
+use WebwareTest\AsciidocPhp\MultiRepo\Support\RecordingCommand;
+use WebwareTest\AsciidocPhp\MultiRepo\Support\TempDirectoryTrait;
 
 use function dirname;
 use function file_put_contents;

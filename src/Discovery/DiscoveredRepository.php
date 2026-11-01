@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webware\AsciidocPhpMultiRepo\Discovery;
+namespace Webware\AsciidocPhp\MultiRepo\Discovery;
 
 /**
  * One repository selected for the site, before it has been fetched.

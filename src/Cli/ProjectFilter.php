@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Webware\AsciidocPhpMultiRepo\Cli;
+namespace Webware\AsciidocPhp\MultiRepo\Cli;
 
-use Webware\AsciidocPhpMultiRepo\Discovery\DiscoveredRepository;
+use Webware\AsciidocPhp\MultiRepo\Discovery\DiscoveredRepository;
 
 use function array_filter;
 use function array_values;

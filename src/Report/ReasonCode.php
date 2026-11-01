@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webware\AsciidocPhpMultiRepo\Report;
+namespace Webware\AsciidocPhp\MultiRepo\Report;
 
 /**
  * The closed set of failure reasons a report may carry.

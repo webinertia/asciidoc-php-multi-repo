@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Cli;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Cli;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\TestCase;
-use Webware\AsciidocPhpMultiRepo\Cli\Options;
-use Webware\AsciidocPhpMultiRepo\Cli\ProjectFilter;
-use WebwareTest\AsciidocPhpMultiRepo\Support\SourceFixture;
+use Webware\AsciidocPhp\MultiRepo\Cli\Options;
+use Webware\AsciidocPhp\MultiRepo\Cli\ProjectFilter;
+use WebwareTest\AsciidocPhp\MultiRepo\Support\SourceFixture;
 
 #[CoversClass(ProjectFilter::class)]
 #[CoversMethod(ProjectFilter::class, 'apply')]

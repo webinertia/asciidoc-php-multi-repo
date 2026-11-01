@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Discovery;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Discovery;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\TestCase;
-use Webware\AsciidocPhpMultiRepo\Discovery\GitHubLinkHeader;
+use Webware\AsciidocPhp\MultiRepo\Discovery\GitHubLinkHeader;
 
 #[CoversClass(GitHubLinkHeader::class)]
 #[CoversMethod(GitHubLinkHeader::class, 'next')]

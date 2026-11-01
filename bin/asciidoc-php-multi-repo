@@ -3,9 +3,9 @@
 
 declare(strict_types=1);
 
-use Webware\AsciidocPhpMultiRepo\Cli\Application;
-use Webware\AsciidocPhpMultiRepo\Cli\ExitCode;
-use Webware\AsciidocPhpMultiRepo\Cli\Output;
+use Webware\AsciidocPhp\MultiRepo\Cli\Application;
+use Webware\AsciidocPhp\MultiRepo\Cli\ExitCode;
+use Webware\AsciidocPhp\MultiRepo\Cli\Output;
 
 // Two locations: a checkout of this package, and the vendor tree of a consumer that installed it.
 $autoloaders = [

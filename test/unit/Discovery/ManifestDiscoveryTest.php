@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Discovery;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Discovery;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\TestCase;
-use Webware\AsciidocPhpMultiRepo\Config\Manifest;
-use Webware\AsciidocPhpMultiRepo\Config\ManifestEntry;
-use Webware\AsciidocPhpMultiRepo\Config\ManifestLoader;
-use Webware\AsciidocPhpMultiRepo\Discovery\DiscoveredRepository;
-use Webware\AsciidocPhpMultiRepo\Discovery\DiscoveryFactory;
-use Webware\AsciidocPhpMultiRepo\Discovery\ManifestDiscovery;
-use Webware\AsciidocPhpMultiRepo\Discovery\SlugException;
-use Webware\AsciidocPhpMultiRepo\Http\HttpException;
-use Webware\AsciidocPhpMultiRepo\Http\HttpResponse;
-use Webware\AsciidocPhpMultiRepo\Http\HttpTransportInterface;
-use WebwareTest\AsciidocPhpMultiRepo\Support\SourceFixture;
+use Webware\AsciidocPhp\MultiRepo\Config\Manifest;
+use Webware\AsciidocPhp\MultiRepo\Config\ManifestEntry;
+use Webware\AsciidocPhp\MultiRepo\Config\ManifestLoader;
+use Webware\AsciidocPhp\MultiRepo\Discovery\DiscoveredRepository;
+use Webware\AsciidocPhp\MultiRepo\Discovery\DiscoveryFactory;
+use Webware\AsciidocPhp\MultiRepo\Discovery\ManifestDiscovery;
+use Webware\AsciidocPhp\MultiRepo\Discovery\SlugException;
+use Webware\AsciidocPhp\MultiRepo\Http\HttpException;
+use Webware\AsciidocPhp\MultiRepo\Http\HttpResponse;
+use Webware\AsciidocPhp\MultiRepo\Http\HttpTransportInterface;
+use WebwareTest\AsciidocPhp\MultiRepo\Support\SourceFixture;
 
 use function array_map;
 use function array_values;

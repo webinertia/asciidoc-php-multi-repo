@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webware\AsciidocPhpMultiRepo\Http;
+namespace Webware\AsciidocPhp\MultiRepo\Http;
 
 use CurlHandle;
 use Override;

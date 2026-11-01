@@ -2,24 +2,24 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Discovery;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Discovery;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\TestCase;
-use Webware\AsciidocPhpMultiRepo\Discovery\DiscoveredRepository;
-use Webware\AsciidocPhpMultiRepo\Discovery\DiscoveryException;
-use Webware\AsciidocPhpMultiRepo\Discovery\GitHubApiClient;
-use Webware\AsciidocPhpMultiRepo\Discovery\GitHubLinkHeader;
-use Webware\AsciidocPhpMultiRepo\Discovery\GitHubPropertyDiscovery;
-use Webware\AsciidocPhpMultiRepo\Discovery\GitHubPropertyValues;
-use Webware\AsciidocPhpMultiRepo\Discovery\GitHubRepositoryMetadata;
-use Webware\AsciidocPhpMultiRepo\Discovery\OnboardValue;
-use Webware\AsciidocPhpMultiRepo\Http\HttpException;
-use Webware\AsciidocPhpMultiRepo\Http\HttpResponse;
-use Webware\AsciidocPhpMultiRepo\Http\HttpTransportInterface;
-use WebwareTest\AsciidocPhpMultiRepo\Support\SourceFixture;
-use WebwareTest\AsciidocPhpMultiRepo\Support\StubHttpTransport;
+use Webware\AsciidocPhp\MultiRepo\Discovery\DiscoveredRepository;
+use Webware\AsciidocPhp\MultiRepo\Discovery\DiscoveryException;
+use Webware\AsciidocPhp\MultiRepo\Discovery\GitHubApiClient;
+use Webware\AsciidocPhp\MultiRepo\Discovery\GitHubLinkHeader;
+use Webware\AsciidocPhp\MultiRepo\Discovery\GitHubPropertyDiscovery;
+use Webware\AsciidocPhp\MultiRepo\Discovery\GitHubPropertyValues;
+use Webware\AsciidocPhp\MultiRepo\Discovery\GitHubRepositoryMetadata;
+use Webware\AsciidocPhp\MultiRepo\Discovery\OnboardValue;
+use Webware\AsciidocPhp\MultiRepo\Http\HttpException;
+use Webware\AsciidocPhp\MultiRepo\Http\HttpResponse;
+use Webware\AsciidocPhp\MultiRepo\Http\HttpTransportInterface;
+use WebwareTest\AsciidocPhp\MultiRepo\Support\SourceFixture;
+use WebwareTest\AsciidocPhp\MultiRepo\Support\StubHttpTransport;
 
 use function array_map;
 use function getenv;

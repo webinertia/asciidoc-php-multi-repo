@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Source;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Source;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\TestCase;
-use Webware\AsciidocPhpMultiRepo\Report\ReasonCode;
-use Webware\AsciidocPhpMultiRepo\Source\DocPage;
-use Webware\AsciidocPhpMultiRepo\Source\DocVersion;
-use Webware\AsciidocPhpMultiRepo\Source\PageEnumerator;
-use Webware\AsciidocPhpMultiRepo\Source\SourceException;
-use WebwareTest\AsciidocPhpMultiRepo\Support\SourceFixture;
+use Webware\AsciidocPhp\MultiRepo\Report\ReasonCode;
+use Webware\AsciidocPhp\MultiRepo\Source\DocPage;
+use Webware\AsciidocPhp\MultiRepo\Source\DocVersion;
+use Webware\AsciidocPhp\MultiRepo\Source\PageEnumerator;
+use Webware\AsciidocPhp\MultiRepo\Source\SourceException;
+use WebwareTest\AsciidocPhp\MultiRepo\Support\SourceFixture;
 
 use function array_map;
 

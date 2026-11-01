@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Config;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Config;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Webware\AsciidocPhpMultiRepo\Config\ConfigException;
-use Webware\AsciidocPhpMultiRepo\Config\ManifestLoader;
-use Webware\AsciidocPhpMultiRepo\Support\Filesystem;
-use Webware\AsciidocPhpMultiRepo\Support\Path;
-use WebwareTest\AsciidocPhpMultiRepo\Support\TempDirectoryTrait;
+use Webware\AsciidocPhp\MultiRepo\Config\ConfigException;
+use Webware\AsciidocPhp\MultiRepo\Config\ManifestLoader;
+use Webware\AsciidocPhp\MultiRepo\Support\Filesystem;
+use Webware\AsciidocPhp\MultiRepo\Support\Path;
+use WebwareTest\AsciidocPhp\MultiRepo\Support\TempDirectoryTrait;
 
 use function dirname;
 use function json_encode;

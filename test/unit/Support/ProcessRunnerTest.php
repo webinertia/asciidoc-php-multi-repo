@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Support;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Support;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Webware\AsciidocPhpMultiRepo\Support\ProcessFailedException;
-use Webware\AsciidocPhpMultiRepo\Support\ProcessRunner;
+use Webware\AsciidocPhp\MultiRepo\Support\ProcessFailedException;
+use Webware\AsciidocPhp\MultiRepo\Support\ProcessRunner;
 
 use const PHP_BINARY;
 

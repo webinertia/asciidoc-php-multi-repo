@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Discovery;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Discovery;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Webware\AsciidocPhpMultiRepo\Discovery\SlugException;
-use Webware\AsciidocPhpMultiRepo\Discovery\SlugNormalizer;
+use Webware\AsciidocPhp\MultiRepo\Discovery\SlugException;
+use Webware\AsciidocPhp\MultiRepo\Discovery\SlugNormalizer;
 
 use function array_unique;
 

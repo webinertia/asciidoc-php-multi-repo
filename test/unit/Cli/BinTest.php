@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Cli;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Cli;
 
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
-use Webware\AsciidocPhpMultiRepo\Cli\ExitCode;
-use Webware\AsciidocPhpMultiRepo\Support\Path;
-use Webware\AsciidocPhpMultiRepo\Support\ProcessRunner;
-use WebwareTest\AsciidocPhpMultiRepo\Support\TempDirectoryTrait;
+use Webware\AsciidocPhp\MultiRepo\Cli\ExitCode;
+use Webware\AsciidocPhp\MultiRepo\Support\Path;
+use Webware\AsciidocPhp\MultiRepo\Support\ProcessRunner;
+use WebwareTest\AsciidocPhp\MultiRepo\Support\TempDirectoryTrait;
 
 use function dirname;
 

@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Webware\AsciidocPhpMultiRepo\Discovery;
+namespace Webware\AsciidocPhp\MultiRepo\Discovery;
 
 use SensitiveParameter;
 use Throwable;
-use Webware\AsciidocPhpMultiRepo\Config\OrganizationSection;
-use Webware\AsciidocPhpMultiRepo\Http\CurlHttpTransport;
-use Webware\AsciidocPhpMultiRepo\Http\HttpException;
-use Webware\AsciidocPhpMultiRepo\Http\HttpResponse;
-use Webware\AsciidocPhpMultiRepo\Http\HttpTransportInterface;
-use Webware\AsciidocPhpMultiRepo\Support\Json;
-use Webware\AsciidocPhpMultiRepo\Support\JsonDecodeException;
+use Webware\AsciidocPhp\MultiRepo\Config\OrganizationSection;
+use Webware\AsciidocPhp\MultiRepo\Http\CurlHttpTransport;
+use Webware\AsciidocPhp\MultiRepo\Http\HttpException;
+use Webware\AsciidocPhp\MultiRepo\Http\HttpResponse;
+use Webware\AsciidocPhp\MultiRepo\Http\HttpTransportInterface;
+use Webware\AsciidocPhp\MultiRepo\Support\Json;
+use Webware\AsciidocPhp\MultiRepo\Support\JsonDecodeException;
 
 use function array_key_exists;
 use function count;

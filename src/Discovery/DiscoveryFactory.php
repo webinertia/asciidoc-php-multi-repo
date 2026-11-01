@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Webware\AsciidocPhpMultiRepo\Discovery;
+namespace Webware\AsciidocPhp\MultiRepo\Discovery;
 
-use Webware\AsciidocPhpMultiRepo\Config\ManifestLoader;
-use Webware\AsciidocPhpMultiRepo\Http\CurlHttpTransport;
-use Webware\AsciidocPhpMultiRepo\Http\HttpTransportInterface;
+use Webware\AsciidocPhp\MultiRepo\Config\ManifestLoader;
+use Webware\AsciidocPhp\MultiRepo\Http\CurlHttpTransport;
+use Webware\AsciidocPhp\MultiRepo\Http\HttpTransportInterface;
 
 /**
  * Chooses the discovery source: a manifest when one was named, the organisation property otherwise.
@@ -25,7 +25,7 @@ final class DiscoveryFactory
     ) {}
 
     /**
-     * @throws \Webware\AsciidocPhpMultiRepo\Config\ConfigException when the manifest is unusable
+     * @throws \Webware\AsciidocPhp\MultiRepo\Config\ConfigException when the manifest is unusable
      */
     public function create(?string $manifestPath): ProjectDiscoveryInterface
     {

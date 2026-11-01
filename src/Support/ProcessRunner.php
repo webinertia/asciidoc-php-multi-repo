@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webware\AsciidocPhpMultiRepo\Support;
+namespace Webware\AsciidocPhp\MultiRepo\Support;
 
 use InvalidArgumentException;
 use RuntimeException;

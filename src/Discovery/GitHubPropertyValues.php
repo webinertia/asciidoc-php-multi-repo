@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Webware\AsciidocPhpMultiRepo\Discovery;
+namespace Webware\AsciidocPhp\MultiRepo\Discovery;
 
-use Webware\AsciidocPhpMultiRepo\Config\OrganizationSection;
+use Webware\AsciidocPhp\MultiRepo\Config\OrganizationSection;
 
 use function is_array;
 use function is_string;

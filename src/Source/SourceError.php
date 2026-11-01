@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Webware\AsciidocPhpMultiRepo\Source;
+namespace Webware\AsciidocPhp\MultiRepo\Source;
 
-use Webware\AsciidocPhpMultiRepo\Report\ReasonCode;
+use Webware\AsciidocPhp\MultiRepo\Report\ReasonCode;
 
 /**
  * One reason a project or a single page could not be produced.

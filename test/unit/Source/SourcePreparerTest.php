@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo\Source;
+namespace WebwareTest\AsciidocPhp\MultiRepo\Source;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\TestCase;
-use Webware\AsciidocPhpMultiRepo\Report\ReasonCode;
-use Webware\AsciidocPhpMultiRepo\Source\DocPage;
-use Webware\AsciidocPhpMultiRepo\Source\SourceException;
-use Webware\AsciidocPhpMultiRepo\Source\SourceFormat;
-use Webware\AsciidocPhpMultiRepo\Source\SourcePreparer;
-use Webware\AsciidocPhpMultiRepo\Support\Filesystem;
-use Webware\AsciidocPhpMultiRepo\Support\Path;
-use WebwareTest\AsciidocPhpMultiRepo\Support\TempDirectoryTrait;
+use Webware\AsciidocPhp\MultiRepo\Report\ReasonCode;
+use Webware\AsciidocPhp\MultiRepo\Source\DocPage;
+use Webware\AsciidocPhp\MultiRepo\Source\SourceException;
+use Webware\AsciidocPhp\MultiRepo\Source\SourceFormat;
+use Webware\AsciidocPhp\MultiRepo\Source\SourcePreparer;
+use Webware\AsciidocPhp\MultiRepo\Support\Filesystem;
+use Webware\AsciidocPhp\MultiRepo\Support\Path;
+use WebwareTest\AsciidocPhp\MultiRepo\Support\TempDirectoryTrait;
 
 /**
  * Source preparation: format detection, encoding validation, byte order mark removal, line-ending

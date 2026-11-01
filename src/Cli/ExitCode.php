@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webware\AsciidocPhpMultiRepo\Cli;
+namespace Webware\AsciidocPhp\MultiRepo\Cli;
 
 use function in_array;
 use function is_array;

@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace WebwareTest\AsciidocPhpMultiRepo;
+namespace WebwareTest\AsciidocPhp\MultiRepo;
 
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
-use Webware\AsciidocPhpMultiRepo\Cli\Application;
-use Webware\AsciidocPhpMultiRepo\Cli\Commands\CommandInterface;
-use Webware\AsciidocPhpMultiRepo\Cli\ExitCode;
-use Webware\AsciidocPhpMultiRepo\Support\Path;
-use WebwareTest\AsciidocPhpMultiRepo\Support\CapturedOutput;
+use Webware\AsciidocPhp\MultiRepo\Cli\Application;
+use Webware\AsciidocPhp\MultiRepo\Cli\Commands\CommandInterface;
+use Webware\AsciidocPhp\MultiRepo\Cli\ExitCode;
+use Webware\AsciidocPhp\MultiRepo\Support\Path;
+use WebwareTest\AsciidocPhp\MultiRepo\Support\CapturedOutput;
 
 use function array_map;
 use function array_slice;

@@ -1,0 +1,35 @@
+/.phpunit.cache
+/.phpunit.result.cache
+/clover.xml
+/coverage/
+/coveralls-upload.json
+/coverage.txt
+/phpbench.json
+/phpunit.xml
+/infection.log
+/summary.log
+/vendor/
+/.vscode
+/mago-results.txt
+*:Zone.Identifier
+
+# `/mago.bat` is deliberately NOT listed here. It is a tracked artifact, shipped
+# by the alignment task list and present in the repository template, because
+# Infection cannot run Mago on Windows without it. See issue 59.
+
+# Spec Kit infrastructure is tracked deliberately: `.specify/` and
+# `.github/skills/` are what seed the workflow in a derived repository, and they
+# exist for the life of the project.
+#
+# Installed presets are tracked for the same reason. `.specify/presets/.registry`
+# is the authoritative record of what is installed: without it the preset
+# directory on disk is ignored and every template falls back to core. Both the
+# registry and the preset directory ship with the template, so a derived
+# repository starts with the standard already resolved and needs no install step.
+#
+# Ignored instead are the artifacts that belong to the machine rather than the
+# project. The alignment run's spec.md, plan.md and tasks.md are working notes:
+# they complete their purpose when alignment lands and are not carried forward.
+/.specify/extensions/.cache/
+__pycache__/
+*.pyc

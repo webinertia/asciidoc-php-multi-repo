@@ -16,13 +16,26 @@ final readonly class ValidationResult
     /**
      * @param list<ValidationError> $errors
      */
-    public function __construct(private array $errors)
-    {
-    }
+    public function __construct(
+        private array $errors,
+    ) {}
 
     public static function valid(): self
     {
         return new self([]);
+    }
+
+    public function describe(): string
+    {
+        return implode('; ', array_map(
+            static fn(ValidationError $error): string => $error->describe(),
+            $this->errors,
+        ));
+    }
+
+    public function errorCount(): int
+    {
+        return count($this->errors);
     }
 
     /**
@@ -35,19 +48,6 @@ final readonly class ValidationResult
 
     public function isValid(): bool
     {
-        return $this->errors === [];
-    }
-
-    public function errorCount(): int
-    {
-        return count($this->errors);
-    }
-
-    public function describe(): string
-    {
-        return implode('; ', array_map(
-            static fn (ValidationError $error): string => $error->describe(),
-            $this->errors,
-        ));
+        return [] === $this->errors;
     }
 }

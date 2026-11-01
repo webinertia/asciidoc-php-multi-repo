@@ -12,8 +12,10 @@ use RuntimeException;
  */
 final class SchemaException extends RuntimeException
 {
-    public function __construct(string $message, private readonly string $pointer = '')
-    {
+    public function __construct(
+        string $message,
+        private readonly string $pointer = '',
+    ) {
         parent::__construct($message);
     }
 

@@ -35,7 +35,7 @@ final class Version
             return self::FALLBACK;
         }
 
-        if (preg_match('/^v?([0-9]+\.[0-9]+\.[0-9]+)$/', $version, $matches) !== 1) {
+        if (preg_match('/^v?([0-9]+\.[0-9]+\.[0-9]+)$/', $version, $matches) !== 1 || ! isset($matches[1])) {
             return self::FALLBACK;
         }
 

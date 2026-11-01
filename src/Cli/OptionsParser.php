@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Webware\AsciidocPhpMultiRepo\Cli;
 
+use SensitiveParameter;
+
 use function count;
 use function in_array;
 use function preg_match;
@@ -87,7 +89,7 @@ final class OptionsParser
             $token = $arguments[$index];
             $index++;
 
-            if ($token === '--') {
+            if ('--' === $token) {
                 while ($index < $count) {
                     $positional[] = $arguments[$index];
                     $index++;
@@ -96,7 +98,7 @@ final class OptionsParser
                 break;
             }
 
-            if ($token === '-') {
+            if ('-' === $token) {
                 throw UsageException::unexpectedArgument($token);
             }
 
@@ -126,30 +128,98 @@ final class OptionsParser
 
         $port = Options::DEFAULT_PORT;
         if (isset($values['port'])) {
-            $port = $this->integer('--port', $values['port'], 1, 65535);
+            $port = $this->integer('--port', $values['port'], 1, 65_535);
         }
 
         return new Options(
-            command: $positional[0] ?? '',
-            config: $values['config'] ?? null,
-            out: $values['out'] ?? null,
-            cache: $values['cache'] ?? null,
-            report: $values['report'] ?? null,
+            command    : $positional[0] ?? '',
+            config     : $values['config'] ?? null,
+            out        : $values['out'] ?? null,
+            cache      : $values['cache'] ?? null,
+            report     : $values['report'] ?? null,
             concurrency: $concurrency,
-            projects: $projects,
-            refs: $refs,
-            manifest: $values['manifest'] ?? null,
-            full: isset($flags['full']),
-            basePath: $values['basePath'] ?? null,
-            port: $port,
-            force: isset($flags['force']),
-            quiet: isset($flags['quiet']),
-            verbose: isset($flags['verbose']),
-            timings: isset($flags['timings']),
-            noColor: isset($flags['noColor']),
-            help: isset($flags['help']),
-            version: isset($flags['version']),
+            projects   : $projects,
+            refs       : $refs,
+            manifest   : $values['manifest'] ?? null,
+            full       : isset($flags['full']),
+            basePath   : $values['basePath'] ?? null,
+            port       : $port,
+            force      : isset($flags['force']),
+            quiet      : isset($flags['quiet']),
+            verbose    : isset($flags['verbose']),
+            timings    : isset($flags['timings']),
+            noColor    : isset($flags['noColor']),
+            help       : isset($flags['help']),
+            version    : isset($flags['version']),
         );
+    }
+
+    /**
+     * @param array<string, string> $refs
+     *
+     * @throws UsageException
+     */
+    private function addRef(string $option, string $assignment, array &$refs): void
+    {
+        $equals = strpos($assignment, '=');
+
+        if (false === $equals || 0 === $equals || $equals === (strlen($assignment) - 1)) {
+            throw UsageException::invalidValue($option, $assignment, 'name=revision');
+        }
+
+        $refs[substr($assignment, 0, $equals)] = substr($assignment, $equals + 1);
+    }
+
+    /**
+     * @param list<string>          $arguments
+     * @param array<string, string> $values
+     * @param array<string, true>   $flags
+     *
+     * @throws UsageException
+     */
+    private function applyShortOption(
+        #[SensitiveParameter]
+        string $token,
+        array $arguments,
+        int &$index,
+        array &$values,
+        array &$flags,
+    ): void {
+        if (! isset(self::SHORT_OPTIONS[$token])) {
+            throw UsageException::unknownOption($token);
+        }
+
+        [$kind, $property] = self::SHORT_OPTIONS[$token];
+
+        if ('flag' === $kind) {
+            $flags[$property] = true;
+
+            return;
+        }
+
+        $values[$property] = $this->value($token, null, $arguments, $index);
+    }
+
+    /**
+     * @throws UsageException
+     */
+    private function integer(string $option, string $value, int $minimum, ?int $maximum = null): int
+    {
+        if (preg_match('/^[0-9]+$/', $value) !== 1) {
+            throw UsageException::invalidValue($option, $value, 'a whole number');
+        }
+
+        $number = (int) $value;
+
+        if ($number < $minimum || (null !== $maximum && $number > $maximum)) {
+            $expected = null === $maximum
+                ? sprintf('a whole number of at least %d', $minimum)
+                : sprintf('a whole number between %d and %d', $minimum, $maximum);
+
+            throw UsageException::invalidValue($option, $value, $expected);
+        }
+
+        return $number;
     }
 
     /**
@@ -162,6 +232,7 @@ final class OptionsParser
      * @throws UsageException
      */
     private function parseLongOption(
+        #[SensitiveParameter]
         string $token,
         array $arguments,
         int &$index,
@@ -170,17 +241,17 @@ final class OptionsParser
         array &$projects,
         array &$refs,
     ): void {
-        $name = $token;
+        $name   = $token;
         $inline = null;
         $equals = strpos($token, '=');
 
-        if ($equals !== false) {
-            $name = substr($token, 0, $equals);
+        if (false !== $equals) {
+            $name   = substr($token, 0, $equals);
             $inline = substr($token, $equals + 1);
         }
 
         if (isset(self::FLAG_OPTIONS[$name])) {
-            if ($inline !== null) {
+            if (null !== $inline) {
                 throw UsageException::unexpectedValue($name);
             }
 
@@ -193,16 +264,16 @@ final class OptionsParser
             throw UsageException::unknownOption($name);
         }
 
-        $value = $this->value($name, $inline, $arguments, $index);
+        $value    = $this->value($name, $inline, $arguments, $index);
         $property = self::VALUE_OPTIONS[$name];
 
-        if ($property === 'project') {
+        if ('project' === $property) {
             $projects[] = $value;
 
             return;
         }
 
-        if ($property === 'ref') {
+        if ('ref' === $property) {
             $this->addRef($name, $value, $refs);
 
             return;
@@ -219,6 +290,7 @@ final class OptionsParser
      * @throws UsageException
      */
     private function parseShortOption(
+        #[SensitiveParameter]
         string $token,
         array $arguments,
         int &$index,
@@ -240,7 +312,7 @@ final class OptionsParser
             }
 
             foreach ($letters as $letter) {
-                $this->applyShortOption('-' . $letter, $arguments, $index, $values, $flags);
+                $this->applyShortOption("-{$letter}", $arguments, $index, $values, $flags);
             }
 
             return;
@@ -250,43 +322,14 @@ final class OptionsParser
     }
 
     /**
-     * @param list<string>          $arguments
-     * @param array<string, string> $values
-     * @param array<string, true>   $flags
-     *
-     * @throws UsageException
-     */
-    private function applyShortOption(
-        string $token,
-        array $arguments,
-        int &$index,
-        array &$values,
-        array &$flags,
-    ): void {
-        if (! isset(self::SHORT_OPTIONS[$token])) {
-            throw UsageException::unknownOption($token);
-        }
-
-        [$kind, $property] = self::SHORT_OPTIONS[$token];
-
-        if ($kind === 'flag') {
-            $flags[$property] = true;
-
-            return;
-        }
-
-        $values[$property] = $this->value($token, null, $arguments, $index);
-    }
-
-    /**
      * @param list<string> $arguments
      *
      * @throws UsageException
      */
     private function value(string $option, ?string $inline, array $arguments, int &$index): string
     {
-        if ($inline !== null) {
-            if ($inline === '') {
+        if (null !== $inline) {
+            if ('' === $inline) {
                 throw UsageException::missingValue($option);
             }
 
@@ -300,48 +343,10 @@ final class OptionsParser
         $value = $arguments[$index];
         $index++;
 
-        if ($value === '') {
+        if ('' === $value) {
             throw UsageException::missingValue($option);
         }
 
         return $value;
-    }
-
-    /**
-     * @param array<string, string> $refs
-     *
-     * @throws UsageException
-     */
-    private function addRef(string $option, string $assignment, array &$refs): void
-    {
-        $equals = strpos($assignment, '=');
-
-        if ($equals === false || $equals === 0 || $equals === strlen($assignment) - 1) {
-            throw UsageException::invalidValue($option, $assignment, 'name=revision');
-        }
-
-        $refs[substr($assignment, 0, $equals)] = substr($assignment, $equals + 1);
-    }
-
-    /**
-     * @throws UsageException
-     */
-    private function integer(string $option, string $value, int $minimum, ?int $maximum = null): int
-    {
-        if (preg_match('/^[0-9]+$/', $value) !== 1) {
-            throw UsageException::invalidValue($option, $value, 'a whole number');
-        }
-
-        $number = (int) $value;
-
-        if ($number < $minimum || ($maximum !== null && $number > $maximum)) {
-            $expected = $maximum === null
-                ? sprintf('a whole number of at least %d', $minimum)
-                : sprintf('a whole number between %d and %d', $minimum, $maximum);
-
-            throw UsageException::invalidValue($option, $value, $expected);
-        }
-
-        return $number;
     }
 }

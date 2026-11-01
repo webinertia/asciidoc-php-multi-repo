@@ -21,8 +21,7 @@ final readonly class SourceSection
         private array $extensions,
         private string $versionPattern,
         private array $excludePatterns,
-    ) {
-    }
+    ) {}
 
     /**
      * @param array<string, mixed> $data
@@ -39,14 +38,14 @@ final readonly class SourceSection
         );
     }
 
-    public function directory(): string
-    {
-        return $this->directory;
-    }
-
     public function defaultBranchOnly(): bool
     {
         return $this->defaultBranchOnly;
+    }
+
+    public function directory(): string
+    {
+        return $this->directory;
     }
 
     /**
@@ -60,6 +59,14 @@ final readonly class SourceSection
     /**
      * @return list<string>
      */
+    public function excludePatterns(): array
+    {
+        return $this->excludePatterns;
+    }
+
+    /**
+     * @return list<string>
+     */
     public function extensions(): array
     {
         return $this->extensions;
@@ -68,13 +75,5 @@ final readonly class SourceSection
     public function versionPattern(): string
     {
         return $this->versionPattern;
-    }
-
-    /**
-     * @return list<string>
-     */
-    public function excludePatterns(): array
-    {
-        return $this->excludePatterns;
     }
 }

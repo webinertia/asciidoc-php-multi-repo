@@ -36,8 +36,27 @@ final class ProcessRunner
 
     private const TERMINATION_GRACE_SECONDS = 2.0;
 
-    public function __construct(private readonly ?string $workingDirectory = null)
-    {
+    public function __construct(
+        private readonly ?string $workingDirectory = null,
+    ) {}
+
+    /**
+     * @param list<string>               $command
+     * @param array<string, string>|null $environment
+     */
+    public function mustRun(
+        array $command,
+        ?string $workingDirectory = null,
+        float $timeoutSeconds = 30.0,
+        ?array $environment = null,
+    ): ProcessResult {
+        $result = $this->run($command, $workingDirectory, $timeoutSeconds, $environment);
+
+        if (! $result->successful()) {
+            throw new ProcessFailedException($result);
+        }
+
+        return $result;
     }
 
     /**
@@ -50,7 +69,7 @@ final class ProcessRunner
         float $timeoutSeconds = 30.0,
         ?array $environment = null,
     ): ProcessResult {
-        if ($command === []) {
+        if ([] === $command) {
             throw new InvalidArgumentException('A process command must contain at least one argument.');
         }
 
@@ -103,7 +122,7 @@ final class ProcessRunner
 
             foreach ($read as $stream) {
                 $chunk = stream_get_contents($stream);
-                if (! is_string($chunk) || $chunk === '') {
+                if (! is_string($chunk) || '' === $chunk) {
                     continue;
                 }
 
@@ -117,7 +136,7 @@ final class ProcessRunner
 
             $status = proc_get_status($process);
 
-            if ($status['running'] === false) {
+            if (! $status['running']) {
                 $exitCode = (int) $status['exitcode'];
                 break;
             }
@@ -154,25 +173,6 @@ final class ProcessRunner
     }
 
     /**
-     * @param list<string>               $command
-     * @param array<string, string>|null $environment
-     */
-    public function mustRun(
-        array $command,
-        ?string $workingDirectory = null,
-        float $timeoutSeconds = 30.0,
-        ?array $environment = null,
-    ): ProcessResult {
-        $result = $this->run($command, $workingDirectory, $timeoutSeconds, $environment);
-
-        if (! $result->successful()) {
-            throw new ProcessFailedException($result);
-        }
-
-        return $result;
-    }
-
-    /**
      * @param resource $process
      */
     private function awaitTermination($process): int
@@ -182,7 +182,7 @@ final class ProcessRunner
         while (microtime(true) < $deadline) {
             $status = proc_get_status($process);
 
-            if ($status['running'] === false) {
+            if (! $status['running']) {
                 return (int) $status['exitcode'];
             }
 

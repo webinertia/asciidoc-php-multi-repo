@@ -105,7 +105,7 @@ this contract. Silent changes break publishing without any visible error at the 
 - PHP 8.4 and 8.5 only. Do not depend on PHP 8.6 features or on the `true-async` extension.
   Concurrency is implemented with a bounded worker pool that works without any extension.
 - Runtime dependencies: `webware/asciidoc-php`, plus `ext-json` and `ext-curl`. Development
-  dependencies follow the converter's conventions (PHPUnit 13, PHPStan level 10).
+  dependencies follow the Webware alignment standard (PHPUnit 13, Mago, Infection, PHPBench).
 - The package name is `webware/asciidoc-php-multi-repo`; the namespace root is
   `Webware\AsciidocPhpMultiRepo\`.
 - Docker Compose in this repository is the supported runtime path and is independent of the
@@ -125,8 +125,8 @@ this contract. Silent changes break publishing without any visible error at the 
 - Specification first: `spec.md`, then `plan.md`, then `tasks.md`. Implementation follows the
   task order; each task group is one pull request.
 - Gates for every pull request: `composer test` (unit and integration suites), `composer sa`
-  (PHPStan level 10), and the determinism gate (build the fixture organization twice, compare a
-  recursive SHA-256 manifest, require zero differences).
+  (Mago format check, lint, analyze, and guard), and the determinism gate (build the fixture
+  organization twice, compare a recursive SHA-256 manifest, require zero differences).
 - Network-dependent tests are opt-in and never run by default.
 - Changes to consumer repositories (documentation migration, workflow wiring) ship as separate
   pull requests in those repositories, never inside a builder pull request.
@@ -140,4 +140,4 @@ principle must either change the pull request or amend the constitution. Amendme
 pull request that states the principle, the reason, the migration impact, and a version bump of
 this file. Compliance is reviewed at plan time (Constitution Check) and at review time.
 
-**Version**: 1.0.0 | **Ratified**: 2026-10-31 | **Last Amended**: 2026-10-31
+**Version**: 1.1.0 | **Ratified**: 2026-10-31 | **Last Amended**: 2026-10-31

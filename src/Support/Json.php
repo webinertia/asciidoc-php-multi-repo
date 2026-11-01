@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Webware\AsciidocPhpMultiRepo\Support;
 
+use JsonException;
+use stdClass;
+
 use function is_array;
 use function json_decode;
 use function json_encode;
 use function sprintf;
-
-use JsonException;
-use stdClass;
 
 /**
  * JSON encoding and decoding with fixed, deterministic formatting.
@@ -24,31 +24,23 @@ final class Json
     /**
      * Four-space indentation is what JSON_PRETTY_PRINT emits; it is used for human-readable reports.
      */
-    public const int REPORT_FLAGS = JSON_PRETTY_PRINT
-        | JSON_UNESCAPED_SLASHES
-        | JSON_UNESCAPED_UNICODE
-        | JSON_PRESERVE_ZERO_FRACTION
-        | JSON_THROW_ON_ERROR;
+    public const int REPORT_FLAGS =
+        JSON_PRETTY_PRINT
+            | JSON_UNESCAPED_SLASHES
+            | JSON_UNESCAPED_UNICODE
+            | JSON_PRESERVE_ZERO_FRACTION
+            | JSON_THROW_ON_ERROR;
 
     /**
      * Compact output is used for machine-read indexes.
      */
-    public const int COMPACT_FLAGS = JSON_UNESCAPED_SLASHES
-        | JSON_UNESCAPED_UNICODE
-        | JSON_PRESERVE_ZERO_FRACTION
-        | JSON_THROW_ON_ERROR;
+    public const int COMPACT_FLAGS =
+        JSON_UNESCAPED_SLASHES
+            | JSON_UNESCAPED_UNICODE
+            | JSON_PRESERVE_ZERO_FRACTION
+            | JSON_THROW_ON_ERROR;
 
     private const int MAX_DEPTH = 512;
-
-    public function encode(mixed $value, int $flags = self::REPORT_FLAGS): string
-    {
-        return json_encode($value, $flags) . "\n";
-    }
-
-    public function encodeCompact(mixed $value): string
-    {
-        return $this->encode($value, self::COMPACT_FLAGS);
-    }
 
     /**
      * Decodes a document into associative arrays. An empty object and an empty array both decode to
@@ -87,9 +79,19 @@ final class Json
         return is_array($decoded) ? $decoded : [];
     }
 
+    public function encode(mixed $value, int $flags = self::REPORT_FLAGS): string
+    {
+        return json_encode($value, $flags) . "\n";
+    }
+
+    public function encodeCompact(mixed $value): string
+    {
+        return $this->encode($value, self::COMPACT_FLAGS);
+    }
+
     private function mapFailure(string $json, string $source, JsonException $exception): JsonDecodeException
     {
-        $location = (new JsonScanner($json))->scan();
+        $location = new JsonScanner($json)->scan();
 
         return new JsonDecodeException(
             sprintf(

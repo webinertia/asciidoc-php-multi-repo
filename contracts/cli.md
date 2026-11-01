@@ -106,7 +106,7 @@ that case the message on standard error is the only output.
 
 ```
 asciidoc-php-multi-repo build --config site.json --report build/report.json
-asciidoc-php-multi-repo validate --manifest tests/fixtures/manifest.json
+asciidoc-php-multi-repo validate --manifest test/fixtures/manifest.json
 asciidoc-php-multi-repo build --project message-bus --project messagebus-event --full
 asciidoc-php-multi-repo serve --out build/site --port 8080
 ```

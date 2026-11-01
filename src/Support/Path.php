@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Webware\AsciidocPhpMultiRepo\Support;
 
 use function array_fill;
-use function array_merge;
 use function array_pop;
 use function array_slice;
 use function count;
@@ -29,20 +28,28 @@ use function substr;
  */
 final class Path
 {
-    private function __construct()
+    private function __construct() {}
+
+    public static function isAbsolute(string $path): bool
     {
+        $canonical = self::toCanonical($path);
+
+        return (
+            str_starts_with($canonical, '/')
+                || preg_match('#^[A-Za-z]:/#', $canonical) === 1
+        );
     }
 
     public static function join(string ...$parts): string
     {
         $canonical = '';
         foreach ($parts as $part) {
-            if ($part === '') {
+            if ('' === $part) {
                 continue;
             }
 
             $part = self::toCanonical($part);
-            if ($canonical === '') {
+            if ('' === $canonical) {
                 $canonical = $part;
                 continue;
             }
@@ -55,7 +62,7 @@ final class Path
 
     public static function normalise(string $path): string
     {
-        if ($path === '') {
+        if ('' === $path) {
             return '';
         }
 
@@ -68,7 +75,7 @@ final class Path
     public static function relativeTo(string $from, string $to): string
     {
         [$fromPrefix, $fromSegments] = self::split(self::toCanonical($from));
-        [$toPrefix, $toSegments]     = self::split(self::toCanonical($to));
+        [$toPrefix, $toSegments] = self::split(self::toCanonical($to));
 
         if ($fromPrefix !== $toPrefix) {
             return self::toPlatform(self::assemble($toPrefix, $toSegments));
@@ -82,34 +89,30 @@ final class Path
             $common++;
         }
 
-        $segments = array_merge(
-            array_fill(0, count($fromSegments) - $common, '..'),
-            array_slice($toSegments, $common),
-        );
+        $segments = [
+            ...array_fill(0, count($fromSegments) - $common, '..'),
+            ...array_slice($toSegments, $common),
+        ];
 
         $relative = self::assemble('', $segments);
 
-        return self::toPlatform($relative === '' ? '.' : $relative);
+        return self::toPlatform('' === $relative ? '.' : $relative);
     }
 
     /**
-     * Replaces the extension of the last path segment. A leading dot in $extension is optional.
+     * Resolves $path against $base when $path is relative, and returns it unchanged otherwise.
      */
-    public static function withExtension(string $path, string $extension): string
+    public static function resolve(string $base, string $path): string
     {
-        $canonical = self::toCanonical($path);
-        $separator = strrpos($canonical, '/');
-        $directory = $separator === false ? '' : substr($canonical, 0, $separator + 1);
-        $basename  = $separator === false ? $canonical : substr($canonical, $separator + 1);
-        $dot       = strrpos($basename, '.');
-
-        if ($dot !== false && $dot > 0) {
-            $basename = substr($basename, 0, $dot);
+        if ('' === $path) {
+            return self::normalise($base);
         }
 
-        $extension = ltrim($extension, '.');
+        if (self::isAbsolute($path)) {
+            return self::normalise($path);
+        }
 
-        return self::toPlatform($directory . $basename . ($extension === '' ? '' : '.' . $extension));
+        return self::join($base, $path);
     }
 
     /**
@@ -121,43 +124,43 @@ final class Path
         return self::normaliseCanonical(self::toCanonical($path));
     }
 
-    public static function isAbsolute(string $path): bool
+    /**
+     * Replaces the extension of the last path segment. A leading dot in $extension is optional.
+     */
+    public static function withExtension(string $path, string $extension): string
     {
         $canonical = self::toCanonical($path);
+        $separator = strrpos($canonical, '/');
+        $directory = false === $separator ? '' : substr($canonical, 0, $separator + 1);
+        $basename  = false === $separator ? $canonical : substr($canonical, $separator + 1);
+        $dot       = strrpos($basename, '.');
 
-        return str_starts_with($canonical, '/')
-            || preg_match('#^[A-Za-z]:/#', $canonical) === 1;
+        if (false !== $dot && $dot > 0) {
+            $basename = substr($basename, 0, $dot);
+        }
+
+        $extension = ltrim($extension, '.');
+
+        return self::toPlatform($directory . $basename . ('' === $extension ? '' : ".{$extension}"));
     }
 
     /**
-     * Resolves $path against $base when $path is relative, and returns it unchanged otherwise.
+     * @param list<string> $segments
      */
-    public static function resolve(string $base, string $path): string
+    private static function assemble(string $prefix, array $segments): string
     {
-        if ($path === '') {
-            return self::normalise($base);
-        }
+        $joined = implode('/', $segments);
 
-        if (self::isAbsolute($path)) {
-            return self::normalise($path);
-        }
-
-        return self::join($base, $path);
-    }
-
-    private static function toCanonical(string $path): string
-    {
-        return str_replace('\\', '/', $path);
-    }
-
-    private static function toPlatform(string $canonical): string
-    {
-        return str_replace('/', DIRECTORY_SEPARATOR, $canonical);
+        return match ($prefix) {
+            ''      => $joined,
+            '/'     => "/{$joined}",
+            default => $prefix . $joined,
+        };
     }
 
     private static function normaliseCanonical(string $canonical): string
     {
-        if ($canonical === '') {
+        if ('' === $canonical) {
             return '';
         }
 
@@ -175,7 +178,7 @@ final class Path
         $rest   = $canonical;
 
         if (preg_match('#^([A-Za-z]):/#', $rest, $matches) === 1) {
-            $prefix = $matches[1] . ':/';
+            $prefix = "{$matches[1]}:/";
             $rest   = substr($rest, strlen($matches[0]));
         } elseif (str_starts_with($rest, '//')) {
             $prefix = '//';
@@ -187,18 +190,18 @@ final class Path
 
         /** @var list<string> $segments */
         $segments = [];
-        $floor    = $prefix === '//' ? 2 : 0;
+        $floor    = '//' === $prefix ? 2 : 0;
 
         foreach (explode('/', $rest) as $segment) {
-            if ($segment === '' || $segment === '.') {
+            if ('' === $segment || '.' === $segment) {
                 continue;
             }
 
-            if ($segment === '..') {
+            if ('..' === $segment) {
                 $last = count($segments) - 1;
-                if ($last >= $floor && $segments[$last] !== '..') {
+                if ($last >= $floor && '..' !== $segments[$last]) {
                     array_pop($segments);
-                } elseif ($prefix === '') {
+                } elseif ('' === $prefix) {
                     $segments[] = '..';
                 }
 
@@ -211,17 +214,13 @@ final class Path
         return [$prefix, $segments];
     }
 
-    /**
-     * @param list<string> $segments
-     */
-    private static function assemble(string $prefix, array $segments): string
+    private static function toCanonical(string $path): string
     {
-        $joined = implode('/', $segments);
+        return str_replace('\\', '/', $path);
+    }
 
-        return match ($prefix) {
-            ''      => $joined,
-            '/'     => '/' . $joined,
-            default => $prefix . $joined,
-        };
+    private static function toPlatform(string $canonical): string
+    {
+        return str_replace('/', DIRECTORY_SEPARATOR, $canonical);
     }
 }

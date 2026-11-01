@@ -16,7 +16,11 @@ final readonly class ProjectOverride
         private ?string $description,
         private ?string $accent,
         private ?int $order,
-    ) {
+    ) {}
+
+    public static function empty(): self
+    {
+        return new self(null, null, null, null, null);
     }
 
     /**
@@ -33,9 +37,30 @@ final readonly class ProjectOverride
         );
     }
 
-    public static function empty(): self
+    public function accent(): ?string
     {
-        return new self(null, null, null, null, null);
+        return $this->accent;
+    }
+
+    public function description(): ?string
+    {
+        return $this->description;
+    }
+
+    public function isEmpty(): bool
+    {
+        return (
+            null === $this->slug
+                && null === $this->title
+                && null === $this->description
+                && null === $this->accent
+                && null === $this->order
+        );
+    }
+
+    public function order(): ?int
+    {
+        return $this->order;
     }
 
     public function slug(): ?string
@@ -46,29 +71,5 @@ final readonly class ProjectOverride
     public function title(): ?string
     {
         return $this->title;
-    }
-
-    public function description(): ?string
-    {
-        return $this->description;
-    }
-
-    public function accent(): ?string
-    {
-        return $this->accent;
-    }
-
-    public function order(): ?int
-    {
-        return $this->order;
-    }
-
-    public function isEmpty(): bool
-    {
-        return $this->slug === null
-            && $this->title === null
-            && $this->description === null
-            && $this->accent === null
-            && $this->order === null;
     }
 }

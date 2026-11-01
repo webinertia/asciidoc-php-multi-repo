@@ -1,6 +1,0 @@
-parameters:
-    level: 10
-    paths:
-        - src
-        - bin/asciidoc-php-multi-repo
-    treatPhpDocTypesAsCertain: false

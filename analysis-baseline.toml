@@ -1,0 +1,487 @@
+variant = "loose"
+
+[[issues]]
+file = "bin/asciidoc-php-multi-repo"
+code = "mixed-assignment"
+message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
+count = 1
+
+[[issues]]
+file = "src/Cli/Commands/CommandInterface.php"
+code = "missing-api-or-internal"
+message = 'Interface `Webware\AsciidocPhpMultiRepo\Cli\Commands\CommandInterface` is missing an `@api` or `@internal` annotation.'
+count = 1
+
+[[issues]]
+file = "src/Cli/Commands/StubCommand.php"
+code = "missing-api-or-internal"
+message = 'Abstract class `Webware\AsciidocPhpMultiRepo\Cli\Commands\StubCommand` is missing an `@api` or `@internal` annotation.'
+count = 1
+
+[[issues]]
+file = "src/Cli/ExitCode.php"
+code = "impossible-condition"
+message = "This condition (type `false`) will always evaluate to false."
+count = 1
+
+[[issues]]
+file = "src/Cli/ExitCode.php"
+code = "mixed-assignment"
+message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
+count = 1
+
+[[issues]]
+file = "src/Cli/ExitCode.php"
+code = "redundant-type-comparison"
+message = "Redundant type assertion: `$project` is already `array<array-key, mixed>`."
+count = 1
+
+[[issues]]
+file = "src/Cli/OptionsParser.php"
+code = "possibly-null-argument"
+message = "Argument #1 of function `str_starts_with` is possibly `null`, but parameter type `string` does not accept it."
+count = 2
+
+[[issues]]
+file = "src/Cli/OptionsParser.php"
+code = "possibly-null-argument"
+message = 'Argument #1 of method `Webware\AsciidocPhpMultiRepo\Cli\OptionsParser::parseLongOption` is possibly `null`, but parameter type `string` does not accept it.'
+count = 1
+
+[[issues]]
+file = "src/Cli/OptionsParser.php"
+code = "possibly-null-argument"
+message = 'Argument #1 of method `Webware\AsciidocPhpMultiRepo\Cli\OptionsParser::parseShortOption` is possibly `null`, but parameter type `string` does not accept it.'
+count = 1
+
+[[issues]]
+file = "src/Cli/OptionsParser.php"
+code = "possibly-null-argument"
+message = 'Argument #1 of method `Webware\AsciidocPhpMultiRepo\Cli\UsageException::unexpectedArgument` is possibly `null`, but parameter type `string` does not accept it.'
+count = 1
+
+[[issues]]
+file = "src/Cli/OptionsParser.php"
+code = "possibly-undefined-int-array-index"
+message = "Possibly undefined array index accessed on `list<string>`."
+count = 2
+
+[[issues]]
+file = "src/Cli/OptionsParser.php"
+code = "possibly-undefined-int-array-index"
+message = "Possibly undefined array index accessed on `non-empty-list<null|string>`."
+count = 1
+
+[[issues]]
+file = "src/Cli/Version.php"
+code = "reference-to-undefined-variable"
+message = "Reference created from a previously undefined variable `$matches`."
+count = 1
+
+[[issues]]
+file = "src/Config/DocumentReader.php"
+code = "possible-method-access-on-null"
+message = "Attempting to call a method on `null`."
+count = 4
+
+[[issues]]
+file = "src/Config/DocumentReader.php"
+code = "possibly-undefined-int-array-index"
+message = 'Possibly undefined array index accessed on `list<Webware\AsciidocPhpMultiRepo\Config\ValidationError>`.'
+count = 1
+
+[[issues]]
+file = "src/Config/ManifestLoader.php"
+code = "impossible-condition"
+message = "This condition (type `false`) will always evaluate to false."
+count = 1
+
+[[issues]]
+file = "src/Config/ManifestLoader.php"
+code = "mixed-assignment"
+message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
+count = 1
+
+[[issues]]
+file = "src/Config/ManifestLoader.php"
+code = "mixed-assignment"
+message = "Assigning `nonnull` type to a variable may lead to unexpected behavior."
+count = 1
+
+[[issues]]
+file = "src/Config/ManifestLoader.php"
+code = "redundant-type-comparison"
+message = "Redundant type assertion: `$repository` is already `array<array-key, mixed>`."
+count = 1
+
+[[issues]]
+file = "src/Config/ManifestLoader.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Webware\AsciidocPhpMultiRepo\Config\ConfigException` in `Webware\AsciidocPhpMultiRepo\Config\ManifestLoader::assertSupportedSchemaVersion`.'
+count = 1
+
+[[issues]]
+file = "src/Config/SchemaValidator.php"
+code = "less-specific-nested-argument-type"
+message = "Argument type mismatch for argument #2 of `implode`: expected `array<array-key, Stringable|null|scalar>|null`, but provided type `list<mixed>` is less specific."
+count = 1
+
+[[issues]]
+file = "src/Config/SchemaValidator.php"
+code = "mixed-assignment"
+message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
+count = 19
+
+[[issues]]
+file = "src/Config/SchemaValidator.php"
+code = "possibly-undefined-int-array-index"
+message = "Possibly undefined array key `array-key` accessed on `array<array-key, mixed>`."
+count = 1
+
+[[issues]]
+file = "src/Config/SchemaValidator.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Webware\AsciidocPhpMultiRepo\Config\SchemaException` in `Webware\AsciidocPhpMultiRepo\Config\SchemaValidator::arrayErrors`.'
+count = 1
+
+[[issues]]
+file = "src/Config/SchemaValidator.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Webware\AsciidocPhpMultiRepo\Config\SchemaException` in `Webware\AsciidocPhpMultiRepo\Config\SchemaValidator::assertKnownKeywords`.'
+count = 1
+
+[[issues]]
+file = "src/Config/SchemaValidator.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Webware\AsciidocPhpMultiRepo\Config\SchemaException` in `Webware\AsciidocPhpMultiRepo\Config\SchemaValidator::enumErrors`.'
+count = 1
+
+[[issues]]
+file = "src/Config/SchemaValidator.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Webware\AsciidocPhpMultiRepo\Config\SchemaException` in `Webware\AsciidocPhpMultiRepo\Config\SchemaValidator::numberErrors`.'
+count = 1
+
+[[issues]]
+file = "src/Config/SchemaValidator.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Webware\AsciidocPhpMultiRepo\Config\SchemaException` in `Webware\AsciidocPhpMultiRepo\Config\SchemaValidator::objectErrors`.'
+count = 1
+
+[[issues]]
+file = "src/Config/SchemaValidator.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Webware\AsciidocPhpMultiRepo\Config\SchemaException` in `Webware\AsciidocPhpMultiRepo\Config\SchemaValidator::resolveReference`.'
+count = 1
+
+[[issues]]
+file = "src/Config/SchemaValidator.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Webware\AsciidocPhpMultiRepo\Config\SchemaException` in `Webware\AsciidocPhpMultiRepo\Config\SchemaValidator::stringErrors`.'
+count = 1
+
+[[issues]]
+file = "src/Config/SchemaValidator.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Webware\AsciidocPhpMultiRepo\Config\SchemaException` in `Webware\AsciidocPhpMultiRepo\Config\SchemaValidator::subSchema`.'
+count = 1
+
+[[issues]]
+file = "src/Config/SchemaValidator.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Webware\AsciidocPhpMultiRepo\Config\SchemaException` in `Webware\AsciidocPhpMultiRepo\Config\SchemaValidator::typeErrors`.'
+count = 1
+
+[[issues]]
+file = "src/Config/SchemaValidator.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Webware\AsciidocPhpMultiRepo\Config\SchemaException` in `Webware\AsciidocPhpMultiRepo\Config\SchemaValidator::validateNode`.'
+count = 1
+
+[[issues]]
+file = "src/Config/SiteConfigLoader.php"
+code = "mixed-assignment"
+message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
+count = 1
+
+[[issues]]
+file = "src/Config/SiteConfigLoader.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Webware\AsciidocPhpMultiRepo\Config\ConfigException` in `Webware\AsciidocPhpMultiRepo\Config\SiteConfigLoader::assertSupportedSchemaVersion`.'
+count = 1
+
+[[issues]]
+file = "src/Config/Values.php"
+code = "mixed-assignment"
+message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
+count = 8
+
+[[issues]]
+file = "src/Config/Values.php"
+code = "mixed-assignment"
+message = "Assigning `nonnull` type to a variable may lead to unexpected behavior."
+count = 1
+
+[[issues]]
+file = "src/Config/Values.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `InvalidArgumentException` in `Webware\AsciidocPhpMultiRepo\Config\Values::asString`.'
+count = 1
+
+[[issues]]
+file = "src/Config/Values.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `InvalidArgumentException` in `Webware\AsciidocPhpMultiRepo\Config\Values::boolean`.'
+count = 1
+
+[[issues]]
+file = "src/Config/Values.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `InvalidArgumentException` in `Webware\AsciidocPhpMultiRepo\Config\Values::integerList`.'
+count = 1
+
+[[issues]]
+file = "src/Config/Values.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `InvalidArgumentException` in `Webware\AsciidocPhpMultiRepo\Config\Values::integer`.'
+count = 1
+
+[[issues]]
+file = "src/Config/Values.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `InvalidArgumentException` in `Webware\AsciidocPhpMultiRepo\Config\Values::optionalInteger`.'
+count = 1
+
+[[issues]]
+file = "src/Config/Values.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `InvalidArgumentException` in `Webware\AsciidocPhpMultiRepo\Config\Values::requiredString`.'
+count = 1
+
+[[issues]]
+file = "src/Config/Values.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `InvalidArgumentException` in `Webware\AsciidocPhpMultiRepo\Config\Values::sectionMap`.'
+count = 1
+
+[[issues]]
+file = "src/Config/Values.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `InvalidArgumentException` in `Webware\AsciidocPhpMultiRepo\Config\Values::section`.'
+count = 1
+
+[[issues]]
+file = "src/Config/Values.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `InvalidArgumentException` in `Webware\AsciidocPhpMultiRepo\Config\Values::stringList`.'
+count = 1
+
+[[issues]]
+file = "src/Support/Filesystem.php"
+code = "missing-constant-type"
+message = "Class constant `SORT_STRING` is missing a type hint."
+count = 1
+
+[[issues]]
+file = "src/Support/Filesystem.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `RuntimeException` in `Webware\AsciidocPhpMultiRepo\Support\Filesystem::ensureDirectory`.'
+count = 1
+
+[[issues]]
+file = "src/Support/Filesystem.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `RuntimeException` in `Webware\AsciidocPhpMultiRepo\Support\Filesystem::hash`.'
+count = 1
+
+[[issues]]
+file = "src/Support/Filesystem.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `RuntimeException` in `Webware\AsciidocPhpMultiRepo\Support\Filesystem::read`.'
+count = 1
+
+[[issues]]
+file = "src/Support/Filesystem.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `RuntimeException` in `Webware\AsciidocPhpMultiRepo\Support\Filesystem::writeAtomic`.'
+count = 1
+
+[[issues]]
+file = "src/Support/Json.php"
+code = "mixed-assignment"
+message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
+count = 1
+
+[[issues]]
+file = "src/Support/Json.php"
+code = "possibly-false-operand"
+message = "Possibly false left operand used in string concatenation (type `false|non-empty-string`)."
+count = 1
+
+[[issues]]
+file = "src/Support/Json.php"
+code = "redundant-condition"
+message = "Redundant ternary operator: condition is always truthy."
+count = 1
+
+[[issues]]
+file = "src/Support/Json.php"
+code = "redundant-type-comparison"
+message = "Redundant type assertion: `$decoded` is already `array<string, mixed>`."
+count = 1
+
+[[issues]]
+file = "src/Support/Json.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Webware\AsciidocPhpMultiRepo\Support\JsonDecodeException` in `Webware\AsciidocPhpMultiRepo\Support\Json::decodeObject`.'
+count = 1
+
+[[issues]]
+file = "src/Support/Json.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Webware\AsciidocPhpMultiRepo\Support\JsonDecodeException` in `Webware\AsciidocPhpMultiRepo\Support\Json::decode`.'
+count = 1
+
+[[issues]]
+file = "src/Support/Path.php"
+code = "possibly-invalid-argument"
+message = "Possible argument type mismatch for argument #2 of `array_fill`: expected `non-negative-int`, but possibly received `int`."
+count = 1
+
+[[issues]]
+file = "src/Support/Path.php"
+code = "possibly-null-argument"
+message = "Argument #1 of function `strlen` is possibly `null`, but parameter type `string` does not accept it."
+count = 1
+
+[[issues]]
+file = "src/Support/Path.php"
+code = "possibly-undefined-int-array-index"
+message = "Possibly undefined array index accessed on `list<string>`."
+count = 1
+
+[[issues]]
+file = "src/Support/Path.php"
+code = "possibly-undefined-int-array-index"
+message = "Possibly undefined array key `int(0)` accessed on `array<array-key, string>`."
+count = 1
+
+[[issues]]
+file = "src/Support/Path.php"
+code = "possibly-undefined-int-array-index"
+message = "Possibly undefined array key `int(1)` accessed on `array<array-key, string>`."
+count = 1
+
+[[issues]]
+file = "src/Support/Path.php"
+code = "reference-to-undefined-variable"
+message = "Reference created from a previously undefined variable `$matches`."
+count = 1
+
+[[issues]]
+file = "src/Support/ProcessRunner.php"
+code = "missing-constant-type"
+message = "Class constant `READ_TIMEOUT_MICROSECONDS` is missing a type hint."
+count = 1
+
+[[issues]]
+file = "src/Support/ProcessRunner.php"
+code = "missing-constant-type"
+message = "Class constant `TERMINATION_GRACE_SECONDS` is missing a type hint."
+count = 1
+
+[[issues]]
+file = "src/Support/ProcessRunner.php"
+code = "missing-parameter-type"
+message = "Parameter `$process` is missing a type hint."
+count = 1
+
+[[issues]]
+file = "src/Support/ProcessRunner.php"
+code = "mixed-argument"
+message = "Invalid argument type for argument #3 of `proc_open`: expected `array<array-key, mixed>|null`, but found `mixed`."
+count = 1
+
+[[issues]]
+file = "src/Support/ProcessRunner.php"
+code = "possibly-invalid-argument"
+message = "Possible argument type mismatch for argument #1 of `stream_select`: expected `('R.stream_select() extends array<array-key, resource>|null)`, but possibly received `list{null|resource, null|resource}`."
+count = 1
+
+[[issues]]
+file = "src/Support/ProcessRunner.php"
+code = "possibly-invalid-argument"
+message = "Possible argument type mismatch for argument #4 of `proc_open`: expected `non-empty-string|null`, but possibly received `null|string`."
+count = 1
+
+[[issues]]
+file = "src/Support/ProcessRunner.php"
+code = "possibly-null-argument"
+message = "Argument #1 of function `fclose` is possibly `null`, but parameter type `resource` does not accept it."
+count = 3
+
+[[issues]]
+file = "src/Support/ProcessRunner.php"
+code = "possibly-null-argument"
+message = "Argument #1 of function `stream_get_contents` is possibly `null`, but parameter type `resource` does not accept it."
+count = 2
+
+[[issues]]
+file = "src/Support/ProcessRunner.php"
+code = "possibly-null-argument"
+message = "Argument #1 of function `stream_set_blocking` is possibly `null`, but parameter type `resource` does not accept it."
+count = 2
+
+[[issues]]
+file = "src/Support/ProcessRunner.php"
+code = "possibly-null-iterator"
+message = "Expression being iterated (type `array<array-key, resource>|null`) might be `null` at runtime."
+count = 1
+
+[[issues]]
+file = "src/Support/ProcessRunner.php"
+code = "possibly-undefined-int-array-index"
+message = "Possibly undefined array key 0 accessed on `array{0?: resource, 1?: resource, 2?: resource}`."
+count = 1
+
+[[issues]]
+file = "src/Support/ProcessRunner.php"
+code = "possibly-undefined-int-array-index"
+message = "Possibly undefined array key 1 accessed on `array{0?: resource, 1?: resource, 2?: resource}`."
+count = 1
+
+[[issues]]
+file = "src/Support/ProcessRunner.php"
+code = "possibly-undefined-int-array-index"
+message = "Possibly undefined array key 2 accessed on `array{0?: resource, 1?: resource, 2?: resource}`."
+count = 1
+
+[[issues]]
+file = "src/Support/ProcessRunner.php"
+code = "reference-to-undefined-variable"
+message = "Reference created from a previously undefined variable `$pipes`."
+count = 1
+
+[[issues]]
+file = "src/Support/ProcessRunner.php"
+code = "template-constraint-violation"
+message = "Argument type mismatch for template `R`."
+count = 1
+
+[[issues]]
+file = "src/Support/ProcessRunner.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `InvalidArgumentException` in `Webware\AsciidocPhpMultiRepo\Support\ProcessRunner::run`.'
+count = 1
+
+[[issues]]
+file = "src/Support/ProcessRunner.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `RuntimeException` in `Webware\AsciidocPhpMultiRepo\Support\ProcessRunner::run`.'
+count = 1
+
+[[issues]]
+file = "src/Support/ProcessRunner.php"
+code = "unhandled-thrown-type"
+message = 'Potentially unhandled exception `Webware\AsciidocPhpMultiRepo\Support\ProcessFailedException` in `Webware\AsciidocPhpMultiRepo\Support\ProcessRunner::mustRun`.'
+count = 1

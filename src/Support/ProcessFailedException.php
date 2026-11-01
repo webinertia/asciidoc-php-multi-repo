@@ -14,14 +14,15 @@ use function trim;
  */
 final class ProcessFailedException extends RuntimeException
 {
-    public function __construct(private readonly ProcessResult $result)
-    {
+    public function __construct(
+        private readonly ProcessResult $result,
+    ) {
         $stderr = trim($result->stderr());
 
         parent::__construct(sprintf(
             '%s%s',
             $result->describeFailure(),
-            $stderr === '' ? '' : ' stderr: ' . $stderr,
+            '' === $stderr ? '' : " stderr: {$stderr}",
         ));
     }
 

@@ -25,19 +25,6 @@ final class SiteConfigLoader
         $this->schemaPath = $schemaPath ?? Path::join(dirname(__DIR__, 2), 'config', 'site.schema.json');
     }
 
-    public function schemaPath(): string
-    {
-        return $this->schemaPath;
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    public function schema(): array
-    {
-        return $this->reader->schema($this->schemaPath);
-    }
-
     /**
      * @throws ConfigException when the file is missing, unreadable, malformed, or invalid
      */
@@ -52,13 +39,26 @@ final class SiteConfigLoader
     }
 
     /**
+     * @return array<string, mixed>
+     */
+    public function schema(): array
+    {
+        return $this->reader->schema($this->schemaPath);
+    }
+
+    public function schemaPath(): string
+    {
+        return $this->schemaPath;
+    }
+
+    /**
      * @param array<string, mixed> $document
      */
     private function assertSupportedSchemaVersion(array $document, string $path): void
     {
         $version = $document['schemaVersion'] ?? null;
 
-        if ($version === SiteConfig::SUPPORTED_SCHEMA_VERSION) {
+        if (SiteConfig::SUPPORTED_SCHEMA_VERSION === $version) {
             return;
         }
 

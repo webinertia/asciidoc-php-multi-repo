@@ -21,9 +21,9 @@ final class JsonDecodeException extends RuntimeException
         parent::__construct($message);
     }
 
-    public function source(): string
+    public function offset(): int
     {
-        return $this->source;
+        return $this->offset;
     }
 
     public function pointer(): string
@@ -31,8 +31,8 @@ final class JsonDecodeException extends RuntimeException
         return $this->pointer;
     }
 
-    public function offset(): int
+    public function source(): string
     {
-        return $this->offset;
+        return $this->source;
     }
 }

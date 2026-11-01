@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Webware\AsciidocPhpMultiRepo\Support;
 
-use RuntimeException;
-use SplFileInfo;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use RuntimeException;
+use SplFileInfo;
 
 use function dirname;
 use function file_get_contents;
@@ -36,13 +36,91 @@ final class Filesystem
 {
     private const SORT_STRING = 2;
 
+    public function ensureDirectory(string $directory): void
+    {
+        if ('' === $directory || is_dir($directory)) {
+            return;
+        }
+
+        if (! @mkdir($directory, 0o777, true) && ! is_dir($directory)) {
+            throw new RuntimeException(sprintf('Unable to create directory "%s".', $directory));
+        }
+    }
+
+    public function exists(string $path): bool
+    {
+        return is_file($path);
+    }
+
+    public function hash(string $path): string
+    {
+        $hash = @hash_file('sha256', $path);
+        if (! is_string($hash)) {
+            throw new RuntimeException(sprintf('Unable to hash "%s".', $path));
+        }
+
+        return $hash;
+    }
+
+    /**
+     * Convenience wrapper used by callers that only need the hex digest of a string.
+     */
+    public function hashContents(string $contents): string
+    {
+        return hash('sha256', $contents);
+    }
+
+    public function read(string $path): string
+    {
+        $contents = @file_get_contents($path);
+        if (! is_string($contents)) {
+            throw new RuntimeException(sprintf('Unable to read "%s".', $path));
+        }
+
+        return $contents;
+    }
+
+    /**
+     * Returns every file below $directory as a sorted list of relative paths using "/" separators.
+     *
+     * @return list<string>
+     */
+    public function scan(string $directory): array
+    {
+        if (! is_dir($directory)) {
+            return [];
+        }
+
+        $base = rtrim(Path::normalise($directory), DIRECTORY_SEPARATOR);
+
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($directory, FilesystemIterator::SKIP_DOTS),
+        );
+
+        /** @var list<string> $paths */
+        $paths = [];
+        foreach ($iterator as $file) {
+            if (! $file instanceof SplFileInfo || ! $file->isFile()) {
+                continue;
+            }
+
+            $absolute = Path::normalise($file->getPathname());
+            $relative = '' === $base ? $absolute : substr($absolute, strlen($base) + 1);
+            $paths[]  = str_replace(DIRECTORY_SEPARATOR, '/', $relative);
+        }
+
+        sort($paths, self::SORT_STRING);
+
+        return $paths;
+    }
+
     public function writeAtomic(string $path, string $contents): void
     {
         $directory = dirname($path);
         $this->ensureDirectory($directory);
 
         $temporary = @tempnam($directory, '.tmp-');
-        if ($temporary === false) {
+        if (false === $temporary) {
             throw new RuntimeException(sprintf('Unable to create a temporary file in "%s".', $directory));
         }
 
@@ -88,83 +166,5 @@ final class Filesystem
         $this->writeAtomic($path, $contents);
 
         return true;
-    }
-
-    /**
-     * Returns every file below $directory as a sorted list of relative paths using "/" separators.
-     *
-     * @return list<string>
-     */
-    public function scan(string $directory): array
-    {
-        if (! is_dir($directory)) {
-            return [];
-        }
-
-        $base = rtrim(Path::normalise($directory), DIRECTORY_SEPARATOR);
-
-        $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($directory, FilesystemIterator::SKIP_DOTS),
-        );
-
-        /** @var list<string> $paths */
-        $paths = [];
-        foreach ($iterator as $file) {
-            if (! $file instanceof SplFileInfo || ! $file->isFile()) {
-                continue;
-            }
-
-            $absolute = Path::normalise($file->getPathname());
-            $relative = $base === '' ? $absolute : substr($absolute, strlen($base) + 1);
-            $paths[]  = str_replace(DIRECTORY_SEPARATOR, '/', $relative);
-        }
-
-        sort($paths, self::SORT_STRING);
-
-        return $paths;
-    }
-
-    public function hash(string $path): string
-    {
-        $hash = @hash_file('sha256', $path);
-        if (! is_string($hash)) {
-            throw new RuntimeException(sprintf('Unable to hash "%s".', $path));
-        }
-
-        return $hash;
-    }
-
-    public function exists(string $path): bool
-    {
-        return is_file($path);
-    }
-
-    public function read(string $path): string
-    {
-        $contents = @file_get_contents($path);
-        if (! is_string($contents)) {
-            throw new RuntimeException(sprintf('Unable to read "%s".', $path));
-        }
-
-        return $contents;
-    }
-
-    public function ensureDirectory(string $directory): void
-    {
-        if ($directory === '' || is_dir($directory)) {
-            return;
-        }
-
-        if (! @mkdir($directory, 0777, true) && ! is_dir($directory)) {
-            throw new RuntimeException(sprintf('Unable to create directory "%s".', $directory));
-        }
-    }
-
-    /**
-     * Convenience wrapper used by callers that only need the hex digest of a string.
-     */
-    public function hashContents(string $contents): string
-    {
-        return hash('sha256', $contents);
     }
 }

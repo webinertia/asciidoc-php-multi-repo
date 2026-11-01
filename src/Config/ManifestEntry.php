@@ -18,8 +18,7 @@ final readonly class ManifestEntry
         private bool $archived,
         private bool $onboarded,
         private ?string $path,
-    ) {
-    }
+    ) {}
 
     /**
      * @param array<string, mixed> $data
@@ -34,18 +33,13 @@ final readonly class ManifestEntry
             Values::string($data, 'defaultBranch', 'main'),
             Values::boolean($data, 'archived', false),
             Values::boolean($data, 'onboarded', true),
-            $path === null || $baseDirectory === null ? $path : Path::resolve($baseDirectory, $path),
+            null === $path || null === $baseDirectory ? $path : Path::resolve($baseDirectory, $path),
         );
     }
 
-    public function name(): string
+    public function archived(): bool
     {
-        return $this->name;
-    }
-
-    public function slug(): ?string
-    {
-        return $this->slug;
+        return $this->archived;
     }
 
     public function defaultBranch(): string
@@ -53,9 +47,9 @@ final readonly class ManifestEntry
         return $this->defaultBranch;
     }
 
-    public function archived(): bool
+    public function name(): string
     {
-        return $this->archived;
+        return $this->name;
     }
 
     public function onboarded(): bool
@@ -69,5 +63,10 @@ final readonly class ManifestEntry
     public function path(): ?string
     {
         return $this->path;
+    }
+
+    public function slug(): ?string
+    {
+        return $this->slug;
     }
 }

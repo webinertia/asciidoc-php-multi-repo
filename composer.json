@@ -22,6 +22,9 @@
         "sort-packages": true,
         "platform": {
             "php": "8.4.99"
+        },
+        "allow-plugins": {
+            "infection/extension-installer": true
         }
     },
     "require": {
@@ -32,8 +35,12 @@
         "webware/asciidoc-php": "^0.1"
     },
     "require-dev": {
-        "phpstan/phpstan": "^2.1",
-        "phpunit/phpunit": "^13.0.0"
+        "infection/infection": "^0.35.0",
+        "phpbench/phpbench": "^1.7",
+        "phpunit/phpunit": "^13.0.0",
+        "roave/backward-compatibility-check": "^8.21.0",
+        "roave/security-advisories": "dev-master",
+        "webware/webware-tools": "^1.0.0-rc.8"
     },
     "autoload": {
         "psr-4": {
@@ -42,18 +49,22 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Webware\\AsciidocPhpMultiRepo\\Test\\": "tests/"
+            "WebwareTest\\AsciidocPhpMultiRepo\\": "test/unit/",
+            "WebwareTestIntegration\\AsciidocPhpMultiRepo\\": "test/integration/"
         }
     },
     "bin": [
         "bin/asciidoc-php-multi-repo"
     ],
     "scripts": {
-        "check-all": [
-            "@sa",
-            "@test"
-        ],
-        "test": "phpunit --colors=always",
-        "sa": "phpstan analyse --memory-limit=512M"
+        "test": "phpunit --no-coverage --colors=always",
+        "test-coverage": "phpunit --colors=always --coverage-clover clover.xml --coverage-text",
+        "test-integration": "phpunit --no-coverage --colors=always --testsuite \"integration test\"",
+        "mutation-test": "infection",
+        "test-all": [
+            "@test",
+            "@test-integration",
+            "@mutation-test"
+        ]
     }
 }

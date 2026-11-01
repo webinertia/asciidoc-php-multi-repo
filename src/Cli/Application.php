@@ -6,14 +6,14 @@ namespace Webware\AsciidocPhpMultiRepo\Cli;
 
 use Closure;
 use Throwable;
-use Webware\AsciidocPhpMultiRepo\Cli\Command\BuildCommand;
-use Webware\AsciidocPhpMultiRepo\Cli\Command\CleanCommand;
-use Webware\AsciidocPhpMultiRepo\Cli\Command\Command;
-use Webware\AsciidocPhpMultiRepo\Cli\Command\DiscoverCommand;
-use Webware\AsciidocPhpMultiRepo\Cli\Command\FetchCommand;
-use Webware\AsciidocPhpMultiRepo\Cli\Command\ServeCommand;
-use Webware\AsciidocPhpMultiRepo\Cli\Command\ValidateCommand;
-use Webware\AsciidocPhpMultiRepo\Cli\Command\WatchCommand;
+use Webware\AsciidocPhpMultiRepo\Cli\Commands\BuildCommand;
+use Webware\AsciidocPhpMultiRepo\Cli\Commands\CleanCommand;
+use Webware\AsciidocPhpMultiRepo\Cli\Commands\CommandInterface;
+use Webware\AsciidocPhpMultiRepo\Cli\Commands\DiscoverCommand;
+use Webware\AsciidocPhpMultiRepo\Cli\Commands\FetchCommand;
+use Webware\AsciidocPhpMultiRepo\Cli\Commands\ServeCommand;
+use Webware\AsciidocPhpMultiRepo\Cli\Commands\ValidateCommand;
+use Webware\AsciidocPhpMultiRepo\Cli\Commands\WatchCommand;
 use Webware\AsciidocPhpMultiRepo\Config\ConfigException;
 use Webware\AsciidocPhpMultiRepo\Config\SiteConfigLoader;
 
@@ -51,7 +51,7 @@ final class Application
         '    --version              Print the package version and exit 0.',
     ];
 
-    /** @var list<Command> */
+    /** @var list<CommandInterface> */
     private readonly array $commands;
 
     private readonly string $version;
@@ -59,7 +59,7 @@ final class Application
     /**
      * @param null|Closure(string): void $stdout
      * @param null|Closure(string): void $stderr
-     * @param null|list<Command>         $commands
+     * @param null|list<CommandInterface>         $commands
      */
     public function __construct(
         private readonly ?Closure $stdout = null,
@@ -74,7 +74,7 @@ final class Application
         $this->version  = $version ?? Version::current();
     }
 
-    /** @return list<Command> */
+    /** @return list<CommandInterface> */
     public static function defaultCommands(): array
     {
         return [
@@ -88,13 +88,19 @@ final class Application
         ];
     }
 
+    /** @return list<CommandInterface> */
+    public function commands(): array
+    {
+        return $this->commands;
+    }
+
     /**
      * @param list<string> $argv The raw argument vector, including the program name at offset 0.
      */
     public function run(array $argv): int
     {
         try {
-            $options = (new OptionsParser())->parse(array_slice($argv, 1));
+            $options = new OptionsParser()->parse(array_slice($argv, 1));
         } catch (UsageException $exception) {
             $output = $this->output(new Options());
             $output->error($exception->getMessage());
@@ -117,7 +123,7 @@ final class Application
             return ExitCode::Success->value;
         }
 
-        if ($options->command === '') {
+        if ('' === $options->command) {
             $output->error('no command given');
             $output->usage($this->usage());
 
@@ -126,7 +132,7 @@ final class Application
 
         $command = $this->command($options->command);
 
-        if (! $command instanceof Command) {
+        if (! $command instanceof CommandInterface) {
             $output->error(sprintf('unknown command "%s"', $options->command));
             $output->usage($this->usage());
 
@@ -166,16 +172,10 @@ final class Application
         $lines[] = 'Global options:';
 
         foreach (self::OPTION_LINES as $line) {
-            $lines[] = '  ' . $line;
+            $lines[] = "  {$line}";
         }
 
         return implode("\n", $lines) . "\n";
-    }
-
-    /** @return list<Command> */
-    public function commands(): array
-    {
-        return $this->commands;
     }
 
     public function version(): string
@@ -183,7 +183,7 @@ final class Application
         return $this->version;
     }
 
-    private function command(string $name): ?Command
+    private function command(string $name): ?CommandInterface
     {
         foreach ($this->commands as $command) {
             if ($command->name() === $name) {
@@ -197,12 +197,12 @@ final class Application
     private function output(Options $options): Output
     {
         return new Output(
-            quiet: $options->quiet,
+            quiet  : $options->quiet,
             verbose: $options->verbose,
             timings: $options->timings,
-            color: Output::colourEnabled($options->noColor, $this->noColorEnvironment, $this->interactive),
-            stdout: $this->stdout,
-            stderr: $this->stderr,
+            color  : Output::colourEnabled($options->noColor, $this->noColorEnvironment, $this->interactive),
+            stdout : $this->stdout,
+            stderr : $this->stderr,
         );
     }
 }

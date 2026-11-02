@@ -1,0 +1,175 @@
+= Theme guide
+:toclevels: 3
+
+This guide covers the theme token set, the per-project accent colour, light and dark behaviour,
+and the places where a site can override the theme without forking the package.
+
+== Where theme settings live
+
+All theme settings live in `site.json`, in the `theme` object and the optional `projects`
+object. The package ships one stylesheet and one script; a site never edits them.
+
+[source,json]
+----
+"theme": {
+    "name": "webware",
+    "defaultAccent": "#7e5ae0",
+    "colorMode": "system",
+    "defaultColorMode": "dark"
+},
+"projects": {
+    "message-bus": {
+        "accent": "#0f766e"
+    }
+}
+----
+
+|===
+| Key | Meaning | Default
+
+| `theme.name`
+| Theme name recorded in the configuration.
+| `webware`
+
+| `theme.defaultAccent`
+| Accent used by every project without an override.
+| `#7e5ae0`
+
+| `theme.colorMode`
+| `system`, `light`, or `dark`.
+| `system`
+
+| `theme.defaultColorMode`
+| `light` or `dark`, painted before the toggle script runs.
+| `dark`
+
+| `projects.<name>.accent`
+| Accent for one project, as a six-digit hex colour.
+| `theme.defaultAccent`
+|===
+
+The `projects` key is also where a project's `slug`, `title`, `description`, and `order` are
+set. None of them is required for a project to appear.
+
+== The token set
+
+The stylesheet exposes the theme as CSS custom properties. Light values are declared on `:root`
+and dark values on `[data-theme="dark"]`.
+
+[cols="2,1,1"]
+|===
+| Token | Light | Dark
+
+| `--color-primary`
+| `#7e5ae0`
+| `#9d80ea`
+
+| `--color-secondary`
+| `#048460`
+| `#05a578`
+
+| `--color-accent`
+| `var(--color-primary)`
+| inherits `--color-primary`
+
+| `--color-link`
+| `#6a49c9`
+| `#b29cec`
+
+| `--color-link-hover`
+| `#543a9e`
+| `#cbbdf3`
+
+| `--surface-page`
+| `#ffffff`
+| `#16131c`
+
+| `--surface-raised`
+| `#f6f5fa`
+| `#1f1b28`
+
+| `--text-body`
+| `#1e1b26`
+| `#e8e5f0`
+
+| `--text-muted`
+| `#55506b`
+| `#a8a2ba`
+
+| `--border-subtle`
+| `#d9d5e6`
+| `#332d42`
+
+| `--focus-ring`
+| `#6a49c9`
+| `#b29cec`
+|===
+
+The stylesheet also defines non-colour tokens: `--space-1` (`0.25rem`), `--space-2` (`0.5rem`),
+`--space-3` (`1rem`), `--space-4` (`1.5rem`), `--space-5` (`2.5rem`), `--radius-small`
+(`0.25rem`), `--radius-medium` (`0.5rem`), `--measure` (`74ch`), `--font-body`, and
+`--font-mono`.
+
+The light-mode link and muted-text colours clear a 4.5:1 contrast ratio against their
+backgrounds. A custom accent is used for emphasis and borders; it does not replace the link
+colour, so a custom accent cannot break link contrast.
+
+== Per-project accent
+
+A project's accent is the value of `projects.<name>.accent`, falling back to
+`theme.defaultAccent`. The build writes one small stylesheet per distinct accent and each page
+links the stylesheet for its own project, so two projects can carry different accents on the
+same site.
+
+To change one project's accent:
+
+. Add or edit its entry under `projects` in `site.json`.
+. Set `accent` to a six-digit hex colour, for example `#0f766e`.
+. Rebuild. The accent stylesheet name changes because the name is derived from the content.
+
+To change every project's accent, set `theme.defaultAccent` instead and remove per-project
+overrides that would mask it. An invalid or missing accent value falls back to
+`theme.defaultAccent`.
+
+== Light and dark behaviour
+
+The page resolves its colour mode in this order:
+
+. A stored choice in the browser. The toggle stores `light` or `dark` in `localStorage` under the
+   key `asciidoc-php-theme`.
+. The configured `theme.colorMode`, when it is `light` or `dark`.
+. The operating system preference, `prefers-color-scheme`, when `theme.colorMode` is `system`.
+
+The resolution runs inline in the page head before first paint, so a stored choice never flashes
+the other theme. The visible toggle then flips between light and dark and persists the new
+choice. It exposes its state through `aria-pressed` and an accessible label, and it is operable
+from the keyboard.
+
+`theme.defaultColorMode` sets the `data-theme` value in the served HTML. The head script
+overwrites it with the resolution above when scripting runs, so it only describes the no-script
+and pre-script state. Set it to `dark` unless the site must paint light before the script runs.
+
+A reader who has never used the toggle follows the operating system and continues to follow it
+when the system preference changes. A reader who has used the toggle keeps that choice until
+they clear site data.
+
+== Where to override without forking
+
+Use `site.json` for every supported override:
+
+* `theme.defaultAccent` changes the accent for the whole site.
+* `projects.<name>.accent` changes the accent for one project.
+* `theme.colorMode` pins the site to light or dark, or leaves it to the operating system.
+* `theme.defaultColorMode` controls the pre-script paint.
+
+Individual design tokens, such as `--surface-page` or `--measure`, are part of the package
+stylesheet and are not configurable in `site.json` in this version. Do not copy or fork the
+stylesheet to change one; a token change is a package change, and a site that forks the
+stylesheet stops receiving package fixes.
+
+== Cached assets
+
+Stylesheets and scripts are published under `assets/` with a content hash in the file name, for
+example `site.4f3a1c2d.css`. The hash changes when the bytes change, so a rebuild after a token
+or accent change produces new URLs and browsers fetch the new files without a hard refresh. Do
+not link the package's source stylesheet directly or hard-code an asset file name.

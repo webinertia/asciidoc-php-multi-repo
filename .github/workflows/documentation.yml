@@ -1,0 +1,37 @@
+name: Documentation
+
+# The organization's required CI workflow lives in webinertia/.github and cannot be extended from
+# this repository, so the dogfood render runs as its own workflow. T077: the render step fails the
+# build when rendering fails, because the CLI exits non-zero on any render failure.
+
+on:
+  push:
+    branches:
+      - 1.0.x
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: documentation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  render:
+    name: Render the package documentation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: curl, json, mbstring
+          coverage: none
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+      - name: Render the documentation
+        run: php bin/asciidoc-php-multi-repo build --config site.json --manifest manifest.json

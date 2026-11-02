@@ -1,0 +1,33 @@
+{
+    "$schema": "./config/site.schema.json",
+    "schemaVersion": 1,
+    "site": {
+        "name": "webware",
+        "baseUrl": "https://docs.webinertia.net",
+        "basePath": "/"
+    },
+    "organization": {
+        "name": "webinertia",
+        "propertyName": "doc-target",
+        "onboardValue": "true",
+        "tokenEnvVar": "DOC_DISCOVERY_TOKEN"
+    },
+    "source": {
+        "directory": "docs"
+    },
+    "render": {
+        "safeMode": "safe"
+    },
+    "projects": {
+        "asciidoc-php-multi-repo": {
+            "title": "asciidoc-php-multi-repo",
+            "description": "Multi-repository documentation site builder for asciidoc-php.",
+            "accent": "#7e5ae0"
+        }
+    },
+    "output": {
+        "directory": "build/docs",
+        "cacheDirectory": "build/docs-cache",
+        "reportPath": "build/docs-report.json"
+    }
+}

@@ -1,0 +1,35 @@
+= Documentation
+:toclevels: 3
+
+This site is built by webware/asciidoc-php-multi-repo from the AsciiDoc sources in this
+repository's own `docs/v1` directory. It is the dogfood copy: the same pipeline that publishes
+an onboarded repository publishes this one.
+
+The four guides below are the complete operator and author documentation for version 1.
+
+== Guides
+
+* xref:authoring.adoc[Author guide] - how to lay out `docs/`, add pages, use includes, and link
+  between projects.
+* xref:operating.adoc[Operator guide] - the `doc-target` organization property, credentials,
+  site repository secrets, and the publish triggers.
+* xref:theming.adoc[Theme guide] - the token set, per-project accents, and light and dark mode.
+* xref:troubleshooting.adoc[Troubleshooting and reason codes] - every reason code the build
+  report can emit, its cause, and its fix.
+
+== Getting started
+
+A repository is published when its organization property is set to the onboard value and its
+`docs/` tree contains an entry page. No configuration in this package changes. The author guide
+describes the tree; the operator guide describes the property and the credentials that read it.
+
+For a local build, install the package and run the CLI from a checkout:
+
+[source,sh]
+----
+composer install
+bin/asciidoc-php-multi-repo build --config site.json --manifest manifest.json
+----
+
+The site is written to `build/site` by default. The repository's own `site.json` sets
+`build/docs` instead.

@@ -647,6 +647,23 @@ conversion failures, and a report field naming the detected source format.
 
 No task in this plan implements it, and no requirement in the spec depends on it.
 
+### Deferred follow-on work
+
+Three pieces of work are deliberately outside version 1 and are recorded here so the boundary is
+explicit. None of them is scheduled by a task in `tasks.md`, and none changes this package's
+command surface.
+
+- **Markdown ingestion** lands in this package behind the `Source\SourcePreparer` seam described
+  above. The change adds a converter stage in `src/Source/`; version detection, page enumeration,
+  URL layout, the converter invocation, theming, search, the writer, the report, and the CLI
+  contract stay as they are.
+- **The standalone action** lands in its own repository, `webinertia/asciidoc-action`, as a
+  container action that wraps this package's `build` command. Nothing in that repository is
+  implemented here.
+- **The site repository's workflows** (the nightly schedule, the manual dispatch, and the
+  `repository_dispatch` trigger) land in `webinertia/docs.webinertia.net`. This package guarantees
+  the CLI those workflows call and ships no workflow YAML for them.
+
 ## Project Structure
 
 ### Documentation (this feature)

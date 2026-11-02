@@ -1,0 +1,13 @@
+{
+    "$schema": "./config/manifest.schema.json",
+    "schemaVersion": 1,
+    "repositories": [
+        {
+            "name": "asciidoc-php-multi-repo",
+            "slug": "asciidoc-php-multi-repo",
+            "defaultBranch": "1.0.x",
+            "archived": false,
+            "path": "."
+        }
+    ]
+}

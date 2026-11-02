@@ -111,57 +111,57 @@ has a contract document that is tested against the code. No site output yet.
 
 ## Phase 3: Discovery, fetch, and version detection (Group 2, Story 1)
 
-- [ ] T020 Create `src/Discovery/SlugNormalizer.php` implementing lowercase and single-hyphen
+- [X] T020 Create `src/Discovery/SlugNormalizer.php` implementing lowercase and single-hyphen
   collapse for characters outside `[a-z0-9]`, plus trimming of leading and trailing hyphens.
   Acceptance: table-driven tests cover `Message_Bus`, `message.bus`, `message--bus`, `MessageBus`,
   names that collapse to empty (which must raise), and names that already conform.
-- [ ] T021 Create `src/Discovery/SlugCollisionDetector.php` rejecting two projects with the same slug
+- [X] T021 Create `src/Discovery/SlugCollisionDetector.php` rejecting two projects with the same slug
   with a message naming both repositories. Acceptance: a config with an override colliding with a
   discovered slug exits 2 before any fetch; a test asserts no fetch was attempted.
-- [ ] T022 Create `src/Discovery/ProjectDiscoveryInterface.php`,
+- [X] T022 Create `src/Discovery/ProjectDiscoveryInterface.php`,
   `DiscoveredRepository.php`, and `ManifestDiscovery.php`. Acceptance: manifest mode produces the
   fixture project set with zero network calls, proven by a test that replaces the HTTP transport with
   one that fails on use.
-- [ ] T023 Create `src/Discovery/GitHubPropertyDiscovery.php` using `ext-curl` against the repository
+- [X] T023 Create `src/Discovery/GitHubPropertyDiscovery.php` using `ext-curl` against the repository
   search and custom property values endpoints, following pagination, reading the token from the
   configured environment variable, and mapping only the configured onboard value to onboarded.
   Acceptance: tests against a local HTTP fixture serve a two-page response and produce the same set
   as a one-page response; the token never appears in an exception message, log line, or report.
-- [ ] T024 Wire `discover` to print one line per repository with name, slug, and onboarded state, and
+- [X] T024 Wire `discover` to print one line per repository with name, slug, and onboarded state, and
   to write nothing else. Acceptance: `discover --manifest tests/fixtures/manifest.json` exits 0 and
   prints the fixture set in slug order; `discover` with an invalid token exits 3 and names the
   organization and property.
-- [ ] T025 Create `src/Source/RepositoryFetcher.php` performing `git init`, `git remote add`,
+- [X] T025 Create `src/Source/RepositoryFetcher.php` performing `git init`, `git remote add`,
   `git fetch --depth 1 origin <branch>`, and `git checkout FETCH_HEAD` into a per-repository cache
   directory, with a configurable retry count. Acceptance: a fetch failure is retried the configured
   number of times and the attempt count is recorded; a successful fetch records the resolved revision;
   a second fetch of an unchanged revision does not re-checkout.
-- [ ] T026 Create `src/Source/FetchedRepository.php` exposing the resolved revision, the
+- [X] T026 Create `src/Source/FetchedRepository.php` exposing the resolved revision, the
   documentation directory path, and a sorted file list relative to the repository root. Acceptance:
   a fetched fixture reports the revision and exactly the expected relative paths; a repository with no
   documentation directory is reported with reason `no-asciidoc-sources` rather than throwing.
-- [ ] T027 Create `src/Source/VersionDetector.php` selecting subdirectories matching the configured
+- [X] T027 Create `src/Source/VersionDetector.php` selecting subdirectories matching the configured
   version pattern, treating the documentation directory itself as `latest` when no subdirectory
   matches, and ignoring loose files when version directories exist (recording a warning). Acceptance:
   tests cover `v1`/`v2`/`v10` ordering, `v0`/`v01`/`V2` being treated as content directories, the
   unversioned case, the mixed case with its warning, and a documentation directory containing neither.
-- [ ] T028 Create `src/Source/PageEnumerator.php` resolving the entry page from the configured
+- [X] T028 Create `src/Source/PageEnumerator.php` resolving the entry page from the configured
   candidates and enumerating renderable pages with extensions filtered, underscore-prefixed files
   excluded, exclude patterns applied, and nested directories preserved. Acceptance: the versioned
   fixture yields the exact expected page list; a version with no entry page fails with
   `missing-entry` and names the candidates; a Markdown-only fixture fails with `no-asciidoc-sources`.
-- [ ] T029 Create `src/Source/SourcePreparer.php` and `src/Source/SourceFormat.php` as the single
+- [X] T029 Create `src/Source/SourcePreparer.php` and `src/Source/SourceFormat.php` as the single
   source-preparation seam: read the file, detect format, reject non-UTF-8 with `invalid-encoding`,
   normalise line endings to `\n`, and return source text plus origin metadata. Acceptance: a CRLF
   fixture renders identically to its LF twin; an invalid UTF-8 fixture fails with the file path; a
   Markdown file is classified `Markdown` and rejected with `no-asciidoc-sources` at the project level,
   never passed to the renderer.
-- [ ] T030 Create `src/Source/SourceError.php` and `src/Report/ReasonCode.php` as the closed reason-code
+- [X] T030 Create `src/Source/SourceError.php` and `src/Report/ReasonCode.php` as the closed reason-code
   set (`no-asciidoc-sources`, `missing-entry`, `fetch-failed`, `archived`,
   `include-outside-root`, `toc-target-missing`, `invalid-encoding`, `render-failed`,
   `config-error`, `discovery-failed`). Acceptance: a test asserts the enum's case list exactly matches
   the list in `contracts/report.schema.json`, so adding a code requires updating the schema.
-- [ ] T031 Wire `fetch` to fetch every onboarded repository and write a cache manifest of repository,
+- [X] T031 Wire `fetch` to fetch every onboarded repository and write a cache manifest of repository,
   revision, and documentation path. Acceptance: `fetch --manifest ...` exits 0 against the fixtures
   and produces the manifest; `fetch --project message-bus` fetches only that repository.
 
@@ -170,45 +170,45 @@ and every failure mode is reported with a reason code. Rendering is still absent
 
 ## Phase 4: Rendering, page shell, and theme (Group 3, Story 1 and Story 3)
 
-- [ ] T032 Create `src/Render/SiteConverter.php` extending `Html5Converter`, overriding
+- [X] T032 Create `src/Render/SiteConverter.php` extending `Html5Converter`, overriding
   `convertDocument()` to return article markup only and `renderStylesheet()` to return an empty
   string. Acceptance: a rendered document contains no `<html>`, `<head>`, `asciidoctor.css` link, or
   inline stylesheet; section markup and heading ids are unchanged from the parent converter, proven by
   a golden comparison.
-- [ ] T033 Create `src/Render/AttributePolicy.php` supplying `stylesheet!`, `noembed`, `linkcss!`,
+- [X] T033 Create `src/Render/AttributePolicy.php` supplying `stylesheet!`, `noembed`, `linkcss!`,
   `toc!`, `docinfo!`, `source-highlighter!` unless highlighting is enabled, and fixed empty values for
   the six clock attributes. Acceptance: rendering the same page twice with the clock changed in
   between produces identical bytes; the output contains no `docdate`, `doctime`, or `localdate` value.
-- [ ] T034 Create `src/Render/TocExtractor.php` reading the document's sections at configured levels
+- [X] T034 Create `src/Render/TocExtractor.php` reading the document's sections at configured levels
   in document order and returning level, id, and title. Acceptance: a page with h2 and h3 sections
   yields them in order; an h1-only page yields an empty TOC; a section whose id is empty causes
   `toc-target-missing` rather than an empty anchor.
-- [ ] T035 Create `src/Render/PageShell.php` and the templates under `resources/templates/` for the
+- [X] T035 Create `src/Render/PageShell.php` and the templates under `resources/templates/` for the
   document shell described in the plan. Acceptance: a rendered page contains doctype, charset,
   viewport, title composed as page, project, site, canonical link, exactly two local stylesheets, skip
   link, header, sidebar, `main#main`, and footer with a source link; every interpolated value is
   escaped, proven by a fixture title containing `<` and `&`.
-- [ ] T036 Create `src/Theme/ThemeResolver.php`, `src/Theme/AssetHasher.php`, and
+- [X] T036 Create `src/Theme/ThemeResolver.php`, `src/Theme/AssetHasher.php`, and
   `resources/css/site.css`, `resources/css/print.css`. Acceptance: `site.css` contains the token
   blocks from the plan and no `@import` and no absolute URL; changing one byte of `site.css` changes
   its hashed name; the light-mode link and muted-text tokens clear 4.5:1 against their backgrounds in
   an automated contrast test.
-- [ ] T037 Create `resources/js/theme.js` implementing the light/dark toggle with `localStorage`
+- [X] T037 Create `resources/js/theme.js` implementing the light/dark toggle with `localStorage`
   persistence, defaulting to the operating system preference and applying the stored choice before
   first paint via a small inline bootstrap. Acceptance: with no stored value the rendering follows
   `prefers-color-scheme`; a stored value overrides it; the toggle is operable by keyboard and exposes
   its state through `aria-pressed`.
-- [ ] T038 Create `src/Render/LinkRewriter.php` rewriting internal `.adoc` links to their `.html`
+- [X] T038 Create `src/Render/LinkRewriter.php` rewriting internal `.adoc` links to their `.html`
   targets, prefixing every internal URL with the configured base path, and leaving external links
   untouched but marking them with `rel="noopener"`. Acceptance: a fixture page linking to
   `../v2/usage-examples.adoc` yields the expected published URL under base path `/` and under
   `/docs/`; no generated link starts with a hard-coded root slash when a base path is set.
-- [ ] T039 Create `src/Render/PageRenderer.php` composing the above: prepare source, build attributes,
+- [X] T039 Create `src/Render/PageRenderer.php` composing the above: prepare source, build attributes,
   call `Asciidoc::convertFile` with the converter option, wrap in the shell, and return the final HTML
   plus extracted TOC and search metadata. Acceptance: the versioned fixture's entry page renders with
   the expected title, TOC entries, and no clock or absolute path; a page with a broken include fails
   with `render-failed` and its source path.
-- [ ] T040 Wire `build` to render every page of every version into the output directory using
+- [X] T040 Wire `build` to render every page of every version into the output directory using
   `ContentWriter` without incrementality yet, and print a per-project page count. Acceptance:
   `build --manifest ... --out build/site` produces the expected file tree for the fixture
   organization and exits 1 because the broken and Markdown-only fixtures fail.

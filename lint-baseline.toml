@@ -1630,7 +1630,7 @@ count = 1
 file = "test/unit/Cli/FetchCommandTest.php"
 code = "assertion-style"
 message = "Inconsistent assertions style."
-count = 43
+count = 47
 
 [[issues]]
 file = "test/unit/Cli/FetchCommandTest.php"
@@ -1690,6 +1690,12 @@ count = 1
 file = "test/unit/Cli/FetchCommandTest.php"
 code = "prefer-test-attribute"
 message = "Use `#[Test]` attribute instead of `test` prefix on method `testASlugCollisionExitsTwoAndWritesNoManifest`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/FetchCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testASlugOverrideCollisionExitsTwoBeforeAnyFetch`."
 count = 1
 
 [[issues]]
@@ -2961,6 +2967,12 @@ count = 1
 [[issues]]
 file = "test/unit/Discovery/ManifestDiscoveryTest.php"
 code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testASlugOverrideThatCollidesWithADiscoveredRepositoryIsRejected`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/ManifestDiscoveryTest.php"
+code = "prefer-test-attribute"
 message = "Use `#[Test]` attribute instead of `test` prefix on method `testAnExcludedRepositoryIsDropped`."
 count = 1
 
@@ -3400,7 +3412,7 @@ count = 1
 file = "test/unit/Render/PageRendererTest.php"
 code = "assertion-style"
 message = "Inconsistent assertions style."
-count = 64
+count = 65
 
 [[issues]]
 file = "test/unit/Render/PageRendererTest.php"
@@ -3448,6 +3460,12 @@ count = 1
 file = "test/unit/Render/PageRendererTest.php"
 code = "prefer-test-attribute"
 message = "Use `#[Test]` attribute instead of `test` prefix on method `testABrokenIncludeFailsWithRenderFailedAndTheSourcePath`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/PageRendererTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testACrlfSourceRendersIdenticallyToItsLfTwin`."
 count = 1
 
 [[issues]]
@@ -4462,7 +4480,7 @@ count = 1
 file = "test/unit/Source/VersionDetectorTest.php"
 code = "assertion-style"
 message = "Inconsistent assertions style."
-count = 28
+count = 31
 
 [[issues]]
 file = "test/unit/Source/VersionDetectorTest.php"
@@ -4510,6 +4528,12 @@ count = 1
 file = "test/unit/Source/VersionDetectorTest.php"
 code = "prefer-test-attribute"
 message = "Use `#[Test]` attribute instead of `test` prefix on method `testAVersionDirectoryIsTheDocumentationDirectoryPlusTheLabel`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/VersionDetectorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAnEmptyDocumentationDirectoryIsASingleLatestVersion`."
 count = 1
 
 [[issues]]

@@ -91,6 +91,13 @@ final class ManifestDiscoveryTest extends TestCase
         self::assertSame('versioned-docs', $versioned->slug());
     }
 
+    public function testASlugOverrideThatCollidesWithADiscoveredRepositoryIsRejected(): void
+    {
+        $this->expectException(SlugException::class);
+
+        $this->discover(['projects' => ['versioned' => ['slug' => 'mixed']]]);
+    }
+
     public function testEveryEntryKeepsItsLocalPath(): void
     {
         foreach ($this->discover() as $repository) {

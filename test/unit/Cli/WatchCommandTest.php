@@ -23,6 +23,7 @@ use function copy;
 use function dirname;
 use function file_get_contents;
 use function file_put_contents;
+use function getenv;
 use function implode;
 use function is_file;
 use function sprintf;
@@ -55,6 +56,42 @@ final class WatchCommandTest extends TestCase
     private string $site = '';
 
     #[Test]
+    public function aBrokenConfigurationIsReportedAndThePreviousOneKept(): void
+    {
+        $command = $this->command();
+        $command->initialize($this->options(), $this->config, $this->cliOutput());
+
+        file_put_contents(Path::join($this->site, 'site.json'), data: '{"schemaVersion": 1}');
+
+        $change = $command->poll($this->options(), $this->config, $this->cliOutput());
+
+        static::assertTrue($change->everything());
+        static::assertStringContainsString('configuration reload failed', $this->captured->stderr);
+    }
+
+    #[Test]
+    public function aChangedBasePathIsReportedAsAReasonToRestart(): void
+    {
+        $command = $this->command();
+        $command->initialize($this->options(), $this->config, $this->cliOutput());
+
+        $configPath = Path::join($this->site, 'site.json');
+        $contents   = file_get_contents($configPath);
+
+        static::assertIsString($contents);
+
+        file_put_contents($configPath, str_replace(
+            search : '"basePath": "/"',
+            replace: '"basePath": "/docs/"',
+            subject: $contents,
+        ));
+
+        $command->poll($this->options(), $this->config, $this->cliOutput());
+
+        static::assertStringContainsString('restart watch', $this->captured->stderr);
+    }
+
+    #[Test]
     public function aDegradedRebuildDoesNotStopWatching(): void
     {
         $command = $this->command();
@@ -79,6 +116,26 @@ final class WatchCommandTest extends TestCase
         $change = $command->poll($this->options(), $this->config, $this->cliOutput());
 
         static::assertSame(['versioned'], $change->projects());
+    }
+
+    #[Test]
+    public function aHostThatCannotBeBoundIsAConfigurationError(): void
+    {
+        if (getenv('ASCIIDOC_SERVE_HOST') !== false) {
+            static::markTestSkipped('ASCIIDOC_SERVE_HOST overrides the bind address under test.');
+        }
+
+        $command = new WatchCommand(
+            host    : '192.0.2.1',
+            cycles  : 1,
+            debounce: 0.0,
+        );
+
+        static::assertSame(
+            ExitCode::ConfigError,
+            $command->execute($this->options(), $this->config, $this->cliOutput()),
+        );
+        static::assertStringContainsString('Unable to listen', $this->captured->stderr);
     }
 
     #[Test]
@@ -149,6 +206,17 @@ final class WatchCommandTest extends TestCase
     }
 
     #[Test]
+    public function executeReturnsTheInitialBuildFailure(): void
+    {
+        $this->filesystem->remove(Path::join($this->site, 'manifest.json'));
+
+        static::assertSame(
+            ExitCode::ConfigError,
+            $this->command(cycles: 1)->execute($this->options(), $this->config, $this->cliOutput()),
+        );
+    }
+
+    #[Test]
     public function executeServesForTheCycleBudgetAndReturnsSuccess(): void
     {
         $command = $this->command(cycles: 1);
@@ -179,6 +247,23 @@ final class WatchCommandTest extends TestCase
     public function pollingBeforeInitializeIsHarmless(): void
     {
         static::assertTrue($this->command()->poll($this->options(), $this->config, $this->cliOutput())->isEmpty());
+    }
+
+    #[Test]
+    public function theConfiguredOutputDirectoryIsUsedWhenOutIsNotGiven(): void
+    {
+        $options = new Options(
+            command : 'watch',
+            config  : Path::join($this->site, 'site.json'),
+            manifest: Path::join($this->site, 'manifest.json'),
+            port    : 0,
+        );
+
+        static::assertSame(
+            ExitCode::Success,
+            $this->command(cycles: 1)->execute($options, $this->config, $this->cliOutput()),
+        );
+        static::assertFileExists(Path::join($this->outputDirectory(), 'versioned/v1/index.html'));
     }
 
     #[Test]

@@ -50,6 +50,19 @@ final class CleanCommandTest extends TestCase
     }
 
     #[Test]
+    public function anExplicitCachePathReplacesTheConfiguredOne(): void
+    {
+        $configured = $this->directory('build/cache');
+        $explicit   = $this->directory('custom/cache');
+
+        $exit = $this->clean(cache: $explicit);
+
+        static::assertSame(ExitCode::Success, $exit, $this->captured->stderr);
+        static::assertFalse(is_dir($explicit));
+        static::assertTrue(is_dir($configured), 'an explicit --cache must not fall back to the configured directory.');
+    }
+
+    #[Test]
     public function anOutputOutsideTheConfigDirectoryIsRefusedWithExitTwo(): void
     {
         $outside = $this->outside();
@@ -177,12 +190,13 @@ final class CleanCommandTest extends TestCase
         parent::tearDown();
     }
 
-    private function clean(?string $out = null, bool $force = false): ExitCode
+    private function clean(?string $out = null, bool $force = false, ?string $cache = null): ExitCode
     {
         return new CleanCommand($this->filesystem)->execute(
             new Options(
                 command: 'clean',
                 out    : $out,
+                cache  : $cache,
                 force  : $force,
             ),
             $this->config(),

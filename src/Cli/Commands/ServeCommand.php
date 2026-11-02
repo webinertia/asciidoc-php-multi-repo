@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webware\AsciidocPhp\MultiRepo\Cli\Commands;
 
+use Closure;
 use Override;
 use RuntimeException;
 use Webware\AsciidocPhp\MultiRepo\Cli\ExitCode;
@@ -34,12 +35,14 @@ final class ServeCommand implements CommandInterface
     private const float POLL_SECONDS = 0.25;
 
     /**
-     * @param string $host         Default bind address; `ASCIIDOC_SERVE_HOST` overrides it.
-     * @param int    $requestLimit Requests to answer before returning, 0 to serve until stopped.
+     * @param string                                                     $host          Default bind address; `ASCIIDOC_SERVE_HOST` overrides it.
+     * @param int                                                        $requestLimit  Requests to answer before returning, 0 to serve until stopped.
+     * @param null|Closure(StaticSiteHandler, string, int): StaticServer $serverFactory Builds the server, which a test replaces.
      */
     public function __construct(
         private readonly string $host = '127.0.0.1',
         private readonly int $requestLimit = 0,
+        private readonly ?Closure $serverFactory = null,
     ) {}
 
     /**
@@ -59,11 +62,8 @@ final class ServeCommand implements CommandInterface
             return ExitCode::ConfigError;
         }
 
-        $server = new StaticServer(
-            new StaticSiteHandler($outputDirectory, $config->site()->basePath()),
-            $this->host(),
-            $options->port,
-        );
+        $handler = new StaticSiteHandler($outputDirectory, $config->site()->basePath());
+        $server  = $this->server($handler, $options->port);
 
         try {
             $server->start();
@@ -133,5 +133,14 @@ final class ServeCommand implements CommandInterface
         $base = getcwd();
 
         return Path::resolve(false === $base ? '.' : $base, $options->out);
+    }
+
+    private function server(StaticSiteHandler $handler, int $port): StaticServer
+    {
+        if ($this->serverFactory instanceof Closure) {
+            return ($this->serverFactory)($handler, $this->host(), $port);
+        }
+
+        return new StaticServer($handler, $this->host(), $port);
     }
 }

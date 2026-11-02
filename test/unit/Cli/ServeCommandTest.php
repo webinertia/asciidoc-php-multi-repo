@@ -12,6 +12,8 @@ use Webware\AsciidocPhp\MultiRepo\Cli\Commands\ServeCommand;
 use Webware\AsciidocPhp\MultiRepo\Cli\ExitCode;
 use Webware\AsciidocPhp\MultiRepo\Cli\Options;
 use Webware\AsciidocPhp\MultiRepo\Cli\Output;
+use Webware\AsciidocPhp\MultiRepo\Cli\Serve\StaticServer;
+use Webware\AsciidocPhp\MultiRepo\Cli\Serve\StaticSiteHandler;
 use Webware\AsciidocPhp\MultiRepo\Config\SiteConfig;
 use Webware\AsciidocPhp\MultiRepo\Config\SiteConfigLoader;
 use Webware\AsciidocPhp\MultiRepo\Support\Filesystem;
@@ -21,6 +23,13 @@ use WebwareTest\AsciidocPhp\MultiRepo\Support\TempDirectoryTrait;
 
 use function copy;
 use function dirname;
+use function fclose;
+use function fsockopen;
+use function fwrite;
+use function getenv;
+use function sprintf;
+use function stream_get_contents;
+use function stream_set_timeout;
 
 #[CoversClass(ServeCommand::class)]
 #[CoversMethod(ServeCommand::class, 'execute')]
@@ -37,6 +46,31 @@ final class ServeCommandTest extends TestCase
     private string $root = '';
 
     private string $site = '';
+
+    #[Test]
+    public function aHostThatCannotBeBoundIsAConfigurationError(): void
+    {
+        if (getenv('ASCIIDOC_SERVE_HOST') !== false) {
+            static::markTestSkipped('ASCIIDOC_SERVE_HOST overrides the bind address under test.');
+        }
+
+        $this->builtOutput();
+
+        $status = new ServeCommand(
+            host        : '192.0.2.1',
+            requestLimit: 1,
+        )->execute(
+            new Options(
+                command: 'serve',
+                port   : 0,
+            ),
+            $this->config(),
+            $this->cliOutput(),
+        );
+
+        static::assertSame(ExitCode::ConfigError, $status);
+        static::assertStringContainsString('Unable to listen', $this->captured->stderr);
+    }
 
     #[Test]
     public function aMissingOutputDirectoryIsAConfigurationError(): void
@@ -60,6 +94,62 @@ final class ServeCommandTest extends TestCase
 
         static::assertSame(ExitCode::ConfigError, $status);
         static::assertStringContainsString('does not exist', $this->captured->stderr);
+    }
+
+    #[Test]
+    public function aRequestIsAnsweredAndTheLoopReturnsAtTheLimit(): void
+    {
+        $this->builtOutput();
+
+        $client = null;
+
+        $command = new ServeCommand(
+            requestLimit: 1,
+            serverFactory: static function (StaticSiteHandler $handler, string $host, int $port) use (
+                &$client,
+            ): StaticServer {
+                $server = new StaticServer($handler, $host, $port);
+                $server->start();
+
+                $socket = fsockopen('127.0.0.1', $server->port(), $errorCode, $errorMessage, timeout: 5.0);
+
+                static::assertIsResource($socket, sprintf(
+                    'cannot reach the server: %s (%d)',
+                    $errorMessage,
+                    $errorCode,
+                ));
+
+                fwrite($socket, data: "GET /index.html HTTP/1.1\r\nHost: localhost\r\n\r\n");
+
+                stream_set_timeout($socket, seconds: 5);
+
+                $client = $socket;
+
+                return $server;
+            },
+        );
+
+        $status = $command->execute(
+            new Options(
+                command: 'serve',
+                port   : 0,
+            ),
+            $this->config(),
+            $this->cliOutput(),
+        );
+
+        static::assertSame(ExitCode::Success, $status);
+        static::assertStringContainsString('serving', $this->captured->stderr);
+
+        static::assertIsResource($client);
+
+        $response = stream_get_contents($client);
+
+        fclose($client);
+
+        static::assertIsString($response);
+        static::assertStringStartsWith('HTTP/1.1 200 OK', $response);
+        static::assertStringEndsWith('served index', $response);
     }
 
     #[Test]
@@ -102,12 +192,30 @@ final class ServeCommandTest extends TestCase
         parent::tearDown();
     }
 
+    private function builtOutput(): string
+    {
+        $output = Path::join($this->site, 'build', 'site');
+
+        $this->filesystem->ensureDirectory($output);
+        $this->filesystem->writeAtomic(Path::join($output, 'index.html'), 'served index');
+
+        return $output;
+    }
+
+    private function cliOutput(): Output
+    {
+        return new Output(
+            stdout: $this->captured->stdoutWriter(),
+            stderr: $this->captured->stderrWriter(),
+        );
+    }
+
     private function config(): SiteConfig
     {
         return new SiteConfigLoader()->load(Path::join($this->site, 'site.json'));
     }
 
-    private function serve(string $output, int $port = 0): ExitCode
+    private function serve(?string $output, int $port = 0): ExitCode
     {
         return new ServeCommand(
             host        : '127.0.0.1',
@@ -119,10 +227,7 @@ final class ServeCommandTest extends TestCase
                 port   : $port,
             ),
             $this->config(),
-            new Output(
-                stdout: $this->captured->stdoutWriter(),
-                stderr: $this->captured->stderrWriter(),
-            ),
+            $this->cliOutput(),
         );
     }
 }

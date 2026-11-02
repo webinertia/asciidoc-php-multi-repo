@@ -34,6 +34,25 @@ final class StaticServerTest extends TestCase
     private string $root = '';
 
     #[Test]
+    public function aConnectionClosedWithoutARequestIsAnsweredWith400(): void
+    {
+        $server = $this->server();
+        $server->start();
+
+        try {
+            $socket = fsockopen('127.0.0.1', $server->port(), $errorCode, $errorMessage, timeout: 5.0);
+
+            static::assertIsResource($socket, sprintf('cannot connect: %s (%d)', $errorMessage, $errorCode));
+
+            fclose($socket);
+
+            static::assertTrue($server->serveOnce(2.0));
+        } finally {
+            $server->stop();
+        }
+    }
+
+    #[Test]
     public function aMalformedRequestLineIsAnsweredWith400(): void
     {
         $server = $this->server();

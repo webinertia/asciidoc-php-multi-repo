@@ -52,6 +52,15 @@ final class StaticSiteHandlerTest extends TestCase
     }
 
     #[Test]
+    public function aBasePathRootServesTheIndexDocument(): void
+    {
+        $response = $this->handler('/docs/')->resolve('/docs');
+
+        static::assertSame(200, $response->status());
+        static::assertSame('root index', $response->body());
+    }
+
+    #[Test]
     public function aCleanPathServesTheHtmlDocument(): void
     {
         $response = $this->handler()->resolve('/versioned/v1/guide');
@@ -61,9 +70,27 @@ final class StaticSiteHandlerTest extends TestCase
     }
 
     #[Test]
+    public function aControlCharacterInASegmentIsTreatedAsUnknown(): void
+    {
+        static::assertSame(404, $this->handler()->resolve('/%01index.html')->status());
+    }
+
+    #[Test]
+    public function aFragmentWithoutAQueryStringIsIgnored(): void
+    {
+        static::assertSame('version one guide', $this->handler()->resolve('/versioned/v1/guide.html#top')->body());
+    }
+
+    #[Test]
     public function anEncodedTraversalIsTreatedAsUnknown(): void
     {
         static::assertSame(404, $this->handler()->resolve('/%2e%2e/secret')->status());
+    }
+
+    #[Test]
+    public function aNulByteInThePathIsTreatedAsUnknown(): void
+    {
+        static::assertSame(404, $this->handler()->resolve('/index%00.html')->status());
     }
 
     #[Test]

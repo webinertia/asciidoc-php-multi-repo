@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebwareTest\AsciidocPhp\MultiRepo\Support;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Webware\AsciidocPhp\MultiRepo\Support\Filesystem;
@@ -31,6 +32,37 @@ final class FilesystemTest extends TestCase
     private string $directory;
 
     private Filesystem $filesystem;
+
+    #[Test]
+    public function removeDeletesADirectoryTree(): void
+    {
+        $tree = Path::join($this->directory, 'build');
+
+        $this->filesystem->ensureDirectory(Path::join($tree, 'deep/nested'));
+
+        self::assertNotFalse(file_put_contents(Path::join($tree, 'index.html'), data: '<html></html>'));
+        self::assertNotFalse(file_put_contents(Path::join($tree, 'deep/nested/page.html'), data: '<html></html>'));
+
+        self::assertTrue($this->filesystem->remove($tree));
+        self::assertFalse(is_dir($tree));
+    }
+
+    #[Test]
+    public function removeDeletesASingleFile(): void
+    {
+        $file = Path::join($this->directory, 'report.json');
+
+        self::assertNotFalse(file_put_contents($file, data: '{}'));
+
+        self::assertTrue($this->filesystem->remove($file));
+        self::assertFalse(is_file($file));
+    }
+
+    #[Test]
+    public function removeTreatsAMissingPathAsAlreadyRemoved(): void
+    {
+        self::assertTrue($this->filesystem->remove(Path::join($this->directory, 'absent')));
+    }
 
     public function testEnsureDirectoryIsIdempotent(): void
     {
@@ -149,30 +181,30 @@ final class FilesystemTest extends TestCase
         $this->filesystem->writeIfChanged($target, 'first');
 
         self::assertTrue($this->filesystem->writeIfChanged($target, 'second'));
-        self::assertSame('second', file_get_contents($target));
+        static::assertSame('second', file_get_contents($target));
     }
 
     public function testWriteIfChangedSkipsIdenticalBytesAndPreservesMtime(): void
     {
         $target = Path::join($this->directory, 'index.adoc');
 
-        self::assertTrue($this->filesystem->writeIfChanged($target, 'first'));
+        static::assertTrue($this->filesystem->writeIfChanged($target, 'first'));
 
         $timestamp = 1_600_000_000;
         touch($target, $timestamp);
-        self::assertSame($timestamp, filemtime($target));
+        static::assertSame($timestamp, filemtime($target));
 
-        self::assertFalse($this->filesystem->writeIfChanged($target, 'first'));
-        self::assertSame($timestamp, filemtime($target));
-        self::assertSame('first', file_get_contents($target));
+        static::assertFalse($this->filesystem->writeIfChanged($target, 'first'));
+        static::assertSame($timestamp, filemtime($target));
+        static::assertSame('first', file_get_contents($target));
     }
 
     public function testWriteIfChangedWritesNewFile(): void
     {
         $target = Path::join($this->directory, 'index.adoc');
 
-        self::assertTrue($this->filesystem->writeIfChanged($target, 'first'));
-        self::assertSame('first', file_get_contents($target));
+        static::assertTrue($this->filesystem->writeIfChanged($target, 'first'));
+        static::assertSame('first', file_get_contents($target));
     }
 
     protected function setUp(): void

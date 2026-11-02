@@ -34,6 +34,8 @@ final readonly class PageContext
         private ?string $sourceUrl = null,
         private string $colorMode = 'system',
         private string $defaultColorMode = 'dark',
+        private string $iconFontCdn = '',
+        private ?PageChrome $chrome = null,
     ) {}
 
     public function body(): string
@@ -46,6 +48,14 @@ final readonly class PageContext
         return $this->canonicalUrl;
     }
 
+    /**
+     * The site chrome, which is empty when the page was rendered without assembling a site.
+     */
+    public function chrome(): PageChrome
+    {
+        return $this->chrome ?? new PageChrome();
+    }
+
     public function colorMode(): string
     {
         return $this->colorMode;
@@ -54,6 +64,14 @@ final readonly class PageContext
     public function defaultColorMode(): string
     {
         return $this->defaultColorMode;
+    }
+
+    /**
+     * The icon font stylesheet, empty when the shell should not link one.
+     */
+    public function iconFontCdn(): string
+    {
+        return $this->iconFontCdn;
     }
 
     public function pageTitle(): string
@@ -111,5 +129,35 @@ final readonly class PageContext
     public function versionLabel(): string
     {
         return $this->versionLabel;
+    }
+
+    /**
+     * The same page with the site chrome attached.
+     *
+     * The chrome cannot be built until every page of every project has rendered, so a page is
+     * rendered once without it and its shell is rendered again from this copy. The script list is
+     * recomputed by the caller because the chrome decides whether the navigation and search scripts
+     * are needed at all.
+     *
+     * @param list<string> $scripts
+     */
+    public function withChrome(PageChrome $chrome, array $scripts): self
+    {
+        return new self(
+            siteName        : $this->siteName,
+            projectTitle    : $this->projectTitle,
+            pageTitle       : $this->pageTitle,
+            versionLabel    : $this->versionLabel,
+            canonicalUrl    : $this->canonicalUrl,
+            body            : $this->body,
+            toc             : $this->toc,
+            stylesheets     : $this->stylesheets,
+            scripts         : $scripts,
+            sourceUrl       : $this->sourceUrl,
+            colorMode       : $this->colorMode,
+            defaultColorMode: $this->defaultColorMode,
+            iconFontCdn     : $this->iconFontCdn,
+            chrome          : $chrome,
+        );
     }
 }

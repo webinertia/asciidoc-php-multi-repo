@@ -218,34 +218,34 @@ attributes and a working sidebar TOC. Navigation between projects is still absen
 
 ## Phase 5: Navigation, redirects, and landing page (Group 4, Story 3)
 
-- [ ] T041 Create `src/Site/UrlBuilder.php` producing project, version, and page URLs from the base
+- [X] T041 Create `src/Site/UrlBuilder.php` producing project, version, and page URLs from the base
   path, and `src/Site/RedirectWriter.php` producing the redirect document from the plan. Acceptance:
   a redirect for `message-bus` with versions v1, v2, v10 targets v10; an unversioned project targets
   `latest`; the document contains meta refresh, canonical, `noindex`, and a plain link, and works with
   scripting disabled in a browser check.
-- [ ] T042 Create `src/Site/NavigationBuilder.php` producing the project switcher, marking the current
+- [X] T042 Create `src/Site/NavigationBuilder.php` producing the project switcher, marking the current
   project and ordering by configured order then slug, and `VersionSelectorBuilder.php` producing the
   version list newest first with the current and latest versions marked. Acceptance: the switcher
   contains exactly the projects with status `ok` or `partial`; keyboard traversal reaches every item
   and the current item carries `aria-current="page"`.
-- [ ] T043 Create `src/Site/OutdatedBannerBuilder.php` emitting a banner on non-latest versions that
+- [X] T043 Create `src/Site/OutdatedBannerBuilder.php` emitting a banner on non-latest versions that
   links to the same page in the latest version when it exists and to the latest entry page otherwise.
   Acceptance: a v1 page whose twin exists in v2 links to that twin; a v1 page absent from v2 links to
   the v2 entry page; a latest page has no banner.
-- [ ] T044 Create `src/Site/LandingPageBuilder.php` emitting one card per publishable project with
+- [X] T044 Create `src/Site/LandingPageBuilder.php` emitting one card per publishable project with
   title, description, latest version, and link, falling back to the first paragraph of the latest
   entry page for the description. Acceptance: the fixture landing page has one card per healthy
   project in the documented order; a configured description wins over the extracted one; extracted
   descriptions are truncated on a word boundary.
-- [ ] T045 Create `src/Site/StaticAssetWriter.php` writing `.nojekyll`, `CNAME` when a hostname is
+- [X] T045 Create `src/Site/StaticAssetWriter.php` writing `.nojekyll`, `CNAME` when a hostname is
   configured, `404.html` with the landing page link and the project list, and the hashed theme assets.
   Acceptance: the output root contains `.nojekyll`; `CNAME` contains exactly the configured hostname
   and a trailing newline; `404.html` links to the landing page and lists every publishable project.
-- [ ] T046 Create `src/Site/SiteAssembler.php` orchestrating redirects, landing page, aggregate pages,
+- [X] T046 Create `src/Site/SiteAssembler.php` orchestrating redirects, landing page, aggregate pages,
   and static assets after per-project rendering, rebuilding them whenever the publishable set or any
   project's metadata changes. Acceptance: adding a project to the manifest adds exactly one card, one
   switcher entry, and one redirect; removing it removes all three.
-- [ ] T047 Add `resources/js/nav.js` for the project switcher and version selector behaviour, keeping
+- [X] T047 Add `resources/js/nav.js` for the project switcher and version selector behaviour, keeping
   both fully usable without it. Acceptance: with JavaScript disabled every switcher and selector link
   still navigates; with it enabled the control opens on click and closes on Escape.
 
@@ -254,31 +254,31 @@ selector, sidebar, outdated banner, redirects, and 404. Story 3 is complete.
 
 ## Phase 6: Search (Group 5, Story 4)
 
-- [ ] T048 Create `src/Search/TextExtractor.php` stripping markup, collapsing whitespace, and
+- [X] T048 Create `src/Search/TextExtractor.php` stripping markup, collapsing whitespace, and
   truncating at a word boundary at the configured limit. Acceptance: a long fixture truncates without
   splitting a word; a page under the limit is unchanged; non-breaking spaces and tabs collapse to
   single spaces.
-- [ ] T049 Create `src/Search/SearchIndexBuilder.php` emitting the per-project index exactly as
+- [X] T049 Create `src/Search/SearchIndexBuilder.php` emitting the per-project index exactly as
   specified in the plan and `contracts/search-index.schema.json`, with versions newest first, pages
   sorted by URL, and headings in document order. Acceptance: the emitted index validates against the
   schema; two builds produce identical bytes; every `url` in the index resolves to a file in the
   output tree.
-- [ ] T050 Create `src/Search/SiteIndexBuilder.php` emitting the site-level index of project index
+- [X] T050 Create `src/Search/SiteIndexBuilder.php` emitting the site-level index of project index
   locations. Acceptance: the site index lists exactly the publishable projects in the documented
   order and every referenced index file exists.
-- [ ] T051 Create `resources/js/search.js` implementing loading of the site index plus the current
+- [X] T051 Create `resources/js/search.js` implementing loading of the site index plus the current
   project index, field-weighted scoring (title 3, heading 2, body 1), stable tie-break by URL,
   rendering of project, version, page title, and matching section, and scope controls for current
   version, all versions, and all projects. Acceptance: a manual test finds a term unique to one
   project's second version only after widening the scope; a term in a heading ranks above the same
   term in body text; equal scores order by URL.
-- [ ] T052 Add query-state handling to `resources/js/search.js` reflecting the query in the URL and
+- [X] T052 Add query-state handling to `resources/js/search.js` reflecting the query in the URL and
   restoring results on load. Acceptance: reloading a results URL restores the query and the same
   ordered results; the back button restores the previous query.
-- [ ] T053 Hide the search control when scripting is unavailable, using a `no-js`/`js` class
+- [X] T053 Hide the search control when scripting is unavailable, using a `no-js`/`js` class
   strategy rather than a disabled input. Acceptance: with JavaScript disabled the control is absent
   from the accessibility tree, verified by a DOM assertion on the rendered HTML.
-- [ ] T054 Add `tests/Search/SearchIndexSchemaTest.php` and a search-behaviour test that loads the
+- [X] T054 Add `tests/Search/SearchIndexSchemaTest.php` and a search-behaviour test that loads the
   built index through the same scoring code path used by the browser script, ported as a small
   JavaScript test harness invoked from PHPUnit. Acceptance: the harness reports zero failures and
   fails the suite when a fixture index is edited to break ranking.
@@ -287,20 +287,20 @@ selector, sidebar, outdated banner, redirects, and 404. Story 3 is complete.
 
 ## Phase 7: Failure isolation, incrementality, determinism, reporting (Group 6, Stories 2 and 5)
 
-- [ ] T055 Create `src/Report/ProjectResult.php`, `BuildReport.php`, and `ReportWriter.php` with the
+- [X] T055 Create `src/Report/ProjectResult.php`, `BuildReport.php`, and `ReportWriter.php` with the
   schema version, one entry per onboarded repository, statuses `ok`/`partial`/`failed`/`skipped`,
   per-error slug, version, path, and reason code, plus totals. Acceptance: the report validates
   against `contracts/report.schema.json`; a build with one broken fixture produces `partial` for it,
   `ok` for healthy fixtures, `skipped` for the archived fixture, and exit code 1.
-- [ ] T056 Isolate failures in `src/Build/BuildRunner.php` so a project or page failure is captured,
+- [X] T056 Isolate failures in `src/Build/BuildRunner.php` so a project or page failure is captured,
   recorded, and does not abort the run, while discovery and configuration failures still short
   circuit. Acceptance: the broken-include fixture publishes its other pages and is `partial`; the
   missing-entry fixture publishes nothing and is `failed`; healthy projects are unaffected in both
   cases; the archived fixture is `skipped` and does not change the exit code.
-- [ ] T057 Add retry accounting to the fetch path and surface it in the report. Acceptance: a fixture
+- [X] T057 Add retry accounting to the fetch path and surface it in the report. Acceptance: a fixture
   server failing twice then succeeding yields status `ok` with an attempt count of 3; a server failing
   every time yields `fetch-failed` with the configured attempt count.
-- [ ] T058 Create `src/Build/IncrementalCache.php` computing the documented cache key and
+- [X] T058 Create `src/Build/IncrementalCache.php` computing the documented cache key and
   `src/Build/BuildPlan.php` deciding which projects to render. Acceptance: an unchanged second build
   renders zero pages; changing one page in one project re-renders only that project; changing
   `site.css` re-renders every project; changing an unrelated project's override re-renders only that
@@ -310,14 +310,14 @@ selector, sidebar, outdated banner, redirects, and 404. Story 3 is complete.
   zero written files; removing a project from the manifest removes its directory on a full build and
   on an incremental build; no unrelated file is deleted, proven by a sentinel file placed in the
   output root.
-- [ ] T060 Create `src/Build/DeterminismGuard.php` scanning output for clock-shaped strings, absolute
+- [X] T060 Create `src/Build/DeterminismGuard.php` scanning output for clock-shaped strings, absolute
   paths, machine names, and non-deterministic identifiers, and failing the build with exit 4 when
   found. Acceptance: injecting a date into a template makes the guard fail the build; the clean build
   passes.
-- [ ] T061 Add `tests/Determinism/BuildDeterminismTest.php` comparing recursive SHA-256 manifests of
+- [X] T061 Add `tests/Determinism/BuildDeterminismTest.php` comparing recursive SHA-256 manifests of
   two consecutive full builds and of an incremental build against a fresh full build. Acceptance: all
   three comparisons report zero differences; the test fails if a template gains a timestamp.
-- [ ] T062 Wire `validate` to report per repository whether it would build and, when not, the reason
+- [X] T062 Wire `validate` to report per repository whether it would build and, when not, the reason
   code and corrective action, writing no site output. Acceptance: against the fixtures it reports the
   healthy set as buildable and each broken fixture with its reason code and an actionable message; the
   output directory is unchanged, proven by a hash comparison.

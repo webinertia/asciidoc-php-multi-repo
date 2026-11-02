@@ -54,7 +54,7 @@ final class BuildCommandTest extends TestCase
         $exit = $this->build(['missing-entry']);
 
         self::assertSame(ExitCode::Degraded, $exit);
-        self::assertStringContainsString('missing-entry: 0 page(s)', $this->captured->stdout);
+        self::assertStringContainsString('missing-entry: 0 page(s) failed', $this->captured->stderr);
         self::assertStringContainsString('docs/v1:', $this->captured->stderr);
         self::assertStringContainsString('(missing-entry)', $this->captured->stderr);
     }
@@ -64,7 +64,7 @@ final class BuildCommandTest extends TestCase
         $exit = $this->build(['mixed']);
 
         self::assertSame(ExitCode::Success, $exit);
-        self::assertStringContainsString('mixed: 2 page(s)', $this->captured->stdout);
+        self::assertStringContainsString('mixed: 2 page(s) ok', $this->captured->stderr);
         self::assertStringContainsString('outside a version directory', $this->captured->stderr);
         self::assertStringContainsString('docs/loose.adoc', $this->captured->stderr);
     }
@@ -80,7 +80,7 @@ final class BuildCommandTest extends TestCase
 
         self::assertSame(ExitCode::Success, $exit);
         self::assertStringContainsString('legacy: archived, skipped', $this->captured->stderr);
-        self::assertStringContainsString('versioned: 5 page(s)', $this->captured->stdout);
+        self::assertStringContainsString('versioned: 5 page(s) ok', $this->captured->stderr);
     }
 
     public function testAnArchivedProjectIsSkippedWithAWarning(): void
@@ -126,9 +126,11 @@ final class BuildCommandTest extends TestCase
 
         self::assertSame(ExitCode::Success, $exit);
         self::assertSame(0, $exit->value);
-        self::assertStringContainsString('versioned: 5 page(s)', $this->captured->stdout);
+        self::assertStringContainsString('versioned: 5 page(s) ok', $this->captured->stderr);
         self::assertStringContainsString('output directory: ', $this->captured->stdout);
-        self::assertSame('', $this->captured->stderr);
+        self::assertStringContainsString('ok: 1, partial: 0, failed: 0, skipped: 0', $this->captured->stdout);
+        self::assertStringNotContainsString('warning: ', $this->captured->stderr);
+        self::assertStringNotContainsString('error: ', $this->captured->stderr);
     }
 
     public function testARenderFailureDegradesTheRunAndNamesThePage(): void
@@ -136,7 +138,7 @@ final class BuildCommandTest extends TestCase
         $exit = $this->build(['broken-include']);
 
         self::assertSame(ExitCode::Degraded, $exit);
-        self::assertStringContainsString('broken-include: 0 page(s)', $this->captured->stdout);
+        self::assertStringContainsString('broken-include: 0 page(s) partial', $this->captured->stderr);
         self::assertStringContainsString('docs/v1/index.adoc:', $this->captured->stderr);
         self::assertStringContainsString('(render-failed)', $this->captured->stderr);
     }
@@ -158,7 +160,7 @@ final class BuildCommandTest extends TestCase
 
         self::assertSame(ExitCode::Degraded, $exit);
         self::assertStringContainsString('a-broken.adoc:', $this->captured->stderr);
-        self::assertStringContainsString('local: 1 page(s)', $this->captured->stdout);
+        self::assertStringContainsString('local: 1 page(s) partial', $this->captured->stderr);
         self::assertTrue(is_file(Path::join($this->tempDirectory, 'site', 'local', 'v1', 'index.html')));
     }
 
@@ -224,7 +226,9 @@ final class BuildCommandTest extends TestCase
 
         self::assertSame(ExitCode::Success, $exit);
         self::assertStringContainsString("output directory: {$out}", $this->captured->stdout);
+        self::assertStringContainsString("report: {$this->tempDirectory}", $this->captured->stdout);
         self::assertTrue(is_file(Path::join($out, 'versioned', 'v1', 'index.html')));
+        self::assertTrue(is_file(Path::join($this->tempDirectory, 'report.json')));
     }
 
     public function testTheVerboseOutputNamesEveryRenderedPage(): void

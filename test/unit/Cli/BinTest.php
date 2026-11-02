@@ -34,10 +34,15 @@ final class BinTest extends TestCase
             'validate',
             '-c',
             $this->fixtureConfig(),
+            '--manifest',
+            $this->fixtureManifest(),
         ]);
 
-        self::assertSame(ExitCode::InternalError->value, $result->exitCode(), $result->describeFailure());
-        self::assertStringContainsString('validate: not implemented', $result->stderr());
+        self::assertSame(ExitCode::Degraded->value, $result->exitCode(), $result->describeFailure());
+        self::assertStringContainsString('versioned: ok', $result->stderr());
+        self::assertStringContainsString('broken-include: partial', $result->stderr());
+        self::assertStringContainsString('markdown-only: failed', $result->stderr());
+        self::assertStringContainsString('no site output was written', $result->stdout());
         self::assertStringNotContainsString('unable to locate', $result->stderr());
     }
 
@@ -78,6 +83,11 @@ final class BinTest extends TestCase
     private function fixtureConfig(): string
     {
         return Path::join($this->root(), 'test', 'fixtures', 'site.json');
+    }
+
+    private function fixtureManifest(): string
+    {
+        return Path::join($this->root(), 'test', 'fixtures', 'manifest.json');
     }
 
     private function root(): string

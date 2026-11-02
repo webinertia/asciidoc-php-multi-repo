@@ -13,11 +13,17 @@ final readonly class ThemeConfig
 
     public const string DEFAULT_ACCENT = '#7e5ae0';
 
+    /**
+     * The converter's own choice of icon font, so a document that sets `icons: font` keeps working.
+     */
+    public const string DEFAULT_ICON_FONT_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css';
+
     public function __construct(
         private string $name,
         private string $defaultAccent,
         private string $colorMode,
         private string $defaultColorMode,
+        private string $iconFontCdn = self::DEFAULT_ICON_FONT_CDN,
     ) {}
 
     public static function defaults(): self
@@ -35,6 +41,7 @@ final readonly class ThemeConfig
             Values::string($data, 'defaultAccent', self::DEFAULT_ACCENT),
             Values::string($data, 'colorMode', 'system'),
             Values::string($data, 'defaultColorMode', 'dark'),
+            Values::string($data, 'iconFontCdn', self::DEFAULT_ICON_FONT_CDN),
         );
     }
 
@@ -51,6 +58,15 @@ final readonly class ThemeConfig
     public function defaultColorMode(): string
     {
         return $this->defaultColorMode;
+    }
+
+    /**
+     * The icon font stylesheet the page shell links, overridable so a build can point at a vendored
+     * copy instead of the CDN.
+     */
+    public function iconFontCdn(): string
+    {
+        return $this->iconFontCdn;
     }
 
     /**

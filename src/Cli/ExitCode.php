@@ -23,13 +23,18 @@ enum ExitCode: int
      * Maps a build report to an exit code: 0 when every project is ok or skipped, 1 when at
      * least one project is partial or failed.
      *
-     * @param array{projects?: list<array<array-key, mixed>>} $report
+     * @param array<string, mixed> $report
      */
     public static function fromBuildReport(array $report): self
     {
         $statuses = [];
+        $projects = $report['projects'] ?? [];
 
-        foreach ($report['projects'] ?? [] as $project) {
+        if (! is_array($projects)) {
+            $projects = [];
+        }
+
+        foreach ($projects as $project) {
             if (! is_array($project)) {
                 continue;
             }

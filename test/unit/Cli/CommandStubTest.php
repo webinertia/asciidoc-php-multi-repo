@@ -45,18 +45,15 @@ final class CommandStubTest extends TestCase
     }
 
     /**
-     * The commands that rendering will implement are still stubs. `discover`, `fetch` and `build`
-     * are not.
+     * The commands still waiting on another implementation group are stubs. `discover`, `fetch`,
+     * `build`, `watch`, `serve` and `clean` are not.
      *
      * @return array<string, array{string}>
      */
     public static function unimplementedCommands(): array
     {
         return [
-            'watch'    => ['watch'],
-            'serve'    => ['serve'],
             'validate' => ['validate'],
-            'clean'    => ['clean'],
         ];
     }
 

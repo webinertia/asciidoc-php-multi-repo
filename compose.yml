@@ -21,6 +21,16 @@
 #        docker compose exec tooling mago lint
 #        docker compose down                  # stop it
 #
+#   3. The documentation site stack (the `site` profile):
+#        docker compose run --rm render       # render once, exit with the build's code
+#        docker compose up watch              # rebuild on change, serve on :8080
+#        docker compose up preview            # serve an already built tree on :8080
+#
+#      All three live in the `site` profile, so a bare `docker compose up -d`
+#      still starts only `tooling`. Naming one of them on the command line
+#      enables the profile for that command, which is why the invocations above
+#      work without --profile.
+#
 # Packages whose tests need MySQL uncomment the `mysql` service below (and the
 # `phpmyadmin` web UI if wanted), plus the `depends_on` block on `tooling`. The
 # `mysql` service mirrors the `db_image` package parameter used by CI, and is
@@ -29,6 +39,67 @@
 # engine add an equivalent service here (postgres, mariadb, ...) mirroring
 # their own `db_image` parameter.
 # ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# The documentation site stack.
+#
+# These three services run the package's own console binary in the runtime
+# image built by docker/Dockerfile, which is a different image from the
+# `tooling` service above: that one is the interactive development toolchain,
+# this one is the small non-root image a publish workflow can run.
+#
+# `render` runs the CLI's `build` once and exits with the build's exit code.
+# `watch` rebuilds the affected projects as their sources change and serves
+# the result. `preview` serves a tree that is already built. Only `watch` and
+# `preview` publish a port, and only on the loopback interface.
+#
+# SITE_DIR is the directory holding the site's site.json; the config's
+# output.directory is resolved against it. OUTPUT_DIR is the host directory
+# that receives the rendered site and OUTPUT_PATH is where it is mounted
+# inside the container, so the two have to agree with the config. The
+# defaults match the bundled fixture site:
+#
+#   SITE_DIR=./test/fixtures SITE_MANIFEST=manifest.json \
+#       docker compose run --rm render
+#   SITE_DIR=./test/fixtures SITE_MANIFEST=manifest.json \
+#       docker compose up watch
+#
+# SITE_DIR has to start with `.` or `/`: a bare relative path such as
+# `test/fixtures` is read as a named volume, not a host directory. SITE_MANIFEST
+# is a manifest read instead of the hosted API, which is what makes the fixture
+# site renderable without a token.
+#
+# Note that the commented-out phpMyAdmin service above also claims port 8080;
+# uncommenting it and running `watch` or `preview` at the same time needs
+# SITE_PORT set to something else.
+# ---------------------------------------------------------------------------
+x-site-stack: &site-stack
+  build:
+    context: .
+    dockerfile: docker/Dockerfile
+    args:
+      # The package supports ~8.4 and ~8.5. The image is built on the floor
+      # of that range, so the container proves the lowest supported runtime.
+      PHP_VERSION: "8.4"
+  image: asciidoc-php-multi-repo:local
+  working_dir: /site
+  # A PID 1 that reaps children, so a stopped watch loop leaves nothing behind.
+  init: true
+  stdin_open: true
+  tty: true
+  environment:
+    # A container cannot be reached through 127.0.0.1, so the served
+    # commands bind every interface and the published port is what limits
+    # reachability.
+    ASCIIDOC_SERVE_HOST: 0.0.0.0
+    # Discovery token for the hosted documentation API, when one is needed.
+    DOC_DISCOVERY_TOKEN: ${DOC_DISCOVERY_TOKEN:-}
+    # A manifest read instead of the organization, for offline and CI runs.
+    # The entrypoint turns it into --manifest for `render` and `watch`.
+    ASCIIDOC_MANIFEST: ${SITE_MANIFEST:-}
+  volumes:
+    - ${SITE_DIR:-.}:/site
+    - ${OUTPUT_DIR:-./build/site}:${OUTPUT_PATH:-/site/build/site}
 
 services:
   tooling:
@@ -70,6 +141,29 @@ services:
     #   mysql:
     #     condition: service_healthy
     working_dir: /app
+
+  # -------------------------------------------------------------------------
+  # Documentation site stack. See the `x-site-stack` anchor above for the
+  # mounts and the environment, and the header for the invocations.
+  # -------------------------------------------------------------------------
+  render:
+    <<: *site-stack
+    profiles: ["site"]
+    command: ["render", "--config", "${SITE_CONFIG:-site.json}"]
+
+  watch:
+    <<: *site-stack
+    profiles: ["site"]
+    command: ["watch", "--config", "${SITE_CONFIG:-site.json}", "--port", "8080"]
+    ports:
+      - "127.0.0.1:${SITE_PORT:-8080}:8080"
+
+  preview:
+    <<: *site-stack
+    profiles: ["site"]
+    command: ["serve", "--config", "${SITE_CONFIG:-site.json}", "--out", "${OUTPUT_PATH:-/site/build/site}", "--port", "8080"]
+    ports:
+      - "127.0.0.1:${SITE_PORT:-8080}:8080"
 
   # -------------------------------------------------------------------------
   # MySQL (optional) - uncomment this whole block for packages whose tests

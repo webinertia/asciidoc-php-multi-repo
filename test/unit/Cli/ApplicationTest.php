@@ -134,13 +134,13 @@ final class ApplicationTest extends TestCase
     {
         $exit = $this->application()->run([
             'asciidoc-php-multi-repo',
-            'watch',
+            'validate',
             '-c',
             $this->fixtureConfig(),
         ]);
 
         self::assertSame(ExitCode::InternalError->value, $exit);
-        self::assertStringContainsString('watch: not implemented', $this->captured->stderr);
+        self::assertStringContainsString('validate: not implemented', $this->captured->stderr);
         self::assertSame('', $this->captured->stdout);
     }
 

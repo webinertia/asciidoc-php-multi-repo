@@ -17,8 +17,10 @@ use function hash;
 use function hash_file;
 use function is_dir;
 use function is_file;
+use function is_link;
 use function is_string;
 use function rename;
+use function rmdir;
 use function rtrim;
 use function sort;
 use function sprintf;
@@ -78,6 +80,40 @@ final class Filesystem
         }
 
         return $contents;
+    }
+
+    /**
+     * Removes a file or a directory tree. A path that does not exist is not an error, so the caller
+     * can run a removal twice without branching. Symbolic links are unlinked, never followed, so a
+     * link cannot pull an unrelated tree into the removal.
+     */
+    public function remove(string $path): bool
+    {
+        if (is_link($path) || is_file($path)) {
+            return @unlink($path);
+        }
+
+        if (! is_dir($path)) {
+            return true;
+        }
+
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::CHILD_FIRST,
+        );
+
+        $removed = true;
+
+        foreach ($iterator as $entry) {
+            if (! $entry instanceof SplFileInfo) {
+                continue;
+            }
+
+            $target  = $entry->getPathname();
+            $removed = ($entry->isDir() && ! $entry->isLink() ? @rmdir($target) : @unlink($target)) && $removed;
+        }
+
+        return @rmdir($path) && $removed;
     }
 
     /**

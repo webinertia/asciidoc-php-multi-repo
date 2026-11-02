@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "815000491799d5b895527282d81c20a0",
+    "content-hash": "2fdf817d933797c70175d683dcb253ad",
     "packages": [
         {
             "name": "laminas/laminas-diactoros",
@@ -261,27 +261,28 @@
         },
         {
             "name": "webware/asciidoc-php",
-            "version": "0.1.0",
+            "version": "0.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webinertia/asciidoc-php.git",
-                "reference": "2f174a21fa45a6bd15d7fef53af2fcb2200dd46f"
+                "reference": "0e12a3cfcc7d663b0376ff0898a45aa20375541e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webinertia/asciidoc-php/zipball/2f174a21fa45a6bd15d7fef53af2fcb2200dd46f",
-                "reference": "2f174a21fa45a6bd15d7fef53af2fcb2200dd46f",
+                "url": "https://api.github.com/repos/webinertia/asciidoc-php/zipball/0e12a3cfcc7d663b0376ff0898a45aa20375541e",
+                "reference": "0e12a3cfcc7d663b0376ff0898a45aa20375541e",
                 "shasum": ""
             },
             "require": {
-                "php": "~8.4.0 || ~8.5.0"
+                "php": "~8.4.1 || ~8.5.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "^2.1",
-                "phpstan/phpstan-phpunit": "^2.0",
+                "infection/infection": "^0.35.0",
+                "phpbench/phpbench": "^1.7",
                 "phpunit/phpunit": "^13.0.0",
                 "psr/log": "^3.0",
-                "roave/security-advisories": "dev-master"
+                "roave/security-advisories": "dev-master",
+                "webware/webware-tools": "^1.0.0-rc.8"
             },
             "bin": [
                 "bin/asciidoc-php"
@@ -319,10 +320,10 @@
             ],
             "support": {
                 "issues": "https://github.com/webinertia/asciidoc-php/issues",
-                "source": "https://github.com/webinertia/asciidoc-php/tree/0.1.0"
+                "source": "https://github.com/webinertia/asciidoc-php/tree/0.1.1"
             },
-            "time": "2026-11-01T02:40:02+00:00",
-            "published-time": "2026-11-01T02:44:15+00:00"
+            "time": "2026-11-02T02:06:29+00:00",
+            "published-time": "2026-11-02T05:21:26+00:00"
         }
     ],
     "packages-dev": [

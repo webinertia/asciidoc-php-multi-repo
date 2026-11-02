@@ -180,11 +180,18 @@ page:
 See xref:../../beta/v2/guide.adoc[the beta guide].
 ----
 
-Use `xref:` rather than the `link:` macro for pages in the site. The `link:` macro is not
-converted by the renderer in this version and is published as literal text.
+Use `xref:` for pages inside the site and `link:` for anything outside it. `xref:` resolves the
+target against the page's own published URL, rewrites the `.adoc` extension to `.html`, and applies
+the site base path. `link:` keeps the URL as written and gains `rel="noopener"`. A bare URL in prose
+is also turned into a link, so no macro is needed for one:
 
-External links are left as written. Links to pages inside the same project use the same rules;
-`xref:guide.adoc[Guide]` from `index.adoc` becomes `guide.html` next to it.
+[source,asciidoc]
+----
+See xref:/beta/v2/guide.adoc[the beta guide] or link:https://example.com[the example site].
+----
+
+Links to pages inside the same project use the same rules: a relative `xref:` target of
+`guide.adoc`, written on `index.adoc`, becomes `guide.html` next to it.
 
 Do not link to an unpublished path such as a partial or an excluded file, and do not hard-code
 the site host name or the base path.
@@ -208,6 +215,6 @@ Consequences for authors:
 . Create the file inside a version directory, or inside `docs` for an unversioned project.
 . Use the `.adoc` or `.asciidoc` extension and do not start the file name with an underscore.
 . Start the page with a level 1 heading, for example `= Page title`.
-. Link to other pages with `xref:` and the `.adoc` extension, and to external sites with a full URL.
+. Link to other pages with `xref:` and the `.adoc` extension, and to external sites with `link:` or a bare URL.
 . Keep includes inside the page's directory subtree.
 . Run the build and confirm the page appears in the output and in the project's page count.

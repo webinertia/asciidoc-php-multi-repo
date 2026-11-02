@@ -27,6 +27,8 @@ use function fclose;
 use function fsockopen;
 use function fwrite;
 use function getenv;
+use function is_resource;
+use function putenv;
 use function sprintf;
 use function stream_get_contents;
 use function stream_set_timeout;
@@ -150,6 +152,69 @@ final class ServeCommandTest extends TestCase
         static::assertIsString($response);
         static::assertStringStartsWith('HTTP/1.1 200 OK', $response);
         static::assertStringEndsWith('served index', $response);
+    }
+
+    #[Test]
+    public function theEnvironmentOverridesTheBindAddress(): void
+    {
+        $this->builtOutput();
+
+        $previous = getenv('ASCIIDOC_SERVE_HOST');
+        $client   = null;
+        $host     = null;
+        $status   = null;
+
+        putenv('ASCIIDOC_SERVE_HOST=127.0.0.2');
+
+        try {
+            $command = new ServeCommand(
+                host         : '192.0.2.1',
+                requestLimit : 1,
+                serverFactory: static function (StaticSiteHandler $handler, string $bind, int $port) use (
+                    &$client,
+                    &$host,
+                ): StaticServer {
+                    $host = $bind;
+
+                    $server = new StaticServer($handler, '127.0.0.1', $port);
+                    $server->start();
+
+                    $socket = fsockopen('127.0.0.1', $server->port(), $errorCode, $errorMessage, timeout: 5.0);
+
+                    static::assertIsResource($socket, sprintf(
+                        'cannot reach the server: %s (%d)',
+                        $errorMessage,
+                        $errorCode,
+                    ));
+
+                    fwrite($socket, data: "GET /index.html HTTP/1.1\r\nHost: localhost\r\n\r\n");
+
+                    stream_set_timeout($socket, seconds: 5);
+
+                    $client = $socket;
+
+                    return $server;
+                },
+            );
+
+            $status = $command->execute(
+                new Options(
+                    command: 'serve',
+                    port   : 0,
+                ),
+                $this->config(),
+                $this->cliOutput(),
+            );
+        } finally {
+            false === $previous ? putenv('ASCIIDOC_SERVE_HOST') : putenv("ASCIIDOC_SERVE_HOST={$previous}");
+
+            if (is_resource($client)) {
+                fclose($client);
+            }
+        }
+
+        static::assertSame(ExitCode::Success, $status);
+        static::assertSame('127.0.0.2', $host, 'ASCIIDOC_SERVE_HOST must replace the configured host.');
     }
 
     #[Test]

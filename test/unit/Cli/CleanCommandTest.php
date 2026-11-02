@@ -41,6 +41,26 @@ final class CleanCommandTest extends TestCase
     private string $site = '';
 
     #[Test]
+    public function anAbsentTargetIsDetailedOnlyUnderVerbose(): void
+    {
+        $output = Path::join($this->site, 'build', 'site');
+        $detail = "output directory: absent ({$output})";
+
+        $this->clean(out: $output);
+
+        static::assertStringNotContainsString($detail, $this->captured->stderr);
+
+        $this->captured = new CapturedOutput();
+
+        $this->clean(
+            out    : $output,
+            verbose: true,
+        );
+
+        static::assertStringContainsString($detail, $this->captured->stderr);
+    }
+
+    #[Test]
     public function anAbsentTargetIsReportedAsAbsentRatherThanFailing(): void
     {
         $exit = $this->clean(out: Path::join($this->site, 'build', 'site'));
@@ -74,6 +94,17 @@ final class CleanCommandTest extends TestCase
         static::assertStringContainsString('outside the config directory', $this->captured->stderr);
         static::assertStringContainsString('--force', $this->captured->stderr);
         static::assertSame('', $this->captured->stdout);
+    }
+
+    #[Test]
+    public function aRemovedTargetIsReportedAsProgress(): void
+    {
+        $output = $this->directory('build/site');
+
+        $exit = $this->clean(out: $output);
+
+        static::assertSame(ExitCode::Success, $exit, $this->captured->stderr);
+        static::assertStringContainsString("removed {$output}", $this->captured->stderr);
     }
 
     #[Test]
@@ -190,19 +221,25 @@ final class CleanCommandTest extends TestCase
         parent::tearDown();
     }
 
-    private function clean(?string $out = null, bool $force = false, ?string $cache = null): ExitCode
-    {
+    private function clean(
+        ?string $out = null,
+        bool $force = false,
+        ?string $cache = null,
+        bool $verbose = false,
+    ): ExitCode {
         return new CleanCommand($this->filesystem)->execute(
             new Options(
                 command: 'clean',
                 out    : $out,
                 cache  : $cache,
                 force  : $force,
+                verbose: $verbose,
             ),
             $this->config(),
             new Output(
-                stdout: $this->captured->stdoutWriter(),
-                stderr: $this->captured->stderrWriter(),
+                verbose: $verbose,
+                stdout : $this->captured->stdoutWriter(),
+                stderr : $this->captured->stderrWriter(),
             ),
         );
     }

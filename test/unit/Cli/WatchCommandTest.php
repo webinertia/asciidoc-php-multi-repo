@@ -26,6 +26,7 @@ use function file_put_contents;
 use function getenv;
 use function implode;
 use function is_file;
+use function putenv;
 use function sprintf;
 use function str_replace;
 
@@ -264,6 +265,29 @@ final class WatchCommandTest extends TestCase
             $this->command(cycles: 1)->execute($options, $this->config, $this->cliOutput()),
         );
         static::assertFileExists(Path::join($this->outputDirectory(), 'versioned/v1/index.html'));
+    }
+
+    #[Test]
+    public function theEnvironmentOverridesTheBindAddress(): void
+    {
+        $previous = getenv('ASCIIDOC_SERVE_HOST');
+
+        putenv('ASCIIDOC_SERVE_HOST=127.0.0.1');
+
+        try {
+            $command = new WatchCommand(
+                host    : '192.0.2.1',
+                cycles  : 1,
+                debounce: 0.0,
+            );
+
+            $status = $command->execute($this->options(), $this->config, $this->cliOutput());
+        } finally {
+            false === $previous ? putenv('ASCIIDOC_SERVE_HOST') : putenv("ASCIIDOC_SERVE_HOST={$previous}");
+        }
+
+        static::assertSame(ExitCode::Success, $status, $this->captured->stderr);
+        static::assertStringContainsString('watching', $this->captured->stderr);
     }
 
     #[Test]

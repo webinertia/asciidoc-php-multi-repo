@@ -32,6 +32,7 @@ use function json_decode;
 use function mb_strlen;
 use function str_contains;
 use function str_repeat;
+use function str_replace;
 use function substr_count;
 use function trim;
 
@@ -86,6 +87,20 @@ final class PageRendererTest extends TestCase
             self::assertStringContainsString('missing.adoc', $error->message());
             self::assertNotNull($error->correctiveAction());
         }
+    }
+
+    public function testACrlfSourceRendersIdenticallyToItsLfTwin(): void
+    {
+        $lf = "= Twin Page\n\nIntro paragraph.\n\n== Section\n\nBody text.\n\n* one\n* two\n";
+
+        $fromLf   = $this->renderFromTemp($lf);
+        $fromCrlf = $this->renderFromTemp(str_replace(
+            search : "\n",
+            replace: "\r\n",
+            subject: $lf,
+        ));
+
+        self::assertSame($fromLf->html(), $fromCrlf->html());
     }
 
     public function testAHumanisedNameFillsInWhenTheDocumentHasNoTitle(): void

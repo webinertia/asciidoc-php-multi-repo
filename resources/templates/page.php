@@ -12,6 +12,7 @@ $mode    = $context->colorMode();
 $mode    = in_array($mode, ['light', 'dark', 'system'], true) ? $mode : 'system';
 $initial = $context->defaultColorMode();
 $initial = in_array($initial, ['light', 'dark'], true) ? $initial : 'dark';
+$chrome  = $context->chrome();
 
 ?>
 <!DOCTYPE html>
@@ -24,6 +25,9 @@ $initial = in_array($initial, ['light', 'dark'], true) ? $initial : 'dark';
 <?php foreach ($context->stylesheets() as $stylesheet) : ?>
 <link rel="stylesheet" href="<?= $e($stylesheet) ?>">
 <?php endforeach ?>
+<?php if ('' !== $context->iconFontCdn()) : ?>
+<link rel="stylesheet" href="<?= $e($context->iconFontCdn()) ?>">
+<?php endif ?>
 <script>
 (function () {
   var stored = null;
@@ -48,11 +52,34 @@ $initial = in_array($initial, ['light', 'dark'], true) ? $initial : 'dark';
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header">
-<p class="site-name"><?= $e($context->siteName()) ?></p>
+<p class="site-name"><a href="<?= $e($chrome->landingUrl()) ?>"><?= $e($context->siteName()) ?></a></p>
 <p class="project-name"><?= $e($context->projectTitle()) ?></p>
 <p class="version-label"><?= $e($context->versionLabel()) ?></p>
+<?php if ($chrome->hasProjectSwitcher()) : ?>
+<?= $chrome->projectSwitcher() ?>
+<?php endif ?>
+<?php if ($chrome->hasVersionSelector()) : ?>
+<?= $chrome->versionSelector() ?>
+<?php endif ?>
 <button type="button" class="theme-toggle" data-theme-toggle aria-pressed="false" aria-label="Toggle dark mode">Toggle dark mode</button>
+<?php if ($chrome->hasSearch()) : ?>
+<div class="site-search" data-search data-site-index="<?= $e($chrome->siteIndexUrl()) ?>" data-project-index="<?= $e($chrome->projectIndexUrl()) ?>" data-project-slug="<?= $e($chrome->projectSlug()) ?>" data-version-label="<?= $e($context->versionLabel()) ?>" hidden>
+<label class="search-label" for="site-search-input">Search</label>
+<input class="search-input" id="site-search-input" type="search" autocomplete="off" spellcheck="false" data-search-input>
+<label class="search-scope-label" for="site-search-scope">Scope</label>
+<select class="search-scope" id="site-search-scope" data-search-scope>
+<option value="version">This version</option>
+<option value="project">All versions</option>
+<option value="site">All projects</option>
+</select>
+<ul class="search-results" data-search-results hidden></ul>
+<p class="search-status" data-search-status aria-live="polite"></p>
+</div>
+<?php endif ?>
 </header>
+<?php if ($chrome->hasOutdatedBanner()) : ?>
+<?= $chrome->outdatedBanner() ?>
+<?php endif ?>
 <div class="layout">
 <nav class="sidebar" aria-label="On this page">
 <?= $toc($context->toc()) ?>

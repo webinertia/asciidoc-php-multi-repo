@@ -53,10 +53,9 @@ final class CommandStubTest extends TestCase
     public static function unimplementedCommands(): array
     {
         return [
-            'watch'    => ['watch'],
-            'serve'    => ['serve'],
-            'validate' => ['validate'],
-            'clean'    => ['clean'],
+            'watch' => ['watch'],
+            'serve' => ['serve'],
+            'clean' => ['clean'],
         ];
     }
 

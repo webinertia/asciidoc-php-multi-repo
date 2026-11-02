@@ -140,6 +140,66 @@ final readonly class ThemeResolver
     }
 
     /**
+     * The navigation script.
+     *
+     * @throws RuntimeException when the script is missing or unreadable
+     */
+    public function navScript(): string
+    {
+        return $this->readFile($this->jsDirectory, 'nav.js');
+    }
+
+    /**
+     * The published navigation script name.
+     *
+     * @throws RuntimeException when the script is missing or unreadable
+     */
+    public function navScriptName(): string
+    {
+        return $this->hasher->hashedName('nav', 'js', $this->navScript());
+    }
+
+    /**
+     * The search scoring core, shared by the browser and the test harness.
+     *
+     * @throws RuntimeException when the script is missing or unreadable
+     */
+    public function searchCore(): string
+    {
+        return $this->readFile($this->jsDirectory, 'search-core.js');
+    }
+
+    /**
+     * The published search core name.
+     *
+     * @throws RuntimeException when the script is missing or unreadable
+     */
+    public function searchCoreName(): string
+    {
+        return $this->hasher->hashedName('search-core', 'js', $this->searchCore());
+    }
+
+    /**
+     * The search client.
+     *
+     * @throws RuntimeException when the script is missing or unreadable
+     */
+    public function searchScript(): string
+    {
+        return $this->readFile($this->jsDirectory, 'search.js');
+    }
+
+    /**
+     * The published search client name.
+     *
+     * @throws RuntimeException when the script is missing or unreadable
+     */
+    public function searchScriptName(): string
+    {
+        return $this->hasher->hashedName('search', 'js', $this->searchScript());
+    }
+
+    /**
      * The site stylesheet plus the print rules, which is what the build publishes.
      *
      * @throws RuntimeException when a stylesheet is missing or unreadable

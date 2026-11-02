@@ -19,6 +19,102 @@ message = "Use of the `isset` construct."
 count = 1
 
 [[issues]]
+file = "src/Build/BuildRunner.php"
+code = "ambiguous-constant-access"
+message = "Ambiguous constant access detected."
+count = 1
+
+[[issues]]
+file = "src/Build/BuildRunner.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Build/BuildRunner.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 5
+
+[[issues]]
+file = "src/Build/BuildRunner.php"
+code = "halstead"
+message = "Method has a high halstead effort"
+count = 1
+
+[[issues]]
+file = "src/Build/BuildRunner.php"
+code = "halstead"
+message = "Method has a high halstead volume and effort"
+count = 1
+
+[[issues]]
+file = "src/Build/BuildRunner.php"
+code = "kan-defect"
+message = "Class has a high kan defect score."
+count = 1
+
+[[issues]]
+file = "src/Build/BuildRunner.php"
+code = "str-starts-with"
+message = "Consider replacing `strpos` with `str_starts_with` for improved readability and intent clarity."
+count = 1
+
+[[issues]]
+file = "src/Build/BuildRunner.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Build/DeterminismGuard.php"
+code = "literal-named-argument"
+message = 'Literal argument `"\n"` should be passed as a named argument for clarity.'
+count = 1
+
+[[issues]]
+file = "src/Build/DeterminismGuard.php"
+code = "literal-named-argument"
+message = "Literal argument `'.'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Build/DeterminismGuard.php"
+code = "literal-named-argument"
+message = "Literal argument `'/'` should be passed as a named argument for clarity."
+count = 3
+
+[[issues]]
+file = "src/Build/DeterminismGuard.php"
+code = "literal-named-argument"
+message = "Literal argument `0` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Build/DeterminismGuard.php"
+code = "literal-named-argument"
+message = "Literal argument `true` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Build/IncrementalCache.php"
+code = "ambiguous-constant-access"
+message = "Ambiguous constant access detected."
+count = 1
+
+[[issues]]
+file = "src/Build/IncrementalCache.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Build/IncrementalCache.php"
+code = "kan-defect"
+message = "Class has a high kan defect score."
+count = 1
+
+[[issues]]
 file = "src/Cli/Application.php"
 code = "excessive-parameter-list"
 message = "Parameter list is too long."
@@ -32,20 +128,8 @@ count = 1
 
 [[issues]]
 file = "src/Cli/Commands/BuildCommand.php"
-code = "cyclomatic-complexity"
-message = "Class has high complexity."
-count = 1
-
-[[issues]]
-file = "src/Cli/Commands/BuildCommand.php"
-code = "excessive-parameter-list"
-message = "Parameter list is too long."
-count = 1
-
-[[issues]]
-file = "src/Cli/Commands/BuildCommand.php"
-code = "kan-defect"
-message = "Class has a high kan defect score."
+code = "halstead"
+message = "Method has a high halstead difficulty"
 count = 1
 
 [[issues]]
@@ -337,6 +421,12 @@ message = "Literal argument `0` should be passed as a named argument for clarity
 count = 2
 
 [[issues]]
+file = "src/Render/PageChrome.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
 file = "src/Render/PageContext.php"
 code = "excessive-parameter-list"
 message = "Parameter list is too long."
@@ -346,6 +436,12 @@ count = 1
 file = "src/Render/PageRenderer.php"
 code = "cyclomatic-complexity"
 message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Render/PageRenderer.php"
+code = "kan-defect"
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -373,6 +469,12 @@ message = "Literal argument `0` should be passed as a named argument for clarity
 count = 2
 
 [[issues]]
+file = "src/Render/PageRenderer.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
 file = "src/Render/PageShell.php"
 code = "literal-named-argument"
 message = "Literal argument `'UTF-8'` should be passed as a named argument for clarity."
@@ -389,6 +491,90 @@ file = "src/Render/RenderedPage.php"
 code = "excessive-parameter-list"
 message = "Parameter list is too long."
 count = 1
+
+[[issues]]
+file = "src/Report/ProjectResult.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
+file = "src/Report/ProjectResult.php"
+code = "literal-named-argument"
+message = "Literal argument `true` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Report/ReportWriter.php"
+code = "no-shorthand-ternary"
+message = "Use of the shorthand ternary operator."
+count = 1
+
+[[issues]]
+file = "src/Search/TextExtractor.php"
+code = "literal-named-argument"
+message = "Literal argument `' '` should be passed as a named argument for clarity."
+count = 5
+
+[[issues]]
+file = "src/Search/TextExtractor.php"
+code = "literal-named-argument"
+message = "Literal argument `'UTF-8'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Search/TextExtractor.php"
+code = "literal-named-argument"
+message = "Literal argument `0` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "src/Site/NavigationBuilder.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
+file = "src/Site/NavigationBuilder.php"
+code = "no-isset"
+message = "Use of the `isset` construct."
+count = 2
+
+[[issues]]
+file = "src/Site/NavigationBuilder.php"
+code = "str-starts-with"
+message = "Consider replacing `strpos` with `str_starts_with` for improved readability and intent clarity."
+count = 1
+
+[[issues]]
+file = "src/Site/ProjectSummary.php"
+code = "ambiguous-constant-access"
+message = "Ambiguous constant access detected."
+count = 1
+
+[[issues]]
+file = "src/Site/ProjectSummary.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
+file = "src/Site/SiteAssembler.php"
+code = "literal-named-argument"
+message = "Literal argument `'/'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Site/SiteAssembly.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
+file = "src/Site/UrlBuilder.php"
+code = "literal-named-argument"
+message = "Literal argument `'/'` should be passed as a named argument for clarity."
+count = 3
 
 [[issues]]
 file = "src/Source/FetchedRepository.php"
@@ -649,6 +835,60 @@ message = "Class has too many methods."
 count = 1
 
 [[issues]]
+file = "test/integration/Determinism/BuildDeterminismTest.php"
+code = "ambiguous-constant-access"
+message = "Ambiguous constant access detected."
+count = 2
+
+[[issues]]
+file = "test/integration/Determinism/BuildDeterminismTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 11
+
+[[issues]]
+file = "test/integration/Determinism/BuildDeterminismTest.php"
+code = "kan-defect"
+message = "Class has a high kan defect score."
+count = 1
+
+[[issues]]
+file = "test/integration/Determinism/BuildDeterminismTest.php"
+code = "literal-named-argument"
+message = "Literal argument `3` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "test/integration/Determinism/BuildDeterminismTest.php"
+code = "no-isset"
+message = "Use of the `isset` construct."
+count = 1
+
+[[issues]]
+file = "test/integration/Determinism/BuildDeterminismTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testATimestampInTheOutputIsReported`."
+count = 1
+
+[[issues]]
+file = "test/integration/Determinism/BuildDeterminismTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAnIncrementalBuildProducesTheSameBytesAsAFreshFullBuild`."
+count = 1
+
+[[issues]]
+file = "test/integration/Determinism/BuildDeterminismTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheCleanBuildReportsNoNonDeterminism`."
+count = 1
+
+[[issues]]
+file = "test/integration/Determinism/BuildDeterminismTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTwoConsecutiveFullBuildsProduceTheSameBytes`."
+count = 1
+
+[[issues]]
 file = "test/integration/DocumentationPipelineTest.php"
 code = "assertion-style"
 message = "Inconsistent assertions style."
@@ -745,16 +985,124 @@ message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheWh
 count = 1
 
 [[issues]]
+file = "test/integration/IncrementalBuildTest.php"
+code = "ambiguous-constant-access"
+message = "Ambiguous constant access detected."
+count = 1
+
+[[issues]]
+file = "test/integration/IncrementalBuildTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 6
+
+[[issues]]
+file = "test/integration/IncrementalBuildTest.php"
+code = "literal-named-argument"
+message = "Literal argument `0o777` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "test/integration/IncrementalBuildTest.php"
+code = "literal-named-argument"
+message = "Literal argument `2` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "test/integration/IncrementalBuildTest.php"
+code = "literal-named-argument"
+message = "Literal argument `true` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "test/integration/IncrementalBuildTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAStylesheetChangeInvalidatesEveryPage`."
+count = 1
+
+[[issues]]
+file = "test/integration/IncrementalBuildTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAnUnchangedRebuildRendersNothing`."
+count = 1
+
+[[issues]]
+file = "test/integration/IncrementalBuildTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testEditingOnePageRendersOnlyThatProject`."
+count = 1
+
+[[issues]]
+file = "test/integration/SearchBehaviourTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 8
+
+[[issues]]
+file = "test/integration/SearchBehaviourTest.php"
+code = "literal-named-argument"
+message = "Literal argument `2` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "test/integration/SearchBehaviourTest.php"
+code = "literal-named-argument"
+message = "Literal argument `true` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "test/integration/SearchBehaviourTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheSearchHarnessFailsWhenTheIndexNoLongerSupportsTheAssertions`."
+count = 1
+
+[[issues]]
+file = "test/integration/SearchBehaviourTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheSearchHarnessPasses`."
+count = 1
+
+[[issues]]
+file = "test/integration/SiteBuildTest.php"
+code = "ambiguous-function-call"
+message = "Ambiguous function call detected."
+count = 8
+
+[[issues]]
 file = "test/integration/SiteBuildTest.php"
 code = "assertion-style"
 message = "Inconsistent assertions style."
-count = 21
+count = 91
+
+[[issues]]
+file = "test/integration/SiteBuildTest.php"
+code = "kan-defect"
+message = "Class has a high kan defect score."
+count = 1
+
+[[issues]]
+file = "test/integration/SiteBuildTest.php"
+code = "literal-named-argument"
+message = "Literal argument `'/'` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "test/integration/SiteBuildTest.php"
+code = "literal-named-argument"
+message = """Literal argument `'class="project-card"'` should be passed as a named argument for clarity."""
+count = 2
+
+[[issues]]
+file = "test/integration/SiteBuildTest.php"
+code = "literal-named-argument"
+message = """Literal argument `'class="project-item'` should be passed as a named argument for clarity."""
+count = 2
 
 [[issues]]
 file = "test/integration/SiteBuildTest.php"
 code = "literal-named-argument"
 message = "Literal argument `2` should be passed as a named argument for clarity."
-count = 2
+count = 3
 
 [[issues]]
 file = "test/integration/SiteBuildTest.php"
@@ -765,7 +1113,31 @@ count = 1
 [[issues]]
 file = "test/integration/SiteBuildTest.php"
 code = "prefer-test-attribute"
-message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheBuildPrintsOnePageCountPerProject`."
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAVersionlessProjectUrlRedirectsToTheNewestVersion`."
+count = 1
+
+[[issues]]
+file = "test/integration/SiteBuildTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testEverySearchIndexUrlResolvesToAPublishedPage`."
+count = 1
+
+[[issues]]
+file = "test/integration/SiteBuildTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testRestrictingThePublishableSetRebuildsTheAggregatePages`."
+count = 1
+
+[[issues]]
+file = "test/integration/SiteBuildTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheBuildPrintsExactlyOneSummaryBlockOnStandardOutput`."
+count = 1
+
+[[issues]]
+file = "test/integration/SiteBuildTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheBuildPrintsOnePageCountPerProjectOnStandardError`."
 count = 1
 
 [[issues]]
@@ -784,6 +1156,54 @@ count = 1
 file = "test/integration/SiteBuildTest.php"
 code = "prefer-test-attribute"
 message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheFixtureSetExitsDegradedBecauseTwoProjectsFail`."
+count = 1
+
+[[issues]]
+file = "test/integration/SiteBuildTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheLandingPageCarriesOneCardPerPublishableProject`."
+count = 1
+
+[[issues]]
+file = "test/integration/SiteBuildTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheNotFoundPageLinksHomeAndListsEveryProject`."
+count = 1
+
+[[issues]]
+file = "test/integration/SiteBuildTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheOutdatedBannerLinksToTheTwinOrToTheLatestEntryPage`."
+count = 1
+
+[[issues]]
+file = "test/integration/SiteBuildTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheOutputRootCarriesTheNoJekyllMarkerAndTheHostname`."
+count = 1
+
+[[issues]]
+file = "test/integration/SiteBuildTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheReportIsWrittenAndValidatesAgainstTheContract`."
+count = 1
+
+[[issues]]
+file = "test/integration/SiteBuildTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheSearchControlIsHiddenUntilScriptingRuns`."
+count = 1
+
+[[issues]]
+file = "test/integration/SiteBuildTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheShellLinksTheIconFontAndTheStylesheetCarriesTheGlyphRules`."
+count = 1
+
+[[issues]]
+file = "test/integration/SiteBuildTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheSwitcherCarriesExactlyThePublishableProjects`."
 count = 1
 
 [[issues]]
@@ -916,7 +1336,7 @@ count = 1
 file = "test/unit/Cli/BinTest.php"
 code = "assertion-style"
 message = "Inconsistent assertions style."
-count = 10
+count = 13
 
 [[issues]]
 file = "test/unit/Cli/BinTest.php"
@@ -946,7 +1366,7 @@ count = 1
 file = "test/unit/Cli/BuildCommandTest.php"
 code = "assertion-style"
 message = "Inconsistent assertions style."
-count = 49
+count = 53
 
 [[issues]]
 file = "test/unit/Cli/BuildCommandTest.php"
@@ -1210,7 +1630,7 @@ count = 1
 file = "test/unit/Cli/FetchCommandTest.php"
 code = "assertion-style"
 message = "Inconsistent assertions style."
-count = 43
+count = 47
 
 [[issues]]
 file = "test/unit/Cli/FetchCommandTest.php"
@@ -1270,6 +1690,12 @@ count = 1
 file = "test/unit/Cli/FetchCommandTest.php"
 code = "prefer-test-attribute"
 message = "Use `#[Test]` attribute instead of `test` prefix on method `testASlugCollisionExitsTwoAndWritesNoManifest`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/FetchCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testASlugOverrideCollisionExitsTwoBeforeAnyFetch`."
 count = 1
 
 [[issues]]
@@ -1552,6 +1978,66 @@ count = 1
 file = "test/unit/Cli/ProjectFilterTest.php"
 code = "prefer-test-attribute"
 message = "Use `#[Test]` attribute instead of `test` prefix on method `testWithoutAFilterEveryProjectIsKept`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/ValidateCommandTest.php"
+code = "ambiguous-constant-access"
+message = "Ambiguous constant access detected."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/ValidateCommandTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 20
+
+[[issues]]
+file = "test/unit/Cli/ValidateCommandTest.php"
+code = "literal-named-argument"
+message = "Literal argument `'published'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/ValidateCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testABrokenIncludeIsCaughtEvenThoughNothingIsWritten`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/ValidateCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAHealthyProjectIsReportedAsBuildable`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/ValidateCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAMissingEntryIsReportedWithItsReasonCodeAndCorrectiveAction`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/ValidateCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAProjectWithoutAsciiDocSourcesIsReportedAsUnbuildable`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/ValidateCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAnArchivedProjectIsSkippedAndDoesNotDegradeTheRun`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/ValidateCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheOutputDirectoryIsUntouched`."
+count = 1
+
+[[issues]]
+file = "test/unit/Cli/ValidateCommandTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheSummarySaysNoSiteOutputWasWritten`."
 count = 1
 
 [[issues]]
@@ -2481,6 +2967,12 @@ count = 1
 [[issues]]
 file = "test/unit/Discovery/ManifestDiscoveryTest.php"
 code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testASlugOverrideThatCollidesWithADiscoveredRepositoryIsRejected`."
+count = 1
+
+[[issues]]
+file = "test/unit/Discovery/ManifestDiscoveryTest.php"
+code = "prefer-test-attribute"
 message = "Use `#[Test]` attribute instead of `test` prefix on method `testAnExcludedRepositoryIsDropped`."
 count = 1
 
@@ -2920,7 +3412,7 @@ count = 1
 file = "test/unit/Render/PageRendererTest.php"
 code = "assertion-style"
 message = "Inconsistent assertions style."
-count = 64
+count = 65
 
 [[issues]]
 file = "test/unit/Render/PageRendererTest.php"
@@ -2968,6 +3460,12 @@ count = 1
 file = "test/unit/Render/PageRendererTest.php"
 code = "prefer-test-attribute"
 message = "Use `#[Test]` attribute instead of `test` prefix on method `testABrokenIncludeFailsWithRenderFailedAndTheSourcePath`."
+count = 1
+
+[[issues]]
+file = "test/unit/Render/PageRendererTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testACrlfSourceRendersIdenticallyToItsLfTwin`."
 count = 1
 
 [[issues]]
@@ -3388,6 +3886,132 @@ count = 1
 file = "test/unit/SchemaContractTest.php"
 code = "prefer-test-attribute"
 message = "Use `#[Test]` attribute instead of `test` prefix on method `testThePackagedSiteSchemaIsThePublishedCopy`."
+count = 1
+
+[[issues]]
+file = "test/unit/Search/SearchIndexSchemaTest.php"
+code = "ambiguous-function-call"
+message = "Ambiguous function call detected."
+count = 4
+
+[[issues]]
+file = "test/unit/Search/SearchIndexSchemaTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 14
+
+[[issues]]
+file = "test/unit/Search/SearchIndexSchemaTest.php"
+code = "literal-named-argument"
+message = "Literal argument `'/'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "test/unit/Search/SearchIndexSchemaTest.php"
+code = "literal-named-argument"
+message = "Literal argument `3` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "test/unit/Search/SearchIndexSchemaTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testEveryPageCarriesItsUrlTitleHeadingsAndText`."
+count = 1
+
+[[issues]]
+file = "test/unit/Search/SearchIndexSchemaTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testPagesWithinAVersionAreOrderedByUrl`."
+count = 1
+
+[[issues]]
+file = "test/unit/Search/SearchIndexSchemaTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheProjectIndexValidatesAgainstTheContract`."
+count = 1
+
+[[issues]]
+file = "test/unit/Search/SearchIndexSchemaTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheSerialisedIndexIsTheSameDocument`."
+count = 1
+
+[[issues]]
+file = "test/unit/Search/SearchIndexSchemaTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheSiteIndexIsSerialisedAsJson`."
+count = 1
+
+[[issues]]
+file = "test/unit/Search/SearchIndexSchemaTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheSiteIndexListsEveryProjectOnce`."
+count = 1
+
+[[issues]]
+file = "test/unit/Search/SearchIndexSchemaTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testVersionsAreOrderedNewestFirstAndOnlyOneIsLatest`."
+count = 1
+
+[[issues]]
+file = "test/unit/Search/TextExtractorTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 12
+
+[[issues]]
+file = "test/unit/Search/TextExtractorTest.php"
+code = "literal-named-argument"
+message = "Literal argument `40` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "test/unit/Search/TextExtractorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAHtmlFragmentWithoutAParagraphYieldsAnEmptyDescription`."
+count = 1
+
+[[issues]]
+file = "test/unit/Search/TextExtractorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testALimitOfZeroDisablesTruncation`."
+count = 1
+
+[[issues]]
+file = "test/unit/Search/TextExtractorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testATextUnderTheLimitIsUnchanged`."
+count = 1
+
+[[issues]]
+file = "test/unit/Search/TextExtractorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testEntitiesAreDecodedInTheExtractedText`."
+count = 1
+
+[[issues]]
+file = "test/unit/Search/TextExtractorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testMarkupIsStrippedAndWhitespaceCollapses`."
+count = 1
+
+[[issues]]
+file = "test/unit/Search/TextExtractorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testScriptAndStyleContentIsNotIndexed`."
+count = 1
+
+[[issues]]
+file = "test/unit/Search/TextExtractorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheFirstParagraphIsUsedForADescription`."
+count = 1
+
+[[issues]]
+file = "test/unit/Search/TextExtractorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTruncationDoesNotSplitAWord`."
 count = 1
 
 [[issues]]
@@ -3856,7 +4480,7 @@ count = 1
 file = "test/unit/Source/VersionDetectorTest.php"
 code = "assertion-style"
 message = "Inconsistent assertions style."
-count = 28
+count = 31
 
 [[issues]]
 file = "test/unit/Source/VersionDetectorTest.php"
@@ -3904,6 +4528,12 @@ count = 1
 file = "test/unit/Source/VersionDetectorTest.php"
 code = "prefer-test-attribute"
 message = "Use `#[Test]` attribute instead of `test` prefix on method `testAVersionDirectoryIsTheDocumentationDirectoryPlusTheLabel`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/VersionDetectorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAnEmptyDocumentationDirectoryIsASingleLatestVersion`."
 count = 1
 
 [[issues]]

@@ -94,7 +94,11 @@ final class PageRendererTest extends TestCase
         $lf = "= Twin Page\n\nIntro paragraph.\n\n== Section\n\nBody text.\n\n* one\n* two\n";
 
         $fromLf   = $this->renderFromTemp($lf);
-        $fromCrlf = $this->renderFromTemp(str_replace(search: "\n", replace: "\r\n", subject: $lf));
+        $fromCrlf = $this->renderFromTemp(str_replace(
+            search : "\n",
+            replace: "\r\n",
+            subject: $lf,
+        ));
 
         self::assertSame($fromLf->html(), $fromCrlf->html());
     }

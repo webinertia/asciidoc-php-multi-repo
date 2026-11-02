@@ -76,8 +76,9 @@ there are accepted costs, not principle breaches.
 
 ## Verified State (Phase 0 research)
 
-Every fact below was measured against `webinertia/docs.webinertia.net` on 2026-11-01. Where a fact
-could not be measured it is marked unverified rather than assumed.
+Every fact below was measured against `webinertia/docs.webinertia.net` on 2026-11-01 and re-measured
+after the `gh-pages` cleanup described below. Where a fact could not be measured it is marked
+unverified rather than assumed.
 
 | Fact | Value | How it was established |
 |------|-------|------------------------|
@@ -86,12 +87,13 @@ could not be measured it is marked unverified rather than assumed.
 | Branches | `gh-pages`, `master`, `renovate/configure` | `gh api .../branches` |
 | `master` root content | `README.md` only | `gh api .../contents?ref=master` |
 | Workflows | none. `.github/workflows` returns 404 | `gh api .../contents/.github/workflows?ref=master` |
-| `gh-pages` root content | `CNAME`, `_config.yml`, `aurora/`, `index.md`, `modelmanager/` | `gh api .../contents?ref=gh-pages` |
+| `gh-pages` root content | `CNAME` and `.nojekyll`, exactly two blobs and nothing else | `gh api .../contents?ref=gh-pages` |
 | `CNAME` content | `docs.webinertia.net` plus a trailing newline, 19 bytes | `gh api` blob read, decoded |
-| `_config.yml` content | `theme: jekyll-theme-midnight`, 28 bytes | same |
-| `.nojekyll` | absent | branch root listing |
-| `aurora/`, `modelmanager/` | each contains only `index.md` | directory listings |
-| Pages `build_type` | `legacy` | `gh api .../pages` |
+| `.nojekyll` | present, 0 bytes | branch root listing |
+| Retired content | `aurora/`, `modelmanager/`, `index.md`, `_config.yml` deleted in commit `36dfe12` | branch listing before and after |
+| Retired and root URLs | `http://docs.webinertia.net/` and `http://docs.webinertia.net/aurora/` both return 404 | HTTP requests after `36dfe12` |
+| Pages `status` | `built`, for commit `36dfe12` | `gh api .../pages` |
+| Pages `build_type` | `legacy` | same |
 | Pages source | `gh-pages` at `/` | same |
 | Pages `cname`, `https_enforced`, `custom_404` | `docs.webinertia.net`, `true`, `false` | same |
 | Pages `https_certificate` | key absent from the response | same |
@@ -104,6 +106,13 @@ could not be measured it is marked unverified rather than assumed.
 | Organization secrets and variables | not readable with the available scope, returns 403 | `gh api orgs/webinertia/actions/secrets` |
 | Organization App installations | `renovate`, `codecov`, `codspeed`, `webinertia-label-sync`. No publish App exists | `gh api orgs/webinertia/installations` |
 | `doc-target` property | `true_false`, organization scope, `required: true`, default `"false"`, `require_explicit_values: true`, `values_editable_by: org_actors` | `gh api orgs/webinertia/properties/schema` |
+
+**The `gh-pages` branch was cleaned out of band.** At the owner's request, commit `36dfe12` on
+`gh-pages` deleted `aurora/`, `modelmanager/`, `index.md`, and `_config.yml`, added `.nojekyll`, and
+kept `CNAME`. Pages reports `status: built` for that commit. The table above records the branch as it
+is now, and every requirement in this plan is written against that state. The inventory this research
+originally observed was the retired content plus `_config.yml` and no `.nojekyll`; that state no longer
+exists, and no requirement is written against it.
 
 Two consequences follow directly. First, `gh-pages` has no ruleset, so a direct push from the
 workflow is accepted today; if a ruleset is ever added it must grant the Actions bot a bypass or the
@@ -229,22 +238,30 @@ without touching `gh-pages` (FR-050, FR-051).
 The published tree is exactly the builder's output directory. There is no carry-over step. That is
 not a simplification; it is the requirement, and it produces these specific consequences:
 
-| Path | Outcome after the first publish | Why |
-|------|-------------------------------|-----|
-| `CNAME` | present, content unchanged | The builder emits it from `site.hostname`, and the guard requires it to match the live value |
-| `.nojekyll` | present | The builder emits it, and the guard requires it |
-| `_config.yml` | removed | It belongs to the retired Jekyll-era content, and nothing preserves it |
-| `index.md` | removed | Not in the builder's output |
-| `aurora/` | removed | Not in the builder's output |
-| `modelmanager/` | removed | Not in the builder's output |
+| Path | State now | Outcome after a publish | Why |
+|------|-----------|-------------------------|-----|
+| `CNAME` | present, 19 bytes | present, byte for byte unchanged | The builder emits it from `site.hostname`, and the guard requires it to match the live value |
+| `.nojekyll` | present, 0 bytes | present | The builder emits it, and the guard requires it |
+| `_config.yml` | absent since `36dfe12` | absent | It belongs to the retired Jekyll-era content, and nothing preserves it |
+| `index.md` | absent since `36dfe12` | absent | Not in the builder's output |
+| `aurora/` | absent since `36dfe12` | absent | Not in the builder's output |
+| `modelmanager/` | absent since `36dfe12` | absent | Not in the builder's output |
 
-**The URLs break permanently.** `https://docs.webinertia.net/aurora/`,
-`https://docs.webinertia.net/modelmanager/`, and `https://docs.webinertia.net/index.md` return 404
-after the first successful publish. No redirect, alias, or compatibility page is provided for them,
-and none is planned. Pages has `custom_404: false`, and the builder's own `404.html` serves the miss
-once it exists, but a `404.html` does not redirect. If any of those three URLs is referenced from
-outside the organization, it must be repointed before the first publish; that is an operator action
-and it is recorded in the operator guide.
+**The retired URLs are already dead.** Commit `36dfe12` removed `aurora/`, `modelmanager/`, `index.md`,
+and `_config.yml` before any workflow ran, so `http://docs.webinertia.net/aurora/` returns 404 today.
+So does `http://docs.webinertia.net/` itself, because the branch no longer holds a landing page. No
+redirect, alias, or compatibility page exists or is planned. Pages has `custom_404: false`, and the
+builder's own `404.html` will serve the miss once it exists, but a `404.html` does not redirect. Any
+inbound link to a retired path is already broken and must be repointed independently of this
+specification; that is an operator action and it is recorded in the operator guide.
+
+**A clean branch cannot prove the mechanism.** Because `gh-pages` now holds only `CNAME` and
+`.nojekyll`, a publish that replaced the tree correctly and a publish that did nothing would leave
+identical branches. Verification therefore seeds synthetic stale content into `gh-pages` immediately
+before the first run, as a scratch file at the branch root and a scratch directory containing a file,
+and asserts both are gone afterwards (task T020). That construction is the only one that distinguishes
+a working wholesale replacement from an inert one, and it is what makes the requirement testable
+rather than merely stated.
 
 **Why `.nojekyll` is load-bearing rather than tidy**: Pages is configured `build_type: legacy`, so
 GitHub runs Jekyll over the branch on every build regardless of what the branch contains. Without
@@ -403,14 +420,22 @@ generator, or a future accidental commit leaves behind persists forever, so the 
 being reproducible and two builds from identical inputs can differ. Clearing the branch by hand
 before the first run fixes only the first publish and leaves the second one non-reproducible.
 
+The branch was in fact cleared by hand once, in commit `36dfe12`, at the owner's request. That was a
+request to remove retired projects from a branch that held nothing else, and it is not a substitute
+for the mechanism: it says nothing about run two onward, and nothing about a tree that drifts later.
+The wholesale replacement remains the thing that makes the published tree a function of the inputs.
+
 **Rejected alternatives**:
 
 - *Delete known stale paths by name* (`aurora/`, `modelmanager/`, `index.md`, `_config.yml`). Rejected
   because the list is only correct for the first run; the mechanism does not generalise and cannot be
   proven correct later.
-- *Clear `gh-pages` manually before the first run, then let the workflow manage it*. Rejected because
-  it moves the correctness requirement onto a human action that is performed once, and provides no
-  answer for a tree that later drifts.
+- *Rely on a manual clear of `gh-pages` instead of a replacement step in the workflow*. Rejected
+  because a manual clear is a one-time action: it says nothing about the second run onward, and it
+  provides no answer for a tree that drifts later, which is the failure mode the replacement step
+  exists to remove. A manual clear has since happened, in commit `36dfe12`, for a different reason
+  (the owner asked for the retired projects to be removed). It removed them and left the mechanism
+  unbuilt, which is precisely why this decision still stands.
 - *Publish into a subdirectory and keep a hand-written landing page at the root*. Rejected because it
   keeps a second source of truth for the site root, which the builder already owns.
 
@@ -546,8 +571,11 @@ creating a second one.
    guide must say so.
 3. **`gh-pages` must stay unprotected, or any ruleset must grant the Actions bot a bypass.** There is
    no ruleset today. Adding one that requires pull requests would make every publish fail.
-4. **The three stale URLs break at first publish.** `aurora/`, `modelmanager/`, and `index.md` return
-   404 with no redirect. Any external reference must be repointed first.
+4. **The retired URLs already return 404.** Commit `36dfe12` removed `aurora/`, `modelmanager/`,
+   `index.md`, and `_config.yml`, so those paths are dead now, not at first publish. The root path
+   `http://docs.webinertia.net/` also returns 404, because the branch holds no landing page until the
+   first publish. No redirect exists for any of them. Any inbound reference must be repointed
+   independently of this work.
 5. **The App's organization secret access list must track `doc-target`.** A repository that gains
    `doc-target: true` should gain secret access; one that loses it should lose secret access. The
    consequence of a stale list is limited to an unnecessary dispatch capability.

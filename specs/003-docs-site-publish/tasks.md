@@ -119,9 +119,16 @@ nothing.
 - [ ] **T019** Suppress the push on a dry run.
   - **Acceptance**: with a non-default ref, the publish step performs the replacement and the
     comparison, records what it would have committed, and pushes nothing.
-- [ ] **T020** Confirm the first publish removes the stale content.
-  - **Acceptance**: after the first successful publish, `gh-pages` contains no `aurora/`,
-    `modelmanager/`, `index.md`, or `_config.yml`, and does contain `CNAME` and `.nojekyll`.
+- [ ] **T020** Prove the replacement removes content the builder did not produce, by seeding stale
+  content first.
+  - **Precondition**: `gh-pages` already contains only `CNAME` and `.nojekyll` as of commit
+    `36dfe12`, so asserting that the retired paths are absent would pass against a publish that did
+    nothing.
+  - **Step**: commit a scratch file at the branch root and a scratch directory holding one file, with
+    names no builder output could produce, then run the first publish.
+  - **Acceptance**: after the publish, `gh-pages` contains neither the scratch file nor the scratch
+    directory, contains exactly the builder's output plus `CNAME` and `.nojekyll`, and the seeded paths
+    return 404.
 
 **Checkpoint**: two consecutive dispatches over an unchanged organization produce exactly one commit
 in total; a single changed page produces one commit whose diff touches only that project's output plus
@@ -199,8 +206,8 @@ to do when each kind of run fails.
 - [ ] **T035** Extend the operator guide with the operational items.
   - **Acceptance**: the guide records the custom-domain HTTPS certificate not provisioning with the
     measured evidence and the remedy, the 60 day scheduled-workflow disable, the `gh-pages` ruleset
-    constraint, the three stale URLs that return 404 after the first publish, and the discovery PAT's
-    expiry and rotation procedure.
+    constraint, the retired URLs that commit `36dfe12` already made return 404 along with the root
+    path, and the discovery PAT's expiry and rotation procedure.
 - [ ] **T036** Confirm `gh-pages` is not protected in a way that blocks the push.
   - **Acceptance**: `gh api repos/webinertia/docs.webinertia.net/rulesets` returns an empty array, or
     any ruleset present grants the Actions bot a bypass.
@@ -223,7 +230,10 @@ Goal: every success criterion in `spec.md` is demonstrated once, and the results
     directory, with no extra and no missing path.
 - [ ] **T040** Verify the site serves correctly after the first publish (SC-001, SC-008).
   - **Acceptance**: the root URL serves the built index over HTTPS, one project page serves, theme
-    assets load (which proves `.nojekyll` is doing its job), and `aurora/` returns 404.
+    assets load (which proves `.nojekyll` is doing its job), and the scratch paths seeded in T020
+    return 404.
+  - **Note**: asserting that `aurora/` returns 404 proves nothing here, because commit `36dfe12`
+    removed it before any workflow ran. The seeded path is the assertion that carries weight.
 - [ ] **T041** Verify no committed content varies with the run (SC-007, SC-009).
   - **Acceptance**: no committed file contains a build date, build time, duration, run id, run number,
     or runner name, and no credential value appears in the log or the artifacts.

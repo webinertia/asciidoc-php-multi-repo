@@ -40,9 +40,8 @@ the additions are recorded in `plan.md` under "Confirmed decisions".
 - The credentials those workflows consume, where each one is set, and which component may hold it.
 - Concurrency and locking: what happens when a nightly run and a dispatch overlap, and what happens
   when a consumer dispatches while a run is in progress.
-- How a published tree replaces the existing `gh-pages` content, including preservation of `CNAME`
-  and `.nojekyll`, and removal of the stale `aurora/`, `modelmanager/`, `index.md`, and
-  `_config.yml` content.
+- How a published tree replaces the existing `gh-pages` content: the branch ends up containing the
+  builder's output plus `CNAME` and `.nojekyll` and nothing else, whatever it held before.
 - Failure handling and operator visibility: how exit codes 0, 1, 2, 3, and 4 surface, and what a
   failed run leaves on `gh-pages`.
 - The determinism requirement at the deployment layer: how the workflow avoids empty or churn
@@ -68,14 +67,19 @@ the additions are recorded in `plan.md` under "Confirmed decisions".
 ## Starting State
 
 The site repository `webinertia/docs.webinertia.net` is public, defaults to `master`, and carries
-only `README.md` there. It has no workflows. `gh-pages` holds `CNAME`, `_config.yml`,
-`aurora/index.md`, `index.md`, and `modelmanager/index.md`, and no `.nojekyll`. Pages is configured
-`build_type: legacy`, source `gh-pages` at `/`, `https_enforced: true`, `custom_404: false`, with
-`cname: docs.webinertia.net`. The repository already holds a repository secret named
-`DOC_DISCOVERY_TOKEN`. The site repository has no ruleset protecting `gh-pages`.
+only `README.md` there. It has no workflows. `gh-pages` holds exactly two blobs, `CNAME` (19 bytes,
+`docs.webinertia.net`) and `.nojekyll` (0 bytes), and nothing else; Pages reports `status: built` for
+that commit. Pages is configured `build_type: legacy`, source `gh-pages` at `/`,
+`https_enforced: true`, `custom_404: false`, with `cname: docs.webinertia.net`. The repository already
+holds a repository secret named `DOC_DISCOVERY_TOKEN`. The site repository has no ruleset protecting
+`gh-pages`.
 
-This specification starts from that state and is the first thing that ever writes to `gh-pages`
-from a workflow.
+The branch reached that state out of band, at the owner's request, in commit `36dfe12`, which deleted
+the retired projects and the Jekyll-era configuration and added `.nojekyll`. Because the branch is now
+clean, the site has no landing page: `http://docs.webinertia.net/` and
+`http://docs.webinertia.net/aurora/` both return 404.
+
+No workflow has ever written to `gh-pages`. This specification is the first thing that will.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -361,9 +365,12 @@ states its optional status and its prerequisites.
   MUST fail the run before anything is pushed.
 - **FR-020**: `_config.yml` MUST NOT be preserved. It belongs to the retired Jekyll-era content and
   is removed by the wholesale replacement.
-- **FR-021**: The first successful publish MUST remove `aurora/`, `modelmanager/`, `index.md`, and
-  `_config.yml` from `gh-pages`, and those paths MUST then return 404. No redirect, alias, or
-  compatibility page is provided for them, and the builder's `404.html` serves the miss.
+- **FR-021**: Every path in the previous `gh-pages` tree that the builder's output does not contain
+  MUST be absent from the published tree and MUST return 404 afterwards. No redirect, alias, or
+  compatibility page is provided for a removed path, and the builder's `404.html` serves the miss.
+  This MUST hold whatever the branch previously held. It MUST NOT be verified against a fixed list of
+  historical paths, because a branch that is already clean cannot distinguish a working replacement
+  from a publish that changes nothing.
 - **FR-022**: The publish MUST be atomic at the commit level: exactly one commit is created per
   publishing run, and a tree that was only partially written MUST never be pushed.
 - **FR-023**: Publishing MUST NOT force-push and MUST NOT rewrite, truncate, or delete the `gh-pages`

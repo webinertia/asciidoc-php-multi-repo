@@ -29,8 +29,8 @@ implementation leakage before any workflow YAML is written.
       `repository_dispatch` (FR-004).
 - [x] Concurrency and locking are specified, including the overlap case and the superseded-queued-run
       case (FR-013 to FR-016).
-- [x] Tree replacement is specified, including `CNAME`, `.nojekyll`, `_config.yml`, and the three
-      stale paths (FR-017 to FR-025).
+- [x] Tree replacement is specified in general form, whatever the branch previously held, including
+      `CNAME` byte preservation and `.nojekyll` (FR-017 to FR-025).
 - [x] Failure handling is specified for every exit code, with the resulting `gh-pages` state named in
       each case (FR-031 to FR-039).
 - [x] Determinism is specified at the deployment layer, not only at the builder layer (FR-026 to
@@ -80,14 +80,16 @@ implementation leakage before any workflow YAML is written.
       never prevents it.
 - [x] The reason exit 1 publishes and then fails is stated, rather than left as a table entry.
 - [x] The reason `.nojekyll` is load-bearing is stated with the Pages setting that makes it so.
-- [x] What happens to the three stale URLs is stated explicitly: they return 404, with no redirect and
-      no compatibility page.
+- [x] What happens to a removed path is stated explicitly: it returns 404, with no redirect and no
+      compatibility page.
+- [x] The requirement that a removed path is absent is stated so that an already-clean branch cannot
+      satisfy it trivially, and verification seeds stale content rather than naming historical paths.
 
 ## Decisions Recorded With Provenance
 
 - [x] Wholesale replacement of `gh-pages` is recorded as a decision with its reasoning, marked as a
-      coordinator decision open to override by the owner, and the two rejected alternatives are named
-      with the reason each drifts or fails to generalise.
+      coordinator decision open to override by the owner, and each rejected alternative is named with
+      the reason it drifts or fails to generalise.
 - [x] The GitHub App trigger credential is recorded as the owner's own decision, with the two rejected
       alternatives named.
 - [x] Direct push to `gh-pages` with `build_type` left on `legacy` is recorded as a decision with its
@@ -101,8 +103,10 @@ implementation leakage before any workflow YAML is written.
 
 - [x] The site repository's default branch, visibility, branch list, and `master` content were read
       from the API, not assumed.
-- [x] The `gh-pages` content, including `CNAME` bytes, `_config.yml` content, and the absence of
-      `.nojekyll`, was read from the API.
+- [x] The `gh-pages` content was read from the API and re-read after commit `36dfe12`: exactly two
+      blobs, `CNAME` at 19 bytes and `.nojekyll` at 0 bytes, with the retired paths already deleted.
+- [x] The `36dfe12` cleanup, its out-of-band origin, and the resulting 404s at the root path and at
+      `aurora/` are recorded as measured facts rather than as predictions.
 - [x] The Pages configuration, including `build_type`, source, `https_enforced`, `custom_404`, and the
       absence of an `https_certificate` object, was read from the API.
 - [x] The absence of workflows, the absence of rulesets, and the existing `DOC_DISCOVERY_TOKEN` secret

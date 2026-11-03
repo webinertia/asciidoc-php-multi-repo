@@ -6,7 +6,10 @@ namespace WebwareTestIntegration\AsciidocPhp\MultiRepo;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Webware\AsciidocPhp\MultiRepo\Build\BuildRunner;
 use Webware\AsciidocPhp\MultiRepo\Build\ContentWriter;
+use Webware\AsciidocPhp\MultiRepo\Build\DeterminismGuard;
+use Webware\AsciidocPhp\MultiRepo\Build\IncrementalCache;
 use Webware\AsciidocPhp\MultiRepo\Cli\Commands\BuildCommand;
 use Webware\AsciidocPhp\MultiRepo\Cli\ExitCode;
 use Webware\AsciidocPhp\MultiRepo\Cli\Options;
@@ -39,7 +42,10 @@ use function trim;
  * exits 1 while still publishing everything that did render.
  */
 #[CoversClass(BuildCommand::class)]
+#[CoversClass(BuildRunner::class)]
 #[CoversClass(ContentWriter::class)]
+#[CoversClass(DeterminismGuard::class)]
+#[CoversClass(IncrementalCache::class)]
 #[CoversClass(PageRenderer::class)]
 final class SiteBuildTest extends TestCase
 {

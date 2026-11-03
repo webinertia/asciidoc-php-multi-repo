@@ -15,6 +15,8 @@ use Webware\AsciidocPhp\MultiRepo\Cli\Output;
 use Webware\AsciidocPhp\MultiRepo\Config\SiteConfigLoader;
 use Webware\AsciidocPhp\MultiRepo\Render\PageRenderer;
 use Webware\AsciidocPhp\MultiRepo\Site\LandingPageBuilder;
+use Webware\AsciidocPhp\MultiRepo\Source\RepositoryFetcher;
+use Webware\AsciidocPhp\MultiRepo\Source\SourceCollector;
 use Webware\AsciidocPhp\MultiRepo\Support\Json;
 use Webware\AsciidocPhp\MultiRepo\Support\Path;
 use WebwareTest\AsciidocPhp\MultiRepo\Support\TempDirectoryTrait;
@@ -62,9 +64,89 @@ final class ProjectOrderingTest extends TestCase
 
     private string $report;
 
+    public function testAChangedProjectSlugIsNotServedFromTheCache(): void
+    {
+        $out = $this->rebuildInto('slug-azalea', ['slug' => 'azalea']);
+
+        self::assertFileExists(Path::join($out, 'azalea', 'v1', 'index.html'));
+        self::assertFileDoesNotExist(Path::join($out, 'alpha', 'v1', 'index.html'));
+    }
+
+    public function testAChangedProjectTitleIsNotServedFromTheCache(): void
+    {
+        $ledger = $this->rebuildWith('title-ledger', ['title' => 'Alpha Ledger']);
+
+        self::assertStringContainsString('<p class="project-name">Alpha Ledger</p>', $ledger);
+        self::assertStringContainsString('<p class="footer-project">Alpha Ledger</p>', $ledger);
+
+        $billing = $this->rebuildWith('title-billing', ['title' => 'Alpha Billing']);
+
+        self::assertStringContainsString('<p class="project-name">Alpha Billing</p>', $billing);
+        self::assertStringNotContainsString('Alpha Ledger', $billing);
+    }
+
     public function testALabelThatStartsWithANumberIsStillOrderedByThatNumber(): void
     {
         self::assertSame(['v1', 'beta', 'v2beta'], $this->projectReport('narrow')['versions']);
+    }
+
+    public function testAProjectWhoseFetchFailsRecordsNoFetchAttempts(): void
+    {
+        $manifest = [
+            'schemaVersion' => 1,
+            'repositories'  => [
+                [
+                    'name'          => 'remote',
+                    'slug'          => 'remote',
+                    'defaultBranch' => 'main',
+                    'archived'      => false,
+                ],
+            ],
+        ];
+
+        $path = Path::join($this->tempDirectory, 'remote-manifest.json');
+        file_put_contents($path, new Json()->encode($manifest));
+
+        $report = Path::join($this->tempDirectory, 'remote-report.json');
+
+        $exitCode = new BuildCommand(
+            runner: new BuildRunner(collector: new SourceCollector(
+                fetcher: new RepositoryFetcher(
+                    remoteUrl: static fn(string $organization, string $repository): string => (
+                        'file:///nonexistent/'
+                        . $repository
+                        . '.git'
+                    ),
+                ),
+            )),
+        )->execute(
+            new Options(
+                command : 'build',
+                manifest: $path,
+                out     : Path::join($this->tempDirectory, 'remote-site'),
+                cache   : Path::join($this->tempDirectory, 'remote-cache'),
+                report  : $report,
+            ),
+            new SiteConfigLoader()->load($this->fixtureConfig()),
+            new Output(stderr: static function (string $line): void {}),
+        );
+
+        self::assertSame(ExitCode::Degraded, $exitCode);
+
+        $written  = new Json()->decodeObject((string) file_get_contents($report), $report);
+        $projects = $written['projects'] ?? [];
+        self::assertIsArray($projects);
+
+        $result = null;
+        foreach ($projects as $project) {
+            if (is_array($project) && 'remote' === ($project['repository'] ?? null)) {
+                $result = $project;
+            }
+        }
+
+        self::assertIsArray($result);
+        self::assertSame('failed', $result['status']);
+        self::assertSame(0, $result['fetchAttempts']);
     }
 
     public function testNumericLabelsOutrankTheLabelsThatCarryNoNumber(): void
@@ -427,6 +509,56 @@ final class ProjectOrderingTest extends TestCase
         }
 
         self::fail("The report carries no entry for {$repository}.");
+    }
+
+    /**
+     * Rebuilds the fixture into the cache the test already populated, with one project override
+     * applied, and returns the output directory of that build.
+     *
+     * @param array<string, mixed> $override
+     */
+    private function rebuildInto(string $label, array $override): string
+    {
+        $config = new Json()->decodeObject((string) file_get_contents($this->fixtureConfig()), $this->fixtureConfig());
+        $alpha  = $config['projects']['alpha'] ?? [];
+        self::assertIsArray($alpha);
+
+        $config['projects']['alpha'] = $override + $alpha;
+
+        $path = Path::join($this->tempDirectory, $label . '.json');
+        file_put_contents($path, new Json()->encode($config));
+
+        $out = Path::join($this->tempDirectory, $label);
+
+        new BuildCommand()->execute(
+            new Options(
+                command : 'build',
+                manifest: $this->fixtureManifest(),
+                out     : $out,
+                cache   : Path::join($this->tempDirectory, 'cache'),
+                report  : Path::join($this->tempDirectory, $label . '-report.json'),
+            ),
+            new SiteConfigLoader()->load($path),
+            new Output(stderr: static function (string $line): void {}),
+        );
+
+        return $out;
+    }
+
+    /**
+     * Rebuilds the fixture into the cache the test already populated, with one project override
+     * applied, and returns the resulting entry page of the alpha project.
+     *
+     * @param array<string, mixed> $override
+     */
+    private function rebuildWith(string $label, array $override): string
+    {
+        return (string) file_get_contents(Path::join(
+            $this->rebuildInto($label, $override),
+            'alpha',
+            'v1',
+            'index.html',
+        ));
     }
 
     /**

@@ -91,7 +91,10 @@ final class OnboardingTest extends TestCase
             'This page is published because the manifest entry is onboarded.',
             (string) file_get_contents($page),
         );
-        static::assertContains(self::ONBOARDED . ': 1 page(s)', $this->stdout);
+        static::assertStringContainsString(
+            self::ONBOARDED . ': 1 page(s) ok',
+            implode("\n", $this->stderr),
+        );
     }
 
     #[Test]

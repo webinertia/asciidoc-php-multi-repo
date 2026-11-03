@@ -19,6 +19,7 @@ use WebwareTest\AsciidocPhp\MultiRepo\Support\TempDirectoryTrait;
 
 use function dirname;
 use function file_get_contents;
+use function implode;
 use function is_file;
 use function trim;
 
@@ -50,6 +51,9 @@ final class DogfoodDocumentationTest extends TestCase
     /** @var list<string> */
     private array $stdout = [];
 
+    /** @var list<string> */
+    private array $stderr = [];
+
     private ExitCode $exitCode;
 
     private string $output;
@@ -58,7 +62,10 @@ final class DogfoodDocumentationTest extends TestCase
     public function thePackageDocumentationRendersThroughThePackage(): void
     {
         static::assertSame(ExitCode::Success, $this->exitCode);
-        static::assertContains(self::SLUG . ': 5 page(s)', $this->stdout);
+        static::assertStringContainsString(
+            self::SLUG . ': 5 page(s) ok',
+            implode("\n", $this->stderr),
+        );
 
         foreach (self::PAGES as $page) {
             static::assertTrue(
@@ -109,7 +116,9 @@ final class DogfoodDocumentationTest extends TestCase
                 stdout: function (string $line): void {
                     $this->stdout[] = trim($line);
                 },
-                stderr: static function (string $line): void {},
+                stderr: function (string $line): void {
+                    $this->stderr[] = trim($line);
+                },
             ),
         );
     }

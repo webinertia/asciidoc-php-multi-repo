@@ -1,0 +1,41 @@
+{
+    "$schema": "../../config/site.schema.json",
+    "schemaVersion": 1,
+    "site": {
+        "name": "Ordering Site",
+        "baseUrl": "https://ordering.example.test",
+        "basePath": "/",
+        "hostname": "ordering.example.test"
+    },
+    "organization": {
+        "name": "ordering-org",
+        "propertyName": "docs",
+        "onboardValue": "true",
+        "tokenEnvVar": "ORDERING_DISCOVERY_TOKEN",
+        "excludeRepositories": []
+    },
+    "source": {
+        "directory": "docs",
+        "defaultBranchOnly": true,
+        "versionPattern": "^[a-z0-9]+$"
+    },
+    "render": {
+        "concurrency": 1,
+        "safeMode": "secure"
+    },
+    "output": {
+        "directory": "build/site",
+        "cacheDirectory": "build/cache",
+        "reportPath": "build/report.json"
+    },
+    "projects": {
+        "alpha": {
+            "order": 2,
+            "description": "Alpha handles billing."
+        },
+        "zeta": {
+            "order": 1,
+            "description": "Zeta handles shipping."
+        }
+    }
+}

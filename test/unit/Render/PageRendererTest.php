@@ -34,6 +34,7 @@ use function mb_strlen;
 use function str_contains;
 use function str_repeat;
 use function str_replace;
+use function strpos;
 use function substr_count;
 use function trim;
 
@@ -192,8 +193,20 @@ final class PageRendererTest extends TestCase
         $page = $this->render('docs/v1/index.adoc', basePath: '/docs/');
         $html = $page->html();
 
+        static::assertStringContainsString('<link rel="stylesheet" href="/docs/assets/asciidoctor.', $html);
         static::assertStringContainsString('<link rel="stylesheet" href="/docs/assets/site.', $html);
         static::assertStringContainsString('<link rel="stylesheet" href="/docs/assets/accent.', $html);
+        static::assertLessThan(
+            strpos($html, needle: '<link rel="stylesheet" href="/docs/assets/site.'),
+            strpos($html, needle: '<link rel="stylesheet" href="/docs/assets/asciidoctor.'),
+            'the base stylesheet is linked before the site overrides',
+        );
+        static::assertLessThan(
+            strpos($html, needle: '<link rel="stylesheet" href="/docs/assets/accent.'),
+            strpos($html, needle: '<link rel="stylesheet" href="/docs/assets/site.'),
+            'the accent rule is linked after the site overrides',
+        );
+        static::assertStringNotContainsString('<style', $html, 'the base stylesheet is never inlined');
         static::assertStringContainsString('<script src="/docs/assets/theme.', $html);
         static::assertStringContainsString(
             '<link rel="canonical" href="https://docs.example.test/docs/versioned/v1/index.html">',

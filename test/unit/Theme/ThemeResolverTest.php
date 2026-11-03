@@ -34,6 +34,8 @@ use function str_replace;
 #[CoversMethod(ThemeResolver::class, 'accentCss')]
 #[CoversMethod(ThemeResolver::class, 'accentName')]
 #[CoversMethod(ThemeResolver::class, 'assetUrl')]
+#[CoversMethod(ThemeResolver::class, 'baseCss')]
+#[CoversMethod(ThemeResolver::class, 'baseName')]
 #[CoversMethod(ThemeResolver::class, 'colorMode')]
 #[CoversMethod(ThemeResolver::class, 'config')]
 #[CoversMethod(ThemeResolver::class, 'darkColors')]
@@ -137,6 +139,22 @@ final class ThemeResolverTest extends TestCase
         static::assertSame(ThemeConfig::DEFAULT_ACCENT, $resolver->accent('javascript:alert(1)'));
         static::assertStringContainsString('--color-accent: #123abc;', $resolver->accentCss('#123abc'));
         static::assertNotSame($resolver->accentName('#123abc'), $resolver->accentName('#abcdef'));
+    }
+
+    #[Test]
+    public function theBaseStylesheetComesFromTheConverterPackage(): void
+    {
+        $resolver = new ThemeResolver();
+
+        $css = $resolver->baseCss();
+
+        static::assertStringContainsString('.admonitionblock', $css);
+        static::assertStringContainsString('.icon-note::before', $css);
+        static::assertSame(
+            $resolver->hasher()->hashedName('asciidoctor', 'css', $css),
+            $resolver->baseName(),
+        );
+        static::assertMatchesRegularExpression('/^asciidoctor\.[0-9a-f]+\.css$/', $resolver->baseName());
     }
 
     #[Test]

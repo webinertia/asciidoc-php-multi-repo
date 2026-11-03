@@ -56,17 +56,18 @@ final readonly class StaticAssetWriter
     private function notFound(SiteAssembly $assembly): string
     {
         return $this->shell->renderTemplate('not-found.php', [
-            'siteName'   => $assembly->siteName(),
-            'landingUrl' => $assembly->urls()->basePath(),
-            'stylesheet' => $assembly->stylesheet(),
-            'projects'   => array_map(
+            'siteName'       => $assembly->siteName(),
+            'landingUrl'     => $assembly->urls()->basePath(),
+            'baseStylesheet' => $assembly->baseStylesheet(),
+            'stylesheet'     => $assembly->stylesheet(),
+            'projects'       => array_map(
                 static fn(ProjectSummary $project): array => [
                     'title' => $project->title(),
                     'url'   => $project->url(),
                 ],
                 $assembly->projects(),
             ),
-            'e'          => $this->shell->escape(...),
+            'e'              => $this->shell->escape(...),
         ]);
     }
 

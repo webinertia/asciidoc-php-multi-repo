@@ -261,16 +261,16 @@
         },
         {
             "name": "webware/asciidoc-php",
-            "version": "0.1.1",
+            "version": "0.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webinertia/asciidoc-php.git",
-                "reference": "0e12a3cfcc7d663b0376ff0898a45aa20375541e"
+                "reference": "d93d87e6ca8d90d7f5f13f7b0cac3c07c00c7f6b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webinertia/asciidoc-php/zipball/0e12a3cfcc7d663b0376ff0898a45aa20375541e",
-                "reference": "0e12a3cfcc7d663b0376ff0898a45aa20375541e",
+                "url": "https://api.github.com/repos/webinertia/asciidoc-php/zipball/d93d87e6ca8d90d7f5f13f7b0cac3c07c00c7f6b",
+                "reference": "d93d87e6ca8d90d7f5f13f7b0cac3c07c00c7f6b",
                 "shasum": ""
             },
             "require": {
@@ -320,10 +320,10 @@
             ],
             "support": {
                 "issues": "https://github.com/webinertia/asciidoc-php/issues",
-                "source": "https://github.com/webinertia/asciidoc-php/tree/0.1.1"
+                "source": "https://github.com/webinertia/asciidoc-php/tree/0.1.2"
             },
-            "time": "2026-11-02T02:06:29+00:00",
-            "published-time": "2026-11-02T05:21:26+00:00"
+            "time": "2026-11-03T05:48:27+00:00",
+            "published-time": "2026-11-03T05:48:49+00:00"
         }
     ],
     "packages-dev": [

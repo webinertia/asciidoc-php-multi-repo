@@ -62,7 +62,7 @@ final readonly class SiteAssembler
         $html = $this->landing->build(
             $assembly->siteName(),
             $this->canonical($assembly, $assembly->urls()->basePath()),
-            $assembly->stylesheet(),
+            [$assembly->baseStylesheet(), $assembly->stylesheet()],
             $assembly->projects(),
             $assembly->entryPages(),
         );

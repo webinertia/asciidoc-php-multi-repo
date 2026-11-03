@@ -26,6 +26,7 @@ final readonly class LandingPageBuilder
     ) {}
 
     /**
+     * @param list<string>          $stylesheets the base stylesheet URL, then the site overrides
      * @param list<ProjectSummary>  $projects   the publishable projects, in the documented order
      * @param array<string, string> $entryPages slug to the latest entry page's rendered HTML
      *
@@ -34,14 +35,14 @@ final readonly class LandingPageBuilder
     public function build(
         string $siteName,
         string $canonicalUrl,
-        string $stylesheet,
+        array $stylesheets,
         array $projects,
         array $entryPages,
     ): string {
         return $this->shell->renderTemplate('landing.php', [
             'siteName'     => $siteName,
             'canonicalUrl' => $canonicalUrl,
-            'stylesheet'   => $stylesheet,
+            'stylesheets'  => $stylesheets,
             'cards'        => $this->cards($projects, $entryPages),
             'e'            => $this->shell->escape(...),
         ]);

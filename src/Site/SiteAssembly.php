@@ -35,6 +35,7 @@ final readonly class SiteAssembly
         private array $searchIndexes,
         private string $siteSearchIndex,
         private array $assets,
+        private string $baseStylesheet,
         private string $stylesheet,
     ) {}
 
@@ -44,6 +45,14 @@ final readonly class SiteAssembly
     public function assets(): array
     {
         return $this->assets;
+    }
+
+    /**
+     * The published base stylesheet URL, linked before the site overrides.
+     */
+    public function baseStylesheet(): string
+    {
+        return $this->baseStylesheet;
     }
 
     public function baseUrl(): string

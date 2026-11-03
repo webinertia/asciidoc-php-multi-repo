@@ -6,7 +6,7 @@ declare(strict_types=1);
  * @var Closure(string): string $e
  * @var string $siteName
  * @var string $canonicalUrl
- * @var string $stylesheet
+ * @var list<string> $stylesheets
  * @var list<array{description: string, title: string, url: string, version: string}> $cards
  */
 
@@ -18,7 +18,9 @@ declare(strict_types=1);
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= $e($siteName) ?></title>
 <link rel="canonical" href="<?= $e($canonicalUrl) ?>">
+<?php foreach ($stylesheets as $stylesheet) : ?>
 <link rel="stylesheet" href="<?= $e($stylesheet) ?>">
+<?php endforeach ?>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>

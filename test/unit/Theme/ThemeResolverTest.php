@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Theme;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Webware\AsciidocPhp\MultiRepo\Config\ThemeConfig;
@@ -49,13 +50,15 @@ final class ThemeResolverTest extends TestCase
 {
     use TempDirectoryTrait;
 
-    public function testAMalformedTokenBlockYieldsNoTokens(): void
+    #[Test]
+    public function aMalformedTokenBlockYieldsNoTokens(): void
     {
-        self::assertSame([], $this->lightColorsFrom(':root {'));
-        self::assertSame([], $this->lightColorsFrom(":root {\n    color: red;\n}\n"));
+        static::assertSame([], $this->lightColorsFrom(':root {'));
+        static::assertSame([], $this->lightColorsFrom(":root {\n    color: red;\n}\n"));
     }
 
-    public function testAMissingStylesheetIsReported(): void
+    #[Test]
+    public function aMissingStylesheetIsReported(): void
     {
         $directory = $this->createTempDirectory();
 
@@ -65,41 +68,45 @@ final class ThemeResolverTest extends TestCase
         new ThemeResolver(cssDirectory: $directory)->lightColors();
     }
 
-    public function testAnUnterminatedTokenBlockYieldsNoTokens(): void
+    #[Test]
+    public function anUnterminatedTokenBlockYieldsNoTokens(): void
     {
-        $css = ":root {\n    --color-link: #6a49c9;\n" . str_repeat("    --padding-token: 1;\n", 8);
+        $css = ":root {\n    --color-link: #6a49c9;\n" . str_repeat("    --padding-token: 1;\n", times: 8);
 
-        self::assertSame([], $this->lightColorsFrom($css));
+        static::assertSame([], $this->lightColorsFrom($css));
     }
 
-    public function testAssetUrlsCarryTheBasePath(): void
+    #[Test]
+    public function assetUrlsCarryTheBasePath(): void
     {
         $resolver = new ThemeResolver();
 
-        self::assertSame('/assets/site.css', $resolver->assetUrl('/', 'site.css'));
-        self::assertSame('/docs/assets/site.css', $resolver->assetUrl('/docs/', 'site.css'));
-        self::assertSame('/docs/assets/site.css', $resolver->assetUrl('/docs', 'site.css'));
+        static::assertSame('/assets/site.css', $resolver->assetUrl('/', 'site.css'));
+        static::assertSame('/docs/assets/site.css', $resolver->assetUrl('/docs/', 'site.css'));
+        static::assertSame('/docs/assets/site.css', $resolver->assetUrl('/docs', 'site.css'));
     }
 
-    public function testAStylesheetWithoutTheSelectorYieldsNoTokens(): void
+    #[Test]
+    public function aStylesheetWithoutTheSelectorYieldsNoTokens(): void
     {
-        self::assertSame([], $this->lightColorsFrom("body {\n    --color-link: #6a49c9;\n}\n"));
+        static::assertSame([], $this->lightColorsFrom("body {\n    --color-link: #6a49c9;\n}\n"));
     }
 
-    public function testOneChangedByteChangesThePublishedName(): void
+    #[Test]
+    public function oneChangedByteChangesThePublishedName(): void
     {
         $directory = $this->createTempDirectory();
 
         file_put_contents(
             "{$directory}/site.css",
             file_get_contents(
-                dirname(__DIR__, 3) . '/resources/css/site.css',
+                dirname(__DIR__, levels: 3) . '/resources/css/site.css',
             ),
         );
         file_put_contents(
             "{$directory}/print.css",
             file_get_contents(
-                dirname(__DIR__, 3) . '/resources/css/print.css',
+                dirname(__DIR__, levels: 3) . '/resources/css/print.css',
             ),
         );
 
@@ -108,77 +115,83 @@ final class ThemeResolverTest extends TestCase
         $css = (string) file_get_contents("{$directory}/site.css");
         file_put_contents("{$directory}/site.css", str_replace(
             '--surface-page: #ffffff;',
-            '--surface-page: #fffffe;',
-            $css,
+            replace: '--surface-page: #fffffe;',
+            subject: $css,
         ));
 
         $after = new ThemeResolver(cssDirectory: $directory)->siteName();
 
-        self::assertNotSame($before, $after);
-        self::assertStringStartsWith('site.', $before);
-        self::assertStringEndsWith('.css', $before);
+        static::assertNotSame($before, $after);
+        static::assertStringStartsWith('site.', $before);
+        static::assertStringEndsWith('.css', $before);
     }
 
-    public function testTheAccentIsValidatedAndFallsBack(): void
+    #[Test]
+    public function theAccentIsValidatedAndFallsBack(): void
     {
         $resolver = new ThemeResolver();
 
-        self::assertSame(ThemeConfig::DEFAULT_ACCENT, $resolver->accent());
-        self::assertSame('#123abc', $resolver->accent('#123abc'));
-        self::assertSame(ThemeConfig::DEFAULT_ACCENT, $resolver->accent('red'));
-        self::assertSame(ThemeConfig::DEFAULT_ACCENT, $resolver->accent('javascript:alert(1)'));
-        self::assertStringContainsString('--color-accent: #123abc;', $resolver->accentCss('#123abc'));
-        self::assertNotSame($resolver->accentName('#123abc'), $resolver->accentName('#abcdef'));
+        static::assertSame(ThemeConfig::DEFAULT_ACCENT, $resolver->accent());
+        static::assertSame('#123abc', $resolver->accent('#123abc'));
+        static::assertSame(ThemeConfig::DEFAULT_ACCENT, $resolver->accent('red'));
+        static::assertSame(ThemeConfig::DEFAULT_ACCENT, $resolver->accent('javascript:alert(1)'));
+        static::assertStringContainsString('--color-accent: #123abc;', $resolver->accentCss('#123abc'));
+        static::assertNotSame($resolver->accentName('#123abc'), $resolver->accentName('#abcdef'));
     }
 
-    public function testTheHasherIsExposed(): void
+    #[Test]
+    public function theHasherIsExposed(): void
     {
         $resolver = new ThemeResolver();
 
-        self::assertSame($resolver->siteName(), $resolver->hasher()->hashedName('site', 'css', $resolver->siteCss()));
-        self::assertSame($resolver->themeScriptName(), $resolver->hasher()->hashedName(
+        static::assertSame($resolver->siteName(), $resolver->hasher()->hashedName('site', 'css', $resolver->siteCss()));
+        static::assertSame($resolver->themeScriptName(), $resolver->hasher()->hashedName(
             'theme',
             'js',
             $resolver->themeScript(),
         ));
     }
 
-    public function testTheModeAndTheInitialPaintComeFromTheThemeConfig(): void
+    #[Test]
+    public function theModeAndTheInitialPaintComeFromTheThemeConfig(): void
     {
         $resolver = new ThemeResolver(theme: new ThemeConfig('webware', '#7e5ae0', 'light', 'dark'));
 
-        self::assertSame('light', $resolver->colorMode());
-        self::assertSame('dark', $resolver->defaultColorMode());
-        self::assertSame('light', $resolver->config()->colorMode());
+        static::assertSame('light', $resolver->colorMode());
+        static::assertSame('dark', $resolver->defaultColorMode());
+        static::assertSame('light', $resolver->config()->colorMode());
     }
 
-    public function testThePublishedStylesheetIsSelfContained(): void
+    #[Test]
+    public function thePublishedStylesheetIsSelfContained(): void
     {
         $css = new ThemeResolver()->siteCss();
 
-        self::assertStringContainsString(':root {', $css);
-        self::assertStringContainsString('[data-theme="dark"] {', $css);
-        self::assertStringContainsString('@media print', $css);
-        self::assertStringNotContainsString('@import', $css);
-        self::assertStringNotContainsString('url(http', $css);
-        self::assertStringNotContainsString('https://', $css);
-        self::assertFalse(str_contains($css, 'file://'));
+        static::assertStringContainsString(':root {', $css);
+        static::assertStringContainsString('[data-theme="dark"] {', $css);
+        static::assertStringContainsString('@media print', $css);
+        static::assertStringNotContainsString('@import', $css);
+        static::assertStringNotContainsString('url(http', $css);
+        static::assertStringNotContainsString('https://', $css);
+        static::assertFalse(str_contains($css, 'file://'));
     }
 
-    public function testTheThemeScriptIsHashedAndCarriesTheToggleBehaviour(): void
+    #[Test]
+    public function theThemeScriptIsHashedAndCarriesTheToggleBehaviour(): void
     {
         $resolver = new ThemeResolver();
         $script   = $resolver->themeScript();
 
-        self::assertStringContainsString('asciidoc-php-theme', $script);
-        self::assertStringContainsString('localStorage', $script);
-        self::assertStringContainsString('prefers-color-scheme', $script);
-        self::assertStringContainsString('aria-pressed', $script);
-        self::assertStringContainsString("addEventListener('click'", $script);
-        self::assertStringEndsWith('.js', $resolver->themeScriptName());
+        static::assertStringContainsString('asciidoc-php-theme', $script);
+        static::assertStringContainsString('localStorage', $script);
+        static::assertStringContainsString('prefers-color-scheme', $script);
+        static::assertStringContainsString('aria-pressed', $script);
+        static::assertStringContainsString("addEventListener('click'", $script);
+        static::assertStringEndsWith('.js', $resolver->themeScriptName());
     }
 
-    public function testTheTokenBlocksFromThePlanArePresent(): void
+    #[Test]
+    public function theTokenBlocksFromThePlanArePresent(): void
     {
         $resolver = new ThemeResolver();
 
@@ -193,18 +206,19 @@ final class ThemeResolverTest extends TestCase
             '--text-muted',
             '--border-subtle',
         ] as $token) {
-            self::assertArrayHasKey($token, $light);
-            self::assertArrayHasKey($token, $dark);
+            static::assertArrayHasKey($token, $light);
+            static::assertArrayHasKey($token, $dark);
         }
 
-        self::assertSame('#ffffff', $light['--surface-page']);
-        self::assertSame('#16131c', $dark['--surface-page']);
+        static::assertSame('#ffffff', $light['--surface-page']);
+        static::assertSame('#16131c', $dark['--surface-page']);
     }
 
-    public function testTheTokenScanStopsAtTheBlockBoundary(): void
+    #[Test]
+    public function theTokenScanStopsAtTheBlockBoundary(): void
     {
-        self::assertSame(['--a' => '1'], $this->lightColorsFrom(':root {--a: 1;}'));
-        self::assertSame(['--a' => '1'], $this->lightColorsFrom(":root {--a:   1   ;}\n--leak: 9;"));
+        static::assertSame(['--a' => '1'], $this->lightColorsFrom(':root {--a: 1;}'));
+        static::assertSame(['--a' => '1'], $this->lightColorsFrom(":root {--a:   1   ;}\n--leak: 9;"));
     }
 
     protected function tearDown(): void

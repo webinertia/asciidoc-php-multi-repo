@@ -69,11 +69,11 @@ final readonly class TextExtractor
             return $text;
         }
 
-        $cut   = mb_substr($text, 0, $limit);
+        $cut   = mb_substr($text, start: 0, length: $limit);
         $space = $this->lastSpace($cut);
 
         if ($space > 0) {
-            $cut = mb_substr($cut, 0, $space);
+            $cut = mb_substr($cut, start: 0, length: $space);
         }
 
         return trim($cut);
@@ -81,8 +81,8 @@ final readonly class TextExtractor
 
     private function collapse(string $text): string
     {
-        $text = str_replace(["\xC2\xA0", "\t", "\r", "\n"], ' ', $text);
-        $text = preg_replace(self::WHITESPACE, ' ', $text) ?? $text;
+        $text = str_replace(["\xC2\xA0", "\t", "\r", "\n"], replace: ' ', subject: $text);
+        $text = preg_replace(self::WHITESPACE, replacement: ' ', subject: $text) ?? $text;
 
         return trim($text);
     }
@@ -93,12 +93,12 @@ final readonly class TextExtractor
             return $text;
         }
 
-        return html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        return html_entity_decode($text, ENT_QUOTES | ENT_HTML5, encoding: 'UTF-8');
     }
 
     private function lastSpace(string $text): int
     {
-        $position = mb_strrpos($text, ' ');
+        $position = mb_strrpos($text, needle: ' ');
 
         return false === $position ? -1 : $position;
     }
@@ -108,12 +108,12 @@ final readonly class TextExtractor
      */
     private function stripBlocks(string $html): string
     {
-        return preg_replace('~<(script|style)\b[^>]*>.*?</\1>~is', ' ', $html) ?? $html;
+        return preg_replace('~<(script|style)\b[^>]*>.*?</\1>~is', replacement: ' ', subject: $html) ?? $html;
     }
 
     private function stripTags(string $html): string
     {
-        $text = preg_replace('~<[^>]*>~', ' ', $html) ?? $html;
+        $text = preg_replace('~<[^>]*>~', replacement: ' ', subject: $html) ?? $html;
 
         return $this->decode($text);
     }

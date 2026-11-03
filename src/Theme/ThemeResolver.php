@@ -48,8 +48,8 @@ final readonly class ThemeResolver
         ?string $cssDirectory = null,
         ?ThemeConfig $theme = null,
     ) {
-        $this->cssDirectory = $cssDirectory ?? dirname(__DIR__, 2) . '/resources/css';
-        $this->jsDirectory  = dirname(__DIR__, 2) . '/resources/js';
+        $this->cssDirectory = $cssDirectory ?? dirname(__DIR__, levels: 2) . '/resources/css';
+        $this->jsDirectory  = dirname(__DIR__, levels: 2) . '/resources/js';
         $this->theme        = $theme ?? ThemeConfig::defaults();
     }
 
@@ -86,7 +86,7 @@ final readonly class ThemeResolver
      */
     public function assetUrl(string $basePath, string $name): string
     {
-        return rtrim($basePath, '/') . '/assets/' . $name;
+        return rtrim($basePath, characters: '/') . '/assets/' . $name;
     }
 
     /**
@@ -276,18 +276,18 @@ final readonly class ThemeResolver
     {
         $css      = $this->read('site.css');
         $needle   = "{$selector} {";
-        $position = strpos($css, $needle);
+        $position = strpos($css, needle: $needle);
 
         if (false === $position) {
             return [];
         }
 
-        $open = strpos($css, '{', $position);
+        $open = strpos($css, needle: '{', offset: $position);
         if (false === $open) {
             return [];
         }
 
-        $close = strpos($css, '}', $open);
+        $close = strpos($css, needle: '}', offset: $open);
         if (false === $close) {
             return [];
         }

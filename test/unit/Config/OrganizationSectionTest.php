@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace WebwareTest\AsciidocPhp\MultiRepo\Config;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Config\OrganizationSection;
 
 #[CoversClass(OrganizationSection::class)]
 final class OrganizationSectionTest extends TestCase
 {
-    public function testExcludesMatchesExactly(): void
+    #[Test]
+    public function excludesMatchesExactly(): void
     {
         $section = OrganizationSection::fromArray([
             'name'                => 'webinertia',
@@ -19,23 +21,25 @@ final class OrganizationSectionTest extends TestCase
             'excludeRepositories' => ['docs.webinertia.net'],
         ]);
 
-        self::assertTrue($section->excludes('docs.webinertia.net'));
-        self::assertFalse($section->excludes('docs'));
+        static::assertTrue($section->excludes('docs.webinertia.net'));
+        static::assertFalse($section->excludes('docs'));
     }
 
-    public function testFromArrayAppliesDefaults(): void
+    #[Test]
+    public function fromArrayAppliesDefaults(): void
     {
         $section = OrganizationSection::fromArray([
             'name'         => 'webinertia',
             'propertyName' => 'doc-target',
         ]);
 
-        self::assertSame('true', $section->onboardValue());
-        self::assertNull($section->tokenEnvVar());
-        self::assertSame([], $section->excludeRepositories());
+        static::assertSame('true', $section->onboardValue());
+        static::assertNull($section->tokenEnvVar());
+        static::assertSame([], $section->excludeRepositories());
     }
 
-    public function testFromArrayReadsEveryField(): void
+    #[Test]
+    public function fromArrayReadsEveryField(): void
     {
         $section = OrganizationSection::fromArray([
             'name'                => 'webinertia',
@@ -45,10 +49,10 @@ final class OrganizationSectionTest extends TestCase
             'excludeRepositories' => ['docs.webinertia.net', '.github'],
         ]);
 
-        self::assertSame('webinertia', $section->name());
-        self::assertSame('doc-target', $section->propertyName());
-        self::assertSame('yes', $section->onboardValue());
-        self::assertSame('DOC_DISCOVERY_TOKEN', $section->tokenEnvVar());
-        self::assertSame(['docs.webinertia.net', '.github'], $section->excludeRepositories());
+        static::assertSame('webinertia', $section->name());
+        static::assertSame('doc-target', $section->propertyName());
+        static::assertSame('yes', $section->onboardValue());
+        static::assertSame('DOC_DISCOVERY_TOKEN', $section->tokenEnvVar());
+        static::assertSame(['docs.webinertia.net', '.github'], $section->excludeRepositories());
     }
 }

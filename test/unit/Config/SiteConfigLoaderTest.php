@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebwareTest\AsciidocPhp\MultiRepo\Config;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Config\ConfigException;
 use Webware\AsciidocPhp\MultiRepo\Config\SiteConfigLoader;
@@ -29,7 +30,8 @@ final class SiteConfigLoaderTest extends TestCase
 
     private Filesystem $filesystem;
 
-    public function testAbsoluteOutputPathsArePreserved(): void
+    #[Test]
+    public function absoluteOutputPathsArePreserved(): void
     {
         $absolute = Path::join($this->directory, 'elsewhere');
 
@@ -43,48 +45,51 @@ final class SiteConfigLoaderTest extends TestCase
 
         $config = new SiteConfigLoader()->load($path);
 
-        self::assertSame($absolute, $config->output()->directory());
+        static::assertSame($absolute, $config->output()->directory());
     }
 
-    public function testBundledSchemaIsShippedWithThePackage(): void
+    #[Test]
+    public function bundledSchemaIsShippedWithThePackage(): void
     {
         $loader = new SiteConfigLoader();
 
-        self::assertSame(
-            Path::join(Path::normalise(dirname(__DIR__, 3)), 'config', 'site.schema.json'),
+        static::assertSame(
+            Path::join(Path::normalise(dirname(__DIR__, levels: 3)), 'config', 'site.schema.json'),
             $loader->schemaPath(),
         );
-        self::assertFileExists($loader->schemaPath());
+        static::assertFileExists($loader->schemaPath());
 
         $schema = $loader->schema();
 
-        self::assertSame('object', $schema['type']);
-        self::assertTrue(isset($schema['$defs']));
+        static::assertSame('object', $schema['type']);
+        static::assertTrue(isset($schema['$defs']));
     }
 
-    public function testBundledSchemaMatchesTheContract(): void
+    #[Test]
+    public function bundledSchemaMatchesTheContract(): void
     {
         $contract = json_decode(
             (string) file_get_contents(
                 Path::join(
-                    Path::normalise(dirname(__DIR__, 3)),
+                    Path::normalise(dirname(__DIR__, levels: 3)),
                     'specs',
                     '001-multi-repo-docs-site',
                     'contracts',
                     'site.schema.json',
                 ),
             ),
-            true,
-            512,
-            JSON_THROW_ON_ERROR,
+            associative: true,
+            depth: 512,
+            flags: JSON_THROW_ON_ERROR,
         );
 
-        self::assertIsArray($contract);
-        self::assertFalse(array_is_list($contract));
-        self::assertSame($contract, new SiteConfigLoader()->schema());
+        static::assertIsArray($contract);
+        static::assertFalse(array_is_list($contract));
+        static::assertSame($contract, new SiteConfigLoader()->schema());
     }
 
-    public function testLoadsMinimalDocumentAndAppliesDefaults(): void
+    #[Test]
+    public function loadsMinimalDocumentAndAppliesDefaults(): void
     {
         $path = $this->writeConfig('site.json', [
             'schemaVersion' => 1,
@@ -94,21 +99,22 @@ final class SiteConfigLoaderTest extends TestCase
 
         $config = new SiteConfigLoader()->load($path);
 
-        self::assertSame(1, $config->schemaVersion());
-        self::assertSame('Docs', $config->site()->name());
-        self::assertSame('webinertia', $config->organization()->name());
-        self::assertSame('doc-target', $config->organization()->propertyName());
-        self::assertSame('true', $config->organization()->onboardValue());
-        self::assertSame('docs', $config->source()->directory());
-        self::assertSame([2, 3], $config->render()->tocLevels());
-        self::assertSame(4, $config->render()->concurrency());
-        self::assertSame('webware', $config->theme()->name());
-        self::assertSame([], $config->projects());
-        self::assertSame(Path::normalise($path), $config->configPath());
-        self::assertSame(Path::normalise($this->directory), $config->configDirectory());
+        static::assertSame(1, $config->schemaVersion());
+        static::assertSame('Docs', $config->site()->name());
+        static::assertSame('webinertia', $config->organization()->name());
+        static::assertSame('doc-target', $config->organization()->propertyName());
+        static::assertSame('true', $config->organization()->onboardValue());
+        static::assertSame('docs', $config->source()->directory());
+        static::assertSame([2, 3], $config->render()->tocLevels());
+        static::assertSame(4, $config->render()->concurrency());
+        static::assertSame('webware', $config->theme()->name());
+        static::assertSame([], $config->projects());
+        static::assertSame(Path::normalise($path), $config->configPath());
+        static::assertSame(Path::normalise($this->directory), $config->configDirectory());
     }
 
-    public function testMalformedJsonFailsNamingTheFile(): void
+    #[Test]
+    public function malformedJsonFailsNamingTheFile(): void
     {
         $path = Path::join($this->directory, 'site.json');
         $this->filesystem->writeAtomic($path, "{\n  \"schemaVersion\": 1,\n");
@@ -119,7 +125,8 @@ final class SiteConfigLoaderTest extends TestCase
         new SiteConfigLoader()->load($path);
     }
 
-    public function testMissingFileFails(): void
+    #[Test]
+    public function missingFileFails(): void
     {
         $path = Path::join($this->directory, 'absent.json');
 
@@ -129,7 +136,8 @@ final class SiteConfigLoaderTest extends TestCase
         new SiteConfigLoader()->load($path);
     }
 
-    public function testMissingRequiredSectionFails(): void
+    #[Test]
+    public function missingRequiredSectionFails(): void
     {
         $path = $this->writeConfig('site.json', [
             'schemaVersion' => 1,
@@ -140,12 +148,13 @@ final class SiteConfigLoaderTest extends TestCase
             new SiteConfigLoader()->load($path);
             self::fail('Expected a ConfigException.');
         } catch (ConfigException $exception) {
-            self::assertSame('', $exception->pointer());
-            self::assertStringContainsString('organization', $exception->getMessage());
+            static::assertSame('', $exception->pointer());
+            static::assertStringContainsString('organization', $exception->getMessage());
         }
     }
 
-    public function testMissingSchemaVersionFails(): void
+    #[Test]
+    public function missingSchemaVersionFails(): void
     {
         $document = $this->minimalDocument();
         unset($document['schemaVersion']);
@@ -157,7 +166,8 @@ final class SiteConfigLoaderTest extends TestCase
         new SiteConfigLoader()->load($path);
     }
 
-    public function testNestedConfigResolvesAgainstItsOwnDirectory(): void
+    #[Test]
+    public function nestedConfigResolvesAgainstItsOwnDirectory(): void
     {
         $nested = Path::join($this->directory, 'conf');
         $this->filesystem->ensureDirectory($nested);
@@ -166,10 +176,11 @@ final class SiteConfigLoaderTest extends TestCase
 
         $config = new SiteConfigLoader()->load($path);
 
-        self::assertSame(Path::join($nested, 'build', 'site'), $config->output()->directory());
+        static::assertSame(Path::join($nested, 'build', 'site'), $config->output()->directory());
     }
 
-    public function testOutputPathsResolveAgainstTheConfigDirectory(): void
+    #[Test]
+    public function outputPathsResolveAgainstTheConfigDirectory(): void
     {
         $path = $this->writeConfig(
             'site.json',
@@ -181,12 +192,13 @@ final class SiteConfigLoaderTest extends TestCase
 
         $config = new SiteConfigLoader()->load($path);
 
-        self::assertSame(Path::join($this->directory, 'out'), $config->output()->directory());
-        self::assertSame(Path::join($this->directory, 'cache'), $config->output()->cacheDirectory());
-        self::assertSame(Path::join($this->directory, 'r.json'), $config->output()->reportPath());
+        static::assertSame(Path::join($this->directory, 'out'), $config->output()->directory());
+        static::assertSame(Path::join($this->directory, 'cache'), $config->output()->cacheDirectory());
+        static::assertSame(Path::join($this->directory, 'r.json'), $config->output()->reportPath());
     }
 
-    public function testProjectsAreParsedAndSorted(): void
+    #[Test]
+    public function projectsAreParsedAndSorted(): void
     {
         $path = $this->writeConfig(
             'site.json',
@@ -201,13 +213,14 @@ final class SiteConfigLoaderTest extends TestCase
 
         $config = new SiteConfigLoader()->load($path);
 
-        self::assertSame(['message-bus', 'messagebus-event'], array_keys($config->projects()));
-        self::assertSame('bus', $config->project('message-bus')?->slug());
-        self::assertSame(1, $config->project('message-bus')?->order());
-        self::assertNull($config->project('missing'));
+        static::assertSame(['message-bus', 'messagebus-event'], array_keys($config->projects()));
+        static::assertSame('bus', $config->project('message-bus')?->slug());
+        static::assertSame(1, $config->project('message-bus')?->order());
+        static::assertNull($config->project('missing'));
     }
 
-    public function testRelativePathResolvesAgainstTheWorkingDirectory(): void
+    #[Test]
+    public function relativePathResolvesAgainstTheWorkingDirectory(): void
     {
         $this->writeConfig('site.json', $this->minimalDocument());
 
@@ -215,10 +228,11 @@ final class SiteConfigLoaderTest extends TestCase
 
         $config = new SiteConfigLoader()->load($relative);
 
-        self::assertSame(Path::join($this->directory, 'site.json'), $config->configPath());
+        static::assertSame(Path::join($this->directory, 'site.json'), $config->configPath());
     }
 
-    public function testUnknownTopLevelKeyFailsNamingTheKeyAndPointer(): void
+    #[Test]
+    public function unknownTopLevelKeyFailsNamingTheKeyAndPointer(): void
     {
         $path = $this->writeConfig('site.json', $this->minimalDocument() + ['typo' => true]);
 
@@ -226,13 +240,14 @@ final class SiteConfigLoaderTest extends TestCase
             new SiteConfigLoader()->load($path);
             self::fail('Expected a ConfigException.');
         } catch (ConfigException $exception) {
-            self::assertSame('/typo', $exception->pointer());
-            self::assertStringContainsString('typo', $exception->getMessage());
-            self::assertStringContainsString('/typo', $exception->getMessage());
+            static::assertSame('/typo', $exception->pointer());
+            static::assertStringContainsString('typo', $exception->getMessage());
+            static::assertStringContainsString('/typo', $exception->getMessage());
         }
     }
 
-    public function testUnsupportedSchemaVersionFails(): void
+    #[Test]
+    public function unsupportedSchemaVersionFails(): void
     {
         $document                  = $this->minimalDocument();
         $document['schemaVersion'] = 2;
@@ -243,12 +258,13 @@ final class SiteConfigLoaderTest extends TestCase
             new SiteConfigLoader()->load($path);
             self::fail('Expected a ConfigException.');
         } catch (ConfigException $exception) {
-            self::assertSame('/schemaVersion', $exception->pointer());
-            self::assertStringContainsString('schemaVersion', $exception->getMessage());
+            static::assertSame('/schemaVersion', $exception->pointer());
+            static::assertStringContainsString('schemaVersion', $exception->getMessage());
         }
     }
 
-    public function testWrongPropertyTypeFailsAtThePropertyPointer(): void
+    #[Test]
+    public function wrongPropertyTypeFailsAtThePropertyPointer(): void
     {
         $document         = $this->minimalDocument();
         $document['site'] = ['name' => 42, 'baseUrl' => 'https://example.test'];
@@ -259,7 +275,7 @@ final class SiteConfigLoaderTest extends TestCase
             new SiteConfigLoader()->load($path);
             self::fail('Expected a ConfigException.');
         } catch (ConfigException $exception) {
-            self::assertSame('/site/name', $exception->pointer());
+            static::assertSame('/site/name', $exception->pointer());
         }
     }
 

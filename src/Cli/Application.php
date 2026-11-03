@@ -100,7 +100,7 @@ final class Application
     public function run(array $argv): int
     {
         try {
-            $options = new OptionsParser()->parse(array_slice($argv, 1));
+            $options = new OptionsParser()->parse(array_slice($argv, offset: 1));
         } catch (UsageException $exception) {
             $output = $this->output(new Options());
             $output->error($exception->getMessage());

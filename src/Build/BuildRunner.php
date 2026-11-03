@@ -40,9 +40,9 @@ use function count;
 use function microtime;
 use function preg_match;
 use function sprintf;
+use function str_starts_with;
 use function strcmp;
 use function strlen;
-use function strpos;
 use function substr;
 use function usort;
 
@@ -460,7 +460,7 @@ final class BuildRunner
     {
         $prefix = "{$slug}/{$label}/";
 
-        return 0 === strpos($pagePath, $prefix) ? substr($pagePath, strlen($prefix)) : 'index.html';
+        return str_starts_with($pagePath, $prefix) ? substr($pagePath, strlen($prefix)) : 'index.html';
     }
 
     /**

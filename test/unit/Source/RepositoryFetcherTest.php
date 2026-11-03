@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Source;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Report\ReasonCode;
 use Webware\AsciidocPhp\MultiRepo\Source\RepositoryFetcher;
@@ -35,7 +36,8 @@ final class RepositoryFetcherTest extends TestCase
 
     private ProcessRunner $runner;
 
-    public function testALocalGitRepositoryReportsItsCommit(): void
+    #[Test]
+    public function aLocalGitRepositoryReportsItsCommit(): void
     {
         $root   = $this->gitRepository(['docs/index.adoc' => "= Index\n"]);
         $commit = $this->head($root);
@@ -46,11 +48,12 @@ final class RepositoryFetcherTest extends TestCase
             "{$this->tempDirectory}/cache",
         );
 
-        self::assertSame($commit, $fetched->revision());
-        self::assertMatchesRegularExpression('/^[0-9a-f]{40}$/', $fetched->revision());
+        static::assertSame($commit, $fetched->revision());
+        static::assertMatchesRegularExpression('/^[0-9a-f]{40}$/', $fetched->revision());
     }
 
-    public function testALocalPathIsUsedInPlace(): void
+    #[Test]
+    public function aLocalPathIsUsedInPlace(): void
     {
         $root = $this->repository([
             'README.md'          => '# Example',
@@ -63,14 +66,15 @@ final class RepositoryFetcherTest extends TestCase
             "{$this->tempDirectory}/cache",
         );
 
-        self::assertSame($root, $fetched->rootPath());
-        self::assertSame(['README.md', 'docs/v1/index.adoc'], $fetched->files());
-        self::assertTrue($fetched->hasDocumentation());
-        self::assertSame(1, $fetched->attempts());
-        self::assertSame('docs', $fetched->documentationDirectory());
+        static::assertSame($root, $fetched->rootPath());
+        static::assertSame(['README.md', 'docs/v1/index.adoc'], $fetched->files());
+        static::assertTrue($fetched->hasDocumentation());
+        static::assertSame(1, $fetched->attempts());
+        static::assertSame('docs', $fetched->documentationDirectory());
     }
 
-    public function testAnUnreachableRemoteFailsWithTheFetchFailedReasonCode(): void
+    #[Test]
+    public function anUnreachableRemoteFailsWithTheFetchFailedReasonCode(): void
     {
         $missing = Path::join($this->tempDirectory, 'absent-repository');
 
@@ -89,14 +93,15 @@ final class RepositoryFetcherTest extends TestCase
         } catch (SourceException $exception) {
             $error = $exception->error();
 
-            self::assertSame(ReasonCode::FetchFailed, $error->reasonCode());
-            self::assertStringContainsString('versioned', $error->message());
-            self::assertStringContainsString('1 attempt(s)', $error->message());
-            self::assertNotNull($error->correctiveAction());
+            static::assertSame(ReasonCode::FetchFailed, $error->reasonCode());
+            static::assertStringContainsString('versioned', $error->message());
+            static::assertStringContainsString('1 attempt(s)', $error->message());
+            static::assertNotNull($error->correctiveAction());
         }
     }
 
-    public function testAPlainDirectoryReportsAContentDigest(): void
+    #[Test]
+    public function aPlainDirectoryReportsAContentDigest(): void
     {
         $root = $this->repository(['docs/index.adoc' => "= Index\n"]);
 
@@ -106,10 +111,11 @@ final class RepositoryFetcherTest extends TestCase
             "{$this->tempDirectory}/cache",
         );
 
-        self::assertMatchesRegularExpression('/^[0-9a-f]{64}$/', $fetched->revision());
+        static::assertMatchesRegularExpression('/^[0-9a-f]{64}$/', $fetched->revision());
     }
 
-    public function testARemoteIsClonedIntoTheCacheDirectory(): void
+    #[Test]
+    public function aRemoteIsClonedIntoTheCacheDirectory(): void
     {
         $origin = $this->gitRepository(['docs/v1/index.adoc' => "= Index\n"]);
         $bare   = $this->bareClone($origin);
@@ -125,14 +131,15 @@ final class RepositoryFetcherTest extends TestCase
                 $cache,
             );
 
-        self::assertSame(Path::join($cache, 'versioned'), $fetched->rootPath());
-        self::assertSame(['docs/v1/index.adoc'], $fetched->files());
-        self::assertSame($this->head($origin), $fetched->revision());
-        self::assertSame(1, $fetched->attempts());
-        self::assertTrue($fetched->checkedOut());
+        static::assertSame(Path::join($cache, 'versioned'), $fetched->rootPath());
+        static::assertSame(['docs/v1/index.adoc'], $fetched->files());
+        static::assertSame($this->head($origin), $fetched->revision());
+        static::assertSame(1, $fetched->attempts());
+        static::assertTrue($fetched->checkedOut());
     }
 
-    public function testARepositoryWithoutDocumentationIsStillFetched(): void
+    #[Test]
+    public function aRepositoryWithoutDocumentationIsStillFetched(): void
     {
         $root = $this->repository(['README.md' => '# Example']);
 
@@ -142,11 +149,12 @@ final class RepositoryFetcherTest extends TestCase
             "{$this->tempDirectory}/cache",
         );
 
-        self::assertFalse($fetched->hasDocumentation());
-        self::assertSame(['README.md'], $fetched->files());
+        static::assertFalse($fetched->hasDocumentation());
+        static::assertSame(['README.md'], $fetched->files());
     }
 
-    public function testARetryCountBelowOneIsClampedToOne(): void
+    #[Test]
+    public function aRetryCountBelowOneIsClampedToOne(): void
     {
         $missing = Path::join($this->tempDirectory, 'absent-repository');
 
@@ -163,11 +171,12 @@ final class RepositoryFetcherTest extends TestCase
 
             self::fail('Expected a SourceException.');
         } catch (SourceException $exception) {
-            self::assertStringContainsString('1 attempt(s)', $exception->error()->message());
+            static::assertStringContainsString('1 attempt(s)', $exception->error()->message());
         }
     }
 
-    public function testASecondFetchOfAnUnchangedRevisionDoesNotCheckOutAgain(): void
+    #[Test]
+    public function aSecondFetchOfAnUnchangedRevisionDoesNotCheckOutAgain(): void
     {
         $origin = $this->gitRepository(['docs/index.adoc' => "= Index\n"]);
         $bare   = $this->bareClone($origin);
@@ -177,12 +186,13 @@ final class RepositoryFetcherTest extends TestCase
         $first   = $fetcher->fetch(SourceFixture::repository(), SourceFixture::config(), $cache);
         $second  = $fetcher->fetch(SourceFixture::repository(), SourceFixture::config(), $cache);
 
-        self::assertTrue($first->checkedOut());
-        self::assertFalse($second->checkedOut());
-        self::assertSame($first->revision(), $second->revision());
+        static::assertTrue($first->checkedOut());
+        static::assertFalse($second->checkedOut());
+        static::assertSame($first->revision(), $second->revision());
     }
 
-    public function testTheConfiguredRetryCountIsUsed(): void
+    #[Test]
+    public function theConfiguredRetryCountIsUsed(): void
     {
         $missing = Path::join($this->tempDirectory, 'absent-repository');
 
@@ -199,11 +209,12 @@ final class RepositoryFetcherTest extends TestCase
 
             self::fail('Expected a SourceException.');
         } catch (SourceException $exception) {
-            self::assertStringContainsString('3 attempt(s)', $exception->error()->message());
+            static::assertStringContainsString('3 attempt(s)', $exception->error()->message());
         }
     }
 
-    public function testTheContentDigestChangesWithTheContent(): void
+    #[Test]
+    public function theContentDigestChangesWithTheContent(): void
     {
         $root = $this->repository(['docs/index.adoc' => "= Index\n"]);
 
@@ -227,10 +238,11 @@ final class RepositoryFetcherTest extends TestCase
             )
             ->revision();
 
-        self::assertNotSame($before, $after);
+        static::assertNotSame($before, $after);
     }
 
-    public function testTheContentDigestIsStableAcrossFetches(): void
+    #[Test]
+    public function theContentDigestIsStableAcrossFetches(): void
     {
         $root = $this->repository(['docs/index.adoc' => "= Index\n"]);
 
@@ -252,10 +264,11 @@ final class RepositoryFetcherTest extends TestCase
             )
             ->revision();
 
-        self::assertSame($first, $second);
+        static::assertSame($first, $second);
     }
 
-    public function testTheDefaultRefIsTheRepositoryDefaultBranch(): void
+    #[Test]
+    public function theDefaultRefIsTheRepositoryDefaultBranch(): void
     {
         $origin = $this->gitRepository(['docs/index.adoc' => "= Index\n"]);
         $bare   = $this->bareClone($origin);
@@ -267,10 +280,11 @@ final class RepositoryFetcherTest extends TestCase
                 Path::join($this->tempDirectory, 'cache'),
             );
 
-        self::assertSame($this->head($origin), $fetched->revision());
+        static::assertSame($this->head($origin), $fetched->revision());
     }
 
-    public function testTheDocumentationDirectoryComesFromTheConfiguration(): void
+    #[Test]
+    public function theDocumentationDirectoryComesFromTheConfiguration(): void
     {
         $root = $this->repository(['documentation/index.adoc' => "= Index\n"]);
 
@@ -280,11 +294,12 @@ final class RepositoryFetcherTest extends TestCase
             "{$this->tempDirectory}/cache",
         );
 
-        self::assertSame('documentation', $fetched->documentationDirectory());
-        self::assertTrue($fetched->hasDocumentation());
+        static::assertSame('documentation', $fetched->documentationDirectory());
+        static::assertTrue($fetched->hasDocumentation());
     }
 
-    public function testTheGitMetadataDirectoryIsNotPartOfTheFileList(): void
+    #[Test]
+    public function theGitMetadataDirectoryIsNotPartOfTheFileList(): void
     {
         $root = $this->gitRepository(['docs/index.adoc' => "= Index\n"]);
 
@@ -294,13 +309,33 @@ final class RepositoryFetcherTest extends TestCase
             "{$this->tempDirectory}/cache",
         );
 
-        self::assertSame(['docs/index.adoc'], $fetched->files());
+        static::assertSame(['docs/index.adoc'], $fetched->files());
     }
 
-    public function testTheRefArgumentOverridesTheDefaultBranch(): void
+    #[Test]
+    public function theRefArgumentOverridesTheDefaultBranch(): void
     {
         $origin = $this->gitRepository(['docs/index.adoc' => "= Index\n"]);
+        $tagged = $this->head($origin);
+
         $this->runner->mustRun(['git', 'tag', 'v9.9.9'], $origin, 60.0);
+        $this->runner->mustRun(
+            [
+                'git',
+                '-c',
+                'user.name=Fixture',
+                '-c',
+                'user.email=fixture@example.test',
+                'commit',
+                '--quiet',
+                '--allow-empty',
+                '-m',
+                'After the tag',
+            ],
+            $origin,
+            60.0,
+        );
+
         $bare = $this->bareClone($origin);
 
         $fetched = $this->fetcher(remoteUrl: static fn(): string => $bare)
@@ -311,10 +346,11 @@ final class RepositoryFetcherTest extends TestCase
                 'v9.9.9',
             );
 
-        self::assertSame($this->head($origin), $fetched->revision());
+        static::assertSame($tagged, $fetched->revision());
     }
 
-    public function testTheRemoteUrlIsBuiltFromTheOrganizationAndRepositoryName(): void
+    #[Test]
+    public function theRemoteUrlIsBuiltFromTheOrganizationAndRepositoryName(): void
     {
         $origin = $this->gitRepository(['docs/index.adoc' => "= Index\n"]);
         $bare   = $this->bareClone($origin);
@@ -338,7 +374,7 @@ final class RepositoryFetcherTest extends TestCase
             Path::join($this->tempDirectory, 'cache'),
         );
 
-        self::assertSame(['fixture-org', 'message-bus'], $seen);
+        static::assertSame(['fixture-org', 'message-bus'], $seen);
     }
 
     protected function setUp(): void

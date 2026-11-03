@@ -9,8 +9,8 @@ use Webware\AsciidocPhp\MultiRepo\Render\PageShell;
 
 use function implode;
 use function sprintf;
+use function str_starts_with;
 use function strlen;
-use function strpos;
 use function substr;
 
 /**
@@ -94,7 +94,7 @@ final readonly class NavigationBuilder
     {
         $prefix = "{$slug}/{$label}/";
 
-        if (0 !== strpos($pagePath, $prefix)) {
+        if (! str_starts_with($pagePath, $prefix)) {
             return 'index.html';
         }
 

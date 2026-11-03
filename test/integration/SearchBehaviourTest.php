@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebwareTestIntegration\AsciidocPhp\MultiRepo;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Search\SearchIndexBuilder;
 use Webware\AsciidocPhp\MultiRepo\Support\Path;
@@ -37,17 +38,18 @@ final class SearchBehaviourTest extends TestCase
 {
     use TempDirectoryTrait;
 
-    public function testTheSearchHarnessFailsWhenTheIndexNoLongerSupportsTheAssertions(): void
+    #[Test]
+    public function theSearchHarnessFailsWhenTheIndexNoLongerSupportsTheAssertions(): void
     {
         $fixture = $this->fixture();
         $version = $fixture['versions'][0];
 
-        self::assertIsArray($version);
+        static::assertIsArray($version);
 
         $pages = $version['pages'];
 
-        self::assertIsArray($pages);
-        self::assertIsArray($pages[0]);
+        static::assertIsArray($pages);
+        static::assertIsArray($pages[0]);
 
         $page = $pages[0];
 
@@ -60,20 +62,21 @@ final class SearchBehaviourTest extends TestCase
 
         $path = Path::join($this->createTempDirectory(), 'broken-index.json');
 
-        self::assertNotFalse(file_put_contents($path, (string) json_encode($fixture)));
+        static::assertNotFalse(file_put_contents($path, (string) json_encode($fixture)));
 
         [$status, $output] = $this->runHarness($path);
 
-        self::assertNotSame(0, $status, $output);
-        self::assertMatchesRegularExpression('/[1-9][0-9]* failures$/m', $output);
+        static::assertNotSame(0, $status, $output);
+        static::assertMatchesRegularExpression('/[1-9][0-9]* failures$/m', $output);
     }
 
-    public function testTheSearchHarnessPasses(): void
+    #[Test]
+    public function theSearchHarnessPasses(): void
     {
         [$status, $output] = $this->runHarness(null);
 
-        self::assertSame(0, $status, $output);
-        self::assertMatchesRegularExpression('/^[0-9]+ checks, 0 failures$/m', $output);
+        static::assertSame(0, $status, $output);
+        static::assertMatchesRegularExpression('/^[0-9]+ checks, 0 failures$/m', $output);
     }
 
     protected function tearDown(): void
@@ -86,11 +89,11 @@ final class SearchBehaviourTest extends TestCase
      */
     private function fixture(): array
     {
-        $path = Path::join(dirname(__DIR__, 2), 'test', 'fixtures', 'search', 'index.json');
+        $path = Path::join(dirname(__DIR__, levels: 2), 'test', 'fixtures', 'search', 'index.json');
 
-        $decoded = json_decode((string) file_get_contents($path), true);
+        $decoded = json_decode((string) file_get_contents($path), associative: true);
 
-        self::assertIsArray($decoded);
+        static::assertIsArray($decoded);
 
         return $decoded;
     }
@@ -100,7 +103,7 @@ final class SearchBehaviourTest extends TestCase
      */
     private function runHarness(?string $fixture): array
     {
-        $script = Path::join(dirname(__DIR__, 2), 'test', 'js', 'search-core.test.mjs');
+        $script = Path::join(dirname(__DIR__, levels: 2), 'test', 'js', 'search-core.test.mjs');
 
         $command = 'node ' . escapeshellarg($script);
 

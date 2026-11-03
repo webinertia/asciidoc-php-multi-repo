@@ -45,7 +45,7 @@ final readonly class UrlBuilder
      */
     public function directory(string $relativePath): string
     {
-        $relative = trim($relativePath, '/');
+        $relative = trim($relativePath, characters: '/');
 
         if ('' === $relative) {
             return $this->basePath;
@@ -67,7 +67,7 @@ final readonly class UrlBuilder
      */
     public function page(string $slug, string $label, string $innerPath): string
     {
-        return $this->url("{$slug}/{$label}/" . ltrim($innerPath, '/'));
+        return $this->url("{$slug}/{$label}/" . ltrim($innerPath, characters: '/'));
     }
 
     /**
@@ -93,7 +93,7 @@ final readonly class UrlBuilder
      */
     public function url(string $relativePath = ''): string
     {
-        $relative = ltrim($relativePath, '/');
+        $relative = ltrim($relativePath, characters: '/');
 
         if ('' === $relative) {
             return $this->basePath;

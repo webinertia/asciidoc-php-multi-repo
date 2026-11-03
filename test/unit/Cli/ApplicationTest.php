@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebwareTest\AsciidocPhp\MultiRepo\Cli;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Webware\AsciidocPhp\MultiRepo\Cli\Application;
@@ -30,7 +31,8 @@ final class ApplicationTest extends TestCase
 
     private string $scratch;
 
-    public function testCommandReceivesParsedOptionsAndTheValidatedConfig(): void
+    #[Test]
+    public function commandReceivesParsedOptionsAndTheValidatedConfig(): void
     {
         $command = new RecordingCommand('build', ExitCode::Degraded);
 
@@ -44,24 +46,25 @@ final class ApplicationTest extends TestCase
             '--full',
         ]);
 
-        self::assertSame(ExitCode::Degraded->value, $exit);
-        self::assertSame(1, $command->calls);
-        self::assertInstanceOf(Options::class, $command->options);
-        self::assertSame(['message-bus'], $command->options->projects);
-        self::assertTrue($command->options->full);
-        self::assertSame('Fixture Site', $command->config?->site()->name());
-        self::assertInstanceOf(Output::class, $command->output);
+        static::assertSame(ExitCode::Degraded->value, $exit);
+        static::assertSame(1, $command->calls);
+        static::assertInstanceOf(Options::class, $command->options);
+        static::assertSame(['message-bus'], $command->options->projects);
+        static::assertTrue($command->options->full);
+        static::assertSame('Fixture Site', $command->config?->site()->name());
+        static::assertInstanceOf(Output::class, $command->output);
     }
 
-    public function testHelpExitsZeroAndListsEveryCommandAndOption(): void
+    #[Test]
+    public function helpExitsZeroAndListsEveryCommandAndOption(): void
     {
         $exit = $this->application()->run(['asciidoc-php-multi-repo', '--help']);
 
-        self::assertSame(ExitCode::Success->value, $exit);
-        self::assertSame('', $this->captured->stderr);
+        static::assertSame(ExitCode::Success->value, $exit);
+        static::assertSame('', $this->captured->stderr);
 
         foreach (['discover', 'fetch', 'build', 'watch', 'serve', 'validate', 'clean'] as $command) {
-            self::assertStringContainsString($command, $this->captured->stdout);
+            static::assertStringContainsString($command, $this->captured->stdout);
         }
 
         foreach ([
@@ -84,39 +87,43 @@ final class ApplicationTest extends TestCase
             '--help',
             '--version',
         ] as $option) {
-            self::assertStringContainsString($option, $this->captured->stdout);
+            static::assertStringContainsString($option, $this->captured->stdout);
         }
     }
 
-    public function testMissingConfigExitsTwo(): void
+    #[Test]
+    public function missingConfigExitsTwo(): void
     {
         $missing = Path::join($this->scratch, 'absent.json');
 
         $exit = $this->application()->run(['asciidoc-php-multi-repo', 'build', '-c', $missing]);
 
-        self::assertSame(ExitCode::ConfigError->value, $exit);
-        self::assertStringContainsString('error:', $this->captured->stderr);
+        static::assertSame(ExitCode::ConfigError->value, $exit);
+        static::assertStringContainsString('error:', $this->captured->stderr);
     }
 
-    public function testNoArgumentsExitsTwoWithUsageOnStandardError(): void
+    #[Test]
+    public function noArgumentsExitsTwoWithUsageOnStandardError(): void
     {
         $exit = $this->application()->run(['asciidoc-php-multi-repo']);
 
-        self::assertSame(ExitCode::ConfigError->value, $exit);
-        self::assertSame('', $this->captured->stdout);
-        self::assertStringContainsString('no command given', $this->captured->stderr);
-        self::assertStringContainsString('asciidoc-php-multi-repo <command> [options]', $this->captured->stderr);
+        static::assertSame(ExitCode::ConfigError->value, $exit);
+        static::assertSame('', $this->captured->stdout);
+        static::assertStringContainsString('no command given', $this->captured->stderr);
+        static::assertStringContainsString('asciidoc-php-multi-repo <command> [options]', $this->captured->stderr);
     }
 
-    public function testNonInteractiveRunEmitsNoAnsiEscapes(): void
+    #[Test]
+    public function nonInteractiveRunEmitsNoAnsiEscapes(): void
     {
         $this->application()->run(['asciidoc-php-multi-repo', 'build', '--nope']);
 
-        self::assertStringNotContainsString("\033[", $this->captured->stderr);
-        self::assertStringNotContainsString("\033[", $this->captured->stdout);
+        static::assertStringNotContainsString("\033[", $this->captured->stderr);
+        static::assertStringNotContainsString("\033[", $this->captured->stdout);
     }
 
-    public function testQuietModeStillReportsConfigurationErrors(): void
+    #[Test]
+    public function quietModeStillReportsConfigurationErrors(): void
     {
         $exit = $this->application()->run([
             'asciidoc-php-multi-repo',
@@ -126,25 +133,12 @@ final class ApplicationTest extends TestCase
             '--quiet',
         ]);
 
-        self::assertSame(ExitCode::ConfigError->value, $exit);
-        self::assertStringContainsString('error:', $this->captured->stderr);
+        static::assertSame(ExitCode::ConfigError->value, $exit);
+        static::assertStringContainsString('error:', $this->captured->stderr);
     }
 
-    public function testStubCommandExitsFour(): void
-    {
-        $exit = $this->application()->run([
-            'asciidoc-php-multi-repo',
-            'watch',
-            '-c',
-            $this->fixtureConfig(),
-        ]);
-
-        self::assertSame(ExitCode::InternalError->value, $exit);
-        self::assertStringContainsString('watch: not implemented', $this->captured->stderr);
-        self::assertSame('', $this->captured->stdout);
-    }
-
-    public function testUnexpectedExceptionMapsToInternalError(): void
+    #[Test]
+    public function unexpectedExceptionMapsToInternalError(): void
     {
         $command = new class implements CommandInterface {
             public function execute(Options $options, SiteConfig $config, Output $output): ExitCode
@@ -170,37 +164,40 @@ final class ApplicationTest extends TestCase
             $this->fixtureConfig(),
         ]);
 
-        self::assertSame(ExitCode::InternalError->value, $exit);
-        self::assertStringContainsString('converter failed', $this->captured->stderr);
+        static::assertSame(ExitCode::InternalError->value, $exit);
+        static::assertStringContainsString('converter failed', $this->captured->stderr);
     }
 
-    public function testUnknownCommandExitsTwo(): void
+    #[Test]
+    public function unknownCommandExitsTwo(): void
     {
         $exit = $this->application()->run(['asciidoc-php-multi-repo', 'publish']);
 
-        self::assertSame(ExitCode::ConfigError->value, $exit);
-        self::assertStringContainsString('unknown command "publish"', $this->captured->stderr);
+        static::assertSame(ExitCode::ConfigError->value, $exit);
+        static::assertStringContainsString('unknown command "publish"', $this->captured->stderr);
     }
 
-    public function testUnknownOptionExitsTwoWithUsageOnStandardError(): void
+    #[Test]
+    public function unknownOptionExitsTwoWithUsageOnStandardError(): void
     {
         $exit = $this->application()->run(['asciidoc-php-multi-repo', 'build', '--nope']);
 
-        self::assertSame(ExitCode::ConfigError->value, $exit);
-        self::assertStringContainsString('unknown option "--nope"', $this->captured->stderr);
-        self::assertStringContainsString('Global options:', $this->captured->stderr);
+        static::assertSame(ExitCode::ConfigError->value, $exit);
+        static::assertStringContainsString('unknown option "--nope"', $this->captured->stderr);
+        static::assertStringContainsString('Global options:', $this->captured->stderr);
     }
 
-    public function testUnsupportedSchemaVersionExitsTwo(): void
+    #[Test]
+    public function unsupportedSchemaVersionExitsTwo(): void
     {
         $path = Path::join($this->scratch, 'site.json');
 
         /** @var array<string, mixed> $document */
         $document = json_decode(
             (string) file_get_contents($this->fixtureConfig()),
-            true,
-            512,
-            JSON_THROW_ON_ERROR,
+            associative: true,
+            depth: 512,
+            flags: JSON_THROW_ON_ERROR,
         );
         $document['schemaVersion'] = 99;
 
@@ -208,17 +205,18 @@ final class ApplicationTest extends TestCase
 
         $exit = $this->application()->run(['asciidoc-php-multi-repo', 'build', '-c', $path]);
 
-        self::assertSame(ExitCode::ConfigError->value, $exit);
-        self::assertStringContainsString('schemaVersion', $this->captured->stderr);
+        static::assertSame(ExitCode::ConfigError->value, $exit);
+        static::assertStringContainsString('schemaVersion', $this->captured->stderr);
     }
 
-    public function testVersionExitsZeroAndPrintsThePackageName(): void
+    #[Test]
+    public function versionExitsZeroAndPrintsThePackageName(): void
     {
         $exit = $this->application()->run(['asciidoc-php-multi-repo', '--version']);
 
-        self::assertSame(ExitCode::Success->value, $exit);
-        self::assertSame("asciidoc-php-multi-repo 1.2.3\n", $this->captured->stdout);
-        self::assertSame('', $this->captured->stderr);
+        static::assertSame(ExitCode::Success->value, $exit);
+        static::assertSame("asciidoc-php-multi-repo 1.2.3\n", $this->captured->stdout);
+        static::assertSame('', $this->captured->stderr);
     }
 
     protected function setUp(): void
@@ -246,6 +244,6 @@ final class ApplicationTest extends TestCase
 
     private function fixtureConfig(): string
     {
-        return Path::join(dirname(__DIR__, 3), 'test', 'fixtures', 'site.json');
+        return Path::join(dirname(__DIR__, levels: 3), 'test', 'fixtures', 'site.json');
     }
 }

@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Discovery;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Discovery\DiscoveredRepository;
 use Webware\AsciidocPhp\MultiRepo\Discovery\SlugCollisionDetector;
@@ -15,7 +16,8 @@ use Webware\AsciidocPhp\MultiRepo\Discovery\SlugException;
 #[CoversMethod(SlugCollisionDetector::class, 'detect')]
 final class SlugCollisionDetectorTest extends TestCase
 {
-    public function testACollisionNamesBothRepositoriesAndTheSlug(): void
+    #[Test]
+    public function aCollisionNamesBothRepositoriesAndTheSlug(): void
     {
         try {
             new SlugCollisionDetector()->detect([
@@ -25,20 +27,22 @@ final class SlugCollisionDetectorTest extends TestCase
 
             self::fail('Expected a SlugException.');
         } catch (SlugException $exception) {
-            self::assertStringContainsString('message-bus', $exception->getMessage());
-            self::assertStringContainsString('message.bus', $exception->getMessage());
-            self::assertStringContainsString('"message-bus"', $exception->getMessage());
+            static::assertStringContainsString('message-bus', $exception->getMessage());
+            static::assertStringContainsString('message.bus', $exception->getMessage());
+            static::assertStringContainsString('"message-bus"', $exception->getMessage());
         }
     }
 
-    public function testAnEmptySetPasses(): void
+    #[Test]
+    public function anEmptySetPasses(): void
     {
         $this->expectNotToPerformAssertions();
 
         new SlugCollisionDetector()->detect([]);
     }
 
-    public function testDistinctSlugsPass(): void
+    #[Test]
+    public function distinctSlugsPass(): void
     {
         $this->expectNotToPerformAssertions();
 
@@ -48,7 +52,8 @@ final class SlugCollisionDetectorTest extends TestCase
         ]);
     }
 
-    public function testTheFirstDuplicateIsReported(): void
+    #[Test]
+    public function theFirstDuplicateIsReported(): void
     {
         try {
             new SlugCollisionDetector()->detect([
@@ -59,13 +64,14 @@ final class SlugCollisionDetectorTest extends TestCase
 
             self::fail('Expected a SlugException.');
         } catch (SlugException $exception) {
-            self::assertStringContainsString('alpha', $exception->getMessage());
-            self::assertStringContainsString('beta', $exception->getMessage());
-            self::assertStringNotContainsString('gamma', $exception->getMessage());
+            static::assertStringContainsString('alpha', $exception->getMessage());
+            static::assertStringContainsString('beta', $exception->getMessage());
+            static::assertStringNotContainsString('gamma', $exception->getMessage());
         }
     }
 
-    public function testTheMessageNamesTheRemedy(): void
+    #[Test]
+    public function theMessageNamesTheRemedy(): void
     {
         try {
             new SlugCollisionDetector()->detect([
@@ -75,11 +81,12 @@ final class SlugCollisionDetectorTest extends TestCase
 
             self::fail('Expected a SlugException.');
         } catch (SlugException $exception) {
-            self::assertStringContainsString('projects.message.bus.slug', $exception->getMessage());
+            static::assertStringContainsString('projects.message.bus.slug', $exception->getMessage());
         }
     }
 
-    public function testThreeRepositoriesSharingASlugStillRaise(): void
+    #[Test]
+    public function threeRepositoriesSharingASlugStillRaise(): void
     {
         $this->expectException(SlugException::class);
 

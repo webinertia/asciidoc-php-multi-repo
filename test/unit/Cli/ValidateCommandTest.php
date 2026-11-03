@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Cli;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Build\BuildRunner;
 use Webware\AsciidocPhp\MultiRepo\Cli\Commands\ValidateCommand;
@@ -45,72 +46,79 @@ final class ValidateCommandTest extends TestCase
 
     private CapturedOutput $captured;
 
-    public function testABrokenIncludeIsCaughtEvenThoughNothingIsWritten(): void
+    #[Test]
+    public function aBrokenIncludeIsCaughtEvenThoughNothingIsWritten(): void
     {
         $exit = $this->validate(['broken-include']);
 
-        self::assertSame(ExitCode::Degraded, $exit);
-        self::assertStringContainsString('broken-include: partial', $this->captured->stderr);
-        self::assertStringContainsString('(render-failed)', $this->captured->stderr);
-        self::assertStringContainsString('Add the missing file', $this->captured->stderr);
+        static::assertSame(ExitCode::Degraded, $exit);
+        static::assertStringContainsString('broken-include: partial', $this->captured->stderr);
+        static::assertStringContainsString('(render-failed)', $this->captured->stderr);
+        static::assertStringContainsString('Add the missing file', $this->captured->stderr);
     }
 
-    public function testAHealthyProjectIsReportedAsBuildable(): void
+    #[Test]
+    public function aHealthyProjectIsReportedAsBuildable(): void
     {
         $exit = $this->validate(['versioned']);
 
-        self::assertSame(ExitCode::Success, $exit);
-        self::assertStringContainsString('versioned: ok', $this->captured->stderr);
-        self::assertStringContainsString('ok: 1, partial: 0, failed: 0, skipped: 0', $this->captured->stdout);
+        static::assertSame(ExitCode::Success, $exit);
+        static::assertStringContainsString('versioned: ok', $this->captured->stderr);
+        static::assertStringContainsString('ok: 1, partial: 0, failed: 0, skipped: 0', $this->captured->stdout);
     }
 
-    public function testAMissingEntryIsReportedWithItsReasonCodeAndCorrectiveAction(): void
+    #[Test]
+    public function aMissingEntryIsReportedWithItsReasonCodeAndCorrectiveAction(): void
     {
         $exit = $this->validate(['missing-entry']);
 
-        self::assertSame(ExitCode::Degraded, $exit);
-        self::assertStringContainsString('missing-entry: failed', $this->captured->stderr);
-        self::assertStringContainsString('(missing-entry)', $this->captured->stderr);
-        self::assertStringContainsString('Add one of the entry candidates', $this->captured->stderr);
+        static::assertSame(ExitCode::Degraded, $exit);
+        static::assertStringContainsString('missing-entry: failed', $this->captured->stderr);
+        static::assertStringContainsString('(missing-entry)', $this->captured->stderr);
+        static::assertStringContainsString('Add one of the entry candidates', $this->captured->stderr);
     }
 
-    public function testAnArchivedProjectIsSkippedAndDoesNotDegradeTheRun(): void
+    #[Test]
+    public function anArchivedProjectIsSkippedAndDoesNotDegradeTheRun(): void
     {
         $exit = $this->validate(manifest: $this->writeManifest([
             $this->entry('legacy', SourceFixture::path('org/archived'), archived: true),
             $this->entry('versioned', SourceFixture::path('org/versioned')),
         ]));
 
-        self::assertSame(ExitCode::Success, $exit);
-        self::assertStringContainsString('legacy: skipped', $this->captured->stderr);
-        self::assertStringContainsString('ok: 1, partial: 0, failed: 0, skipped: 1', $this->captured->stdout);
+        static::assertSame(ExitCode::Success, $exit);
+        static::assertStringContainsString('legacy: skipped', $this->captured->stderr);
+        static::assertStringContainsString('ok: 1, partial: 0, failed: 0, skipped: 1', $this->captured->stdout);
     }
 
-    public function testAProjectWithoutAsciiDocSourcesIsReportedAsUnbuildable(): void
+    #[Test]
+    public function aProjectWithoutAsciiDocSourcesIsReportedAsUnbuildable(): void
     {
         $exit = $this->validate(['markdown-only']);
 
-        self::assertSame(ExitCode::Degraded, $exit);
-        self::assertStringContainsString('(no-asciidoc-sources)', $this->captured->stderr);
+        static::assertSame(ExitCode::Degraded, $exit);
+        static::assertStringContainsString('(no-asciidoc-sources)', $this->captured->stderr);
     }
 
-    public function testTheOutputDirectoryIsUntouched(): void
+    #[Test]
+    public function theOutputDirectoryIsUntouched(): void
     {
         $out = Path::join($this->tempDirectory, 'site');
-        file_put_contents(Path::join($this->tempDirectory, 'marker.txt'), 'published');
+        file_put_contents(Path::join($this->tempDirectory, 'marker.txt'), data: 'published');
 
         $this->validate(['versioned'], $out);
 
-        self::assertFalse(is_dir($out), 'validate created the output directory');
-        self::assertFalse(is_file(Path::join($this->tempDirectory, 'report.json')));
-        self::assertSame('published', file_get_contents(Path::join($this->tempDirectory, 'marker.txt')));
+        static::assertFalse(is_dir($out), 'validate created the output directory');
+        static::assertFalse(is_file(Path::join($this->tempDirectory, 'report.json')));
+        static::assertSame('published', file_get_contents(Path::join($this->tempDirectory, 'marker.txt')));
     }
 
-    public function testTheSummarySaysNoSiteOutputWasWritten(): void
+    #[Test]
+    public function theSummarySaysNoSiteOutputWasWritten(): void
     {
         $this->validate(['versioned']);
 
-        self::assertStringContainsString('no site output was written', $this->captured->stdout);
+        static::assertStringContainsString('no site output was written', $this->captured->stdout);
     }
 
     protected function setUp(): void

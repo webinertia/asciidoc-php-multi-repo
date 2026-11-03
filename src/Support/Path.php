@@ -54,7 +54,7 @@ final class Path
                 continue;
             }
 
-            $canonical = rtrim($canonical, '/') . '/' . ltrim($part, '/');
+            $canonical = rtrim($canonical, characters: '/') . '/' . ltrim($part, characters: '/');
         }
 
         return self::toPlatform(self::normaliseCanonical($canonical));
@@ -90,7 +90,7 @@ final class Path
         }
 
         $segments = [
-            ...array_fill(0, count($fromSegments) - $common, '..'),
+            ...array_fill(0, count($fromSegments) - $common, value: '..'),
             ...array_slice($toSegments, $common),
         ];
 
@@ -130,16 +130,16 @@ final class Path
     public static function withExtension(string $path, string $extension): string
     {
         $canonical = self::toCanonical($path);
-        $separator = strrpos($canonical, '/');
-        $directory = false === $separator ? '' : substr($canonical, 0, $separator + 1);
+        $separator = strrpos($canonical, needle: '/');
+        $directory = false === $separator ? '' : substr($canonical, offset: 0, length: $separator + 1);
         $basename  = false === $separator ? $canonical : substr($canonical, $separator + 1);
-        $dot       = strrpos($basename, '.');
+        $dot       = strrpos($basename, needle: '.');
 
         if (false !== $dot && $dot > 0) {
-            $basename = substr($basename, 0, $dot);
+            $basename = substr($basename, offset: 0, length: $dot);
         }
 
-        $extension = ltrim($extension, '.');
+        $extension = ltrim($extension, characters: '.');
 
         return self::toPlatform($directory . $basename . ('' === $extension ? '' : ".{$extension}"));
     }
@@ -182,10 +182,10 @@ final class Path
             $rest   = substr($rest, strlen($matches[0]));
         } elseif (str_starts_with($rest, '//')) {
             $prefix = '//';
-            $rest   = substr($rest, 2);
+            $rest   = substr($rest, offset: 2);
         } elseif (str_starts_with($rest, '/')) {
             $prefix = '/';
-            $rest   = substr($rest, 1);
+            $rest   = substr($rest, offset: 1);
         }
 
         /** @var list<string> $segments */
@@ -216,7 +216,7 @@ final class Path
 
     private static function toCanonical(string $path): string
     {
-        return str_replace('\\', '/', $path);
+        return str_replace('\\', replace: '/', subject: $path);
     }
 
     private static function toPlatform(string $canonical): string

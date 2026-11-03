@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Render;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Webware\AsciidocPhp\MultiRepo\Render\PageContext;
@@ -48,24 +49,26 @@ final class PageShellTest extends TestCase
 {
     use TempDirectoryTrait;
 
-    public function testABufferLeftOpenByTheTemplateDoesNotEscapeTheShell(): void
+    #[Test]
+    public function aBufferLeftOpenByTheTemplateDoesNotEscapeTheShell(): void
     {
         $directory = $this->createTempDirectory();
-        file_put_contents("{$directory}/page.php", '<?php ob_start(); echo "leaked";');
+        file_put_contents("{$directory}/page.php", data: '<?php ob_start(); echo "leaked";');
 
         $level = ob_get_level();
 
         try {
             $html = new PageShell($directory)->render($this->context());
 
-            self::assertSame($level, ob_get_level());
-            self::assertSame('leaked', $html);
+            static::assertSame($level, ob_get_level());
+            static::assertSame('leaked', $html);
         } finally {
             $this->removeTempDirectory($directory);
         }
     }
 
-    public function testAMissingTemplateIsReported(): void
+    #[Test]
+    public function aMissingTemplateIsReported(): void
     {
         $directory = $this->createTempDirectory();
 
@@ -79,101 +82,113 @@ final class PageShellTest extends TestCase
         }
     }
 
-    public function testAnOmittedTemplateDirectoryFallsBackToTheShippedTemplates(): void
+    #[Test]
+    public function anOmittedTemplateDirectoryFallsBackToTheShippedTemplates(): void
     {
         $directory = new PageShell(null)->templateDirectory();
 
-        self::assertDirectoryExists($directory);
-        self::assertStringEndsWith('resources/templates', str_replace('\\', '/', $directory));
-        self::assertSame($directory, new PageShell()->templateDirectory());
+        static::assertDirectoryExists($directory);
+        static::assertStringEndsWith('resources/templates', str_replace('\\', replace: '/', subject: $directory));
+        static::assertSame($directory, new PageShell()->templateDirectory());
     }
 
-    public function testInterpolatedValuesAreEscaped(): void
+    #[Test]
+    public function interpolatedValuesAreEscaped(): void
     {
         $html = new PageShell()->render($this->context(
             pageTitle   : 'Tips <script>alert("x")</script> & tricks',
             projectTitle: 'R&D <Widgets>',
         ));
 
-        self::assertStringNotContainsString('<script>alert("x")</script>', $html);
-        self::assertStringContainsString(
+        static::assertStringNotContainsString('<script>alert("x")</script>', $html);
+        static::assertStringContainsString(
             '<title>Tips &lt;script&gt;alert(&quot;x&quot;)&lt;/script&gt; &amp; tricks | R&amp;D &lt;Widgets&gt; | Fixture Site</title>',
             $html,
         );
-        self::assertStringContainsString('<p class="project-name">R&amp;D &lt;Widgets&gt;</p>', $html);
+        static::assertStringContainsString('<p class="project-name">R&amp;D &lt;Widgets&gt;</p>', $html);
     }
 
-    public function testTheArticleBodyIsNotEscaped(): void
+    #[Test]
+    public function theArticleBodyIsNotEscaped(): void
     {
         $body = '<article class="doc"><p>Escaped &amp; converted.</p></article>';
         $html = new PageShell()->render($this->context(body: $body));
 
-        self::assertStringContainsString($body, $html);
+        static::assertStringContainsString($body, $html);
     }
 
-    public function testTheContextExposesItsPageTitle(): void
+    #[Test]
+    public function theContextExposesItsPageTitle(): void
     {
-        self::assertSame('Usage examples', $this->context()->pageTitle());
-        self::assertSame('Rendered & escaped', $this->context(pageTitle: 'Rendered & escaped')->pageTitle());
+        static::assertSame('Usage examples', $this->context()->pageTitle());
+        static::assertSame('Rendered & escaped', $this->context(pageTitle: 'Rendered & escaped')->pageTitle());
     }
 
-    public function testTheShellCarriesEveryDocumentedElement(): void
+    #[Test]
+    public function theShellCarriesEveryDocumentedElement(): void
     {
         $html = new PageShell()->render($this->context());
 
-        self::assertStringStartsWith('<!DOCTYPE html>', $html);
-        self::assertStringContainsString('<meta charset="utf-8">', $html);
-        self::assertStringContainsString('<meta name="viewport" content="width=device-width, initial-scale=1">', $html);
-        self::assertStringContainsString(
+        static::assertStringStartsWith('<!DOCTYPE html>', $html);
+        static::assertStringContainsString('<meta charset="utf-8">', $html);
+        static::assertStringContainsString(
+            '<meta name="viewport" content="width=device-width, initial-scale=1">',
+            $html,
+        );
+        static::assertStringContainsString(
             '<title>Usage examples | Widgets | Fixture Site</title>',
             $html,
         );
-        self::assertStringContainsString(
+        static::assertStringContainsString(
             '<link rel="canonical" href="https://docs.example.test/widgets/v1/usage.html">',
             $html,
         );
-        self::assertSame(2, substr_count($html, '<link rel="stylesheet"'));
-        self::assertStringContainsString('<a class="skip-link" href="#main">Skip to content</a>', $html);
-        self::assertStringContainsString('<header class="site-header">', $html);
-        self::assertStringContainsString('<nav class="sidebar" aria-label="On this page">', $html);
-        self::assertStringContainsString('<main id="main">', $html);
-        self::assertStringContainsString('<footer class="site-footer">', $html);
-        self::assertStringContainsString('<a class="source-link"', $html);
-        self::assertStringContainsString('rel="noopener"', $html);
-        self::assertStringContainsString('data-theme-toggle', $html);
-        self::assertStringContainsString('aria-pressed="false"', $html);
+        static::assertSame(2, substr_count($html, needle: '<link rel="stylesheet"'));
+        static::assertStringContainsString('<a class="skip-link" href="#main">Skip to content</a>', $html);
+        static::assertStringContainsString('<header class="site-header">', $html);
+        static::assertStringContainsString('<nav class="sidebar" aria-label="On this page">', $html);
+        static::assertStringContainsString('<main id="main">', $html);
+        static::assertStringContainsString('<footer class="site-footer">', $html);
+        static::assertStringContainsString('<a class="source-link"', $html);
+        static::assertStringContainsString('rel="noopener"', $html);
+        static::assertStringContainsString('data-theme-toggle', $html);
+        static::assertStringContainsString('aria-pressed="false"', $html);
     }
 
-    public function testTheShellHelpersAreCallableFromOutsideTheShell(): void
+    #[Test]
+    public function theShellHelpersAreCallableFromOutsideTheShell(): void
     {
         $shell = new PageShell();
 
-        self::assertSame('&lt;b&gt; &amp; more', $shell->escape('<b> & more'));
-        self::assertStringContainsString('href="#_guide"', $shell->renderToc([new TocEntry(2, '_guide', 'Guide')]));
+        static::assertSame('&lt;b&gt; &amp; more', $shell->escape('<b> & more'));
+        static::assertStringContainsString('href="#_guide"', $shell->renderToc([new TocEntry(2, '_guide', 'Guide')]));
     }
 
-    public function testTheSourceLinkIsOmittedWhenThereIsNoSourceUrl(): void
+    #[Test]
+    public function theSourceLinkIsOmittedWhenThereIsNoSourceUrl(): void
     {
         $html = new PageShell()->render($this->context(sourceUrl: null));
 
-        self::assertStringNotContainsString('class="source-link"', $html);
+        static::assertStringNotContainsString('class="source-link"', $html);
     }
 
-    public function testTheTableOfContentsIsRenderedAsAList(): void
+    #[Test]
+    public function theTableOfContentsIsRenderedAsAList(): void
     {
         $html = new PageShell()->render($this->context(toc: [
             new TocEntry(2, '_first', 'First'),
             new TocEntry(3, '_nested', 'Nested & <deep>'),
         ]));
 
-        self::assertStringContainsString('<li class="toc-level-2"><a href="#_first">First</a></li>', $html);
-        self::assertStringContainsString(
+        static::assertStringContainsString('<li class="toc-level-2"><a href="#_first">First</a></li>', $html);
+        static::assertStringContainsString(
             '<li class="toc-level-3"><a href="#_nested">Nested &amp; &lt;deep&gt;</a></li>',
             $html,
         );
     }
 
-    public function testTheThemeModeReachesTheDocumentElement(): void
+    #[Test]
+    public function theThemeModeReachesTheDocumentElement(): void
     {
         $html = new PageShell()->render(new PageContext(
             siteName        : 'Fixture Site',
@@ -190,9 +205,9 @@ final class PageShellTest extends TestCase
             defaultColorMode: 'light',
         ));
 
-        self::assertStringContainsString('<html lang="en" data-theme="light" data-theme-mode="system">', $html);
+        static::assertStringContainsString('<html lang="en" data-theme="light" data-theme-mode="system">', $html);
         preg_match_all('/<script>/', $html, $inline);
-        self::assertCount(1, $inline[0]);
+        static::assertCount(1, $inline[0]);
     }
 
     private function context(

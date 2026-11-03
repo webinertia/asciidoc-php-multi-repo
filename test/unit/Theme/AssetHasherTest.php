@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Theme;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Theme\AssetHasher;
 
@@ -26,40 +27,45 @@ final class AssetHasherTest extends TestCase
 {
     private const string CONTENTS = 'body { color: #7e5ae0; }';
 
-    public function testAShortHashLengthIsHonoured(): void
+    #[Test]
+    public function aShortHashLengthIsHonoured(): void
     {
         $hasher = new AssetHasher(1);
 
-        self::assertSame(substr(hash('sha256', self::CONTENTS), 0, 1), $hasher->hash(self::CONTENTS));
-        self::assertSame(1, strlen($hasher->hash(self::CONTENTS)));
+        static::assertSame(substr(hash('sha256', self::CONTENTS), offset: 0, length: 1), $hasher->hash(self::CONTENTS));
+        static::assertSame(1, strlen($hasher->hash(self::CONTENTS)));
     }
 
-    public function testDifferentContentsProduceDifferentHashes(): void
+    #[Test]
+    public function differentContentsProduceDifferentHashes(): void
     {
         $hasher = new AssetHasher();
 
-        self::assertSame($hasher->hash('a'), $hasher->hash('a'));
-        self::assertNotSame($hasher->hash('a'), $hasher->hash('b'));
+        static::assertSame($hasher->hash('a'), $hasher->hash('a'));
+        static::assertNotSame($hasher->hash('a'), $hasher->hash('b'));
     }
 
-    public function testTheHashIsSixCharactersByDefault(): void
+    #[Test]
+    public function theHashIsSixCharactersByDefault(): void
     {
-        self::assertSame(6, strlen(new AssetHasher()->hash(self::CONTENTS)));
+        static::assertSame(6, strlen(new AssetHasher()->hash(self::CONTENTS)));
     }
 
-    public function testTheHashIsTheLeadingCharactersOfTheContentDigest(): void
+    #[Test]
+    public function theHashIsTheLeadingCharactersOfTheContentDigest(): void
     {
-        self::assertSame(
-            substr(hash('sha256', self::CONTENTS), 0, 6),
+        static::assertSame(
+            substr(hash('sha256', self::CONTENTS), offset: 0, length: 6),
             new AssetHasher()->hash(self::CONTENTS),
         );
     }
 
-    public function testThePublishedNameCarriesTheBaseNameTheHashAndTheExtension(): void
+    #[Test]
+    public function thePublishedNameCarriesTheBaseNameTheHashAndTheExtension(): void
     {
         $hasher = new AssetHasher();
 
-        self::assertSame(
+        static::assertSame(
             "site.{$hasher->hash(self::CONTENTS)}.css",
             $hasher->hashedName('site', 'css', self::CONTENTS),
         );

@@ -49,4 +49,32 @@ final readonly class Options
     {
         return [] !== $this->projects;
     }
+
+    /**
+     * @param list<string> $projects
+     */
+    public function withProjects(array $projects): self
+    {
+        return new self(
+            $this->command,
+            $this->config,
+            $this->out,
+            $this->cache,
+            $this->report,
+            $this->concurrency,
+            $projects,
+            $this->refs,
+            $this->manifest,
+            $this->full,
+            $this->basePath,
+            $this->port,
+            $this->force,
+            $this->quiet,
+            $this->verbose,
+            $this->timings,
+            $this->noColor,
+            $this->help,
+            $this->version,
+        );
+    }
 }

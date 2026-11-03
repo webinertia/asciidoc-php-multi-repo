@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebwareTest\AsciidocPhp\MultiRepo\Support;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Support\ProcessFailedException;
 use Webware\AsciidocPhp\MultiRepo\Support\ProcessRunner;
@@ -16,99 +17,109 @@ final class ProcessRunnerTest extends TestCase
 {
     private ProcessRunner $runner;
 
-    public function testArgumentWithShellMetacharactersIsNotInterpolated(): void
+    #[Test]
+    public function argumentWithShellMetacharactersIsNotInterpolated(): void
     {
         $argument = 'x; echo injected && echo injected | echo injected';
 
         $result = $this->runner->run([PHP_BINARY, '-r', 'echo $argv[1];', '--', $argument]);
 
-        self::assertSame($argument, $result->stdout());
+        static::assertSame($argument, $result->stdout());
     }
 
-    public function testArgumentWithSpaceAndQuoteReachesChildVerbatim(): void
+    #[Test]
+    public function argumentWithSpaceAndQuoteReachesChildVerbatim(): void
     {
         $argument = 'a b "c" d\'e';
 
         $result = $this->runner->run([PHP_BINARY, '-r', 'echo $argv[1];', '--', $argument]);
 
-        self::assertTrue($result->successful());
-        self::assertSame($argument, $result->stdout());
+        static::assertTrue($result->successful());
+        static::assertSame($argument, $result->stdout());
     }
 
-    public function testCapturesStandardError(): void
+    #[Test]
+    public function capturesStandardError(): void
     {
         $result = $this->runner->run([PHP_BINARY, '-r', 'fwrite(STDERR, "warning");']);
 
-        self::assertTrue($result->successful());
-        self::assertSame('warning', $result->stderr());
+        static::assertTrue($result->successful());
+        static::assertSame('warning', $result->stderr());
     }
 
-    public function testCapturesStandardOutput(): void
+    #[Test]
+    public function capturesStandardOutput(): void
     {
         $result = $this->runner->run([PHP_BINARY, '-r', 'echo "hello";']);
 
-        self::assertTrue($result->successful());
-        self::assertSame(0, $result->exitCode());
-        self::assertSame('hello', $result->stdout());
-        self::assertSame('', $result->stderr());
-        self::assertFalse($result->timedOut());
+        static::assertTrue($result->successful());
+        static::assertSame(0, $result->exitCode());
+        static::assertSame('hello', $result->stdout());
+        static::assertSame('', $result->stderr());
+        static::assertFalse($result->timedOut());
     }
 
-    public function testDescribeCommandListsArguments(): void
+    #[Test]
+    public function describeCommandListsArguments(): void
     {
         $result = $this->runner->run([PHP_BINARY, '-r', 'exit(0);']);
 
-        self::assertStringContainsString(PHP_BINARY, $result->describeCommand());
+        static::assertStringContainsString(PHP_BINARY, $result->describeCommand());
     }
 
-    public function testMustRunReturnsResultOnSuccess(): void
+    #[Test]
+    public function mustRunReturnsResultOnSuccess(): void
     {
         $result = $this->runner->mustRun([PHP_BINARY, '-r', 'echo "ok";']);
 
-        self::assertSame('ok', $result->stdout());
+        static::assertSame('ok', $result->stdout());
     }
 
-    public function testMustRunThrowsWithBothStreamsPreserved(): void
+    #[Test]
+    public function mustRunThrowsWithBothStreamsPreserved(): void
     {
         try {
             $this->runner->mustRun([PHP_BINARY, '-r', 'echo "out"; fwrite(STDERR, "boom"); exit(2);']);
             self::fail('A non-zero exit should have raised an exception.');
         } catch (ProcessFailedException $exception) {
-            self::assertSame(2, $exception->result()->exitCode());
-            self::assertSame('out', $exception->result()->stdout());
-            self::assertSame('boom', $exception->result()->stderr());
-            self::assertStringContainsString('boom', $exception->getMessage());
+            static::assertSame(2, $exception->result()->exitCode());
+            static::assertSame('out', $exception->result()->stdout());
+            static::assertSame('boom', $exception->result()->stderr());
+            static::assertStringContainsString('boom', $exception->getMessage());
         }
     }
 
-    public function testNonZeroExitCodeIsReported(): void
+    #[Test]
+    public function nonZeroExitCodeIsReported(): void
     {
         $result = $this->runner->run([PHP_BINARY, '-r', 'exit(3);']);
 
-        self::assertFalse($result->successful());
-        self::assertSame(3, $result->exitCode());
-        self::assertStringContainsString('exited with code 3', $result->describeFailure());
+        static::assertFalse($result->successful());
+        static::assertSame(3, $result->exitCode());
+        static::assertStringContainsString('exited with code 3', $result->describeFailure());
     }
 
-    public function testTimeoutTerminatesTheProcess(): void
+    #[Test]
+    public function timeoutTerminatesTheProcess(): void
     {
         $result = $this->runner->run([PHP_BINARY, '-r', 'sleep(10);'], null, 0.2);
 
-        self::assertTrue($result->timedOut());
-        self::assertFalse($result->successful());
-        self::assertStringContainsString('timed out', $result->describeFailure());
+        static::assertTrue($result->timedOut());
+        static::assertFalse($result->successful());
+        static::assertStringContainsString('timed out', $result->describeFailure());
     }
 
-    public function testWorkingDirectoryIsUsed(): void
+    #[Test]
+    public function workingDirectoryIsUsed(): void
     {
         $directory = sys_get_temp_dir();
 
         $result = $this->runner->run([PHP_BINARY, '-r', 'echo getcwd();'], $directory);
 
-        self::assertTrue($result->successful());
-        self::assertSame(
-            strtolower(str_replace('\\', '/', (string) realpath($directory))),
-            strtolower(str_replace('\\', '/', $result->stdout())),
+        static::assertTrue($result->successful());
+        static::assertSame(
+            strtolower(str_replace('\\', replace: '/', subject: (string) realpath($directory))),
+            strtolower(str_replace('\\', replace: '/', subject: $result->stdout())),
         );
     }
 

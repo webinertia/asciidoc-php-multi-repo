@@ -51,7 +51,7 @@ final readonly class SiteAssembler
             return $url;
         }
 
-        return rtrim($baseUrl, '/') . $url;
+        return rtrim($baseUrl, characters: '/') . $url;
     }
 
     /**

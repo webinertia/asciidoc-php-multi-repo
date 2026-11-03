@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebwareTest\AsciidocPhp\MultiRepo\Config;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Config\OutputSection;
 
@@ -13,16 +14,18 @@ use function sys_get_temp_dir;
 #[CoversClass(OutputSection::class)]
 final class OutputSectionTest extends TestCase
 {
-    public function testFromArrayAppliesDefaults(): void
+    #[Test]
+    public function fromArrayAppliesDefaults(): void
     {
         $section = OutputSection::fromArray([]);
 
-        self::assertSame('build/site', $section->directory());
-        self::assertSame('.cache/multi-repo', $section->cacheDirectory());
-        self::assertSame('build/report.json', $section->reportPath());
+        static::assertSame('build/site', $section->directory());
+        static::assertSame('.cache/multi-repo', $section->cacheDirectory());
+        static::assertSame('build/report.json', $section->reportPath());
     }
 
-    public function testFromArrayReadsEveryField(): void
+    #[Test]
+    public function fromArrayReadsEveryField(): void
     {
         $section = OutputSection::fromArray([
             'directory'      => 'public',
@@ -30,12 +33,13 @@ final class OutputSectionTest extends TestCase
             'reportPath'     => 'reports/report.json',
         ]);
 
-        self::assertSame('public', $section->directory());
-        self::assertSame('cache', $section->cacheDirectory());
-        self::assertSame('reports/report.json', $section->reportPath());
+        static::assertSame('public', $section->directory());
+        static::assertSame('cache', $section->cacheDirectory());
+        static::assertSame('reports/report.json', $section->reportPath());
     }
 
-    public function testWithPathsReturnsANewInstance(): void
+    #[Test]
+    public function withPathsReturnsANewInstance(): void
     {
         $section = OutputSection::fromArray([]);
         $updated = $section->withPaths(
@@ -44,9 +48,9 @@ final class OutputSectionTest extends TestCase
             sys_get_temp_dir() . '/report.json',
         );
 
-        self::assertNotSame($section, $updated);
-        self::assertSame(sys_get_temp_dir() . '/site', $updated->directory());
-        self::assertSame(sys_get_temp_dir() . '/cache', $updated->cacheDirectory());
-        self::assertSame(sys_get_temp_dir() . '/report.json', $updated->reportPath());
+        static::assertNotSame($section, $updated);
+        static::assertSame(sys_get_temp_dir() . '/site', $updated->directory());
+        static::assertSame(sys_get_temp_dir() . '/cache', $updated->cacheDirectory());
+        static::assertSame(sys_get_temp_dir() . '/report.json', $updated->reportPath());
     }
 }

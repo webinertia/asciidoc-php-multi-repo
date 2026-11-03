@@ -54,7 +54,7 @@ final readonly class ProjectResult
         private array $warnings = [],
         private int $fetchAttempts = 1,
     ) {
-        if (! in_array($status, self::STATUSES, true)) {
+        if (! in_array($status, self::STATUSES, strict: true)) {
             throw new InvalidArgumentException(
                 'Unknown project status "' . $status . '"; expected one of ' . implode(', ', self::STATUSES) . '.',
             );

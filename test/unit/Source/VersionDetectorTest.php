@@ -7,6 +7,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Source;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Source\DocVersion;
 use Webware\AsciidocPhp\MultiRepo\Source\VersionDetector;
@@ -70,7 +71,8 @@ final class VersionDetectorTest extends TestCase
         ];
     }
 
-    public function testAConfiguredVersionPatternReplacesTheDefault(): void
+    #[Test]
+    public function aConfiguredVersionPatternReplacesTheDefault(): void
     {
         $config = SourceFixture::config(['source' => [
             'directory'      => 'docs',
@@ -82,44 +84,47 @@ final class VersionDetectorTest extends TestCase
             $config,
         );
 
-        self::assertSame(['release-7'], array_map(
+        static::assertSame(['release-7'], array_map(
             static fn(DocVersion $version): string => $version->label(),
             $selection->versions(),
         ));
-        self::assertCount(1, $selection->warnings());
+        static::assertCount(1, $selection->warnings());
     }
 
-    public function testAFileOutsideEveryVersionDirectoryWarnsInsteadOfVanishing(): void
+    #[Test]
+    public function aFileOutsideEveryVersionDirectoryWarnsInsteadOfVanishing(): void
     {
         $selection = new VersionDetector()->detect(
             SourceFixture::fetched('mixed', ['docs/loose.adoc', 'docs/v1/index.adoc']),
             SourceFixture::config(),
         );
 
-        self::assertSame(['v1'], array_map(
+        static::assertSame(['v1'], array_map(
             static fn(DocVersion $version): string => $version->label(),
             $selection->versions(),
         ));
-        self::assertCount(1, $selection->warnings());
-        self::assertStringContainsString('mixed', $selection->warnings()[0]);
-        self::assertStringContainsString('docs/loose.adoc', $selection->warnings()[0]);
+        static::assertCount(1, $selection->warnings());
+        static::assertStringContainsString('mixed', $selection->warnings()[0]);
+        static::assertStringContainsString('docs/loose.adoc', $selection->warnings()[0]);
     }
 
-    public function testAFileOutsideTheDocumentationDirectoryDoesNotStopTheScan(): void
+    #[Test]
+    public function aFileOutsideTheDocumentationDirectoryDoesNotStopTheScan(): void
     {
         $selection = new VersionDetector()->detect(
             SourceFixture::fetched('example', ['README.adoc', 'docs/v1/index.adoc']),
             SourceFixture::config(),
         );
 
-        self::assertSame(['v1'], array_map(
+        static::assertSame(['v1'], array_map(
             static fn(DocVersion $version): string => $version->label(),
             $selection->versions(),
         ));
-        self::assertSame([], $selection->warnings());
+        static::assertSame([], $selection->warnings());
     }
 
-    public function testALabelWithoutThePrefixIsNumberedFromItsFirstCharacter(): void
+    #[Test]
+    public function aLabelWithoutThePrefixIsNumberedFromItsFirstCharacter(): void
     {
         $config = SourceFixture::config(['source' => [
             'directory'      => 'docs',
@@ -131,20 +136,32 @@ final class VersionDetectorTest extends TestCase
             $config,
         );
 
-        self::assertSame(7, $selection->versions()[0]->number());
+        static::assertSame(7, $selection->versions()[0]->number());
     }
 
-    public function testAnUnversionedRepositoryProducesNoWarning(): void
+    #[Test]
+    public function anEmptyDocumentationDirectoryIsASingleLatestVersion(): void
+    {
+        $selection = new VersionDetector()->detect(SourceFixture::fetched('empty', []), SourceFixture::config());
+
+        static::assertCount(1, $selection->versions());
+        static::assertSame(DocVersion::LATEST, $selection->versions()[0]->label());
+        static::assertSame([], $selection->warnings());
+    }
+
+    #[Test]
+    public function anUnversionedRepositoryProducesNoWarning(): void
     {
         $selection = new VersionDetector()->detect(
             SourceFixture::fetched('example', ['docs/index.adoc', 'docs/guide.adoc']),
             SourceFixture::config(),
         );
 
-        self::assertSame([], $selection->warnings());
+        static::assertSame([], $selection->warnings());
     }
 
-    public function testAPatternDelimiterInsideTheVersionPatternIsEscaped(): void
+    #[Test]
+    public function aPatternDelimiterInsideTheVersionPatternIsEscaped(): void
     {
         $config = SourceFixture::config(['source' => [
             'directory'      => 'docs',
@@ -156,76 +173,82 @@ final class VersionDetectorTest extends TestCase
             $config,
         );
 
-        self::assertSame(['v1#2'], array_map(
+        static::assertSame(['v1#2'], array_map(
             static fn(DocVersion $version): string => $version->label(),
             $selection->versions(),
         ));
     }
 
-    public function testASubdirectoryThatDoesNotMatchIsNotAVersion(): void
+    #[Test]
+    public function aSubdirectoryThatDoesNotMatchIsNotAVersion(): void
     {
         $selection = new VersionDetector()->detect(
             SourceFixture::fetched('example', ['docs/nightly/index.adoc', 'docs/v1/index.adoc']),
             SourceFixture::config(),
         );
 
-        self::assertSame(['v1'], array_map(
+        static::assertSame(['v1'], array_map(
             static fn(DocVersion $version): string => $version->label(),
             $selection->versions(),
         ));
-        self::assertCount(1, $selection->warnings());
+        static::assertCount(1, $selection->warnings());
     }
 
-    public function testAVersionDefaultsToNumberZero(): void
+    #[Test]
+    public function aVersionDefaultsToNumberZero(): void
     {
-        self::assertSame(0, new DocVersion('unlabelled', 'docs/unlabelled')->number());
+        static::assertSame(0, new DocVersion('unlabelled', 'docs/unlabelled')->number());
     }
 
-    public function testAVersionDirectoryIsTheDocumentationDirectoryPlusTheLabel(): void
+    #[Test]
+    public function aVersionDirectoryIsTheDocumentationDirectoryPlusTheLabel(): void
     {
         $selection = new VersionDetector()->detect(
             SourceFixture::fetched('example', ['docs/v2/index.adoc']),
             SourceFixture::config(),
         );
 
-        self::assertSame('docs/v2', $selection->versions()[0]->directory());
-        self::assertSame('docs/v2/', $selection->versions()[0]->prefix());
-        self::assertFalse($selection->versions()[0]->isLatest());
+        static::assertSame('docs/v2', $selection->versions()[0]->directory());
+        static::assertSame('docs/v2/', $selection->versions()[0]->prefix());
+        static::assertFalse($selection->versions()[0]->isLatest());
     }
 
     /**
      * @param list<string> $files
      * @param list<string> $expected
      */
+    #[Test]
     #[DataProvider('directoryLayouts')]
-    public function testLabelsFollowTheVersionPattern(array $files, array $expected): void
+    public function labelsFollowTheVersionPattern(array $files, array $expected): void
     {
         $selection = new VersionDetector()->detect(
             SourceFixture::fetched('example', $files),
             SourceFixture::config(),
         );
 
-        self::assertSame(
+        static::assertSame(
             $expected,
             array_map(static fn(DocVersion $version): string => $version->label(), $selection->versions()),
         );
     }
 
-    public function testPathsOutsideTheDocumentationDirectoryAreIgnored(): void
+    #[Test]
+    public function pathsOutsideTheDocumentationDirectoryAreIgnored(): void
     {
         $selection = new VersionDetector()->detect(
             SourceFixture::fetched('example', ['docs/v1/index.adoc', 'src/Other.php', 'README.adoc']),
             SourceFixture::config(),
         );
 
-        self::assertSame(['v1'], array_map(
+        static::assertSame(['v1'], array_map(
             static fn(DocVersion $version): string => $version->label(),
             $selection->versions(),
         ));
-        self::assertSame([], $selection->warnings());
+        static::assertSame([], $selection->warnings());
     }
 
-    public function testTheConfiguredDocumentationDirectoryIsHonoured(): void
+    #[Test]
+    public function theConfiguredDocumentationDirectoryIsHonoured(): void
     {
         $config = SourceFixture::config(['source' => ['directory' => 'documentation']]);
 
@@ -238,13 +261,14 @@ final class VersionDetectorTest extends TestCase
             $config,
         );
 
-        self::assertSame(['v3'], array_map(
+        static::assertSame(['v3'], array_map(
             static fn(DocVersion $version): string => $version->label(),
             $selection->versions(),
         ));
     }
 
-    public function testTheUnversionedDirectoryIsLatestAndIsTheDocumentationDirectory(): void
+    #[Test]
+    public function theUnversionedDirectoryIsLatestAndIsTheDocumentationDirectory(): void
     {
         $selection = new VersionDetector()->detect(
             SourceFixture::fetched('example', ['docs/index.adoc']),
@@ -253,25 +277,26 @@ final class VersionDetectorTest extends TestCase
 
         $version = $selection->versions()[0];
 
-        self::assertSame(DocVersion::LATEST, $version->label());
-        self::assertSame('docs', $version->directory());
-        self::assertSame('docs/', $version->prefix());
-        self::assertTrue($version->isLatest());
-        self::assertSame(0, $version->number());
+        static::assertSame(DocVersion::LATEST, $version->label());
+        static::assertSame('docs', $version->directory());
+        static::assertSame('docs/', $version->prefix());
+        static::assertTrue($version->isLatest());
+        static::assertSame(0, $version->number());
     }
 
-    public function testVersionsSortNumericallyNotLexically(): void
+    #[Test]
+    public function versionsSortNumericallyNotLexically(): void
     {
         $selection = new VersionDetector()->detect(
             SourceFixture::fetched('example', ['docs/v2/index.adoc', 'docs/v10/index.adoc', 'docs/v9/index.adoc']),
             SourceFixture::config(),
         );
 
-        self::assertSame(
+        static::assertSame(
             ['v2', 'v9', 'v10'],
             array_map(static fn(DocVersion $version): string => $version->label(), $selection->versions()),
         );
-        self::assertSame([2, 9, 10], array_map(
+        static::assertSame([2, 9, 10], array_map(
             static fn(DocVersion $version): int => $version->number(),
             $selection->versions(),
         ));

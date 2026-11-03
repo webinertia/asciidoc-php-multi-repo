@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Source;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Report\ReasonCode;
 use Webware\AsciidocPhp\MultiRepo\Source\DocPage;
@@ -28,21 +29,24 @@ final class SourcePreparerTest extends TestCase
 
     private Filesystem $filesystem;
 
-    public function testALeadingByteOrderMarkIsRemoved(): void
+    #[Test]
+    public function aLeadingByteOrderMarkIsRemoved(): void
     {
         $source = new SourcePreparer()->prepare($this->page('docs/bom.adoc', "\xEF\xBB\xBF= Title\n"));
 
-        self::assertSame("= Title\n", $source->text());
+        static::assertSame("= Title\n", $source->text());
     }
 
-    public function testALoneCarriageReturnIsNormalisedToLf(): void
+    #[Test]
+    public function aLoneCarriageReturnIsNormalisedToLf(): void
     {
         $source = new SourcePreparer()->prepare($this->page('docs/old.adoc', "= Title\rBody.\r"));
 
-        self::assertSame("= Title\nBody.\n", $source->text());
+        static::assertSame("= Title\nBody.\n", $source->text());
     }
 
-    public function testAMarkdownPageIsRejectedBeforeItIsRead(): void
+    #[Test]
+    public function aMarkdownPageIsRejectedBeforeItIsRead(): void
     {
         $page = new DocPage('v1', 'docs/v1/guide.md', Path::join($this->tempDirectory, 'absent.md'));
 
@@ -53,22 +57,24 @@ final class SourcePreparerTest extends TestCase
         } catch (SourceException $exception) {
             $error = $exception->error();
 
-            self::assertSame(ReasonCode::NoAsciidocSources, $error->reasonCode());
-            self::assertSame('docs/v1/guide.md', $error->path());
-            self::assertSame('v1', $error->version());
-            self::assertStringContainsString('markdown', $error->message());
-            self::assertNotNull($error->correctiveAction());
+            static::assertSame(ReasonCode::NoAsciidocSources, $error->reasonCode());
+            static::assertSame('docs/v1/guide.md', $error->path());
+            static::assertSame('v1', $error->version());
+            static::assertStringContainsString('markdown', $error->message());
+            static::assertNotNull($error->correctiveAction());
         }
     }
 
-    public function testAnAsciidocExtensionInUpperCaseIsAccepted(): void
+    #[Test]
+    public function anAsciidocExtensionInUpperCaseIsAccepted(): void
     {
         $source = new SourcePreparer()->prepare($this->page('docs/INDEX.ADOC', "= Title\n"));
 
-        self::assertSame(SourceFormat::AsciiDoc, $source->format());
+        static::assertSame(SourceFormat::AsciiDoc, $source->format());
     }
 
-    public function testAnUnknownExtensionIsRejected(): void
+    #[Test]
+    public function anUnknownExtensionIsRejected(): void
     {
         $page = new DocPage('v1', 'docs/v1/notes.txt', Path::join($this->tempDirectory, 'absent.txt'));
 
@@ -77,29 +83,32 @@ final class SourcePreparerTest extends TestCase
         new SourcePreparer()->prepare($page);
     }
 
-    public function testAWellFormedPageIsReturnedUnchanged(): void
+    #[Test]
+    public function aWellFormedPageIsReturnedUnchanged(): void
     {
         $page   = $this->page('docs/index.adoc', "= Title\n\nBody.\n");
         $source = new SourcePreparer()->prepare($page);
 
-        self::assertSame("= Title\n\nBody.\n", $source->text());
-        self::assertSame(SourceFormat::AsciiDoc, $source->format());
-        self::assertSame($page, $source->page());
-        self::assertSame($this->filesystem->hashContents("= Title\n\nBody.\n"), $source->hash());
+        static::assertSame("= Title\n\nBody.\n", $source->text());
+        static::assertSame(SourceFormat::AsciiDoc, $source->format());
+        static::assertSame($page, $source->page());
+        static::assertSame($this->filesystem->hashContents("= Title\n\nBody.\n"), $source->hash());
     }
 
-    public function testCrlfIsNormalisedToLf(): void
+    #[Test]
+    public function crlfIsNormalisedToLf(): void
     {
         $crlf = $this->page('docs/crlf.adoc', "= Title\r\n\r\nBody.\r\n");
         $lf   = $this->page('docs/lf.adoc', "= Title\n\nBody.\n");
 
         $preparer = new SourcePreparer();
 
-        self::assertSame($preparer->prepare($lf)->text(), $preparer->prepare($crlf)->text());
-        self::assertSame($preparer->prepare($lf)->hash(), $preparer->prepare($crlf)->hash());
+        static::assertSame($preparer->prepare($lf)->text(), $preparer->prepare($crlf)->text());
+        static::assertSame($preparer->prepare($lf)->hash(), $preparer->prepare($crlf)->hash());
     }
 
-    public function testInvalidUtf8IsRejectedNamingThePath(): void
+    #[Test]
+    public function invalidUtf8IsRejectedNamingThePath(): void
     {
         $page = $this->page('docs/v1/latin1.adoc', "= Caf\xE9\n");
 
@@ -110,28 +119,30 @@ final class SourcePreparerTest extends TestCase
         } catch (SourceException $exception) {
             $error = $exception->error();
 
-            self::assertSame(ReasonCode::InvalidEncoding, $error->reasonCode());
-            self::assertSame('docs/v1/latin1.adoc', $error->path());
-            self::assertSame('v1', $error->version());
-            self::assertStringContainsString('docs/v1/latin1.adoc', $error->message());
+            static::assertSame(ReasonCode::InvalidEncoding, $error->reasonCode());
+            static::assertSame('docs/v1/latin1.adoc', $error->path());
+            static::assertSame('v1', $error->version());
+            static::assertStringContainsString('docs/v1/latin1.adoc', $error->message());
         }
     }
 
-    public function testTheHashCoversTheNormalisedText(): void
+    #[Test]
+    public function theHashCoversTheNormalisedText(): void
     {
         $source = new SourcePreparer()->prepare($this->page('docs/crlf.adoc', "= Title\r\n"));
 
-        self::assertSame($this->filesystem->hashContents("= Title\n"), $source->hash());
-        self::assertNotSame($this->filesystem->hashContents("= Title\r\n"), $source->hash());
+        static::assertSame($this->filesystem->hashContents("= Title\n"), $source->hash());
+        static::assertNotSame($this->filesystem->hashContents("= Title\r\n"), $source->hash());
     }
 
-    public function testThePreparedSourceKeepsThePageItCameFrom(): void
+    #[Test]
+    public function thePreparedSourceKeepsThePageItCameFrom(): void
     {
         $page   = $this->page('docs/index.adoc', "= Title\n");
         $source = new SourcePreparer()->prepare($page);
 
-        self::assertSame('docs/index.adoc', $source->page()->relativePath());
-        self::assertSame('v1', $source->page()->version());
+        static::assertSame('docs/index.adoc', $source->page()->relativePath());
+        static::assertSame('v1', $source->page()->version());
     }
 
     protected function setUp(): void

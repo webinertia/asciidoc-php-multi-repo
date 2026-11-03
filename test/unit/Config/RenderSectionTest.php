@@ -5,24 +5,27 @@ declare(strict_types=1);
 namespace WebwareTest\AsciidocPhp\MultiRepo\Config;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Config\RenderSection;
 
 #[CoversClass(RenderSection::class)]
 final class RenderSectionTest extends TestCase
 {
-    public function testFromArrayAppliesDefaults(): void
+    #[Test]
+    public function fromArrayAppliesDefaults(): void
     {
         $section = RenderSection::fromArray([]);
 
-        self::assertSame([2, 3], $section->tocLevels());
-        self::assertSame('safe', $section->safeMode());
-        self::assertSame(4, $section->concurrency());
-        self::assertSame(2000, $section->searchExtractLimit());
-        self::assertFalse($section->syntaxHighlighting());
+        static::assertSame([2, 3], $section->tocLevels());
+        static::assertSame('safe', $section->safeMode());
+        static::assertSame(4, $section->concurrency());
+        static::assertSame(2000, $section->searchExtractLimit());
+        static::assertFalse($section->syntaxHighlighting());
     }
 
-    public function testFromArrayReadsEveryField(): void
+    #[Test]
+    public function fromArrayReadsEveryField(): void
     {
         $section = RenderSection::fromArray([
             'tocLevels'          => [1, 2],
@@ -32,23 +35,24 @@ final class RenderSectionTest extends TestCase
             'syntaxHighlighting' => true,
         ]);
 
-        self::assertSame([1, 2], $section->tocLevels());
-        self::assertSame('server', $section->safeMode());
-        self::assertSame(8, $section->concurrency());
-        self::assertSame(500, $section->searchExtractLimit());
-        self::assertTrue($section->syntaxHighlighting());
+        static::assertSame([1, 2], $section->tocLevels());
+        static::assertSame('server', $section->safeMode());
+        static::assertSame(8, $section->concurrency());
+        static::assertSame(500, $section->searchExtractLimit());
+        static::assertTrue($section->syntaxHighlighting());
     }
 
-    public function testWithConcurrencyReturnsANewInstance(): void
+    #[Test]
+    public function withConcurrencyReturnsANewInstance(): void
     {
         $section = RenderSection::fromArray([]);
         $updated = $section->withConcurrency(16);
 
-        self::assertSame(16, $updated->concurrency());
-        self::assertSame(4, $section->concurrency());
-        self::assertSame($section->tocLevels(), $updated->tocLevels());
-        self::assertSame($section->safeMode(), $updated->safeMode());
-        self::assertSame($section->searchExtractLimit(), $updated->searchExtractLimit());
-        self::assertSame($section->syntaxHighlighting(), $updated->syntaxHighlighting());
+        static::assertSame(16, $updated->concurrency());
+        static::assertSame(4, $section->concurrency());
+        static::assertSame($section->tocLevels(), $updated->tocLevels());
+        static::assertSame($section->safeMode(), $updated->safeMode());
+        static::assertSame($section->searchExtractLimit(), $updated->searchExtractLimit());
+        static::assertSame($section->syntaxHighlighting(), $updated->syntaxHighlighting());
     }
 }

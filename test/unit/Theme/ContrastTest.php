@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Theme;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Theme\ThemeResolver;
 
@@ -30,45 +31,48 @@ final class ContrastTest extends TestCase
 {
     private const float MINIMUM_RATIO = 4.5;
 
-    public function testTheBodyTextTokenClearsTheContrastMinimum(): void
+    #[Test]
+    public function theBodyTextTokenClearsTheContrastMinimum(): void
     {
         $tokens = new ThemeResolver()->lightColors();
 
-        self::assertGreaterThanOrEqual(
+        static::assertGreaterThanOrEqual(
             self::MINIMUM_RATIO,
             $this->ratio($tokens['--text-body'], $tokens['--surface-page']),
             $this->describe('--text-body', $tokens['--text-body'], '--surface-page', $tokens['--surface-page']),
         );
     }
 
-    public function testTheLinkTokenClearsTheContrastMinimumOnBothSurfaces(): void
+    #[Test]
+    public function theLinkTokenClearsTheContrastMinimumOnBothSurfaces(): void
     {
         $tokens = new ThemeResolver()->lightColors();
 
-        self::assertGreaterThanOrEqual(
+        static::assertGreaterThanOrEqual(
             self::MINIMUM_RATIO,
             $this->ratio($tokens['--color-link'], $tokens['--surface-page']),
             $this->describe('--color-link', $tokens['--color-link'], '--surface-page', $tokens['--surface-page']),
         );
 
-        self::assertGreaterThanOrEqual(
+        static::assertGreaterThanOrEqual(
             self::MINIMUM_RATIO,
             $this->ratio($tokens['--color-link'], $tokens['--surface-raised']),
             $this->describe('--color-link', $tokens['--color-link'], '--surface-raised', $tokens['--surface-raised']),
         );
     }
 
-    public function testTheMutedTextTokenClearsTheContrastMinimumOnBothSurfaces(): void
+    #[Test]
+    public function theMutedTextTokenClearsTheContrastMinimumOnBothSurfaces(): void
     {
         $tokens = new ThemeResolver()->lightColors();
 
-        self::assertGreaterThanOrEqual(
+        static::assertGreaterThanOrEqual(
             self::MINIMUM_RATIO,
             $this->ratio($tokens['--text-muted'], $tokens['--surface-page']),
             $this->describe('--text-muted', $tokens['--text-muted'], '--surface-page', $tokens['--surface-page']),
         );
 
-        self::assertGreaterThanOrEqual(
+        static::assertGreaterThanOrEqual(
             self::MINIMUM_RATIO,
             $this->ratio($tokens['--text-muted'], $tokens['--surface-raised']),
             $this->describe('--text-muted', $tokens['--text-muted'], '--surface-raised', $tokens['--surface-raised']),
@@ -94,20 +98,20 @@ final class ContrastTest extends TestCase
 
     private function luminance(string $colour): float
     {
-        self::assertSame(1, preg_match('/^#([0-9a-fA-F]{6})$/', $colour), "Unexpected colour: {$colour}");
+        static::assertSame(1, preg_match('/^#([0-9a-fA-F]{6})$/', $colour), "Unexpected colour: {$colour}");
 
-        $value    = (string) substr($colour, 1);
+        $value    = (string) substr($colour, offset: 1);
         $channels = [
-            hexdec(substr($value, 0, 2)) / 255,
-            hexdec(substr($value, 2, 2)) / 255,
-            hexdec(substr($value, 4, 2)) / 255,
+            hexdec(substr($value, offset: 0, length: 2)) / 255,
+            hexdec(substr($value, offset: 2, length: 2)) / 255,
+            hexdec(substr($value, offset: 4, length: 2)) / 255,
         ];
 
         $linear = [];
         foreach ($channels as $channel) {
             $linear[] = $channel <= 0.039_28
                 ? $channel / 12.92
-                : pow(($channel + 0.055) / 1.055, 2.4);
+                : pow(($channel + 0.055) / 1.055, exponent: 2.4);
         }
 
         return (0.2126 * $linear[0]) + (0.7152 * $linear[1]) + (0.0722 * $linear[2]);

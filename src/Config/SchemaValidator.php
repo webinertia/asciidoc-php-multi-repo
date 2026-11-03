@@ -116,7 +116,7 @@ final class SchemaValidator
     private function assertKnownKeywords(array $schema, string $pointer): void
     {
         foreach (array_keys($schema) as $keyword) {
-            if (in_array($keyword, self::ANNOTATION_KEYWORDS, true)) {
+            if (in_array($keyword, self::ANNOTATION_KEYWORDS, strict: true)) {
                 continue;
             }
 
@@ -137,7 +137,7 @@ final class SchemaValidator
                     'minItems',
                     '$ref',
                 ],
-                true,
+                strict: true,
             )) {
                 continue;
             }
@@ -369,7 +369,7 @@ final class SchemaValidator
             throw new SchemaException(sprintf('Only local $ref values are supported, got "%s".', $reference));
         }
 
-        $segments = explode('/', substr($reference, 2));
+        $segments = explode('/', substr($reference, offset: 2));
         $current  = $root;
 
         foreach ($segments as $segment) {

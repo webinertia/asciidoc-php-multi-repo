@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebwareTest\AsciidocPhp\MultiRepo\Config;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Config\ConfigException;
 use Webware\AsciidocPhp\MultiRepo\Config\ManifestLoader;
@@ -22,7 +23,8 @@ final class ManifestLoaderTest extends TestCase
 
     private Filesystem $filesystem;
 
-    public function testAbsoluteEntryPathsArePreserved(): void
+    #[Test]
+    public function absoluteEntryPathsArePreserved(): void
     {
         $absolute = Path::join($this->tempDirectory, 'elsewhere');
 
@@ -31,7 +33,7 @@ final class ManifestLoaderTest extends TestCase
             'repositories'  => [['name' => 'only', 'path' => $absolute]],
         ]);
 
-        self::assertSame(
+        static::assertSame(
             $absolute,
             new ManifestLoader()
                 ->load($path)
@@ -39,18 +41,20 @@ final class ManifestLoaderTest extends TestCase
         );
     }
 
-    public function testBundledSchemaIsShippedWithThePackage(): void
+    #[Test]
+    public function bundledSchemaIsShippedWithThePackage(): void
     {
         $loader = new ManifestLoader();
 
-        self::assertFileExists($loader->schemaPath());
-        self::assertSame(
-            Path::join(Path::normalise(dirname(__DIR__, 3)), 'config', 'manifest.schema.json'),
+        static::assertFileExists($loader->schemaPath());
+        static::assertSame(
+            Path::join(Path::normalise(dirname(__DIR__, levels: 3)), 'config', 'manifest.schema.json'),
             $loader->schemaPath(),
         );
     }
 
-    public function testEmptyRepositoryListFails(): void
+    #[Test]
+    public function emptyRepositoryListFails(): void
     {
         $path = $this->writeManifest([
             'schemaVersion' => 1,
@@ -61,11 +65,12 @@ final class ManifestLoaderTest extends TestCase
             new ManifestLoader()->load($path);
             self::fail('Expected a ConfigException.');
         } catch (ConfigException $exception) {
-            self::assertSame('/repositories', $exception->pointer());
+            static::assertSame('/repositories', $exception->pointer());
         }
     }
 
-    public function testEntryDefaultsAreApplied(): void
+    #[Test]
+    public function entryDefaultsAreApplied(): void
     {
         $path = $this->writeManifest([
             'schemaVersion' => 1,
@@ -76,26 +81,28 @@ final class ManifestLoaderTest extends TestCase
             ->load($path)
             ->repositories()[0];
 
-        self::assertSame('only', $entry->name());
-        self::assertNull($entry->slug());
-        self::assertSame('main', $entry->defaultBranch());
-        self::assertFalse($entry->archived());
-        self::assertTrue($entry->onboarded());
-        self::assertNull($entry->path());
+        static::assertSame('only', $entry->name());
+        static::assertNull($entry->slug());
+        static::assertSame('main', $entry->defaultBranch());
+        static::assertFalse($entry->archived());
+        static::assertTrue($entry->onboarded());
+        static::assertNull($entry->path());
     }
 
-    public function testLoadsTheFixtureManifest(): void
+    #[Test]
+    public function loadsTheFixtureManifest(): void
     {
-        $path     = Path::join(Path::normalise(dirname(__DIR__, 2)), 'fixtures', 'manifest.json');
+        $path     = Path::join(Path::normalise(dirname(__DIR__, levels: 2)), 'fixtures', 'manifest.json');
         $manifest = new ManifestLoader()->load($path);
 
-        self::assertSame(1, $manifest->schemaVersion());
-        self::assertSame(Path::normalise($path), $manifest->path());
-        self::assertCount(7, $manifest->repositories());
-        self::assertSame('versioned', $manifest->names()[0]);
+        static::assertSame(1, $manifest->schemaVersion());
+        static::assertSame(Path::normalise($path), $manifest->path());
+        static::assertCount(7, $manifest->repositories());
+        static::assertSame('versioned', $manifest->names()[0]);
     }
 
-    public function testMissingFileFails(): void
+    #[Test]
+    public function missingFileFails(): void
     {
         $path = Path::join($this->tempDirectory, 'absent.json');
 
@@ -105,7 +112,8 @@ final class ManifestLoaderTest extends TestCase
         new ManifestLoader()->load($path);
     }
 
-    public function testRelativeEntryPathsResolveAgainstTheManifestDirectory(): void
+    #[Test]
+    public function relativeEntryPathsResolveAgainstTheManifestDirectory(): void
     {
         $path = $this->writeManifest([
             'schemaVersion' => 1,
@@ -116,10 +124,11 @@ final class ManifestLoaderTest extends TestCase
             ->load($path)
             ->repositories()[0];
 
-        self::assertSame(Path::join($this->tempDirectory, 'org', 'only'), $entry->path());
+        static::assertSame(Path::join($this->tempDirectory, 'org', 'only'), $entry->path());
     }
 
-    public function testUnknownEntryKeyFailsAtTheEntryPointer(): void
+    #[Test]
+    public function unknownEntryKeyFailsAtTheEntryPointer(): void
     {
         $path = $this->writeManifest([
             'schemaVersion' => 1,
@@ -130,11 +139,12 @@ final class ManifestLoaderTest extends TestCase
             new ManifestLoader()->load($path);
             self::fail('Expected a ConfigException.');
         } catch (ConfigException $exception) {
-            self::assertSame('/repositories/0/typo', $exception->pointer());
+            static::assertSame('/repositories/0/typo', $exception->pointer());
         }
     }
 
-    public function testUnknownRootKeyFails(): void
+    #[Test]
+    public function unknownRootKeyFails(): void
     {
         $path = $this->writeManifest([
             'schemaVersion' => 1,
@@ -146,12 +156,13 @@ final class ManifestLoaderTest extends TestCase
             new ManifestLoader()->load($path);
             self::fail('Expected a ConfigException.');
         } catch (ConfigException $exception) {
-            self::assertSame('/typo', $exception->pointer());
-            self::assertStringContainsString('/typo', $exception->getMessage());
+            static::assertSame('/typo', $exception->pointer());
+            static::assertStringContainsString('/typo', $exception->getMessage());
         }
     }
 
-    public function testUnsupportedSchemaVersionFails(): void
+    #[Test]
+    public function unsupportedSchemaVersionFails(): void
     {
         $path = $this->writeManifest([
             'schemaVersion' => 2,
@@ -162,7 +173,7 @@ final class ManifestLoaderTest extends TestCase
             new ManifestLoader()->load($path);
             self::fail('Expected a ConfigException.');
         } catch (ConfigException $exception) {
-            self::assertSame('/schemaVersion', $exception->pointer());
+            static::assertSame('/schemaVersion', $exception->pointer());
         }
     }
 

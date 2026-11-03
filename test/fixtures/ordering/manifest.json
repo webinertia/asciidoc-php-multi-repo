@@ -1,0 +1,89 @@
+{
+    "schemaVersion": 1,
+    "repositories": [
+        {
+            "name": "alpha",
+            "slug": "alpha",
+            "defaultBranch": "main",
+            "archived": false,
+            "path": "org/alpha"
+        },
+        {
+            "name": "sorting",
+            "slug": "sorting",
+            "defaultBranch": "main",
+            "archived": false,
+            "path": "org/sorting"
+        },
+        {
+            "name": "narrow",
+            "slug": "narrow",
+            "defaultBranch": "main",
+            "archived": false,
+            "path": "org/narrow"
+        },
+        {
+            "name": "zeta",
+            "slug": "zeta",
+            "defaultBranch": "main",
+            "archived": false,
+            "path": "org/zeta"
+        },
+        {
+            "name": "prefix",
+            "slug": "prefix",
+            "defaultBranch": "main",
+            "archived": false,
+            "path": "org/prefix"
+        },
+        {
+            "name": "noindex",
+            "slug": "noindex",
+            "defaultBranch": "main",
+            "archived": false,
+            "path": "org/noindex"
+        },
+        {
+            "name": "twoindex",
+            "slug": "twoindex",
+            "defaultBranch": "main",
+            "archived": false,
+            "path": "org/twoindex"
+        },
+        {
+            "name": "renderloop",
+            "slug": "renderloop",
+            "defaultBranch": "main",
+            "archived": false,
+            "path": "org/renderloop"
+        },
+        {
+            "name": "stray",
+            "slug": "stray",
+            "defaultBranch": "main",
+            "archived": false,
+            "path": "org/stray"
+        },
+        {
+            "name": "nodocs",
+            "slug": "nodocs",
+            "defaultBranch": "main",
+            "archived": false,
+            "path": "org/nodocs"
+        },
+        {
+            "name": "missingrepo",
+            "slug": "missingrepo",
+            "defaultBranch": "main",
+            "archived": false,
+            "path": "org/missingrepo"
+        },
+        {
+            "name": "archived",
+            "slug": "archived",
+            "defaultBranch": "main",
+            "archived": true,
+            "path": "org/archived"
+        }
+    ]
+}

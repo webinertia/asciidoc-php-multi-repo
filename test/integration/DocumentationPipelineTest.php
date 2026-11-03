@@ -6,6 +6,7 @@ namespace WebwareTestIntegration\AsciidocPhp\MultiRepo;
 
 use Override;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
@@ -70,135 +71,150 @@ final class DocumentationPipelineTest extends TestCase
     /** @var array<string, RepositorySources> */
     private array $collected = [];
 
-    public function testABrokenIncludeStillReachesSourcePreparation(): void
+    #[Test]
+    public function aBrokenIncludeStillReachesSourcePreparation(): void
     {
         $sources = $this->sources('broken-include');
 
-        self::assertTrue($sources->isSuccessful());
-        self::assertSame(['v1'], $this->labels('broken-include'));
-        self::assertStringContainsString(
+        static::assertTrue($sources->isSuccessful());
+        static::assertSame(['v1'], $this->labels('broken-include'));
+        static::assertStringContainsString(
             'include::missing.adoc[]',
             $this->prepared('broken-include', 'docs/v1/index.adoc')->text(),
         );
     }
 
-    public function testAMarkdownOnlyProjectIsRejectedAfterVersionDetection(): void
+    #[Test]
+    public function aMarkdownOnlyProjectIsRejectedAfterVersionDetection(): void
     {
         $sources = $this->sources('markdown-only');
 
-        self::assertFalse($sources->isSuccessful());
-        self::assertSame(ReasonCode::NoAsciidocSources, $sources->errors()[0]->reasonCode());
-        self::assertSame('docs', $sources->documentationPath());
-        self::assertSame(['v1'], $this->labels('markdown-only'));
-        self::assertSame([], $sources->pages());
-        self::assertSame([], $sources->sources());
+        static::assertFalse($sources->isSuccessful());
+        static::assertSame(ReasonCode::NoAsciidocSources, $sources->errors()[0]->reasonCode());
+        static::assertSame('docs', $sources->documentationPath());
+        static::assertSame(['v1'], $this->labels('markdown-only'));
+        static::assertSame([], $sources->pages());
+        static::assertSame([], $sources->sources());
     }
 
-    public function testAPageInANestedDirectoryKeepsItsVersion(): void
+    #[Test]
+    public function aPageInANestedDirectoryKeepsItsVersion(): void
     {
         $paths = array_map(
             static fn(PreparedSource $source): string => $source->relativePath(),
             $this->sources('versioned')->sources(),
         );
 
-        self::assertContains('docs/v1/reference/nested.adoc', $paths);
-        self::assertContains('docs/v2/guide.adoc', $paths);
+        static::assertContains('docs/v1/reference/nested.adoc', $paths);
+        static::assertContains('docs/v2/guide.adoc', $paths);
     }
 
-    public function testAPageOutsideEveryVersionDirectoryIsReportedAsAWarning(): void
+    #[Test]
+    public function aPageOutsideEveryVersionDirectoryIsReportedAsAWarning(): void
     {
         $sources = $this->sources('mixed');
 
-        self::assertSame(['v1', 'v2'], $this->labels('mixed'));
-        self::assertCount(1, $sources->warnings());
-        self::assertStringContainsString('docs/loose.adoc', $sources->warnings()[0]);
+        static::assertSame(['v1', 'v2'], $this->labels('mixed'));
+        static::assertCount(1, $sources->warnings());
+        static::assertStringContainsString('docs/loose.adoc', $sources->warnings()[0]);
     }
 
-    public function testAProjectWithoutAnEntryPageIsReportedAsMissingEntry(): void
+    #[Test]
+    public function aProjectWithoutAnEntryPageIsReportedAsMissingEntry(): void
     {
         $sources = $this->sources('missing-entry');
 
-        self::assertSame(ReasonCode::MissingEntry, $sources->errors()[0]->reasonCode());
-        self::assertSame('docs/v1', $sources->errors()[0]->path());
-        self::assertStringContainsString('index.adoc, README.adoc', $sources->errors()[0]->message());
+        static::assertSame(ReasonCode::MissingEntry, $sources->errors()[0]->reasonCode());
+        static::assertSame('docs/v1', $sources->errors()[0]->path());
+        static::assertStringContainsString('index.adoc, README.adoc', $sources->errors()[0]->message());
     }
 
-    public function testDiscoverySelectsTheOnboardedFixtureProjects(): void
+    #[Test]
+    public function discoverySelectsTheOnboardedFixtureProjects(): void
     {
-        self::assertSame(self::EXPECTED_PROJECTS, array_keys($this->collected));
+        static::assertSame(self::EXPECTED_PROJECTS, array_keys($this->collected));
     }
 
-    public function testEveryDiscoveredProjectResolvesToItsLocalFixture(): void
+    #[Test]
+    public function everyDiscoveredProjectResolvesToItsLocalFixture(): void
     {
         foreach (self::EXPECTED_PROJECTS as $name) {
             $fetched = $this->sources($name)->fetched();
 
-            self::assertNotNull($fetched, "{$name} was never fetched.");
-            self::assertSame($this->fixture($name), $fetched->rootPath());
-            self::assertSame('docs', $fetched->documentationDirectory());
-            self::assertSame(1, $fetched->attempts());
+            static::assertNotNull($fetched, "{$name} was never fetched.");
+            static::assertSame($this->fixture($name), $fetched->rootPath());
+            static::assertSame('docs', $fetched->documentationDirectory());
+            static::assertSame(1, $fetched->attempts());
         }
     }
 
-    public function testEveryEnumeratedPageIsPreparedAsAsciiDoc(): void
+    #[Test]
+    public function everyEnumeratedPageIsPreparedAsAsciiDoc(): void
     {
         $sources = $this->sources('versioned')->sources();
 
-        self::assertCount(5, $sources);
+        static::assertCount(5, $sources);
 
         foreach ($sources as $source) {
-            self::assertSame(SourceFormat::AsciiDoc, $source->format());
-            self::assertNotSame('', $source->text());
-            self::assertSame(hash('sha256', $source->text()), $source->hash());
+            static::assertSame(SourceFormat::AsciiDoc, $source->format());
+            static::assertNotSame('', $source->text());
+            static::assertSame(hash('sha256', $source->text()), $source->hash());
         }
     }
 
-    public function testEveryFetchedProjectCarriesAContentDigestRevision(): void
+    #[Test]
+    public function everyFetchedProjectCarriesAContentDigestRevision(): void
     {
         foreach (self::EXPECTED_PROJECTS as $name) {
-            self::assertMatchesRegularExpression(
+            static::assertMatchesRegularExpression(
                 '/^[0-9a-f]{64}$/',
                 (string) $this->sources($name)->revision(),
             );
         }
     }
 
-    public function testTheEntryPageOfEveryVersionIsEnumerated(): void
+    #[Test]
+    public function theEntryPageOfEveryVersionIsEnumerated(): void
     {
         $sets = $this->sources('versioned')->pages();
 
-        self::assertCount(2, $sets);
-        self::assertSame('docs/v1/index.adoc', $sets[0]->entry()->relativePath());
-        self::assertSame('docs/v2/index.adoc', $sets[1]->entry()->relativePath());
+        static::assertCount(2, $sets);
+        static::assertSame('docs/v1/index.adoc', $sets[0]->entry()->relativePath());
+        static::assertSame('docs/v2/index.adoc', $sets[1]->entry()->relativePath());
     }
 
-    public function testTheExcludedArchivedProjectNeverReachesThePipeline(): void
+    #[Test]
+    public function theExcludedArchivedProjectNeverReachesThePipeline(): void
     {
-        self::assertArrayNotHasKey('archived', $this->collected);
+        static::assertArrayNotHasKey('archived', $this->collected);
     }
 
-    public function testThePreparedTextIsTheNormalisedFileOnDisk(): void
+    #[Test]
+    public function thePreparedTextIsTheNormalisedFileOnDisk(): void
     {
         $source = $this->prepared('versioned', 'docs/v1/index.adoc');
 
-        self::assertStringContainsString('= Versioned Project', $source->text());
-        self::assertStringContainsString('include::guide.adoc[]', $source->text());
-        self::assertFalse(str_contains($source->text(), "\r"));
-        self::assertSame($this->digestOf('versioned', 'docs/v1/index.adoc'), $source->hash());
+        static::assertStringContainsString('= Versioned Project', $source->text());
+        static::assertStringContainsString('include::guide.adoc[]', $source->text());
+        static::assertFalse(str_contains($source->text(), "\r"));
+        static::assertSame($this->digestOf('versioned', 'docs/v1/index.adoc'), $source->hash());
     }
 
-    public function testTheUnversionedProjectFallsBackToTheDocumentationDirectory(): void
+    #[Test]
+    public function theUnversionedProjectFallsBackToTheDocumentationDirectory(): void
     {
-        self::assertSame(['latest'], $this->labels('unversioned'));
-        self::assertSame('docs', $this->sources('unversioned')->versions()[0]->directory());
+        static::assertSame(['latest'], $this->labels('unversioned'));
+        static::assertSame('docs', $this->sources('unversioned')->versions()[0]->directory());
     }
 
-    public function testTheVersionedProjectSelectsItsVersionDirectories(): void
+    #[Test]
+    public function theVersionedProjectSelectsItsVersionDirectories(): void
     {
-        self::assertSame(['v1', 'v2'], $this->labels('versioned'));
+        static::assertSame(['v1', 'v2'], $this->labels('versioned'));
     }
 
-    public function testTheWholeFixtureSetIsAccountedFor(): void
+    #[Test]
+    public function theWholeFixtureSetIsAccountedFor(): void
     {
         $prepared = 0;
 
@@ -206,7 +222,7 @@ final class DocumentationPipelineTest extends TestCase
             $prepared += count($sources->sources());
         }
 
-        self::assertSame(9, $prepared);
+        static::assertSame(9, $prepared);
     }
 
     protected function setUp(): void
@@ -245,7 +261,7 @@ final class DocumentationPipelineTest extends TestCase
     {
         $contents = file_get_contents(Path::join($this->fixture($project), $relativePath));
 
-        self::assertTrue(is_string($contents));
+        static::assertTrue(is_string($contents));
 
         return hash(
             'sha256',
@@ -334,7 +350,7 @@ final class DocumentationPipelineTest extends TestCase
 
     private function sources(string $name): RepositorySources
     {
-        self::assertArrayHasKey($name, $this->collected);
+        static::assertArrayHasKey($name, $this->collected);
 
         return $this->collected[$name];
     }

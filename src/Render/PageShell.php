@@ -35,7 +35,7 @@ final class PageShell
 
     public function __construct(?string $templateDirectory = null)
     {
-        $this->templateDirectory = $templateDirectory ?? dirname(__DIR__, 2) . '/resources/templates';
+        $this->templateDirectory = $templateDirectory ?? dirname(__DIR__, levels: 2) . '/resources/templates';
     }
 
     /**
@@ -43,7 +43,7 @@ final class PageShell
      */
     public function escape(string $value): string
     {
-        return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, encoding: 'UTF-8');
     }
 
     /**
@@ -51,7 +51,7 @@ final class PageShell
      */
     public function render(PageContext $context): string
     {
-        return $this->capture('page.php', [
+        return $this->renderTemplate('page.php', [
             'context' => $context,
             'e'       => $this->escape(...),
             /** @param list<TocEntry> $entries */
@@ -60,29 +60,13 @@ final class PageShell
     }
 
     /**
-     * @param list<TocEntry> $entries
+     * Renders a template from the template directory with the given variables in scope.
      *
-     * @throws RuntimeException when a template is missing
-     */
-    public function renderToc(array $entries): string
-    {
-        return $this->capture('toc.php', [
-            'entries' => $entries,
-            'e'       => $this->escape(...),
-        ]);
-    }
-
-    public function templateDirectory(): string
-    {
-        return $this->templateDirectory;
-    }
-
-    /**
      * @param array<string, mixed> $variables
      *
      * @throws RuntimeException when the template is missing
      */
-    private function capture(string $template, array $variables): string
+    public function renderTemplate(string $template, array $variables): string
     {
         $path = "{$this->templateDirectory}/{$template}";
 
@@ -109,5 +93,23 @@ final class PageShell
                 ob_end_clean();
             }
         }
+    }
+
+    /**
+     * @param list<TocEntry> $entries
+     *
+     * @throws RuntimeException when a template is missing
+     */
+    public function renderToc(array $entries): string
+    {
+        return $this->renderTemplate('toc.php', [
+            'entries' => $entries,
+            'e'       => $this->escape(...),
+        ]);
+    }
+
+    public function templateDirectory(): string
+    {
+        return $this->templateDirectory;
     }
 }

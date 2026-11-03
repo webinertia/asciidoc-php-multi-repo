@@ -21,7 +21,7 @@ final class ManifestLoader
         private readonly DocumentReader $reader = new DocumentReader(),
         ?string $schemaPath = null,
     ) {
-        $this->schemaPath = $schemaPath ?? Path::join(dirname(__DIR__, 2), 'config', 'manifest.schema.json');
+        $this->schemaPath = $schemaPath ?? Path::join(dirname(__DIR__, levels: 2), 'config', 'manifest.schema.json');
     }
 
     /**

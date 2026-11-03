@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Discovery;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
@@ -30,7 +31,8 @@ use function sort;
 #[CoversMethod(DiscoveryFactory::class, 'create')]
 final class ManifestDiscoveryTest extends TestCase
 {
-    public function testACollisionBetweenOnboardedProjectsIsRejected(): void
+    #[Test]
+    public function aCollisionBetweenOnboardedProjectsIsRejected(): void
     {
         $manifest = $this->manifest(
             new ManifestEntry('message-bus', null, 'main', false, true, null),
@@ -42,7 +44,8 @@ final class ManifestDiscoveryTest extends TestCase
         new ManifestDiscovery($manifest)->discover(SourceFixture::config());
     }
 
-    public function testAConfiguredSlugOverrideWins(): void
+    #[Test]
+    public function aConfiguredSlugOverrideWins(): void
     {
         $repositories = $this->discover(['projects' => ['versioned' => ['slug' => 'versioned-docs']]]);
 
@@ -51,55 +54,69 @@ final class ManifestDiscoveryTest extends TestCase
             $repositories,
         );
 
-        self::assertContains('versioned-docs', $slugs);
-        self::assertNotContains('versioned', $slugs);
+        static::assertContains('versioned-docs', $slugs);
+        static::assertNotContains('versioned', $slugs);
     }
 
-    public function testAnExcludedRepositoryIsDropped(): void
+    #[Test]
+    public function anExcludedRepositoryIsDropped(): void
     {
         $names = array_map(
             static fn(DiscoveredRepository $repository): string => $repository->name(),
             $this->discover(),
         );
 
-        self::assertNotContains('archived', $names);
+        static::assertNotContains('archived', $names);
     }
 
-    public function testANonOnboardedProjectIsIgnoredByTheCollisionCheck(): void
+    #[Test]
+    public function aNonOnboardedProjectIsIgnoredByTheCollisionCheck(): void
     {
         $manifest = $this->manifest(
             new ManifestEntry('message-bus', null, 'main', false, true, null),
             new ManifestEntry('message_bus', null, 'main', false, false, null),
         );
 
-        self::assertCount(2, new ManifestDiscovery($manifest)->discover(SourceFixture::config()));
+        static::assertCount(2, new ManifestDiscovery($manifest)->discover(SourceFixture::config()));
     }
 
-    public function testAnOverrideWithoutASlugLeavesTheSlugAlone(): void
+    #[Test]
+    public function anOverrideWithoutASlugLeavesTheSlugAlone(): void
     {
         $repositories = $this->discover(['projects' => ['versioned' => ['title' => 'Versioned']]]);
 
-        self::assertSame('versioned', $this->named($repositories, 'versioned')->slug());
+        static::assertSame('versioned', $this->named($repositories, 'versioned')->slug());
     }
 
-    public function testASlugOverrideIsNormalised(): void
+    #[Test]
+    public function aSlugOverrideIsNormalised(): void
     {
         $repositories = $this->discover(['projects' => ['versioned' => ['slug' => 'versioned-docs']]]);
 
         $versioned = $this->named($repositories, 'versioned');
 
-        self::assertSame('versioned-docs', $versioned->slug());
+        static::assertSame('versioned-docs', $versioned->slug());
     }
 
-    public function testEveryEntryKeepsItsLocalPath(): void
+    #[Test]
+    public function aSlugOverrideThatCollidesWithADiscoveredRepositoryIsRejected(): void
+    {
+        $this->expectException(SlugException::class);
+
+        $this->discover(['projects' => ['versioned' => ['slug' => 'mixed']]]);
+    }
+
+    #[Test]
+    public function everyEntryKeepsItsLocalPath(): void
     {
         foreach ($this->discover() as $repository) {
-            self::assertNotNull($repository->path(), $repository->name());
-            self::assertDirectoryExists($repository->path());
+            static::assertNotNull($repository->path(), $repository->name());
+            static::assertDirectoryExists($repository->path());
         }
     }
 
-    public function testManifestDiscoveryNeverTouchesTheNetwork(): void
+    #[Test]
+    public function manifestDiscoveryNeverTouchesTheNetwork(): void
     {
         $transport = new class implements ClientInterface {
             public function sendRequest(RequestInterface $request): ResponseInterface
@@ -111,52 +128,58 @@ final class ManifestDiscoveryTest extends TestCase
         $discovery = new DiscoveryFactory(transport: $transport)
             ->create(SourceFixture::path('manifest.json'));
 
-        self::assertInstanceOf(ManifestDiscovery::class, $discovery);
-        self::assertCount(6, $discovery->discover(SourceFixture::config()));
+        static::assertInstanceOf(ManifestDiscovery::class, $discovery);
+        static::assertCount(6, $discovery->discover(SourceFixture::config()));
     }
 
-    public function testTheDefaultBranchComesFromTheManifest(): void
+    #[Test]
+    public function theDefaultBranchComesFromTheManifest(): void
     {
         foreach ($this->discover() as $repository) {
-            self::assertSame('main', $repository->defaultBranch(), $repository->name());
+            static::assertSame('main', $repository->defaultBranch(), $repository->name());
         }
     }
 
-    public function testTheFixtureManifestProducesTheOnboardedProjectSet(): void
+    #[Test]
+    public function theFixtureManifestProducesTheOnboardedProjectSet(): void
     {
         $repositories = $this->discover();
 
-        self::assertSame(
+        static::assertSame(
             ['broken-include', 'markdown-only', 'missing-entry', 'mixed', 'unversioned', 'versioned'],
             array_map(static fn(DiscoveredRepository $repository): string => $repository->slug(), $repositories),
         );
     }
 
-    public function testTheManifestPathIsResolvedByTheLoader(): void
+    #[Test]
+    public function theManifestPathIsResolvedByTheLoader(): void
     {
         $manifest = new ManifestLoader()->load(SourceFixture::path('manifest.json'));
 
-        self::assertCount(7, $manifest->repositories());
-        self::assertContains('archived', $manifest->names());
+        static::assertCount(7, $manifest->repositories());
+        static::assertContains('archived', $manifest->names());
     }
 
-    public function testTheManifestSlugWinsOverTheRepositoryName(): void
+    #[Test]
+    public function theManifestSlugWinsOverTheRepositoryName(): void
     {
         $manifest = $this->manifest(new ManifestEntry('message-bus', 'bus', 'main', false, true, null));
 
         $repositories = new ManifestDiscovery($manifest)->discover(SourceFixture::config());
 
-        self::assertSame('bus', $repositories[0]->slug());
+        static::assertSame('bus', $repositories[0]->slug());
     }
 
-    public function testTheOnboardedFlagComesFromTheManifest(): void
+    #[Test]
+    public function theOnboardedFlagComesFromTheManifest(): void
     {
         foreach ($this->discover() as $repository) {
-            self::assertTrue($repository->onboarded(), $repository->name());
+            static::assertTrue($repository->onboarded(), $repository->name());
         }
     }
 
-    public function testTheProjectsAreSortedBySlug(): void
+    #[Test]
+    public function theProjectsAreSortedBySlug(): void
     {
         $slugs = array_map(
             static fn(DiscoveredRepository $repository): string => $repository->slug(),
@@ -166,7 +189,7 @@ final class ManifestDiscoveryTest extends TestCase
 
         sort($sorted);
 
-        self::assertSame($sorted, $slugs);
+        static::assertSame($sorted, $slugs);
     }
 
     /**

@@ -7,6 +7,48 @@ message = "Assigning `mixed` type to a variable may lead to unexpected behavior.
 count = 1
 
 [[issues]]
+file = "src/Build/BuildRunner.php"
+code = "possibly-undefined-int-array-index"
+message = "Possibly undefined array key `int(1)` accessed on `array<array-key, string>`."
+count = 2
+
+[[issues]]
+file = "src/Build/BuildRunner.php"
+code = "reference-to-undefined-variable"
+message = "Reference created from a previously undefined variable `$matches`."
+count = 1
+
+[[issues]]
+file = "src/Build/IncrementalCache.php"
+code = "mixed-assignment"
+message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
+count = 11
+
+[[issues]]
+file = "src/Cli/Commands/BuildCommand.php"
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('failed')` accessed on `array<string, int>`."
+count = 1
+
+[[issues]]
+file = "src/Cli/Commands/BuildCommand.php"
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('ok')` accessed on `array<string, int>`."
+count = 1
+
+[[issues]]
+file = "src/Cli/Commands/BuildCommand.php"
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('partial')` accessed on `array<string, int>`."
+count = 1
+
+[[issues]]
+file = "src/Cli/Commands/BuildCommand.php"
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('skipped')` accessed on `array<string, int>`."
+count = 1
+
+[[issues]]
 file = "src/Cli/Commands/CommandInterface.php"
 code = "missing-api-or-internal"
 message = 'Interface `Webware\AsciidocPhp\MultiRepo\Cli\Commands\CommandInterface` is missing an `@api` or `@internal` annotation.'
@@ -19,21 +61,39 @@ message = 'Abstract class `Webware\AsciidocPhp\MultiRepo\Cli\Commands\StubComman
 count = 1
 
 [[issues]]
-file = "src/Cli/ExitCode.php"
-code = "impossible-condition"
-message = "This condition (type `false`) will always evaluate to false."
+file = "src/Cli/Commands/ValidateCommand.php"
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('failed')` accessed on `array<string, int>`."
+count = 1
+
+[[issues]]
+file = "src/Cli/Commands/ValidateCommand.php"
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('ok')` accessed on `array<string, int>`."
+count = 1
+
+[[issues]]
+file = "src/Cli/Commands/ValidateCommand.php"
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('partial')` accessed on `array<string, int>`."
+count = 1
+
+[[issues]]
+file = "src/Cli/Commands/ValidateCommand.php"
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string('skipped')` accessed on `array<string, int>`."
 count = 1
 
 [[issues]]
 file = "src/Cli/ExitCode.php"
 code = "mixed-assignment"
 message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 1
+count = 2
 
 [[issues]]
 file = "src/Cli/ExitCode.php"
-code = "redundant-type-comparison"
-message = "Redundant type assertion: `$project` is already `array<array-key, mixed>`."
+code = "mixed-assignment"
+message = "Assigning `nonnull` type to a variable may lead to unexpected behavior."
 count = 1
 
 [[issues]]
@@ -287,6 +347,102 @@ file = "src/Discovery/GitHubRepositoryMetadata.php"
 code = "mixed-assignment"
 message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
 count = 5
+
+[[issues]]
+file = "src/Report/BuildReport.php"
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string` accessed on `array{'failed': int(0), 'ok': int(0), 'pages': int, 'partial': int(0), 'renderedPages': int, 'skipped': int(0)}`."
+count = 1
+
+[[issues]]
+file = "src/Report/BuildReport.php"
+code = "possibly-undefined-string-array-index"
+message = "Possibly undefined array key `string` accessed on `array{'failed': int, 'ok': int, 'pages': int, 'partial': int, 'renderedPages': int, 'skipped': int, ...<string, int>}`."
+count = 1
+
+[[issues]]
+file = "src/Report/ProjectResult.php"
+code = "imprecise-type"
+message = "Type `array` in parameter `$left` is imprecise, equivalent to `array<array-key, mixed>`."
+count = 1
+
+[[issues]]
+file = "src/Report/ProjectResult.php"
+code = "imprecise-type"
+message = "Type `array` in parameter `$right` is imprecise, equivalent to `array<array-key, mixed>`."
+count = 1
+
+[[issues]]
+file = "src/Report/ProjectResult.php"
+code = "redundant-cast"
+message = "Redundant cast to `(string)`: the expression already has this type."
+count = 4
+
+[[issues]]
+file = "src/Search/SearchIndexBuilder.php"
+code = "imprecise-type"
+message = "Type `array` in parameter `$left` is imprecise, equivalent to `array<array-key, mixed>`."
+count = 1
+
+[[issues]]
+file = "src/Search/SearchIndexBuilder.php"
+code = "imprecise-type"
+message = "Type `array` in parameter `$right` is imprecise, equivalent to `array<array-key, mixed>`."
+count = 1
+
+[[issues]]
+file = "src/Search/SearchIndexBuilder.php"
+code = "imprecise-type"
+message = "Type `array` in return type of `arrow function` is imprecise, equivalent to `array<array-key, mixed>`."
+count = 1
+
+[[issues]]
+file = "src/Search/SearchIndexBuilder.php"
+code = "possibly-undefined-int-array-index"
+message = "Possibly undefined array key `int(1)` accessed on `array<array-key, string>`."
+count = 1
+
+[[issues]]
+file = "src/Search/SearchIndexBuilder.php"
+code = "redundant-cast"
+message = "Redundant cast to `(string)`: the expression already has this type."
+count = 2
+
+[[issues]]
+file = "src/Search/SearchIndexBuilder.php"
+code = "reference-to-undefined-variable"
+message = "Reference created from a previously undefined variable `$matches`."
+count = 1
+
+[[issues]]
+file = "src/Search/TextExtractor.php"
+code = "reference-to-undefined-variable"
+message = "Reference created from a previously undefined variable `$matches`."
+count = 1
+
+[[issues]]
+file = "src/Site/LandingPageBuilder.php"
+code = "imprecise-type"
+message = "Type `array` in return type of `arrow function` is imprecise, equivalent to `array<array-key, mixed>`."
+count = 1
+
+[[issues]]
+file = "src/Site/RedirectWriter.php"
+code = "possibly-undefined-int-array-index"
+message = "Possibly undefined array key `int(1)` accessed on `array<array-key, string>`."
+count = 1
+
+[[issues]]
+file = "src/Site/RedirectWriter.php"
+code = "possibly-undefined-variable"
+message = "Variable `$matches` might not have been defined on all execution paths leading to this point."
+count = 1
+
+[[issues]]
+file = "src/Site/StaticAssetWriter.php"
+code = "imprecise-type"
+message = "Type `array` in return type of `arrow function` is imprecise, equivalent to `array<array-key, mixed>`."
+count = 1
 
 [[issues]]
 file = "src/Support/Filesystem.php"

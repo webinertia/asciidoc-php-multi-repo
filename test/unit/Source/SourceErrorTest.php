@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Source;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Report\ReasonCode;
 use Webware\AsciidocPhp\MultiRepo\Source\SourceError;
@@ -22,7 +23,8 @@ use Webware\AsciidocPhp\MultiRepo\Source\SourceException;
 #[CoversMethod(SourceException::class, 'error')]
 final class SourceErrorTest extends TestCase
 {
-    public function testEveryDetailIsAvailable(): void
+    #[Test]
+    public function everyDetailIsAvailable(): void
     {
         $error = new SourceError(
             ReasonCode::MissingEntry,
@@ -32,16 +34,17 @@ final class SourceErrorTest extends TestCase
             'Add an index.adoc.',
         );
 
-        self::assertSame(ReasonCode::MissingEntry, $error->reasonCode());
-        self::assertSame('example: docs has no entry page.', $error->message());
-        self::assertSame('v1', $error->version());
-        self::assertSame('docs/v1', $error->path());
-        self::assertSame('Add an index.adoc.', $error->correctiveAction());
+        static::assertSame(ReasonCode::MissingEntry, $error->reasonCode());
+        static::assertSame('example: docs has no entry page.', $error->message());
+        static::assertSame('v1', $error->version());
+        static::assertSame('docs/v1', $error->path());
+        static::assertSame('Add an index.adoc.', $error->correctiveAction());
     }
 
-    public function testTheArrayKeepsEveryKeyWhenTheDetailsAreAbsent(): void
+    #[Test]
+    public function theArrayKeepsEveryKeyWhenTheDetailsAreAbsent(): void
     {
-        self::assertSame(
+        static::assertSame(
             [
                 'reasonCode'       => 'archived',
                 'message'          => 'example: archived.',
@@ -53,11 +56,12 @@ final class SourceErrorTest extends TestCase
         );
     }
 
-    public function testTheArrayShapeMatchesTheReportSchema(): void
+    #[Test]
+    public function theArrayShapeMatchesTheReportSchema(): void
     {
         $error = new SourceError(ReasonCode::InvalidEncoding, 'bad', 'v2', 'docs/v2/a.adoc', 'Re-save it.');
 
-        self::assertSame(
+        static::assertSame(
             [
                 'reasonCode'       => 'invalid-encoding',
                 'message'          => 'bad',
@@ -69,28 +73,31 @@ final class SourceErrorTest extends TestCase
         );
     }
 
-    public function testTheExceptionCarriesTheErrorItWasBuiltFrom(): void
+    #[Test]
+    public function theExceptionCarriesTheErrorItWasBuiltFrom(): void
     {
         $error     = new SourceError(ReasonCode::FetchFailed, 'example: fetch failed.');
         $exception = new SourceException($error);
 
-        self::assertSame($error, $exception->error());
-        self::assertSame('example: fetch failed.', $exception->getMessage());
+        static::assertSame($error, $exception->error());
+        static::assertSame('example: fetch failed.', $exception->getMessage());
     }
 
-    public function testTheExceptionMessageIsTheErrorMessage(): void
+    #[Test]
+    public function theExceptionMessageIsTheErrorMessage(): void
     {
         $error = new SourceError(ReasonCode::NoAsciidocSources, 'example: nothing to render.');
 
-        self::assertSame($error->message(), new SourceException($error)->getMessage());
+        static::assertSame($error->message(), new SourceException($error)->getMessage());
     }
 
-    public function testTheOptionalDetailsDefaultToNull(): void
+    #[Test]
+    public function theOptionalDetailsDefaultToNull(): void
     {
         $error = new SourceError(ReasonCode::Archived, 'example: archived.');
 
-        self::assertNull($error->version());
-        self::assertNull($error->path());
-        self::assertNull($error->correctiveAction());
+        static::assertNull($error->version());
+        static::assertNull($error->path());
+        static::assertNull($error->correctiveAction());
     }
 }

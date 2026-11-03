@@ -39,7 +39,7 @@ trait SiteFixtureTrait
 
     protected function fixturePath(string $relative): string
     {
-        return Path::join(dirname(__DIR__, 2), 'fixtures', $relative);
+        return Path::join(dirname(__DIR__, levels: 2), 'fixtures', $relative);
     }
 
     protected function fixtureRepository(string $name, string $defaultBranch = 'main'): DiscoveredRepository

@@ -12,5 +12,8 @@ vendor
 specs
 .phpunit.cache
 coverage
+# Rendered sites. `docker/Dockerfile` copies the source it needs explicitly, so
+# a built tree on the host only slows the build down.
+build
 node_modules
 *.log

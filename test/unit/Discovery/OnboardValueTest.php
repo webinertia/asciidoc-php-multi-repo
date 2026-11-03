@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Discovery;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Discovery\OnboardValue;
 
@@ -13,25 +14,29 @@ use Webware\AsciidocPhp\MultiRepo\Discovery\OnboardValue;
 #[CoversMethod(OnboardValue::class, 'matches')]
 final class OnboardValueTest extends TestCase
 {
-    public function testABooleanTrueMatchesTheConfiguredString(): void
+    #[Test]
+    public function aBooleanTrueMatchesTheConfiguredString(): void
     {
-        self::assertTrue(OnboardValue::matches(true, 'true'));
-        self::assertFalse(OnboardValue::matches(true, 'yes'));
+        static::assertTrue(OnboardValue::matches(true, 'true'));
+        static::assertFalse(OnboardValue::matches(true, 'yes'));
     }
 
-    public function testANonScalarValueNeverMatches(): void
+    #[Test]
+    public function aNonScalarValueNeverMatches(): void
     {
-        self::assertFalse(OnboardValue::matches(null, 'yes'));
-        self::assertFalse(OnboardValue::matches(['yes'], 'yes'));
+        static::assertFalse(OnboardValue::matches(null, 'yes'));
+        static::assertFalse(OnboardValue::matches(['yes'], 'yes'));
     }
 
-    public function testAValueIsComparedCaseInsensitivelyAndTrimmed(): void
+    #[Test]
+    public function aValueIsComparedCaseInsensitivelyAndTrimmed(): void
     {
-        self::assertTrue(OnboardValue::matches('  Yes  ', 'yes'));
+        static::assertTrue(OnboardValue::matches('  Yes  ', 'yes'));
     }
 
-    public function testTheConfiguredValueIsTrimmedAndLowercased(): void
+    #[Test]
+    public function theConfiguredValueIsTrimmedAndLowercased(): void
     {
-        self::assertTrue(OnboardValue::matches('yes', ' YES '));
+        static::assertTrue(OnboardValue::matches('yes', ' YES '));
     }
 }

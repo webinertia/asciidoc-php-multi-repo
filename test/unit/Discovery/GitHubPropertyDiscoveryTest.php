@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Discovery;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
@@ -56,14 +57,16 @@ final class GitHubPropertyDiscoveryTest extends TestCase
 
     private ?string $previousToken = null;
 
-    public function testABooleanPropertyValueIsAccepted(): void
+    #[Test]
+    public function aBooleanPropertyValueIsAccepted(): void
     {
         $repositories = $this->discover($this->twoPageTransport());
 
-        self::assertTrue($this->named($repositories, 'theme-kit')->onboarded());
+        static::assertTrue($this->named($repositories, 'theme-kit')->onboarded());
     }
 
-    public function testAMissingTokenEnvironmentVariableIsReportedByName(): void
+    #[Test]
+    public function aMissingTokenEnvironmentVariableIsReportedByName(): void
     {
         putenv('FIXTURE_DISCOVERY_TOKEN');
 
@@ -72,21 +75,23 @@ final class GitHubPropertyDiscoveryTest extends TestCase
 
             self::fail('Expected a DiscoveryException.');
         } catch (DiscoveryException $exception) {
-            self::assertStringContainsString('FIXTURE_DISCOVERY_TOKEN', $exception->getMessage());
+            static::assertStringContainsString('FIXTURE_DISCOVERY_TOKEN', $exception->getMessage());
         }
     }
 
-    public function testAnExcludedRepositoryIsDropped(): void
+    #[Test]
+    public function anExcludedRepositoryIsDropped(): void
     {
         $names = array_map(
             static fn(DiscoveredRepository $repository): string => $repository->name(),
             $this->discover($this->twoPageTransport()),
         );
 
-        self::assertNotContains('archived', $names);
+        static::assertNotContains('archived', $names);
     }
 
-    public function testAnInvalidJsonBodyIsReportedAsADiscoveryFailure(): void
+    #[Test]
+    public function anInvalidJsonBodyIsReportedAsADiscoveryFailure(): void
     {
         $transport = new class implements ClientInterface {
             public function sendRequest(RequestInterface $request): ResponseInterface
@@ -100,25 +105,28 @@ final class GitHubPropertyDiscoveryTest extends TestCase
         $this->discover($transport);
     }
 
-    public function testARepositoryMissingFromTheSearchFallsBackToTheDefaults(): void
+    #[Test]
+    public function aRepositoryMissingFromTheSearchFallsBackToTheDefaults(): void
     {
         $repositories = $this->discover($this->twoPageTransport([
             'search' => ['items' => []],
         ]));
 
-        self::assertSame('main', $this->named($repositories, 'message-bus')->defaultBranch());
-        self::assertFalse($this->named($repositories, 'message-bus')->archived());
+        static::assertSame('main', $this->named($repositories, 'message-bus')->defaultBranch());
+        static::assertFalse($this->named($repositories, 'message-bus')->archived());
     }
 
-    public function testOnlyTheConfiguredOnboardValueIsOnboarded(): void
+    #[Test]
+    public function onlyTheConfiguredOnboardValueIsOnboarded(): void
     {
         $repositories = $this->discover($this->twoPageTransport());
 
-        self::assertTrue($this->named($repositories, 'message-bus')->onboarded());
-        self::assertFalse($this->named($repositories, 'job-queue')->onboarded());
+        static::assertTrue($this->named($repositories, 'message-bus')->onboarded());
+        static::assertFalse($this->named($repositories, 'job-queue')->onboarded());
     }
 
-    public function testTheApiBaseIsHonoured(): void
+    #[Test]
+    public function theApiBaseIsHonoured(): void
     {
         $transport = $this->twoPageTransport();
 
@@ -127,31 +135,34 @@ final class GitHubPropertyDiscoveryTest extends TestCase
             apiBase  : 'https://github.example.test/api/v3/',
         ))->discover(SourceFixture::config());
 
-        self::assertSame(
+        static::assertSame(
             'https://github.example.test/api/v3/orgs/fixture-org/properties/values?per_page=100',
             $transport->requests[0]['url'],
         );
     }
 
-    public function testTheDefaultBranchAndArchivedFlagComeFromTheRepositorySearch(): void
+    #[Test]
+    public function theDefaultBranchAndArchivedFlagComeFromTheRepositorySearch(): void
     {
         $repositories = $this->discover($this->twoPageTransport());
 
-        self::assertSame('develop', $this->named($repositories, 'job-queue')->defaultBranch());
-        self::assertSame('main', $this->named($repositories, 'message-bus')->defaultBranch());
+        static::assertSame('develop', $this->named($repositories, 'job-queue')->defaultBranch());
+        static::assertSame('main', $this->named($repositories, 'message-bus')->defaultBranch());
     }
 
-    public function testTheOnboardedRepositoriesAreDiscoveredAcrossTwoPages(): void
+    #[Test]
+    public function theOnboardedRepositoriesAreDiscoveredAcrossTwoPages(): void
     {
         $repositories = $this->discover($this->twoPageTransport());
 
-        self::assertSame(
+        static::assertSame(
             ['job-queue', 'message-bus', 'theme-kit'],
             array_map(static fn(DiscoveredRepository $repository): string => $repository->slug(), $repositories),
         );
     }
 
-    public function testTheTokenNeverAppearsInAFailureMessage(): void
+    #[Test]
+    public function theTokenNeverAppearsInAFailureMessage(): void
     {
         $transport = new class implements ClientInterface {
             public function sendRequest(RequestInterface $request): ResponseInterface
@@ -165,14 +176,15 @@ final class GitHubPropertyDiscoveryTest extends TestCase
 
             self::fail('Expected a DiscoveryException.');
         } catch (DiscoveryException $exception) {
-            self::assertStringContainsString('fixture-org', $exception->getMessage());
-            self::assertStringContainsString('docs', $exception->getMessage());
-            self::assertStringContainsString('401', $exception->getMessage());
-            self::assertFalse(str_contains($exception->getMessage(), self::ENV_VALUE));
+            static::assertStringContainsString('fixture-org', $exception->getMessage());
+            static::assertStringContainsString('docs', $exception->getMessage());
+            static::assertStringContainsString('401', $exception->getMessage());
+            static::assertFalse(str_contains($exception->getMessage(), self::ENV_VALUE));
         }
     }
 
-    public function testTheTokenNeverAppearsWhenTheTransportItselfFails(): void
+    #[Test]
+    public function theTokenNeverAppearsWhenTheTransportItselfFails(): void
     {
         $transport = new class implements ClientInterface {
             public function sendRequest(RequestInterface $request): ResponseInterface
@@ -186,27 +198,29 @@ final class GitHubPropertyDiscoveryTest extends TestCase
 
             self::fail('Expected a DiscoveryException.');
         } catch (DiscoveryException $exception) {
-            self::assertStringContainsString('Could not resolve host', $exception->getMessage());
-            self::assertFalse(str_contains($exception->getMessage(), self::ENV_VALUE));
+            static::assertStringContainsString('Could not resolve host', $exception->getMessage());
+            static::assertFalse(str_contains($exception->getMessage(), self::ENV_VALUE));
         }
     }
 
-    public function testTheTokenTravelsAsABearerHeader(): void
+    #[Test]
+    public function theTokenTravelsAsABearerHeader(): void
     {
         $transport = $this->twoPageTransport();
 
         $this->discover($transport);
 
-        self::assertNotEmpty($transport->requests);
-        self::assertSame(sprintf('Bearer %s', self::ENV_VALUE), $transport->requests[0]['headers']['Authorization']);
+        static::assertNotEmpty($transport->requests);
+        static::assertSame(sprintf('Bearer %s', self::ENV_VALUE), $transport->requests[0]['headers']['Authorization']);
     }
 
-    public function testTwoPagesProduceTheSameSetAsOnePage(): void
+    #[Test]
+    public function twoPagesProduceTheSameSetAsOnePage(): void
     {
         $paged  = $this->describe($this->discover($this->twoPageTransport()));
         $single = $this->describe($this->discover($this->singlePageTransport()));
 
-        self::assertSame($single, $paged);
+        static::assertSame($single, $paged);
     }
 
     protected function setUp(): void

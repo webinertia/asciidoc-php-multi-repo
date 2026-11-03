@@ -1,0 +1,3 @@
+= Zzz Page
+
+Zzz survives the broken entry page.

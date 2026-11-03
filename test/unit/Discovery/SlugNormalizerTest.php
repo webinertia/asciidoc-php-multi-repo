@@ -7,6 +7,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Discovery;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Discovery\SlugException;
 use Webware\AsciidocPhp\MultiRepo\Discovery\SlugNormalizer;
@@ -34,31 +35,35 @@ final class SlugNormalizerTest extends TestCase
         yield 'already a slug' => ['asciidoc-php', 'asciidoc-php'];
     }
 
-    public function testANameWithNoUsableCharacterIsRejected(): void
+    #[Test]
+    public function aNameWithNoUsableCharacterIsRejected(): void
     {
         try {
             new SlugNormalizer()->normalise('___');
 
             self::fail('Expected a SlugException.');
         } catch (SlugException $exception) {
-            self::assertStringContainsString('___', $exception->getMessage());
-            self::assertStringContainsString('slug', $exception->getMessage());
+            static::assertStringContainsString('___', $exception->getMessage());
+            static::assertStringContainsString('slug', $exception->getMessage());
         }
     }
 
-    public function testAnEmptyNameIsRejected(): void
+    #[Test]
+    public function anEmptyNameIsRejected(): void
     {
         $this->expectException(SlugException::class);
 
         new SlugNormalizer()->normalise('');
     }
 
-    public function testANonAsciiNameCollapsesToSeparators(): void
+    #[Test]
+    public function aNonAsciiNameCollapsesToSeparators(): void
     {
-        self::assertSame('na-ve', new SlugNormalizer()->normalise('naïve'));
+        static::assertSame('na-ve', new SlugNormalizer()->normalise('naïve'));
     }
 
-    public function testPunctuationVariantsCannotMoveTheUrl(): void
+    #[Test]
+    public function punctuationVariantsCannotMoveTheUrl(): void
     {
         $normalizer = new SlugNormalizer();
         $slugs      = [
@@ -68,29 +73,32 @@ final class SlugNormalizerTest extends TestCase
             $normalizer->normalise('MESSAGE BUS'),
         ];
 
-        self::assertCount(1, array_unique($slugs));
+        static::assertCount(1, array_unique($slugs));
     }
 
+    #[Test]
     #[DataProvider('equivalentNames')]
-    public function testTheNameIsReducedToALowercaseHyphenatedSlug(string $name, string $expected): void
+    public function theNameIsReducedToALowercaseHyphenatedSlug(string $name, string $expected): void
     {
-        self::assertSame($expected, new SlugNormalizer()->normalise($name));
+        static::assertSame($expected, new SlugNormalizer()->normalise($name));
     }
 
-    public function testTheResultContainsOnlyLowercaseAsciiAndHyphens(): void
+    #[Test]
+    public function theResultContainsOnlyLowercaseAsciiAndHyphens(): void
     {
-        self::assertMatchesRegularExpression(
+        static::assertMatchesRegularExpression(
             '/^[a-z0-9]+(-[a-z0-9]+)*$/',
             new SlugNormalizer()->normalise('Webware.Asciidoc PHP_Multi Repo'),
         );
     }
 
-    public function testTheResultNeverStartsWithOrEndsWithAHyphen(): void
+    #[Test]
+    public function theResultNeverStartsWithOrEndsWithAHyphen(): void
     {
         $slug = new SlugNormalizer()->normalise('__Message_Bus__');
 
-        self::assertSame('message-bus', $slug);
-        self::assertStringStartsNotWith('-', $slug);
-        self::assertStringEndsNotWith('-', $slug);
+        static::assertSame('message-bus', $slug);
+        static::assertStringStartsNotWith('-', $slug);
+        static::assertStringEndsNotWith('-', $slug);
     }
 }

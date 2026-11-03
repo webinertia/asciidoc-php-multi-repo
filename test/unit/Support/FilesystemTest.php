@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebwareTest\AsciidocPhp\MultiRepo\Support;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Webware\AsciidocPhp\MultiRepo\Support\Filesystem;
@@ -32,32 +33,35 @@ final class FilesystemTest extends TestCase
 
     private Filesystem $filesystem;
 
-    public function testEnsureDirectoryIsIdempotent(): void
+    #[Test]
+    public function ensureDirectoryIsIdempotent(): void
     {
         $directory = Path::join($this->directory, 'nested', 'deeper');
 
         $this->filesystem->ensureDirectory($directory);
         $this->filesystem->ensureDirectory($directory);
 
-        self::assertTrue(is_dir($directory));
+        static::assertTrue(is_dir($directory));
     }
 
-    public function testExistsAndRead(): void
+    #[Test]
+    public function existsAndRead(): void
     {
         $target = Path::join($this->directory, 'index.adoc');
 
-        self::assertFalse($this->filesystem->exists($target));
+        static::assertFalse($this->filesystem->exists($target));
 
         $this->filesystem->writeAtomic($target, 'contents');
 
-        self::assertTrue($this->filesystem->exists($target));
-        self::assertSame('contents', $this->filesystem->read($target));
+        static::assertTrue($this->filesystem->exists($target));
+        static::assertSame('contents', $this->filesystem->read($target));
     }
 
-    public function testFailedWriteLeavesNoTemporaryFile(): void
+    #[Test]
+    public function failedWriteLeavesNoTemporaryFile(): void
     {
         $blocker = Path::join($this->directory, 'blocker');
-        file_put_contents($blocker, 'x');
+        file_put_contents($blocker, data: 'x');
 
         $target = Path::join($blocker, 'nested', 'index.adoc');
 
@@ -65,114 +69,157 @@ final class FilesystemTest extends TestCase
             $this->filesystem->writeAtomic($target, 'content');
             self::fail('Writing below a file should fail.');
         } catch (RuntimeException $exception) {
-            self::assertStringContainsString('blocker', $exception->getMessage());
+            static::assertStringContainsString('blocker', $exception->getMessage());
         }
 
-        self::assertSame([], glob(Path::join($this->directory, '.tmp-*')) ?: []);
-        self::assertFalse(is_file($target));
+        static::assertSame([], glob(Path::join($this->directory, '.tmp-*')) ?: []);
+        static::assertFalse(is_file($target));
     }
 
-    public function testHashContentsMatchesSha256(): void
+    #[Test]
+    public function hashContentsMatchesSha256(): void
     {
-        self::assertSame(hash('sha256', 'contents'), $this->filesystem->hashContents('contents'));
+        static::assertSame(hash('sha256', data: 'contents'), $this->filesystem->hashContents('contents'));
     }
 
-    public function testHashFailsForMissingFile(): void
+    #[Test]
+    public function hashFailsForMissingFile(): void
     {
         $this->expectException(RuntimeException::class);
 
         $this->filesystem->hash(Path::join($this->directory, 'missing.adoc'));
     }
 
-    public function testHashMatchesSha256OfFileContents(): void
+    #[Test]
+    public function hashMatchesSha256OfFileContents(): void
     {
         $target = Path::join($this->directory, 'index.adoc');
         $this->filesystem->writeAtomic($target, 'contents');
 
-        self::assertSame(hash('sha256', 'contents'), $this->filesystem->hash($target));
+        static::assertSame(hash('sha256', data: 'contents'), $this->filesystem->hash($target));
     }
 
-    public function testReadFailsForMissingFile(): void
+    #[Test]
+    public function readFailsForMissingFile(): void
     {
         $this->expectException(RuntimeException::class);
 
         $this->filesystem->read(Path::join($this->directory, 'missing.adoc'));
     }
 
-    public function testScanIgnoresDirectories(): void
+    #[Test]
+    public function removeDeletesADirectoryTree(): void
+    {
+        $tree = Path::join($this->directory, 'build');
+
+        $this->filesystem->ensureDirectory(Path::join($tree, 'deep/nested'));
+
+        static::assertNotFalse(file_put_contents(Path::join($tree, 'index.html'), data: '<html></html>'));
+        static::assertNotFalse(file_put_contents(Path::join($tree, 'deep/nested/page.html'), data: '<html></html>'));
+
+        static::assertTrue($this->filesystem->remove($tree));
+        static::assertFalse(is_dir($tree));
+    }
+
+    #[Test]
+    public function removeDeletesASingleFile(): void
+    {
+        $file = Path::join($this->directory, 'report.json');
+
+        static::assertNotFalse(file_put_contents($file, data: '{}'));
+
+        static::assertTrue($this->filesystem->remove($file));
+        static::assertFalse(is_file($file));
+    }
+
+    #[Test]
+    public function removeTreatsAMissingPathAsAlreadyRemoved(): void
+    {
+        static::assertTrue($this->filesystem->remove(Path::join($this->directory, 'absent')));
+    }
+
+    #[Test]
+    public function scanIgnoresDirectories(): void
     {
         $this->filesystem->writeAtomic(Path::join($this->directory, 'a', 'b.adoc'), 'b');
 
-        self::assertSame(['a/b.adoc'], $this->filesystem->scan($this->directory));
+        static::assertSame(['a/b.adoc'], $this->filesystem->scan($this->directory));
     }
 
-    public function testScanReturnsEmptyListForMissingDirectory(): void
+    #[Test]
+    public function scanReturnsEmptyListForMissingDirectory(): void
     {
-        self::assertSame([], $this->filesystem->scan(Path::join($this->directory, 'missing')));
+        static::assertSame([], $this->filesystem->scan(Path::join($this->directory, 'missing')));
     }
 
-    public function testScanReturnsSortedRelativePathsWithForwardSlashes(): void
+    #[Test]
+    public function scanReturnsSortedRelativePathsWithForwardSlashes(): void
     {
         $this->filesystem->writeAtomic(Path::join($this->directory, 'b.adoc'), 'b');
         $this->filesystem->writeAtomic(Path::join($this->directory, 'a', 'c.adoc'), 'c');
         $this->filesystem->writeAtomic(Path::join($this->directory, 'a', 'b.adoc'), 'b');
 
-        self::assertSame(
+        static::assertSame(
             ['a/b.adoc', 'a/c.adoc', 'b.adoc'],
             $this->filesystem->scan($this->directory),
         );
     }
 
-    public function testWriteAtomicCreatesMissingDirectories(): void
+    #[Test]
+    public function writeAtomicCreatesMissingDirectories(): void
     {
         $target = Path::join($this->directory, 'build', 'html', 'index.html');
 
         $this->filesystem->writeAtomic($target, '<html></html>');
 
-        self::assertSame('<html></html>', file_get_contents($target));
+        static::assertSame('<html></html>', file_get_contents($target));
     }
 
-    public function testWriteIfChangedLeavesNoTemporaryFile(): void
+    #[Test]
+    public function writeIfChangedLeavesNoTemporaryFile(): void
     {
         $target = Path::join($this->directory, 'index.adoc');
 
         $this->filesystem->writeIfChanged($target, 'first');
         $this->filesystem->writeIfChanged($target, 'second');
 
-        self::assertSame([], glob(Path::join($this->directory, '.tmp-*')) ?: []);
+        static::assertSame([], glob(Path::join($this->directory, '.tmp-*')) ?: []);
     }
 
-    public function testWriteIfChangedReplacesDifferentBytes(): void
+    #[Test]
+    public function writeIfChangedReplacesDifferentBytes(): void
     {
         $target = Path::join($this->directory, 'index.adoc');
 
         $this->filesystem->writeIfChanged($target, 'first');
 
-        self::assertTrue($this->filesystem->writeIfChanged($target, 'second'));
-        self::assertSame('second', file_get_contents($target));
+        static::assertTrue($this->filesystem->writeIfChanged($target, 'second'));
+        static::assertSame('second', file_get_contents($target));
     }
 
-    public function testWriteIfChangedSkipsIdenticalBytesAndPreservesMtime(): void
+    #[Test]
+    public function writeIfChangedSkipsIdenticalBytesAndPreservesMtime(): void
     {
         $target = Path::join($this->directory, 'index.adoc');
 
-        self::assertTrue($this->filesystem->writeIfChanged($target, 'first'));
+        static::assertTrue($this->filesystem->writeIfChanged($target, 'first'));
 
         $timestamp = 1_600_000_000;
         touch($target, $timestamp);
-        self::assertSame($timestamp, filemtime($target));
+        static::assertSame($timestamp, filemtime($target));
 
-        self::assertFalse($this->filesystem->writeIfChanged($target, 'first'));
-        self::assertSame($timestamp, filemtime($target));
-        self::assertSame('first', file_get_contents($target));
+        static::assertFalse($this->filesystem->writeIfChanged($target, 'first'));
+        static::assertSame($timestamp, filemtime($target));
+        static::assertSame('first', file_get_contents($target));
     }
 
-    public function testWriteIfChangedWritesNewFile(): void
+    #[Test]
+    public function writeIfChangedWritesNewFile(): void
     {
         $target = Path::join($this->directory, 'index.adoc');
 
-        self::assertTrue($this->filesystem->writeIfChanged($target, 'first'));
-        self::assertSame('first', file_get_contents($target));
+        static::assertTrue($this->filesystem->writeIfChanged($target, 'first'));
+        static::assertSame('first', file_get_contents($target));
     }
 
     protected function setUp(): void
@@ -180,7 +227,7 @@ final class FilesystemTest extends TestCase
         $this->directory  = Path::join(sys_get_temp_dir(), 'asciidoc-fs-' . bin2hex(random_bytes(6)));
         $this->filesystem = new Filesystem();
 
-        self::assertTrue(mkdir($this->directory, 0o777, true));
+        static::assertTrue(mkdir($this->directory, permissions: 0o777, recursive: true));
     }
 
     protected function tearDown(): void

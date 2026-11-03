@@ -1,0 +1,135 @@
+= Troubleshooting and reason codes
+:toclevels: 3
+
+Every failure the builder reports carries one reason code from a closed set. This page lists every
+code, what causes it, and how to fix it. The list is checked against the report schema by a test,
+so a code cannot be added to the schema without appearing here.
+
+== Where to find the reason code
+
+The build prints a failing page or project on standard error with the code in parentheses:
+
+[source,text]
+----
+message-bus: docs/v2/index.adoc: The include target "_partials/setup.adoc" does not exist. (render-failed)
+----
+
+The machine-readable report records the same code per project:
+
+[source,json]
+----
+"errors": [
+    {
+        "reasonCode": "render-failed",
+        "message": "The include target \"_partials/setup.adoc\" does not exist.",
+        "correctiveAction": "Add the missing file or remove the include directive, then rebuild."
+    }
+]
+----
+
+A project that fails is not published, but the rest of the site still is. The build exits with a
+non-zero code when any project fails or is degraded.
+
+== Reason codes
+
+[cols="1,2,2"]
+|===
+| Code | Cause | Fix
+
+| `no-asciidoc-sources`
+| A version directory contains no file with a configured extension, or the repository is
+  Markdown-only. Markdown is not converted in version 1.
+| Add an `.adoc` or `.asciidoc` page to the version directory. Convert Markdown to AsciiDoc, or
+  wait for Markdown ingestion, which is deferred.
+
+| `missing-entry`
+| A version directory has no entry page at its root. The report names the candidates it looked
+  for.
+| Add `index.adoc` or `README.adoc` at the root of the version directory. Only those two names
+  count.
+
+| `fetch-failed`
+| A remote repository could not be cloned or fetched after the configured retries. The branch may
+  not exist, the network may be unavailable, or the repository may be private.
+| Check the repository name and default branch in the manifest or the organization, check network
+  access, and re-run. For a private repository, give the fetch credential access.
+
+| `archived`
+| The repository is archived. Archived repositories are skipped rather than rendered.
+| Unarchive the repository, or set `doc-target` to `false` and remove it from the manifest.
+
+| `include-outside-root`
+| An `include::` target resolves outside the directory the active safe mode permits. Under `safe`
+  and `server` only the page's own directory subtree is permitted; under `secure` every include is
+  suppressed.
+| Move the fragment inside the version directory and inside the page's directory subtree, and
+  reference it with a relative path. Do not raise the safe mode to work around a layout problem.
+
+| `toc-target-missing`
+| A section at a configured table-of-contents level has no usable anchor, so the contents list
+  cannot link to it.
+| Give the section an explicit id, for example `[#install]`, or remove the empty heading. A
+  heading with text always has a usable anchor.
+
+| `invalid-encoding`
+| A source file is not valid UTF-8. The report names the file.
+| Re-save the file as UTF-8 without a byte-order mark and rebuild.
+
+| `render-failed`
+| The AsciiDoc conversion failed, or an `include::` target does not exist. The report names the
+  page and, for a missing include, the target.
+| Fix the AsciiDoc syntax, or add the missing include target. A remote include containing `://` is
+  left to the converter and is not checked by the builder.
+
+| `config-error`
+| `site.json` or the manifest is missing, malformed, fails its schema, or declares an unsupported
+  `schemaVersion`.
+| Validate the file against its schema, correct the reported pointer, and re-run. The error names
+  the JSON pointer that failed.
+
+| `discovery-failed`
+| Organization property discovery failed. The token may be missing, expired, not approved, or
+  owned by a non-member, or the GitHub API may be unavailable.
+| Check that the token in `organization.tokenEnvVar` exists, holds Custom properties Read, belongs
+  to an organization member, and is approved by the organization's PAT policy.
+|===
+
+== Exit codes
+
+|===
+| Code | Name | Meaning
+
+| 0
+| Success
+| Every project was published.
+
+| 1
+| Degraded
+| At least one project failed or was skipped, and the rest of the site was published.
+
+| 2
+| Config error
+| The configuration or manifest could not be loaded or validated.
+
+| 3
+| Discovery error
+| The repository list could not be obtained.
+
+| 4
+| Internal error
+| The build could not continue for a reason that is not one of the above.
+|===
+
+== Common checks
+
+Before reporting a build problem, confirm these in order:
+
+. The repository's `doc-target` value is `true` and was set by an organization owner.
+. `docs` contains either version directories or an unversioned tree, not a mix of both.
+. Each version directory has `index.adoc` or `README.adoc` at its root.
+. Each page is valid UTF-8 and ends in `.adoc` or `.asciidoc`.
+. Each `include::` target exists and sits inside the page's directory subtree.
+. `site.json` and the manifest validate against their schemas.
+
+If the project is absent from the site rather than failing, check discovery first: the property
+value, the token, and the `excludeRepositories` list in `site.json`.

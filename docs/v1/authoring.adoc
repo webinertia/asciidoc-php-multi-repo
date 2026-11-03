@@ -1,0 +1,220 @@
+= Author guide
+:toclevels: 3
+
+This guide is for anyone writing documentation for a repository that is already onboarded. It
+covers the directory layout, the entry page, page URLs, images, includes, cross-project links,
+and the outdated-version banner. No package change and no site configuration change is needed to
+add a page.
+
+== The documentation directory
+
+The builder reads the `docs` directory of each repository's default branch. The directory name
+is configurable for the whole site, but `docs` is the default and every example here uses it.
+
+Inside `docs`, choose one of two layouts: versioned or unversioned. Do not mix them except while
+migrating, and read the mixed layout note below before you do.
+
+=== Versioned layout
+
+Create one subdirectory per published version. The name must match `^v[1-9][0-9]*$`, so `v1`,
+`v2`, and `v10` are versions while `v0`, `v01`, and `V2` are not.
+
+[source,text]
+----
+docs/
+  v1/
+    index.adoc
+    guide.adoc
+    reference/
+      api.adoc
+  v2/
+    index.adoc
+    guide.adoc
+----
+
+Each version directory is self-contained. A page in `docs/v1` is published under `v1`, and the
+same relative path in `docs/v2` is published under `v2`.
+
+Versions are ordered by their number, not as text, so `v10` is newer than `v2`. The highest
+number is the latest version.
+
+=== Unversioned layout
+
+When `docs` contains no version subdirectory, the whole directory is treated as one version
+labelled `latest`.
+
+[source,text]
+----
+docs/
+  index.adoc
+  guide.adoc
+  reference/
+    api.adoc
+----
+
+The pages are published under `latest`. The label `latest` is not a numeric version, so a page
+in this layout never shows the outdated-version banner.
+
+=== Mixed layout
+
+When at least one version subdirectory exists, the version directories win. Loose AsciiDoc files
+directly in `docs` are ignored, and the build records a warning naming every ignored path. Move
+those files into a version directory rather than leaving them in place.
+
+== The entry page
+
+Every version must have an entry page at the root of its directory. The builder looks for these
+names in this order:
+
+|===
+| Order | File name
+
+| 1
+| `index.adoc`
+
+| 2
+| `README.adoc`
+|===
+
+Only these two names count, and only at the root of the version directory. If neither exists,
+the project fails with reason `missing-entry` and the report names both candidates.
+
+The entry page is the page served at `/slug/version/`. Write it as an introduction and a table of
+contents; the site does not generate a landing page for a version.
+
+== Which files are published
+
+Only files ending in `.adoc` or `.asciidoc` are rendered. A version with no such file fails with
+reason `no-asciidoc-sources`, which is also what a Markdown-only repository sees.
+
+Two kinds of path are never published:
+
+* A file whose name begins with an underscore, such as `_partial.adoc`. Use this prefix for
+  fragments that are included by other pages.
+* A path matching a configured exclude pattern. The default excludes `**/_*.adoc` and
+  `**/_*.asciidoc`.
+
+Nested directories become URL path segments and the file extension becomes `.html`. For example:
+
+[source,text]
+----
+docs/v1/index.adoc               -> /slug/v1/index.html
+docs/v1/guide.adoc               -> /slug/v1/guide.html
+docs/v1/reference/api.adoc       -> /slug/v1/reference/api.html
+docs/v1/_partials/setup.adoc     -> not published
+----
+
+== Images and other assets
+
+Put images and other supporting files inside the version directory that uses them, for example
+`docs/v1/images/overview.png`, and reference them with a path relative to the page:
+
+[source,asciidoc]
+----
+image::images/overview.png[Overview diagram]
+----
+
+Only AsciiDoc pages are published in this version. A non-AsciiDoc file in `docs` is not copied to
+the output, so an image referenced this way does not resolve on the published site yet. Until
+asset publishing exists, host the image outside the documentation tree and reference it by URL:
+
+[source,asciidoc]
+----
+image::https://example.com/images/overview.png[Overview diagram]
+----
+
+The same rule applies to downloadable files and diagrams. Keep them inside the version directory
+so they are ready for the day assets are published, and do not put them outside `docs`.
+
+== Includes
+
+Share a fragment between pages by putting `include::_partials/setup.adoc[]` on a line of its own.
+The target is resolved relative to the directory of the page that contains the directive. A
+fragment included by `docs/v1/guide.adoc` is looked for in `docs/v1/`.
+
+The site sets a safe mode that limits which files an include may read. The default is `safe`.
+
+|===
+| Safe mode | What an include may read
+
+| `secure`
+| Nothing. Every include is suppressed and no file is read.
+
+| `safe`
+| Only paths inside the directory of the page that contains the include. A target outside that
+  directory is suppressed.
+
+| `server`
+| Only paths inside the page directory, the same containment rule as `safe`.
+
+| `unsafe`
+| Any readable path. `~` and environment variables in the target are expanded.
+|===
+
+A suppressed include does not fail the build; the page renders without the fragment. A target
+that does not exist is different: the page fails with reason `render-failed` and the report names
+the missing target. Remote includes containing `://` are not checked by the builder and are left
+to the converter.
+
+Keep includes inside the version directory and inside the page's own directory subtree, and use
+the underscore prefix so the fragment is not published as a page of its own.
+
+== Cross-project links
+
+A link to another project is an `xref` whose target is the other project's published path.
+Write the `.adoc` extension; the builder rewrites it to `.html` and prefixes the site base path.
+
+From a page at `/alpha/v1/index.html`, link to a page in project `beta`:
+
+[source,asciidoc]
+----
+See xref:/beta/v2/guide.adoc[the beta guide].
+----
+
+A target that starts with `/` is resolved from the site root, so it works at any page depth and
+under any base path. A relative target also works, but count the `..` segments from the current
+page:
+
+[source,asciidoc]
+----
+See xref:../../beta/v2/guide.adoc[the beta guide].
+----
+
+Use `xref:` for pages inside the site and `link:` for anything outside it. `xref:` resolves the
+target against the page's own published URL, rewrites the `.adoc` extension to `.html`, and applies
+the site base path. `link:` keeps the URL as written and gains `rel="noopener"`. A bare URL in prose
+is also turned into a link, so no macro is needed for one:
+
+[source,asciidoc]
+----
+See xref:/beta/v2/guide.adoc[the beta guide] or link:https://example.com[the example site].
+----
+
+Links to pages inside the same project use the same rules: a relative `xref:` target of
+`guide.adoc`, written on `index.adoc`, becomes `guide.html` next to it.
+
+Do not link to an unpublished path such as a partial or an excluded file, and do not hard-code
+the site host name or the base path.
+
+== The outdated-version banner
+
+A page shows the outdated-version banner when its version is not the project's latest version.
+The latest version is the highest numeric version directory. The banner links to the same page
+in the latest version when that page exists, and to the latest version's entry page otherwise.
+
+Consequences for authors:
+
+* A page that exists only in an old version still shows the banner, and its banner link goes to
+  the latest entry page.
+* A page that exists in both versions links to its counterpart.
+* An unversioned project, published as `latest`, never shows the banner.
+* To stop showing the banner for a page, add the page to the latest version directory.
+
+== Adding a page: checklist
+
+. Create the file inside a version directory, or inside `docs` for an unversioned project.
+. Use the `.adoc` or `.asciidoc` extension and do not start the file name with an underscore.
+. Start the page with a level 1 heading, for example `= Page title`.
+. Link to other pages with `xref:` and the `.adoc` extension, and to external sites with `link:` or a bare URL.
+. Keep includes inside the page's directory subtree.
+. Run the build and confirm the page appears in the output and in the project's page count.

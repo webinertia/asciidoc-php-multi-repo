@@ -48,7 +48,7 @@ final class ManifestLoaderTest extends TestCase
 
         static::assertFileExists($loader->schemaPath());
         static::assertSame(
-            Path::join(Path::normalise(dirname(__DIR__, 3)), 'config', 'manifest.schema.json'),
+            Path::join(Path::normalise(dirname(__DIR__, levels: 3)), 'config', 'manifest.schema.json'),
             $loader->schemaPath(),
         );
     }
@@ -92,7 +92,7 @@ final class ManifestLoaderTest extends TestCase
     #[Test]
     public function loadsTheFixtureManifest(): void
     {
-        $path     = Path::join(Path::normalise(dirname(__DIR__, 2)), 'fixtures', 'manifest.json');
+        $path     = Path::join(Path::normalise(dirname(__DIR__, levels: 2)), 'fixtures', 'manifest.json');
         $manifest = new ManifestLoader()->load($path);
 
         static::assertSame(1, $manifest->schemaVersion());

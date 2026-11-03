@@ -195,9 +195,9 @@ final class ApplicationTest extends TestCase
         /** @var array<string, mixed> $document */
         $document = json_decode(
             (string) file_get_contents($this->fixtureConfig()),
-            true,
-            512,
-            JSON_THROW_ON_ERROR,
+            associative: true,
+            depth: 512,
+            flags: JSON_THROW_ON_ERROR,
         );
         $document['schemaVersion'] = 99;
 
@@ -244,6 +244,6 @@ final class ApplicationTest extends TestCase
 
     private function fixtureConfig(): string
     {
-        return Path::join(dirname(__DIR__, 3), 'test', 'fixtures', 'site.json');
+        return Path::join(dirname(__DIR__, levels: 3), 'test', 'fixtures', 'site.json');
     }
 }

@@ -89,9 +89,9 @@ final class SearchBehaviourTest extends TestCase
      */
     private function fixture(): array
     {
-        $path = Path::join(dirname(__DIR__, 2), 'test', 'fixtures', 'search', 'index.json');
+        $path = Path::join(dirname(__DIR__, levels: 2), 'test', 'fixtures', 'search', 'index.json');
 
-        $decoded = json_decode((string) file_get_contents($path), true);
+        $decoded = json_decode((string) file_get_contents($path), associative: true);
 
         static::assertIsArray($decoded);
 
@@ -103,7 +103,7 @@ final class SearchBehaviourTest extends TestCase
      */
     private function runHarness(?string $fixture): array
     {
-        $script = Path::join(dirname(__DIR__, 2), 'test', 'js', 'search-core.test.mjs');
+        $script = Path::join(dirname(__DIR__, levels: 2), 'test', 'js', 'search-core.test.mjs');
 
         $command = 'node ' . escapeshellarg($script);
 

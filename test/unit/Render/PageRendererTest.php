@@ -179,7 +179,7 @@ final class PageRendererTest extends TestCase
     public function aSearchLimitOfZeroKeepsTheWholeText(): void
     {
         $page = $this->renderFromTemp(
-            "= Long\n\n" . str_repeat('word ', 900) . "\n",
+            "= Long\n\n" . str_repeat('word ', times: 900) . "\n",
             $this->configWithOverrides(['render' => ['searchExtractLimit' => 0]]),
         );
 
@@ -231,7 +231,7 @@ final class PageRendererTest extends TestCase
     public function everyIncludeIsCheckedNotJustTheFirst(): void
     {
         $directory = $this->createTempDirectory();
-        file_put_contents(Path::join($directory, 'guide.adoc'), "== Guide\n\nIncluded text.\n");
+        file_put_contents(Path::join($directory, 'guide.adoc'), data: "== Guide\n\nIncluded text.\n");
 
         try {
             $this->renderFromTemp(
@@ -266,7 +266,7 @@ final class PageRendererTest extends TestCase
     {
         $html = $this->render('docs/v1/index.adoc')->html();
 
-        static::assertSame(1, substr_count($html, '<!DOCTYPE html>'));
+        static::assertSame(1, substr_count($html, needle: '<!DOCTYPE html>'));
         static::assertStringNotContainsString('<div id="header">', $html);
         static::assertStringNotContainsString('<div id="footer">', $html);
     }
@@ -369,7 +369,7 @@ final class PageRendererTest extends TestCase
     public function theSearchTextIsATruncatedPrefixOfTheWholeText(): void
     {
         $page = $this->renderFromTemp(
-            "= Accents\n\nIntro text.\n\n" . str_repeat("\u{65e5}", 400) . "\n",
+            "= Accents\n\nIntro text.\n\n" . str_repeat("\u{65e5}", times: 400) . "\n",
             $this->configWithOverrides(['render' => ['searchExtractLimit' => 200]]),
         );
 
@@ -394,7 +394,7 @@ final class PageRendererTest extends TestCase
     public function theSearchTextIsTruncatedOnCharacterBoundaries(): void
     {
         $page = $this->renderFromTemp(
-            "= Accents\n\n" . str_repeat("\u{e9}", 400) . "\n",
+            "= Accents\n\n" . str_repeat("\u{e9}", times: 400) . "\n",
             $this->configWithOverrides(['render' => ['searchExtractLimit' => 200]]),
         );
 
@@ -407,7 +407,7 @@ final class PageRendererTest extends TestCase
         $directory = $this->createTempDirectory();
         $path      = Path::join($directory, 'long.adoc');
 
-        file_put_contents($path, "= Long Page\n\n" . str_repeat('word ', 900) . "\n");
+        file_put_contents($path, "= Long Page\n\n" . str_repeat('word ', times: 900) . "\n");
 
         $page = new PageRenderer()->render(
             $this->fixtureConfig(),
@@ -465,9 +465,9 @@ final class PageRendererTest extends TestCase
     {
         $decoded = json_decode(
             (string) file_get_contents($this->fixturePath('site.json')),
-            true,
-            512,
-            JSON_THROW_ON_ERROR,
+            associative: true,
+            depth: 512,
+            flags: JSON_THROW_ON_ERROR,
         );
         $document = is_array($decoded) ? $decoded : [];
 

@@ -104,7 +104,7 @@ final class ValidateCommandTest extends TestCase
     public function theOutputDirectoryIsUntouched(): void
     {
         $out = Path::join($this->tempDirectory, 'site');
-        file_put_contents(Path::join($this->tempDirectory, 'marker.txt'), 'published');
+        file_put_contents(Path::join($this->tempDirectory, 'marker.txt'), data: 'published');
 
         $this->validate(['versioned'], $out);
 

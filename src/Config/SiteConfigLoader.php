@@ -22,7 +22,7 @@ final class SiteConfigLoader
         private readonly DocumentReader $reader = new DocumentReader(),
         ?string $schemaPath = null,
     ) {
-        $this->schemaPath = $schemaPath ?? Path::join(dirname(__DIR__, 2), 'config', 'site.schema.json');
+        $this->schemaPath = $schemaPath ?? Path::join(dirname(__DIR__, levels: 2), 'config', 'site.schema.json');
     }
 
     /**

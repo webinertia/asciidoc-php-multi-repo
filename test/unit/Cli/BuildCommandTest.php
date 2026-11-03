@@ -160,9 +160,9 @@ final class BuildCommandTest extends TestCase
 
         file_put_contents(
             Path::join($repository, 'docs', 'v1', 'a-broken.adoc'),
-            "= Broken\n\ninclude::missing.adoc[]\n",
+            data: "= Broken\n\ninclude::missing.adoc[]\n",
         );
-        file_put_contents(Path::join($repository, 'docs', 'v1', 'index.adoc'), "= Index\n\nText.\n");
+        file_put_contents(Path::join($repository, 'docs', 'v1', 'index.adoc'), data: "= Index\n\nText.\n");
 
         $manifest = $this->writeManifest([$this->entry('local', $repository)]);
 

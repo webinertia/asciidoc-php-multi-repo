@@ -97,7 +97,7 @@ final class DeterminismGuard
                 }
 
                 $offset = $matches[0][1] ?? 0;
-                $line   = substr_count(substr($contents, 0, (int) $offset), "\n") + 1;
+                $line   = substr_count(substr($contents, offset: 0, length: (int) $offset), needle: "\n") + 1;
 
                 $violations[] = sprintf('%s line %d: %s', $relative, $line, $description);
             }
@@ -114,13 +114,13 @@ final class DeterminismGuard
             return true;
         }
 
-        $position = strrpos($name, '.');
+        $position = strrpos($name, needle: '.');
 
         if (false === $position) {
             return false;
         }
 
-        return in_array(substr($name, $position + 1), self::TEXT_EXTENSIONS, true);
+        return in_array(substr($name, $position + 1), self::TEXT_EXTENSIONS, strict: true);
     }
 
     /**
@@ -136,14 +136,14 @@ final class DeterminismGuard
             'a leftover temporary file name' => '/\.tmp-[A-Za-z0-9]+/',
         ];
 
-        $normalised = str_replace('\\', '/', $outputDirectory);
+        $normalised = str_replace('\\', replace: '/', subject: $outputDirectory);
 
         if ('' !== $normalised && Path::isAbsolute($outputDirectory)) {
-            $patterns['the output directory path'] = '/' . preg_quote($normalised, '/') . '/';
+            $patterns['the output directory path'] = '/' . preg_quote($normalised, delimiter: '/') . '/';
         }
 
         if (strlen($hostname) > 2) {
-            $patterns['this machine\'s name'] = '/\b' . preg_quote($hostname, '/') . '\b/i';
+            $patterns['this machine\'s name'] = '/\b' . preg_quote($hostname, delimiter: '/') . '\b/i';
         }
 
         return $patterns;

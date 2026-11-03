@@ -35,7 +35,7 @@ final class PageShell
 
     public function __construct(?string $templateDirectory = null)
     {
-        $this->templateDirectory = $templateDirectory ?? dirname(__DIR__, 2) . '/resources/templates';
+        $this->templateDirectory = $templateDirectory ?? dirname(__DIR__, levels: 2) . '/resources/templates';
     }
 
     /**
@@ -43,7 +43,7 @@ final class PageShell
      */
     public function escape(string $value): string
     {
-        return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, encoding: 'UTF-8');
     }
 
     /**

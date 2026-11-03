@@ -148,7 +148,7 @@ final class SearchIndexSchemaTest extends TestCase
     {
         return new RenderedPage(
             html      : '<article class="doc"></article>',
-            outputPath: ltrim($urlPath, '/'),
+            outputPath: ltrim($urlPath, characters: '/'),
             urlPath   : $urlPath,
             title     : $title,
             toc       : [new TocEntry(2, 'overview', 'Overview')],
@@ -178,7 +178,7 @@ final class SearchIndexSchemaTest extends TestCase
      */
     private function schema(string $name): array
     {
-        $path = Path::join(dirname(__DIR__, 3), 'contracts', "{$name}.schema.json");
+        $path = Path::join(dirname(__DIR__, levels: 3), 'contracts', "{$name}.schema.json");
 
         $schema = $this->json->decodeObject((string) file_get_contents($path), $path);
 

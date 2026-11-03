@@ -106,7 +106,7 @@ final class IncrementalBuildTest extends TestCase
         $this->workspace = Path::join($this->tempDirectory, 'fixtures');
 
         $this->copyDirectory(
-            Path::join(dirname(__DIR__, 2), 'test', 'fixtures'),
+            Path::join(dirname(__DIR__, levels: 2), 'test', 'fixtures'),
             $this->workspace,
             ['build', 'search'],
         );
@@ -175,7 +175,7 @@ final class IncrementalBuildTest extends TestCase
     private function copyDirectory(string $source, string $target, array $skip = []): void
     {
         if (! is_dir($target)) {
-            static::assertTrue(mkdir($target, 0o777, true));
+            static::assertTrue(mkdir($target, permissions: 0o777, recursive: true));
         }
 
         $entries = scandir($source);
@@ -183,7 +183,7 @@ final class IncrementalBuildTest extends TestCase
         static::assertIsArray($entries);
 
         foreach ($entries as $entry) {
-            if ('.' === $entry || '..' === $entry || in_array($entry, $skip, true)) {
+            if ('.' === $entry || '..' === $entry || in_array($entry, $skip, strict: true)) {
                 continue;
             }
 

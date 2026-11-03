@@ -144,13 +144,13 @@ final class BuildDeterminismTest extends TestCase
         $exitCode = new BuildCommand()->execute(
             new Options(
                 command : 'build',
-                manifest: Path::join(dirname(__DIR__, 3), 'test', 'fixtures', 'manifest.json'),
+                manifest: Path::join(dirname(__DIR__, levels: 3), 'test', 'fixtures', 'manifest.json'),
                 out     : $output,
                 cache   : $cache,
                 full    : $full,
             ),
             new SiteConfigLoader()->load(
-                Path::join(dirname(__DIR__, 3), 'test', 'fixtures', 'site.json'),
+                Path::join(dirname(__DIR__, levels: 3), 'test', 'fixtures', 'site.json'),
             ),
             new Output(
                 stdout: static function (string $line): void {},

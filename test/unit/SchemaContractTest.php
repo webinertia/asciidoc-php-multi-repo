@@ -170,7 +170,7 @@ final class SchemaContractTest extends TestCase
 
     private function root(): string
     {
-        return dirname(__DIR__, 2);
+        return dirname(__DIR__, levels: 2);
     }
 
     /**

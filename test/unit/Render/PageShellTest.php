@@ -53,7 +53,7 @@ final class PageShellTest extends TestCase
     public function aBufferLeftOpenByTheTemplateDoesNotEscapeTheShell(): void
     {
         $directory = $this->createTempDirectory();
-        file_put_contents("{$directory}/page.php", '<?php ob_start(); echo "leaked";');
+        file_put_contents("{$directory}/page.php", data: '<?php ob_start(); echo "leaked";');
 
         $level = ob_get_level();
 
@@ -88,7 +88,7 @@ final class PageShellTest extends TestCase
         $directory = new PageShell(null)->templateDirectory();
 
         static::assertDirectoryExists($directory);
-        static::assertStringEndsWith('resources/templates', str_replace('\\', '/', $directory));
+        static::assertStringEndsWith('resources/templates', str_replace('\\', replace: '/', subject: $directory));
         static::assertSame($directory, new PageShell()->templateDirectory());
     }
 
@@ -143,7 +143,7 @@ final class PageShellTest extends TestCase
             '<link rel="canonical" href="https://docs.example.test/widgets/v1/usage.html">',
             $html,
         );
-        static::assertSame(2, substr_count($html, '<link rel="stylesheet"'));
+        static::assertSame(2, substr_count($html, needle: '<link rel="stylesheet"'));
         static::assertStringContainsString('<a class="skip-link" href="#main">Skip to content</a>', $html);
         static::assertStringContainsString('<header class="site-header">', $html);
         static::assertStringContainsString('<nav class="sidebar" aria-label="On this page">', $html);

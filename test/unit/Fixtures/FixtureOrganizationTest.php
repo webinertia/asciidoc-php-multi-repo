@@ -175,7 +175,7 @@ final class FixtureOrganizationTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->fixtures   = Path::join(Path::normalise(dirname(__DIR__, 2)), 'fixtures');
+        $this->fixtures   = Path::join(Path::normalise(dirname(__DIR__, levels: 2)), 'fixtures');
         $this->filesystem = new Filesystem();
     }
 
@@ -188,7 +188,7 @@ final class FixtureOrganizationTest extends TestCase
                 continue;
             }
 
-            $start = strpos($line, '[');
+            $start = strpos($line, needle: '[');
 
             if (false === $start) {
                 continue;

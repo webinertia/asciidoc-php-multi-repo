@@ -111,7 +111,7 @@ final class SiteBuildTest extends TestCase
             $index = $project['index'] ?? '';
             static::assertIsString($index);
             static::assertTrue(
-                is_file(Path::join($this->output, ...explode('/', ltrim($index, '/')))),
+                is_file(Path::join($this->output, ...explode('/', ltrim($index, characters: '/')))),
                 "the site index points at a missing file: {$index}",
             );
 
@@ -145,7 +145,7 @@ final class SiteBuildTest extends TestCase
                     $url = $page['url'] ?? '';
                     static::assertIsString($url);
                     static::assertTrue(
-                        is_file(Path::join($this->output, ...explode('/', ltrim($url, '/')))),
+                        is_file(Path::join($this->output, ...explode('/', ltrim($url, characters: '/')))),
                         "the {$slug} index points at a missing page: {$url}",
                     );
                 }
@@ -178,7 +178,7 @@ final class SiteBuildTest extends TestCase
 
         $landing = (string) file_get_contents(Path::join($output, 'index.html'));
 
-        static::assertSame(1, substr_count($landing, 'class="project-card"'));
+        static::assertSame(1, substr_count($landing, needle: 'class="project-card"'));
         static::assertStringContainsString('href="/versioned/"', $landing);
         static::assertStringNotContainsString('mixed', $landing);
 
@@ -187,7 +187,7 @@ final class SiteBuildTest extends TestCase
 
         $page = (string) file_get_contents(Path::join($output, 'versioned', 'v1', 'index.html'));
 
-        static::assertSame(1, substr_count($page, 'class="project-item'));
+        static::assertSame(1, substr_count($page, needle: 'class="project-item'));
     }
 
     #[Test]
@@ -262,7 +262,7 @@ final class SiteBuildTest extends TestCase
     {
         $html = (string) file_get_contents(Path::join($this->output, 'index.html'));
 
-        static::assertSame(3, substr_count($html, 'class="project-card"'));
+        static::assertSame(3, substr_count($html, needle: 'class="project-card"'));
         static::assertStringContainsString('href="/mixed/"', $html);
         static::assertStringContainsString('href="/unversioned/"', $html);
         static::assertStringContainsString('href="/versioned/"', $html);
@@ -394,7 +394,7 @@ final class SiteBuildTest extends TestCase
     {
         $html = (string) file_get_contents(Path::join($this->output, 'versioned', 'v1', 'index.html'));
 
-        static::assertSame(3, substr_count($html, 'class="project-item'));
+        static::assertSame(3, substr_count($html, needle: 'class="project-item'));
 
         $current = [];
         preg_match('~<a href="/versioned/" aria-current="page">([^<]+)</a>~', $html, $current);
@@ -463,17 +463,17 @@ final class SiteBuildTest extends TestCase
 
     private function fixtureConfig(): string
     {
-        return Path::join(dirname(__DIR__, 2), 'test', 'fixtures', 'site.json');
+        return Path::join(dirname(__DIR__, levels: 2), 'test', 'fixtures', 'site.json');
     }
 
     private function fixtureManifest(): string
     {
-        return Path::join(dirname(__DIR__, 2), 'test', 'fixtures', 'manifest.json');
+        return Path::join(dirname(__DIR__, levels: 2), 'test', 'fixtures', 'manifest.json');
     }
 
     private function root(): string
     {
-        return dirname(__DIR__, 2);
+        return dirname(__DIR__, levels: 2);
     }
 
     private function summary(): string

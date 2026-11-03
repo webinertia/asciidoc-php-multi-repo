@@ -96,6 +96,6 @@ final class BinTest extends TestCase
 
     private function root(): string
     {
-        return dirname(__DIR__, 3);
+        return dirname(__DIR__, levels: 3);
     }
 }

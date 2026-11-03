@@ -29,7 +29,7 @@ final class TextExtractorTest extends TestCase
     #[Test]
     public function aLimitOfZeroDisablesTruncation(): void
     {
-        $text = str_repeat('word ', 40);
+        $text = str_repeat('word ', times: 40);
 
         static::assertSame($text, new TextExtractor(limit: 0)->truncate($text));
         static::assertSame(0, new TextExtractor(limit: 0)->limit());
@@ -88,7 +88,7 @@ final class TextExtractorTest extends TestCase
     #[Test]
     public function truncationDoesNotSplitAWord(): void
     {
-        $text = str_repeat('word ', 40);
+        $text = str_repeat('word ', times: 40);
 
         $truncated = new TextExtractor(limit: 20)->truncate("{$text}");
 

@@ -61,7 +61,7 @@ final class FilesystemTest extends TestCase
     public function failedWriteLeavesNoTemporaryFile(): void
     {
         $blocker = Path::join($this->directory, 'blocker');
-        file_put_contents($blocker, 'x');
+        file_put_contents($blocker, data: 'x');
 
         $target = Path::join($blocker, 'nested', 'index.adoc');
 
@@ -79,7 +79,7 @@ final class FilesystemTest extends TestCase
     #[Test]
     public function hashContentsMatchesSha256(): void
     {
-        static::assertSame(hash('sha256', 'contents'), $this->filesystem->hashContents('contents'));
+        static::assertSame(hash('sha256', data: 'contents'), $this->filesystem->hashContents('contents'));
     }
 
     #[Test]
@@ -96,7 +96,7 @@ final class FilesystemTest extends TestCase
         $target = Path::join($this->directory, 'index.adoc');
         $this->filesystem->writeAtomic($target, 'contents');
 
-        static::assertSame(hash('sha256', 'contents'), $this->filesystem->hash($target));
+        static::assertSame(hash('sha256', data: 'contents'), $this->filesystem->hash($target));
     }
 
     #[Test]
@@ -227,7 +227,7 @@ final class FilesystemTest extends TestCase
         $this->directory  = Path::join(sys_get_temp_dir(), 'asciidoc-fs-' . bin2hex(random_bytes(6)));
         $this->filesystem = new Filesystem();
 
-        static::assertTrue(mkdir($this->directory, 0o777, true));
+        static::assertTrue(mkdir($this->directory, permissions: 0o777, recursive: true));
     }
 
     protected function tearDown(): void

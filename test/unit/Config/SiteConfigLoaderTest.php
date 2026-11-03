@@ -54,7 +54,7 @@ final class SiteConfigLoaderTest extends TestCase
         $loader = new SiteConfigLoader();
 
         static::assertSame(
-            Path::join(Path::normalise(dirname(__DIR__, 3)), 'config', 'site.schema.json'),
+            Path::join(Path::normalise(dirname(__DIR__, levels: 3)), 'config', 'site.schema.json'),
             $loader->schemaPath(),
         );
         static::assertFileExists($loader->schemaPath());
@@ -71,16 +71,16 @@ final class SiteConfigLoaderTest extends TestCase
         $contract = json_decode(
             (string) file_get_contents(
                 Path::join(
-                    Path::normalise(dirname(__DIR__, 3)),
+                    Path::normalise(dirname(__DIR__, levels: 3)),
                     'specs',
                     '001-multi-repo-docs-site',
                     'contracts',
                     'site.schema.json',
                 ),
             ),
-            true,
-            512,
-            JSON_THROW_ON_ERROR,
+            associative: true,
+            depth: 512,
+            flags: JSON_THROW_ON_ERROR,
         );
 
         static::assertIsArray($contract);

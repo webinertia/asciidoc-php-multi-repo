@@ -161,13 +161,13 @@ final class OptionsParser
      */
     private function addRef(string $option, string $assignment, array &$refs): void
     {
-        $equals = strpos($assignment, '=');
+        $equals = strpos($assignment, needle: '=');
 
         if (false === $equals || 0 === $equals || $equals === (strlen($assignment) - 1)) {
             throw UsageException::invalidValue($option, $assignment, 'name=revision');
         }
 
-        $refs[substr($assignment, 0, $equals)] = substr($assignment, $equals + 1);
+        $refs[substr($assignment, offset: 0, length: $equals)] = substr($assignment, $equals + 1);
     }
 
     /**
@@ -243,10 +243,10 @@ final class OptionsParser
     ): void {
         $name   = $token;
         $inline = null;
-        $equals = strpos($token, '=');
+        $equals = strpos($token, needle: '=');
 
         if (false !== $equals) {
-            $name   = substr($token, 0, $equals);
+            $name   = substr($token, offset: 0, length: $equals);
             $inline = substr($token, $equals + 1);
         }
 
@@ -298,7 +298,7 @@ final class OptionsParser
         array &$flags,
     ): void {
         if (strlen($token) > 2) {
-            $cluster = substr($token, 1);
+            $cluster = substr($token, offset: 1);
             $letters = [];
 
             for ($offset = 0; $offset < strlen($cluster); $offset++) {
@@ -306,7 +306,7 @@ final class OptionsParser
             }
 
             foreach ($letters as $letter) {
-                if (! in_array($letter, self::SHORT_FLAGS, true)) {
+                if (! in_array($letter, self::SHORT_FLAGS, strict: true)) {
                     throw UsageException::unknownOption($token);
                 }
             }

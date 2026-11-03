@@ -100,18 +100,18 @@ final class ContrastTest extends TestCase
     {
         static::assertSame(1, preg_match('/^#([0-9a-fA-F]{6})$/', $colour), "Unexpected colour: {$colour}");
 
-        $value    = (string) substr($colour, 1);
+        $value    = (string) substr($colour, offset: 1);
         $channels = [
-            hexdec(substr($value, 0, 2)) / 255,
-            hexdec(substr($value, 2, 2)) / 255,
-            hexdec(substr($value, 4, 2)) / 255,
+            hexdec(substr($value, offset: 0, length: 2)) / 255,
+            hexdec(substr($value, offset: 2, length: 2)) / 255,
+            hexdec(substr($value, offset: 4, length: 2)) / 255,
         ];
 
         $linear = [];
         foreach ($channels as $channel) {
             $linear[] = $channel <= 0.039_28
                 ? $channel / 12.92
-                : pow(($channel + 0.055) / 1.055, 2.4);
+                : pow(($channel + 0.055) / 1.055, exponent: 2.4);
         }
 
         return (0.2126 * $linear[0]) + (0.7152 * $linear[1]) + (0.0722 * $linear[2]);

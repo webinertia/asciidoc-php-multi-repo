@@ -32,7 +32,7 @@ final class AssetHasherTest extends TestCase
     {
         $hasher = new AssetHasher(1);
 
-        static::assertSame(substr(hash('sha256', self::CONTENTS), 0, 1), $hasher->hash(self::CONTENTS));
+        static::assertSame(substr(hash('sha256', self::CONTENTS), offset: 0, length: 1), $hasher->hash(self::CONTENTS));
         static::assertSame(1, strlen($hasher->hash(self::CONTENTS)));
     }
 
@@ -55,7 +55,7 @@ final class AssetHasherTest extends TestCase
     public function theHashIsTheLeadingCharactersOfTheContentDigest(): void
     {
         static::assertSame(
-            substr(hash('sha256', self::CONTENTS), 0, 6),
+            substr(hash('sha256', self::CONTENTS), offset: 0, length: 6),
             new AssetHasher()->hash(self::CONTENTS),
         );
     }

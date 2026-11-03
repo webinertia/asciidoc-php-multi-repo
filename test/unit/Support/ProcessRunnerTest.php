@@ -118,8 +118,8 @@ final class ProcessRunnerTest extends TestCase
 
         static::assertTrue($result->successful());
         static::assertSame(
-            strtolower(str_replace('\\', '/', (string) realpath($directory))),
-            strtolower(str_replace('\\', '/', $result->stdout())),
+            strtolower(str_replace('\\', replace: '/', subject: (string) realpath($directory))),
+            strtolower(str_replace('\\', replace: '/', subject: $result->stdout())),
         );
     }
 

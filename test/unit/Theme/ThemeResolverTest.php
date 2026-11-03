@@ -71,7 +71,7 @@ final class ThemeResolverTest extends TestCase
     #[Test]
     public function anUnterminatedTokenBlockYieldsNoTokens(): void
     {
-        $css = ":root {\n    --color-link: #6a49c9;\n" . str_repeat("    --padding-token: 1;\n", 8);
+        $css = ":root {\n    --color-link: #6a49c9;\n" . str_repeat("    --padding-token: 1;\n", times: 8);
 
         static::assertSame([], $this->lightColorsFrom($css));
     }
@@ -100,13 +100,13 @@ final class ThemeResolverTest extends TestCase
         file_put_contents(
             "{$directory}/site.css",
             file_get_contents(
-                dirname(__DIR__, 3) . '/resources/css/site.css',
+                dirname(__DIR__, levels: 3) . '/resources/css/site.css',
             ),
         );
         file_put_contents(
             "{$directory}/print.css",
             file_get_contents(
-                dirname(__DIR__, 3) . '/resources/css/print.css',
+                dirname(__DIR__, levels: 3) . '/resources/css/print.css',
             ),
         );
 
@@ -115,8 +115,8 @@ final class ThemeResolverTest extends TestCase
         $css = (string) file_get_contents("{$directory}/site.css");
         file_put_contents("{$directory}/site.css", str_replace(
             '--surface-page: #ffffff;',
-            '--surface-page: #fffffe;',
-            $css,
+            replace: '--surface-page: #fffffe;',
+            subject: $css,
         ));
 
         $after = new ThemeResolver(cssDirectory: $directory)->siteName();

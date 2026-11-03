@@ -240,7 +240,7 @@ final class JsonScanner
             }
 
             if ('u' === $escape) {
-                $hex = substr($this->json, $this->offset + 2, 4);
+                $hex = substr($this->json, $this->offset + 2, length: 4);
                 if (strlen($hex) !== 4 || ! ctype_xdigit($hex)) {
                     $this->fail($pointer, $this->offset);
 

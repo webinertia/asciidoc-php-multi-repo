@@ -27,7 +27,7 @@ foreach ($autoloaders as $autoloader) {
 }
 
 if (! $autoloaded) {
-    $stream = fopen('php://stderr', 'wb');
+    $stream = fopen('php://stderr', mode: 'wb');
 
     if (false !== $stream) {
         fwrite($stream, Application::NAME . ": unable to locate the Composer autoloader\n");

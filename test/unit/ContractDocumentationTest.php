@@ -130,7 +130,7 @@ final class ContractDocumentationTest extends TestCase
     protected function setUp(): void
     {
         $this->captured = new CapturedOutput();
-        $contents       = file_get_contents(Path::join(dirname(__DIR__, 2), 'contracts', 'cli.md'));
+        $contents       = file_get_contents(Path::join(dirname(__DIR__, levels: 2), 'contracts', 'cli.md'));
 
         static::assertIsString($contents);
 
@@ -156,7 +156,7 @@ final class ContractDocumentationTest extends TestCase
         $commands = [];
 
         foreach ($this->tableRows('Commands') as $row) {
-            $name = trim($row[0] ?? '', ' `');
+            $name = trim($row[0] ?? '', characters: ' `');
 
             if ('' !== $name) {
                 $commands[] = $name;
@@ -228,7 +228,7 @@ final class ContractDocumentationTest extends TestCase
 
         foreach (explode("\n", $this->contract) as $line) {
             if (str_starts_with($line, '## ')) {
-                $inside = trim(substr($line, 3)) === $heading;
+                $inside = trim(substr($line, offset: 3)) === $heading;
 
                 continue;
             }
@@ -238,13 +238,13 @@ final class ContractDocumentationTest extends TestCase
             }
 
             $cells = array_map('trim', explode('|', trim($line)));
-            $cells = array_slice($cells, 1, -1);
+            $cells = array_slice($cells, offset: 1, length: -1);
 
             if ([] === $cells || preg_match('/^-+$/', $cells[0]) === 1) {
                 continue;
             }
 
-            if (in_array($cells[0], ['Option', 'Command', 'Code'], true)) {
+            if (in_array($cells[0], ['Option', 'Command', 'Code'], strict: true)) {
                 continue;
             }
 

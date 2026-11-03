@@ -96,7 +96,7 @@ final class Output
 
     public static function stderrIsTty(): bool
     {
-        $handle = @fopen('php://stderr', 'wb');
+        $handle = @fopen('php://stderr', mode: 'wb');
 
         if (false === $handle) {
             return false;
@@ -113,7 +113,7 @@ final class Output
         $handle = self::$streams[$stream] ?? null;
 
         if (! is_resource($handle)) {
-            $handle = fopen($stream, 'wb');
+            $handle = fopen($stream, mode: 'wb');
 
             if (false === $handle) {
                 return;

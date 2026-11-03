@@ -44,7 +44,7 @@ final class Filesystem
             return;
         }
 
-        if (! @mkdir($directory, 0o777, true) && ! is_dir($directory)) {
+        if (! @mkdir($directory, permissions: 0o777, recursive: true) && ! is_dir($directory)) {
             throw new RuntimeException(sprintf('Unable to create directory "%s".', $directory));
         }
     }
@@ -142,7 +142,7 @@ final class Filesystem
 
             $absolute = Path::normalise($file->getPathname());
             $relative = '' === $base ? $absolute : substr($absolute, strlen($base) + 1);
-            $paths[]  = str_replace(DIRECTORY_SEPARATOR, '/', $relative);
+            $paths[]  = str_replace(DIRECTORY_SEPARATOR, replace: '/', subject: $relative);
         }
 
         sort($paths, self::SORT_STRING);
@@ -155,7 +155,7 @@ final class Filesystem
         $directory = dirname($path);
         $this->ensureDirectory($directory);
 
-        $temporary = @tempnam($directory, '.tmp-');
+        $temporary = @tempnam($directory, prefix: '.tmp-');
         if (false === $temporary) {
             throw new RuntimeException(sprintf('Unable to create a temporary file in "%s".', $directory));
         }

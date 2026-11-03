@@ -91,6 +91,7 @@ final readonly class PageRenderer
         DiscoveredRepository $repository,
         DocVersion $version,
         PreparedSource $source,
+        ?PageChrome $chrome = null,
     ): RenderedPage {
         $this->assertIncludesResolve($source);
 
@@ -132,6 +133,7 @@ final readonly class PageRenderer
         $projectTitle = $this->projectTitle($config, $repository);
         $accent       = $config->project($repository->name())?->accent();
         $siteName     = $config->site()->name();
+        $chrome       ??= new PageChrome();
 
         $context = new PageContext(
             siteName        : $siteName,
@@ -145,9 +147,7 @@ final readonly class PageRenderer
                 $this->theme->assetUrl($basePath, $this->theme->siteName()),
                 $this->theme->assetUrl($basePath, $this->theme->accentName($accent)),
             ],
-            scripts         : [
-                $this->theme->assetUrl($basePath, $this->theme->themeScriptName()),
-            ],
+            scripts         : $this->scripts($basePath, $chrome),
             sourceUrl       : sprintf(
                 self::GITHUB_BLOB,
                 $config->organization()->name(),
@@ -157,6 +157,8 @@ final readonly class PageRenderer
             ),
             colorMode       : $this->theme->colorMode(),
             defaultColorMode: $this->theme->defaultColorMode(),
+            iconFontCdn     : $this->theme->config()->iconFontCdn(),
+            chrome          : $chrome,
         );
 
         $headings = [];
@@ -172,7 +174,29 @@ final readonly class PageRenderer
             toc       : $entries,
             headings  : $headings,
             searchText: $this->searchText($body, $config->render()->searchExtractLimit()),
+            context   : $context,
         );
+    }
+
+    /**
+     * The same page with the site chrome attached.
+     *
+     * The chrome is built once every page has rendered, so a page's shell is rendered a second time
+     * from the conversion it already carries. Nothing is converted twice.
+     *
+     * @throws RuntimeException when a theme asset cannot be read
+     */
+    public function withChrome(RenderedPage $page, PageChrome $chrome, string $basePath): RenderedPage
+    {
+        $context = $page->context();
+
+        if (null === $context) {
+            return $page;
+        }
+
+        return $page->withHtml($this->shell->render(
+            $context->withChrome($chrome, $this->scripts($basePath, $chrome)),
+        ));
     }
 
     /**
@@ -269,6 +293,27 @@ final readonly class PageRenderer
             'secure' => SafeMode::SECURE,
             default  => SafeMode::SAFE,
         };
+    }
+
+    /**
+     * @return list<string>
+     *
+     * @throws RuntimeException when a theme asset cannot be read
+     */
+    private function scripts(string $basePath, PageChrome $chrome): array
+    {
+        $scripts = [$this->theme->assetUrl($basePath, $this->theme->themeScriptName())];
+
+        if ($chrome->hasProjectSwitcher() || $chrome->hasVersionSelector()) {
+            $scripts[] = $this->theme->assetUrl($basePath, $this->theme->navScriptName());
+        }
+
+        if ($chrome->hasSearch()) {
+            $scripts[] = $this->theme->assetUrl($basePath, $this->theme->searchCoreName());
+            $scripts[] = $this->theme->assetUrl($basePath, $this->theme->searchScriptName());
+        }
+
+        return $scripts;
     }
 
     private function searchText(string $html, int $limit): string

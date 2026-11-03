@@ -130,20 +130,6 @@ final class ApplicationTest extends TestCase
         self::assertStringContainsString('error:', $this->captured->stderr);
     }
 
-    public function testStubCommandExitsFour(): void
-    {
-        $exit = $this->application()->run([
-            'asciidoc-php-multi-repo',
-            'validate',
-            '-c',
-            $this->fixtureConfig(),
-        ]);
-
-        self::assertSame(ExitCode::InternalError->value, $exit);
-        self::assertStringContainsString('validate: not implemented', $this->captured->stderr);
-        self::assertSame('', $this->captured->stdout);
-    }
-
     public function testUnexpectedExceptionMapsToInternalError(): void
     {
         $command = new class implements CommandInterface {

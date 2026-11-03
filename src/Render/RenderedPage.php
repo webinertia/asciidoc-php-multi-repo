@@ -27,7 +27,20 @@ final readonly class RenderedPage
         private array $toc = [],
         private array $headings = [],
         private string $searchText = '',
+        private ?PageContext $context = null,
     ) {}
+
+    /**
+     * The shell inputs this page was rendered from.
+     *
+     * The site chrome is not known until every page has rendered, so the shell is rendered again
+     * from these inputs once the chrome exists. Converting the source a second time is what this
+     * avoids.
+     */
+    public function context(): ?PageContext
+    {
+        return $this->context;
+    }
 
     /**
      * @return list<string>
@@ -82,5 +95,19 @@ final readonly class RenderedPage
     public function urlPath(): string
     {
         return $this->urlPath;
+    }
+
+    public function withHtml(string $html): self
+    {
+        return new self(
+            html      : $html,
+            outputPath: $this->outputPath,
+            urlPath   : $this->urlPath,
+            title     : $this->title,
+            toc       : $this->toc,
+            headings  : $this->headings,
+            searchText: $this->searchText,
+            context   : $this->context,
+        );
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webware\AsciidocPhp\MultiRepo\Cli\Commands;
 
+use InvalidArgumentException;
 use Override;
 use RuntimeException;
 use Webware\AsciidocPhp\MultiRepo\Cli\ExitCode;
@@ -135,6 +136,10 @@ final class WatchCommand implements CommandInterface
         try {
             $status = $this->build->execute($options, $config, $output);
         } catch (ConfigException $exception) {
+            $output->error($exception->getMessage());
+
+            return ExitCode::ConfigError;
+        } catch (InvalidArgumentException $exception) {
             $output->error($exception->getMessage());
 
             return ExitCode::ConfigError;
@@ -291,6 +296,10 @@ final class WatchCommand implements CommandInterface
         try {
             return $this->build->execute($options->withProjects($projects), $this->current ?? $config, $output);
         } catch (ConfigException $exception) {
+            $output->warning(sprintf('rebuild failed: %s, still watching', $exception->getMessage()));
+
+            return null;
+        } catch (InvalidArgumentException $exception) {
             $output->warning(sprintf('rebuild failed: %s, still watching', $exception->getMessage()));
 
             return null;

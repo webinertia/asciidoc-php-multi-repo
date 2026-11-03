@@ -1,0 +1,47 @@
+{
+    "schemaVersion": 1,
+    "project": {
+        "slug": "message-bus",
+        "title": "Message Bus"
+    },
+    "versions": [
+        {
+            "label": "v2",
+            "latest": true,
+            "url": "/message-bus/v2/",
+            "pages": [
+                {
+                    "url": "/message-bus/v2/transport.html",
+                    "title": "Transport",
+                    "headings": [
+                        { "id": "retries", "title": "Retry policy", "level": 2 }
+                    ],
+                    "text": "A transport carries a message from a producer to a consumer."
+                },
+                {
+                    "url": "/message-bus/v2/index.html",
+                    "title": "Message Bus",
+                    "headings": [
+                        { "id": "overview", "title": "Overview", "level": 2 }
+                    ],
+                    "text": "The message bus routes a message to every subscribed consumer."
+                }
+            ]
+        },
+        {
+            "label": "v1",
+            "latest": false,
+            "url": "/message-bus/v1/",
+            "pages": [
+                {
+                    "url": "/message-bus/v1/transport.html",
+                    "title": "Transport",
+                    "headings": [
+                        { "id": "retries", "title": "Retry policy", "level": 2 }
+                    ],
+                    "text": "A transport carries a message from a producer to a consumer."
+                }
+            ]
+        }
+    ]
+}

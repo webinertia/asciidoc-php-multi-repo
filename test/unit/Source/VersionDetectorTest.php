@@ -134,6 +134,15 @@ final class VersionDetectorTest extends TestCase
         self::assertSame(7, $selection->versions()[0]->number());
     }
 
+    public function testAnEmptyDocumentationDirectoryIsASingleLatestVersion(): void
+    {
+        $selection = new VersionDetector()->detect(SourceFixture::fetched('empty', []), SourceFixture::config());
+
+        self::assertCount(1, $selection->versions());
+        self::assertSame(DocVersion::LATEST, $selection->versions()[0]->label());
+        self::assertSame([], $selection->warnings());
+    }
+
     public function testAnUnversionedRepositoryProducesNoWarning(): void
     {
         $selection = new VersionDetector()->detect(

@@ -199,6 +199,19 @@ final class FetchCommandTest extends TestCase
         self::assertStringContainsString('message-bus', $this->captured->stderr);
     }
 
+    public function testASlugOverrideCollisionExitsTwoBeforeAnyFetch(): void
+    {
+        $exit = $this->executeCommand(
+            manifest: SourceFixture::path('manifest.json'),
+            config  : SourceFixture::config(['projects' => ['versioned' => ['slug' => 'mixed']]]),
+        );
+
+        self::assertSame(ExitCode::ConfigError, $exit);
+        self::assertStringContainsString('"mixed"', $this->captured->stderr);
+        self::assertStringNotContainsString(': fetching', $this->captured->stderr);
+        self::assertFalse(is_file($this->manifestPath()));
+    }
+
     public function testTheCacheManifestCarriesOneEntryPerOnboardedRepository(): void
     {
         $this->executeCommand(SourceFixture::path('manifest.json'));

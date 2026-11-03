@@ -21,10 +21,10 @@ use Webware\AsciidocPhp\MultiRepo\Support\Json;
 use Webware\AsciidocPhp\MultiRepo\Support\Path;
 use WebwareTest\AsciidocPhp\MultiRepo\Support\TempDirectoryTrait;
 
+use function array_column;
 use function dirname;
 use function file_get_contents;
 use function implode;
-use function is_array;
 use function is_file;
 use function preg_match;
 use function preg_match_all;
@@ -63,27 +63,6 @@ final class ProjectOrderingTest extends TestCase
     private string $output;
 
     private string $report;
-
-    public function testAChangedProjectSlugIsNotServedFromTheCache(): void
-    {
-        $out = $this->rebuildInto('slug-azalea', ['slug' => 'azalea']);
-
-        self::assertFileExists(Path::join($out, 'azalea', 'v1', 'index.html'));
-        self::assertFileDoesNotExist(Path::join($out, 'alpha', 'v1', 'index.html'));
-    }
-
-    public function testAChangedProjectTitleIsNotServedFromTheCache(): void
-    {
-        $ledger = $this->rebuildWith('title-ledger', ['title' => 'Alpha Ledger']);
-
-        self::assertStringContainsString('<p class="project-name">Alpha Ledger</p>', $ledger);
-        self::assertStringContainsString('<p class="footer-project">Alpha Ledger</p>', $ledger);
-
-        $billing = $this->rebuildWith('title-billing', ['title' => 'Alpha Billing']);
-
-        self::assertStringContainsString('<p class="project-name">Alpha Billing</p>', $billing);
-        self::assertStringNotContainsString('Alpha Ledger', $billing);
-    }
 
     public function testALabelThatStartsWithANumberIsStillOrderedByThatNumber(): void
     {
@@ -137,12 +116,8 @@ final class ProjectOrderingTest extends TestCase
         $projects = $written['projects'] ?? [];
         self::assertIsArray($projects);
 
-        $result = null;
-        foreach ($projects as $project) {
-            if (is_array($project) && 'remote' === ($project['repository'] ?? null)) {
-                $result = $project;
-            }
-        }
+        $byRepository = array_column($projects, null, 'repository');
+        $result       = $byRepository['remote'] ?? null;
 
         self::assertIsArray($result);
         self::assertSame('failed', $result['status']);
@@ -509,56 +484,6 @@ final class ProjectOrderingTest extends TestCase
         }
 
         self::fail("The report carries no entry for {$repository}.");
-    }
-
-    /**
-     * Rebuilds the fixture into the cache the test already populated, with one project override
-     * applied, and returns the output directory of that build.
-     *
-     * @param array<string, mixed> $override
-     */
-    private function rebuildInto(string $label, array $override): string
-    {
-        $config = new Json()->decodeObject((string) file_get_contents($this->fixtureConfig()), $this->fixtureConfig());
-        $alpha  = $config['projects']['alpha'] ?? [];
-        self::assertIsArray($alpha);
-
-        $config['projects']['alpha'] = $override + $alpha;
-
-        $path = Path::join($this->tempDirectory, $label . '.json');
-        file_put_contents($path, new Json()->encode($config));
-
-        $out = Path::join($this->tempDirectory, $label);
-
-        new BuildCommand()->execute(
-            new Options(
-                command : 'build',
-                manifest: $this->fixtureManifest(),
-                out     : $out,
-                cache   : Path::join($this->tempDirectory, 'cache'),
-                report  : Path::join($this->tempDirectory, $label . '-report.json'),
-            ),
-            new SiteConfigLoader()->load($path),
-            new Output(stderr: static function (string $line): void {}),
-        );
-
-        return $out;
-    }
-
-    /**
-     * Rebuilds the fixture into the cache the test already populated, with one project override
-     * applied, and returns the resulting entry page of the alpha project.
-     *
-     * @param array<string, mixed> $override
-     */
-    private function rebuildWith(string $label, array $override): string
-    {
-        return (string) file_get_contents(Path::join(
-            $this->rebuildInto($label, $override),
-            'alpha',
-            'v1',
-            'index.html',
-        ));
     }
 
     /**

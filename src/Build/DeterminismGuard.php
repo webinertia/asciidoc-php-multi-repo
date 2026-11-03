@@ -55,12 +55,13 @@ final class DeterminismGuard
         'xml',
     ];
 
-    private readonly Filesystem $filesystem;
-
-    public function __construct(Filesystem $filesystem = new Filesystem())
-    {
-        $this->filesystem = $filesystem;
-    }
+    /**
+     * @param ?string $hostname the name to look for, or null to read this machine's own name
+     */
+    public function __construct(
+        private readonly Filesystem $filesystem = new Filesystem(),
+        private readonly ?string $hostname = null,
+    ) {}
 
     /**
      * Every violation found in the output directory, in a stable order.
@@ -70,7 +71,7 @@ final class DeterminismGuard
     public function inspect(string $outputDirectory): array
     {
         $violations = [];
-        $hostname   = gethostname();
+        $hostname   = $this->hostname ?? gethostname();
         $patterns   = $this->patterns($outputDirectory, is_string($hostname) ? $hostname : '');
 
         foreach ($this->filesystem->scan($outputDirectory) as $relative) {
@@ -143,7 +144,14 @@ final class DeterminismGuard
         }
 
         if (strlen($hostname) > 2) {
-            $patterns['this machine\'s name'] = '/\b' . preg_quote($hostname, delimiter: '/') . '\b/i';
+            // A word boundary is too loose here. For a machine named WEBINERTIA, the
+            // canonical link to docs.webinertia.net has a dot on each side of the name,
+            // dots are not word characters, so \b matches and a clean build fails on
+            // every page carrying the site's own domain. Requiring a character that
+            // cannot continue a name on both sides keeps a standalone token such as
+            // "served by WEBINERTIA" a violation, while a name that is one label of a
+            // longer dotted or hyphenated name is not one.
+            $patterns['this machine\'s name'] = '/(?<![\w.-])' . preg_quote($hostname, delimiter: '/') . '(?![\w.-])/i';
         }
 
         return $patterns;

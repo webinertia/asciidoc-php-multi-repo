@@ -68,6 +68,33 @@ final class DeterminismGuardTest extends TestCase
     }
 
     #[Test]
+    public function aHostnameInsideTheSiteDomainIsNotReported(): void
+    {
+        $directory = $this->createTempDirectory();
+        $this->write(
+            $directory,
+            'usage.html',
+            "<html>\n<head>\n<title>Usage</title>\n"
+                . "<meta charset=\"utf-8\">\n"
+                . "<meta name=\"viewport\" content=\"width=device-width\">\n"
+                . "<link rel=\"stylesheet\" href=\"../assets/site.css\">\n"
+                . "<link rel=\"canonical\" href=\"https://docs.webinertia.net/asciidoc-php/v1/usage.html\">\n"
+                . "</head>\n</html>\n",
+        );
+
+        static::assertSame([], new DeterminismGuard(hostname: 'WEBINERTIA')->inspect($directory));
+    }
+
+    #[Test]
+    public function aHostnameThatIsOnePartOfALongerNameIsNotReported(): void
+    {
+        $directory = $this->createTempDirectory();
+        $this->write($directory, 'page.html', "<p>webinertia.example.test and webinertia-ci</p>\n");
+
+        static::assertSame([], new DeterminismGuard(hostname: 'WEBINERTIA')->inspect($directory));
+    }
+
+    #[Test]
     public function aLeftoverTemporaryFileNameIsReported(): void
     {
         $directory = $this->createTempDirectory();
@@ -208,6 +235,18 @@ final class DeterminismGuardTest extends TestCase
         static::assertSame(
             ['CNAME line 1: a build timestamp (an ISO 8601 instant)'],
             new DeterminismGuard()->inspect($directory),
+        );
+    }
+
+    #[Test]
+    public function theConfiguredHostnameIsReported(): void
+    {
+        $directory = $this->createTempDirectory();
+        $this->write($directory, 'page.html', "served by WEBINERTIA\n");
+
+        static::assertSame(
+            ['page.html line 1: this machine\'s name'],
+            new DeterminismGuard(hostname: 'WEBINERTIA')->inspect($directory),
         );
     }
 

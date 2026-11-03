@@ -41,7 +41,7 @@ final class ReasonCodeTest extends TestCase
         sort($published);
         sort($codes);
 
-        self::assertSame(
+        static::assertSame(
             $published,
             $codes,
             'src/Report/ReasonCode.php and contracts/report.schema.json have drifted apart.',
@@ -52,7 +52,7 @@ final class ReasonCodeTest extends TestCase
     public function everyCaseIsReachableFromItsValue(): void
     {
         foreach (ReasonCode::cases() as $case) {
-            self::assertSame($case, ReasonCode::from($case->value));
+            static::assertSame($case, ReasonCode::from($case->value));
         }
     }
 
@@ -60,7 +60,7 @@ final class ReasonCodeTest extends TestCase
     public function labelIsTheSchemaValue(): void
     {
         foreach (ReasonCode::cases() as $case) {
-            self::assertSame($case->value, $case->label());
+            static::assertSame($case->value, $case->label());
         }
     }
 
@@ -69,13 +69,13 @@ final class ReasonCodeTest extends TestCase
     {
         $codes = array_map(static fn(ReasonCode $code): string => $code->value, ReasonCode::cases());
 
-        self::assertSame($codes, array_values(array_unique($codes)));
+        static::assertSame($codes, array_values(array_unique($codes)));
     }
 
     #[Test]
     public function theSchemaEnumIsNonEmpty(): void
     {
-        self::assertNotSame([], $this->publishedCodes());
+        static::assertNotSame([], $this->publishedCodes());
     }
 
     /**
@@ -135,16 +135,16 @@ final class ReasonCodeTest extends TestCase
         );
         $json = file_get_contents($path);
 
-        self::assertIsString($json, "Unable to read {$path}");
+        static::assertIsString($json, "Unable to read {$path}");
 
         $schema = new Json()->decode($json);
         $codes  = [];
 
-        self::assertIsArray($schema);
+        static::assertIsArray($schema);
 
         $this->collectEnum($schema, $codes);
 
-        self::assertNotSame([], $codes, 'No reasonCode enum was found in contracts/report.schema.json.');
+        static::assertNotSame([], $codes, 'No reasonCode enum was found in contracts/report.schema.json.');
 
         return $codes;
     }

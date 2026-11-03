@@ -58,27 +58,27 @@ final class SiteConverterTest extends TestCase
         Asciidoc::convert(self::SOURCE, ['converter' => $converter, 'header_footer' => false]);
 
         $document = $converter->lastDocument();
-        self::assertInstanceOf(Document::class, $document);
+        static::assertInstanceOf(Document::class, $document);
 
         $block = $document->getBlocks()[0] ?? null;
-        self::assertNotNull($block);
+        static::assertNotNull($block);
 
-        self::assertStringNotContainsString('<article class="doc">', $converter->convert($block));
-        self::assertStringContainsString('<article class="doc">', $converter->convert($document));
+        static::assertStringNotContainsString('<article class="doc">', $converter->convert($block));
+        static::assertStringContainsString('<article class="doc">', $converter->convert($document));
     }
 
     #[Test]
     public function headingIdsMatchTheParentConverter(): void
     {
-        self::assertSame($this->parentIds(), $this->siteIds());
-        self::assertNotSame([], $this->siteIds());
+        static::assertSame($this->parentIds(), $this->siteIds());
+        static::assertNotSame([], $this->siteIds());
     }
 
     #[Test]
     public function sectionMarkupMatchesTheParentConverter(): void
     {
-        self::assertSame($this->parentSections(), $this->siteSections());
-        self::assertNotSame([], $this->siteSections());
+        static::assertSame($this->parentSections(), $this->siteSections());
+        static::assertNotSame([], $this->siteSections());
     }
 
     #[Test]
@@ -89,12 +89,12 @@ final class SiteConverterTest extends TestCase
         Asciidoc::convert(self::SOURCE, ['converter' => $converter, 'header_footer' => false]);
 
         $document = $converter->lastDocument();
-        self::assertInstanceOf(Document::class, $document);
+        static::assertInstanceOf(Document::class, $document);
 
         $html = $converter->convertDocument($document);
 
-        self::assertStringStartsWith('<article class="doc">', $html);
-        self::assertStringContainsString('<h2 id="_first_section">First section</h2>', $html);
+        static::assertStringStartsWith('<article class="doc">', $html);
+        static::assertStringContainsString('<h2 id="_first_section">First section</h2>', $html);
     }
 
     #[Test]
@@ -102,15 +102,15 @@ final class SiteConverterTest extends TestCase
     {
         $converter = new SiteConverter();
 
-        self::assertTrue($converter->handles('paragraph'));
-        self::assertTrue($converter->handles('section'));
-        self::assertFalse($converter->handles('not-a-transform'));
+        static::assertTrue($converter->handles('paragraph'));
+        static::assertTrue($converter->handles('section'));
+        static::assertFalse($converter->handles('not-a-transform'));
     }
 
     #[Test]
     public function theConverterHandlesTheDocumentTransform(): void
     {
-        self::assertTrue(new SiteConverter()->handles('document'));
+        static::assertTrue(new SiteConverter()->handles('document'));
     }
 
     #[Test]
@@ -122,8 +122,8 @@ final class SiteConverterTest extends TestCase
 
         $document = $converter->lastDocument();
 
-        self::assertInstanceOf(Document::class, $document);
-        self::assertSame('Golden Page', $document->getDocTitle());
+        static::assertInstanceOf(Document::class, $document);
+        static::assertSame('Golden Page', $document->getDocTitle());
     }
 
     #[Test]
@@ -131,12 +131,12 @@ final class SiteConverterTest extends TestCase
     {
         $html = $this->convertWithSiteConverter();
 
-        self::assertStringStartsWith('<article class="doc">', $html);
-        self::assertStringEndsWith("</article>\n", $html);
-        self::assertStringNotContainsString('<html', $html);
-        self::assertStringNotContainsString('<head', $html);
-        self::assertStringNotContainsString('<body', $html);
-        self::assertStringNotContainsString('id="content"', $html);
+        static::assertStringStartsWith('<article class="doc">', $html);
+        static::assertStringEndsWith("</article>\n", $html);
+        static::assertStringNotContainsString('<html', $html);
+        static::assertStringNotContainsString('<head', $html);
+        static::assertStringNotContainsString('<body', $html);
+        static::assertStringNotContainsString('id="content"', $html);
     }
 
     #[Test]
@@ -144,7 +144,7 @@ final class SiteConverterTest extends TestCase
     {
         $converter = new SiteConverter();
 
-        self::assertSame('', $converter->renderStylesheet());
+        static::assertSame('', $converter->renderStylesheet());
     }
 
     private function convertWithSiteConverter(): string

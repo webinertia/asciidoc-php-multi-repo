@@ -39,11 +39,11 @@ final class RepositorySourcesTest extends TestCase
         $error   = new SourceError(ReasonCode::FetchFailed, 'message-bus: fetch failed.');
         $sources = RepositorySources::failed(SourceFixture::repository(), null, $error);
 
-        self::assertFalse($sources->isSuccessful());
-        self::assertSame([$error], $sources->errors());
-        self::assertNull($sources->fetched());
-        self::assertNull($sources->revision());
-        self::assertNull($sources->documentationPath());
+        static::assertFalse($sources->isSuccessful());
+        static::assertSame([$error], $sources->errors());
+        static::assertNull($sources->fetched());
+        static::assertNull($sources->revision());
+        static::assertNull($sources->documentationPath());
     }
 
     #[Test]
@@ -56,9 +56,9 @@ final class RepositorySourcesTest extends TestCase
             new SourceError(ReasonCode::NoAsciidocSources, 'message-bus: no AsciiDoc.'),
         );
 
-        self::assertSame($fetched, $sources->fetched());
-        self::assertSame('deadbeef', $sources->revision());
-        self::assertNull($sources->documentationPath());
+        static::assertSame($fetched, $sources->fetched());
+        static::assertSame('deadbeef', $sources->revision());
+        static::assertNull($sources->documentationPath());
     }
 
     #[Test]
@@ -66,12 +66,12 @@ final class RepositorySourcesTest extends TestCase
     {
         $sources = new RepositorySources(SourceFixture::repository());
 
-        self::assertTrue($sources->isSuccessful());
-        self::assertSame([], $sources->errors());
-        self::assertSame([], $sources->versions());
-        self::assertSame([], $sources->pages());
-        self::assertSame([], $sources->sources());
-        self::assertSame([], $sources->warnings());
+        static::assertTrue($sources->isSuccessful());
+        static::assertSame([], $sources->errors());
+        static::assertSame([], $sources->versions());
+        static::assertSame([], $sources->pages());
+        static::assertSame([], $sources->sources());
+        static::assertSame([], $sources->warnings());
     }
 
     #[Test]
@@ -83,8 +83,8 @@ final class RepositorySourcesTest extends TestCase
             warnings: ['versioned: docs/loose.adoc sits outside a version directory'],
         );
 
-        self::assertTrue($sources->isSuccessful());
-        self::assertCount(1, $sources->warnings());
+        static::assertTrue($sources->isSuccessful());
+        static::assertCount(1, $sources->warnings());
     }
 
     #[Test]
@@ -105,12 +105,12 @@ final class RepositorySourcesTest extends TestCase
             ['versioned: a warning'],
         );
 
-        self::assertSame([$version], $sources->versions());
-        self::assertCount(1, $sources->pages());
-        self::assertSame([$prepared], $sources->sources());
-        self::assertSame(['versioned: a warning'], $sources->warnings());
-        self::assertSame('abc', $sources->revision());
-        self::assertTrue($sources->isSuccessful());
+        static::assertSame([$version], $sources->versions());
+        static::assertCount(1, $sources->pages());
+        static::assertSame([$prepared], $sources->sources());
+        static::assertSame(['versioned: a warning'], $sources->warnings());
+        static::assertSame('abc', $sources->revision());
+        static::assertTrue($sources->isSuccessful());
     }
 
     #[Test]
@@ -121,7 +121,7 @@ final class RepositorySourcesTest extends TestCase
             SourceFixture::fetched('versioned', ['README.md']),
         );
 
-        self::assertNull($sources->documentationPath());
+        static::assertNull($sources->documentationPath());
     }
 
     #[Test]
@@ -132,7 +132,7 @@ final class RepositorySourcesTest extends TestCase
             SourceFixture::fetched('versioned', ['docs/index.adoc']),
         );
 
-        self::assertSame('docs', $sources->documentationPath());
+        static::assertSame('docs', $sources->documentationPath());
     }
 
     #[Test]
@@ -143,6 +143,6 @@ final class RepositorySourcesTest extends TestCase
             slug: 'message-bus',
         );
 
-        self::assertSame($repository, new RepositorySources($repository)->repository());
+        static::assertSame($repository, new RepositorySources($repository)->repository());
     }
 }

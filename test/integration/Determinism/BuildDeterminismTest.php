@@ -68,14 +68,14 @@ final class BuildDeterminismTest extends TestCase
 
         $before = $this->cacheTimestamps($cache);
 
-        self::assertNotSame([], $before, 'the first build stored nothing in the cache');
+        static::assertNotSame([], $before, 'the first build stored nothing in the cache');
 
         $this->build($incremental, $cache, full: false);
         $this->build($full, Path::join($this->tempDirectory, 'cache-fresh'), full: true);
 
-        self::assertNotSame([], $this->manifest($full), 'the full build published nothing');
-        self::assertSame($before, $this->cacheTimestamps($cache), 'the incremental build re-rendered pages');
-        self::assertSame([], $this->differences($incremental, $full));
+        static::assertNotSame([], $this->manifest($full), 'the full build published nothing');
+        static::assertSame($before, $this->cacheTimestamps($cache), 'the incremental build re-rendered pages');
+        static::assertSame([], $this->differences($incremental, $full));
     }
 
     #[Test]
@@ -91,15 +91,15 @@ final class BuildDeterminismTest extends TestCase
         // rendered output rather than the template.
         $contents = (string) file_get_contents($page);
 
-        self::assertNotFalse(
+        static::assertNotFalse(
             file_put_contents($page, "{$contents}<footer>built 2024-05-06T07:08:09Z</footer>\n"),
         );
 
         $violations = new DeterminismGuard()->inspect($output);
 
-        self::assertCount(1, $violations);
-        self::assertStringContainsString('versioned/v1/index.html line ', $violations[0]);
-        self::assertStringContainsString('a build timestamp', $violations[0]);
+        static::assertCount(1, $violations);
+        static::assertStringContainsString('versioned/v1/index.html line ', $violations[0]);
+        static::assertStringContainsString('a build timestamp', $violations[0]);
     }
 
     #[Test]
@@ -109,8 +109,8 @@ final class BuildDeterminismTest extends TestCase
 
         $this->build($output, Path::join($this->tempDirectory, 'cache-clean'), full: true);
 
-        self::assertSame([], new DeterminismGuard()->inspect($output));
-        self::assertFalse(
+        static::assertSame([], new DeterminismGuard()->inspect($output));
+        static::assertFalse(
             str_contains(implode("\n", $this->stderr), 'non-deterministic output'),
             implode("\n", $this->stderr),
         );
@@ -125,7 +125,7 @@ final class BuildDeterminismTest extends TestCase
         $this->build($first, Path::join($this->tempDirectory, 'cache-first'), full: true);
         $this->build($second, Path::join($this->tempDirectory, 'cache-second'), full: true);
 
-        self::assertSame([], $this->differences($first, $second));
+        static::assertSame([], $this->differences($first, $second));
     }
 
     protected function setUp(): void
@@ -160,7 +160,7 @@ final class BuildDeterminismTest extends TestCase
             ),
         );
 
-        self::assertSame(ExitCode::Degraded, $exitCode, 'the fixture organisation is expected to degrade');
+        static::assertSame(ExitCode::Degraded, $exitCode, 'the fixture organisation is expected to degrade');
     }
 
     /**

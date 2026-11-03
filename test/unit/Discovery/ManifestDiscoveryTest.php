@@ -54,8 +54,8 @@ final class ManifestDiscoveryTest extends TestCase
             $repositories,
         );
 
-        self::assertContains('versioned-docs', $slugs);
-        self::assertNotContains('versioned', $slugs);
+        static::assertContains('versioned-docs', $slugs);
+        static::assertNotContains('versioned', $slugs);
     }
 
     #[Test]
@@ -66,7 +66,7 @@ final class ManifestDiscoveryTest extends TestCase
             $this->discover(),
         );
 
-        self::assertNotContains('archived', $names);
+        static::assertNotContains('archived', $names);
     }
 
     #[Test]
@@ -77,7 +77,7 @@ final class ManifestDiscoveryTest extends TestCase
             new ManifestEntry('message_bus', null, 'main', false, false, null),
         );
 
-        self::assertCount(2, new ManifestDiscovery($manifest)->discover(SourceFixture::config()));
+        static::assertCount(2, new ManifestDiscovery($manifest)->discover(SourceFixture::config()));
     }
 
     #[Test]
@@ -85,7 +85,7 @@ final class ManifestDiscoveryTest extends TestCase
     {
         $repositories = $this->discover(['projects' => ['versioned' => ['title' => 'Versioned']]]);
 
-        self::assertSame('versioned', $this->named($repositories, 'versioned')->slug());
+        static::assertSame('versioned', $this->named($repositories, 'versioned')->slug());
     }
 
     #[Test]
@@ -95,7 +95,7 @@ final class ManifestDiscoveryTest extends TestCase
 
         $versioned = $this->named($repositories, 'versioned');
 
-        self::assertSame('versioned-docs', $versioned->slug());
+        static::assertSame('versioned-docs', $versioned->slug());
     }
 
     #[Test]
@@ -110,8 +110,8 @@ final class ManifestDiscoveryTest extends TestCase
     public function everyEntryKeepsItsLocalPath(): void
     {
         foreach ($this->discover() as $repository) {
-            self::assertNotNull($repository->path(), $repository->name());
-            self::assertDirectoryExists($repository->path());
+            static::assertNotNull($repository->path(), $repository->name());
+            static::assertDirectoryExists($repository->path());
         }
     }
 
@@ -128,15 +128,15 @@ final class ManifestDiscoveryTest extends TestCase
         $discovery = new DiscoveryFactory(transport: $transport)
             ->create(SourceFixture::path('manifest.json'));
 
-        self::assertInstanceOf(ManifestDiscovery::class, $discovery);
-        self::assertCount(6, $discovery->discover(SourceFixture::config()));
+        static::assertInstanceOf(ManifestDiscovery::class, $discovery);
+        static::assertCount(6, $discovery->discover(SourceFixture::config()));
     }
 
     #[Test]
     public function theDefaultBranchComesFromTheManifest(): void
     {
         foreach ($this->discover() as $repository) {
-            self::assertSame('main', $repository->defaultBranch(), $repository->name());
+            static::assertSame('main', $repository->defaultBranch(), $repository->name());
         }
     }
 
@@ -145,7 +145,7 @@ final class ManifestDiscoveryTest extends TestCase
     {
         $repositories = $this->discover();
 
-        self::assertSame(
+        static::assertSame(
             ['broken-include', 'markdown-only', 'missing-entry', 'mixed', 'unversioned', 'versioned'],
             array_map(static fn(DiscoveredRepository $repository): string => $repository->slug(), $repositories),
         );
@@ -156,8 +156,8 @@ final class ManifestDiscoveryTest extends TestCase
     {
         $manifest = new ManifestLoader()->load(SourceFixture::path('manifest.json'));
 
-        self::assertCount(7, $manifest->repositories());
-        self::assertContains('archived', $manifest->names());
+        static::assertCount(7, $manifest->repositories());
+        static::assertContains('archived', $manifest->names());
     }
 
     #[Test]
@@ -167,14 +167,14 @@ final class ManifestDiscoveryTest extends TestCase
 
         $repositories = new ManifestDiscovery($manifest)->discover(SourceFixture::config());
 
-        self::assertSame('bus', $repositories[0]->slug());
+        static::assertSame('bus', $repositories[0]->slug());
     }
 
     #[Test]
     public function theOnboardedFlagComesFromTheManifest(): void
     {
         foreach ($this->discover() as $repository) {
-            self::assertTrue($repository->onboarded(), $repository->name());
+            static::assertTrue($repository->onboarded(), $repository->name());
         }
     }
 
@@ -189,7 +189,7 @@ final class ManifestDiscoveryTest extends TestCase
 
         sort($sorted);
 
-        self::assertSame($sorted, $slugs);
+        static::assertSame($sorted, $slugs);
     }
 
     /**

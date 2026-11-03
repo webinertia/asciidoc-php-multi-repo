@@ -43,8 +43,8 @@ final class DiscoverCommandTest extends TestCase
             transport: $this->unauthorisedTransport(),
         );
 
-        self::assertSame(ExitCode::DiscoveryError, $exit);
-        self::assertSame('', $this->captured->stdout);
+        static::assertSame(ExitCode::DiscoveryError, $exit);
+        static::assertSame('', $this->captured->stdout);
     }
 
     #[Test]
@@ -55,10 +55,10 @@ final class DiscoverCommandTest extends TestCase
             transport: $this->unauthorisedTransport(),
         );
 
-        self::assertStringContainsString('fixture-org', $this->captured->stderr);
-        self::assertStringContainsString('docs', $this->captured->stderr);
-        self::assertStringContainsString('401', $this->captured->stderr);
-        self::assertStringStartsWith('error: ', $this->captured->stderr);
+        static::assertStringContainsString('fixture-org', $this->captured->stderr);
+        static::assertStringContainsString('docs', $this->captured->stderr);
+        static::assertStringContainsString('401', $this->captured->stderr);
+        static::assertStringStartsWith('error: ', $this->captured->stderr);
     }
 
     #[Test]
@@ -71,8 +71,8 @@ final class DiscoverCommandTest extends TestCase
             transport: $this->collidingTransport(),
         );
 
-        self::assertSame(ExitCode::DiscoveryError, $exit);
-        self::assertStringContainsString('FIXTURE_DISCOVERY_TOKEN', $this->captured->stderr);
+        static::assertSame(ExitCode::DiscoveryError, $exit);
+        static::assertStringContainsString('FIXTURE_DISCOVERY_TOKEN', $this->captured->stderr);
     }
 
     #[Test]
@@ -83,10 +83,10 @@ final class DiscoverCommandTest extends TestCase
             transport: $this->collidingTransport(),
         );
 
-        self::assertSame(ExitCode::ConfigError, $exit);
-        self::assertStringContainsString('message-bus', $this->captured->stderr);
-        self::assertStringContainsString('message.bus', $this->captured->stderr);
-        self::assertSame('', $this->captured->stdout);
+        static::assertSame(ExitCode::ConfigError, $exit);
+        static::assertStringContainsString('message-bus', $this->captured->stderr);
+        static::assertStringContainsString('message.bus', $this->captured->stderr);
+        static::assertSame('', $this->captured->stdout);
     }
 
     #[Test]
@@ -94,8 +94,8 @@ final class DiscoverCommandTest extends TestCase
     {
         $this->executeCommand(manifest: SourceFixture::path('manifest.json'));
 
-        self::assertSame('', $this->captured->stderr);
-        self::assertCount(6, $this->stdoutLines());
+        static::assertSame('', $this->captured->stderr);
+        static::assertCount(6, $this->stdoutLines());
     }
 
     #[Test]
@@ -103,8 +103,8 @@ final class DiscoverCommandTest extends TestCase
     {
         $command = new DiscoverCommand();
 
-        self::assertSame('discover', $command->name());
-        self::assertNotSame('', $command->summary());
+        static::assertSame('discover', $command->name());
+        static::assertNotSame('', $command->summary());
     }
 
     #[Test]
@@ -112,7 +112,7 @@ final class DiscoverCommandTest extends TestCase
     {
         $this->executeCommand(manifest: SourceFixture::path('manifest.json'));
 
-        self::assertStringNotContainsString('archived', $this->captured->stdout);
+        static::assertStringNotContainsString('archived', $this->captured->stdout);
     }
 
     #[Test]
@@ -120,8 +120,8 @@ final class DiscoverCommandTest extends TestCase
     {
         $exit = $this->executeCommand(manifest: SourceFixture::path('manifest.json'));
 
-        self::assertSame(ExitCode::Success, $exit);
-        self::assertSame(
+        static::assertSame(ExitCode::Success, $exit);
+        static::assertSame(
             [
                 'name=broken-include slug=broken-include onboarded=yes',
                 'name=markdown-only slug=markdown-only onboarded=yes',
@@ -142,7 +142,7 @@ final class DiscoverCommandTest extends TestCase
             projects: ['markdown-only'],
         );
 
-        self::assertSame(['name=markdown-only slug=markdown-only onboarded=yes'], $this->stdoutLines());
+        static::assertSame(['name=markdown-only slug=markdown-only onboarded=yes'], $this->stdoutLines());
     }
 
     #[Test]
@@ -153,8 +153,8 @@ final class DiscoverCommandTest extends TestCase
             projects: ['absent'],
         );
 
-        self::assertSame(ExitCode::Success, $exit);
-        self::assertSame('', $this->captured->stdout);
+        static::assertSame(ExitCode::Success, $exit);
+        static::assertSame('', $this->captured->stdout);
     }
 
     #[Test]
@@ -165,7 +165,7 @@ final class DiscoverCommandTest extends TestCase
             projects: ['versioned'],
         );
 
-        self::assertSame(['name=versioned slug=versioned onboarded=yes'], $this->stdoutLines());
+        static::assertSame(['name=versioned slug=versioned onboarded=yes'], $this->stdoutLines());
     }
 
     protected function setUp(): void

@@ -55,10 +55,10 @@ final class BuildCommandTest extends TestCase
     {
         $exit = $this->build(['missing-entry']);
 
-        self::assertSame(ExitCode::Degraded, $exit);
-        self::assertStringContainsString('missing-entry: 0 page(s) failed', $this->captured->stderr);
-        self::assertStringContainsString('docs/v1:', $this->captured->stderr);
-        self::assertStringContainsString('(missing-entry)', $this->captured->stderr);
+        static::assertSame(ExitCode::Degraded, $exit);
+        static::assertStringContainsString('missing-entry: 0 page(s) failed', $this->captured->stderr);
+        static::assertStringContainsString('docs/v1:', $this->captured->stderr);
+        static::assertStringContainsString('(missing-entry)', $this->captured->stderr);
     }
 
     #[Test]
@@ -66,10 +66,10 @@ final class BuildCommandTest extends TestCase
     {
         $exit = $this->build(['mixed']);
 
-        self::assertSame(ExitCode::Success, $exit);
-        self::assertStringContainsString('mixed: 2 page(s) ok', $this->captured->stderr);
-        self::assertStringContainsString('outside a version directory', $this->captured->stderr);
-        self::assertStringContainsString('docs/loose.adoc', $this->captured->stderr);
+        static::assertSame(ExitCode::Success, $exit);
+        static::assertStringContainsString('mixed: 2 page(s) ok', $this->captured->stderr);
+        static::assertStringContainsString('outside a version directory', $this->captured->stderr);
+        static::assertStringContainsString('docs/loose.adoc', $this->captured->stderr);
     }
 
     #[Test]
@@ -82,9 +82,9 @@ final class BuildCommandTest extends TestCase
 
         $exit = $this->build([], manifest: $manifest);
 
-        self::assertSame(ExitCode::Success, $exit);
-        self::assertStringContainsString('legacy: archived, skipped', $this->captured->stderr);
-        self::assertStringContainsString('versioned: 5 page(s) ok', $this->captured->stderr);
+        static::assertSame(ExitCode::Success, $exit);
+        static::assertStringContainsString('legacy: archived, skipped', $this->captured->stderr);
+        static::assertStringContainsString('versioned: 5 page(s) ok', $this->captured->stderr);
     }
 
     #[Test]
@@ -96,9 +96,9 @@ final class BuildCommandTest extends TestCase
 
         $exit = $this->build(['legacy'], manifest: $manifest);
 
-        self::assertSame(ExitCode::Success, $exit);
-        self::assertStringContainsString('legacy: archived, skipped', $this->captured->stderr);
-        self::assertStringNotContainsString('page(s)', $this->captured->stdout);
+        static::assertSame(ExitCode::Success, $exit);
+        static::assertStringContainsString('legacy: archived, skipped', $this->captured->stderr);
+        static::assertStringNotContainsString('page(s)', $this->captured->stdout);
     }
 
     #[Test]
@@ -110,10 +110,10 @@ final class BuildCommandTest extends TestCase
 
         $exit = $this->build(['draft'], verbose: true, manifest: $manifest);
 
-        self::assertSame(ExitCode::Success, $exit);
-        self::assertStringContainsString('draft: not onboarded, skipped', $this->captured->stderr);
-        self::assertStringNotContainsString('page(s)', $this->captured->stdout);
-        self::assertFalse(is_file(Path::join($this->tempDirectory, 'site', 'draft', 'v1', 'index.html')));
+        static::assertSame(ExitCode::Success, $exit);
+        static::assertStringContainsString('draft: not onboarded, skipped', $this->captured->stderr);
+        static::assertStringNotContainsString('page(s)', $this->captured->stdout);
+        static::assertFalse(is_file(Path::join($this->tempDirectory, 'site', 'draft', 'v1', 'index.html')));
     }
 
     #[Test]
@@ -121,10 +121,10 @@ final class BuildCommandTest extends TestCase
     {
         $exit = $this->discover($this->unauthorisedTransport());
 
-        self::assertSame(ExitCode::DiscoveryError, $exit);
-        self::assertStringContainsString('error: ', $this->captured->stderr);
-        self::assertStringContainsString('401', $this->captured->stderr);
-        self::assertSame('', $this->captured->stdout);
+        static::assertSame(ExitCode::DiscoveryError, $exit);
+        static::assertStringContainsString('error: ', $this->captured->stderr);
+        static::assertStringContainsString('401', $this->captured->stderr);
+        static::assertSame('', $this->captured->stdout);
     }
 
     #[Test]
@@ -132,13 +132,13 @@ final class BuildCommandTest extends TestCase
     {
         $exit = $this->build(['versioned']);
 
-        self::assertSame(ExitCode::Success, $exit);
-        self::assertSame(0, $exit->value);
-        self::assertStringContainsString('versioned: 5 page(s) ok', $this->captured->stderr);
-        self::assertStringContainsString('output directory: ', $this->captured->stdout);
-        self::assertStringContainsString('ok: 1, partial: 0, failed: 0, skipped: 0', $this->captured->stdout);
-        self::assertStringNotContainsString('warning: ', $this->captured->stderr);
-        self::assertStringNotContainsString('error: ', $this->captured->stderr);
+        static::assertSame(ExitCode::Success, $exit);
+        static::assertSame(0, $exit->value);
+        static::assertStringContainsString('versioned: 5 page(s) ok', $this->captured->stderr);
+        static::assertStringContainsString('output directory: ', $this->captured->stdout);
+        static::assertStringContainsString('ok: 1, partial: 0, failed: 0, skipped: 0', $this->captured->stdout);
+        static::assertStringNotContainsString('warning: ', $this->captured->stderr);
+        static::assertStringNotContainsString('error: ', $this->captured->stderr);
     }
 
     #[Test]
@@ -146,10 +146,10 @@ final class BuildCommandTest extends TestCase
     {
         $exit = $this->build(['broken-include']);
 
-        self::assertSame(ExitCode::Degraded, $exit);
-        self::assertStringContainsString('broken-include: 0 page(s) partial', $this->captured->stderr);
-        self::assertStringContainsString('docs/v1/index.adoc:', $this->captured->stderr);
-        self::assertStringContainsString('(render-failed)', $this->captured->stderr);
+        static::assertSame(ExitCode::Degraded, $exit);
+        static::assertStringContainsString('broken-include: 0 page(s) partial', $this->captured->stderr);
+        static::assertStringContainsString('docs/v1/index.adoc:', $this->captured->stderr);
+        static::assertStringContainsString('(render-failed)', $this->captured->stderr);
     }
 
     #[Test]
@@ -168,10 +168,10 @@ final class BuildCommandTest extends TestCase
 
         $exit = $this->build(['local'], manifest: $manifest);
 
-        self::assertSame(ExitCode::Degraded, $exit);
-        self::assertStringContainsString('a-broken.adoc:', $this->captured->stderr);
-        self::assertStringContainsString('local: 1 page(s) partial', $this->captured->stderr);
-        self::assertTrue(is_file(Path::join($this->tempDirectory, 'site', 'local', 'v1', 'index.html')));
+        static::assertSame(ExitCode::Degraded, $exit);
+        static::assertStringContainsString('a-broken.adoc:', $this->captured->stderr);
+        static::assertStringContainsString('local: 1 page(s) partial', $this->captured->stderr);
+        static::assertTrue(is_file(Path::join($this->tempDirectory, 'site', 'local', 'v1', 'index.html')));
     }
 
     #[Test]
@@ -179,10 +179,10 @@ final class BuildCommandTest extends TestCase
     {
         $exit = $this->discover($this->collidingTransport());
 
-        self::assertSame(ExitCode::ConfigError, $exit);
-        self::assertStringContainsString('error: ', $this->captured->stderr);
-        self::assertStringContainsString('message-bus', $this->captured->stderr);
-        self::assertSame('', $this->captured->stdout);
+        static::assertSame(ExitCode::ConfigError, $exit);
+        static::assertStringContainsString('error: ', $this->captured->stderr);
+        static::assertStringContainsString('message-bus', $this->captured->stderr);
+        static::assertSame('', $this->captured->stdout);
     }
 
     #[Test]
@@ -205,9 +205,9 @@ final class BuildCommandTest extends TestCase
 
         $html = (string) file_get_contents(Path::join($out, 'versioned', 'v1', 'index.html'));
 
-        self::assertSame(ExitCode::Success, $exit);
-        self::assertStringContainsString('href="/handbook/assets/site.', $html);
-        self::assertStringNotContainsString('href="/assets/site.', $html);
+        static::assertSame(ExitCode::Success, $exit);
+        static::assertStringContainsString('href="/handbook/assets/site.', $html);
+        static::assertStringNotContainsString('href="/assets/site.', $html);
     }
 
     #[Test]
@@ -215,8 +215,8 @@ final class BuildCommandTest extends TestCase
     {
         $command = new BuildCommand();
 
-        self::assertSame('build', $command->name());
-        self::assertNotSame('', $command->summary());
+        static::assertSame('build', $command->name());
+        static::assertNotSame('', $command->summary());
     }
 
     #[Test]
@@ -238,11 +238,11 @@ final class BuildCommandTest extends TestCase
             $this->makeOutput(),
         );
 
-        self::assertSame(ExitCode::Success, $exit);
-        self::assertStringContainsString("output directory: {$out}", $this->captured->stdout);
-        self::assertStringContainsString("report: {$this->tempDirectory}", $this->captured->stdout);
-        self::assertTrue(is_file(Path::join($out, 'versioned', 'v1', 'index.html')));
-        self::assertTrue(is_file(Path::join($this->tempDirectory, 'report.json')));
+        static::assertSame(ExitCode::Success, $exit);
+        static::assertStringContainsString("output directory: {$out}", $this->captured->stdout);
+        static::assertStringContainsString("report: {$this->tempDirectory}", $this->captured->stdout);
+        static::assertTrue(is_file(Path::join($out, 'versioned', 'v1', 'index.html')));
+        static::assertTrue(is_file(Path::join($this->tempDirectory, 'report.json')));
     }
 
     #[Test]
@@ -250,8 +250,8 @@ final class BuildCommandTest extends TestCase
     {
         $this->build(['mixed'], verbose: true);
 
-        self::assertStringContainsString('mixed: rendered mixed/v1/index.html', $this->captured->stderr);
-        self::assertStringContainsString('mixed: rendered mixed/v2/index.html', $this->captured->stderr);
+        static::assertStringContainsString('mixed: rendered mixed/v1/index.html', $this->captured->stderr);
+        static::assertStringContainsString('mixed: rendered mixed/v2/index.html', $this->captured->stderr);
     }
 
     protected function setUp(): void

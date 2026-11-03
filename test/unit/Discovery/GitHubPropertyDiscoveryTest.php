@@ -62,7 +62,7 @@ final class GitHubPropertyDiscoveryTest extends TestCase
     {
         $repositories = $this->discover($this->twoPageTransport());
 
-        self::assertTrue($this->named($repositories, 'theme-kit')->onboarded());
+        static::assertTrue($this->named($repositories, 'theme-kit')->onboarded());
     }
 
     #[Test]
@@ -75,7 +75,7 @@ final class GitHubPropertyDiscoveryTest extends TestCase
 
             self::fail('Expected a DiscoveryException.');
         } catch (DiscoveryException $exception) {
-            self::assertStringContainsString('FIXTURE_DISCOVERY_TOKEN', $exception->getMessage());
+            static::assertStringContainsString('FIXTURE_DISCOVERY_TOKEN', $exception->getMessage());
         }
     }
 
@@ -87,7 +87,7 @@ final class GitHubPropertyDiscoveryTest extends TestCase
             $this->discover($this->twoPageTransport()),
         );
 
-        self::assertNotContains('archived', $names);
+        static::assertNotContains('archived', $names);
     }
 
     #[Test]
@@ -112,8 +112,8 @@ final class GitHubPropertyDiscoveryTest extends TestCase
             'search' => ['items' => []],
         ]));
 
-        self::assertSame('main', $this->named($repositories, 'message-bus')->defaultBranch());
-        self::assertFalse($this->named($repositories, 'message-bus')->archived());
+        static::assertSame('main', $this->named($repositories, 'message-bus')->defaultBranch());
+        static::assertFalse($this->named($repositories, 'message-bus')->archived());
     }
 
     #[Test]
@@ -121,8 +121,8 @@ final class GitHubPropertyDiscoveryTest extends TestCase
     {
         $repositories = $this->discover($this->twoPageTransport());
 
-        self::assertTrue($this->named($repositories, 'message-bus')->onboarded());
-        self::assertFalse($this->named($repositories, 'job-queue')->onboarded());
+        static::assertTrue($this->named($repositories, 'message-bus')->onboarded());
+        static::assertFalse($this->named($repositories, 'job-queue')->onboarded());
     }
 
     #[Test]
@@ -135,7 +135,7 @@ final class GitHubPropertyDiscoveryTest extends TestCase
             apiBase  : 'https://github.example.test/api/v3/',
         ))->discover(SourceFixture::config());
 
-        self::assertSame(
+        static::assertSame(
             'https://github.example.test/api/v3/orgs/fixture-org/properties/values?per_page=100',
             $transport->requests[0]['url'],
         );
@@ -146,8 +146,8 @@ final class GitHubPropertyDiscoveryTest extends TestCase
     {
         $repositories = $this->discover($this->twoPageTransport());
 
-        self::assertSame('develop', $this->named($repositories, 'job-queue')->defaultBranch());
-        self::assertSame('main', $this->named($repositories, 'message-bus')->defaultBranch());
+        static::assertSame('develop', $this->named($repositories, 'job-queue')->defaultBranch());
+        static::assertSame('main', $this->named($repositories, 'message-bus')->defaultBranch());
     }
 
     #[Test]
@@ -155,7 +155,7 @@ final class GitHubPropertyDiscoveryTest extends TestCase
     {
         $repositories = $this->discover($this->twoPageTransport());
 
-        self::assertSame(
+        static::assertSame(
             ['job-queue', 'message-bus', 'theme-kit'],
             array_map(static fn(DiscoveredRepository $repository): string => $repository->slug(), $repositories),
         );
@@ -176,10 +176,10 @@ final class GitHubPropertyDiscoveryTest extends TestCase
 
             self::fail('Expected a DiscoveryException.');
         } catch (DiscoveryException $exception) {
-            self::assertStringContainsString('fixture-org', $exception->getMessage());
-            self::assertStringContainsString('docs', $exception->getMessage());
-            self::assertStringContainsString('401', $exception->getMessage());
-            self::assertFalse(str_contains($exception->getMessage(), self::ENV_VALUE));
+            static::assertStringContainsString('fixture-org', $exception->getMessage());
+            static::assertStringContainsString('docs', $exception->getMessage());
+            static::assertStringContainsString('401', $exception->getMessage());
+            static::assertFalse(str_contains($exception->getMessage(), self::ENV_VALUE));
         }
     }
 
@@ -198,8 +198,8 @@ final class GitHubPropertyDiscoveryTest extends TestCase
 
             self::fail('Expected a DiscoveryException.');
         } catch (DiscoveryException $exception) {
-            self::assertStringContainsString('Could not resolve host', $exception->getMessage());
-            self::assertFalse(str_contains($exception->getMessage(), self::ENV_VALUE));
+            static::assertStringContainsString('Could not resolve host', $exception->getMessage());
+            static::assertFalse(str_contains($exception->getMessage(), self::ENV_VALUE));
         }
     }
 
@@ -210,8 +210,8 @@ final class GitHubPropertyDiscoveryTest extends TestCase
 
         $this->discover($transport);
 
-        self::assertNotEmpty($transport->requests);
-        self::assertSame(sprintf('Bearer %s', self::ENV_VALUE), $transport->requests[0]['headers']['Authorization']);
+        static::assertNotEmpty($transport->requests);
+        static::assertSame(sprintf('Bearer %s', self::ENV_VALUE), $transport->requests[0]['headers']['Authorization']);
     }
 
     #[Test]
@@ -220,7 +220,7 @@ final class GitHubPropertyDiscoveryTest extends TestCase
         $paged  = $this->describe($this->discover($this->twoPageTransport()));
         $single = $this->describe($this->discover($this->singlePageTransport()));
 
-        self::assertSame($single, $paged);
+        static::assertSame($single, $paged);
     }
 
     protected function setUp(): void

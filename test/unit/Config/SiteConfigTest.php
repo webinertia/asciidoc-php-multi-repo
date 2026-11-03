@@ -57,20 +57,20 @@ final class SiteConfigTest extends TestCase
 
         $config = SiteConfig::fromArray($document, self::configPath());
 
-        self::assertSame(Path::normalise($absolute), $config->output()->directory());
+        static::assertSame(Path::normalise($absolute), $config->output()->directory());
     }
 
     #[Test]
     public function configPathIsNormalised(): void
     {
-        self::assertSame(Path::normalise(self::configPath()), $this->config()->configPath());
-        self::assertSame(Path::join(sys_get_temp_dir(), 'site-fixture'), $this->config()->configDirectory());
+        static::assertSame(Path::normalise(self::configPath()), $this->config()->configPath());
+        static::assertSame(Path::join(sys_get_temp_dir(), 'site-fixture'), $this->config()->configDirectory());
     }
 
     #[Test]
     public function organizationSectionIsRead(): void
     {
-        self::assertSame('doc-target', $this->config()->organization()->propertyName());
+        static::assertSame('doc-target', $this->config()->organization()->propertyName());
     }
 
     #[Test]
@@ -79,16 +79,16 @@ final class SiteConfigTest extends TestCase
         $directory = Path::join(sys_get_temp_dir(), 'site-fixture');
         $output    = $this->config()->output();
 
-        self::assertSame(Path::join($directory, 'public'), $output->directory());
-        self::assertSame(Path::join($directory, 'cache'), $output->cacheDirectory());
-        self::assertSame(Path::join($directory, 'reports', 'report.json'), $output->reportPath());
+        static::assertSame(Path::join($directory, 'public'), $output->directory());
+        static::assertSame(Path::join($directory, 'cache'), $output->cacheDirectory());
+        static::assertSame(Path::join($directory, 'reports', 'report.json'), $output->reportPath());
     }
 
     #[Test]
     public function projectLookupReturnsNullForUnknownName(): void
     {
-        self::assertNull($this->config()->project('missing'));
-        self::assertSame(20, $this->config()->project('messagebus-event')?->order());
+        static::assertNull($this->config()->project('missing'));
+        static::assertSame(20, $this->config()->project('messagebus-event')?->order());
     }
 
     #[Test]
@@ -96,39 +96,39 @@ final class SiteConfigTest extends TestCase
     {
         $projects = $this->config()->projects();
 
-        self::assertSame(['message-bus', 'messagebus-event'], array_keys($projects));
-        self::assertInstanceOf(ProjectOverride::class, $projects['message-bus']);
-        self::assertSame('Message Bus', $projects['message-bus']->title());
+        static::assertSame(['message-bus', 'messagebus-event'], array_keys($projects));
+        static::assertInstanceOf(ProjectOverride::class, $projects['message-bus']);
+        static::assertSame('Message Bus', $projects['message-bus']->title());
     }
 
     #[Test]
     public function renderSectionUsesDefaults(): void
     {
-        self::assertSame(4, $this->config()->render()->concurrency());
+        static::assertSame(4, $this->config()->render()->concurrency());
     }
 
     #[Test]
     public function schemaVersionIsRead(): void
     {
-        self::assertSame(1, $this->config()->schemaVersion());
+        static::assertSame(1, $this->config()->schemaVersion());
     }
 
     #[Test]
     public function siteSectionIsRead(): void
     {
-        self::assertSame('Webware Documentation', $this->config()->site()->name());
+        static::assertSame('Webware Documentation', $this->config()->site()->name());
     }
 
     #[Test]
     public function sourceSectionUsesDefaults(): void
     {
-        self::assertSame('docs', $this->config()->source()->directory());
+        static::assertSame('docs', $this->config()->source()->directory());
     }
 
     #[Test]
     public function themeSectionUsesDefaults(): void
     {
-        self::assertSame('webware', $this->config()->theme()->name());
+        static::assertSame('webware', $this->config()->theme()->name());
     }
 
     #[Test]
@@ -137,10 +137,10 @@ final class SiteConfigTest extends TestCase
         $config  = $this->config();
         $updated = $config->withSite($config->site()->withBasePath('/docs'));
 
-        self::assertNotSame($config, $updated);
-        self::assertSame('/docs/', $updated->site()->basePath());
-        self::assertSame('/', $config->site()->basePath());
-        self::assertSame($config->configPath(), $updated->configPath());
+        static::assertNotSame($config, $updated);
+        static::assertSame('/docs/', $updated->site()->basePath());
+        static::assertSame('/', $config->site()->basePath());
+        static::assertSame($config->configPath(), $updated->configPath());
     }
 
     private function config(): SiteConfig

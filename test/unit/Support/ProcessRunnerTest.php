@@ -24,7 +24,7 @@ final class ProcessRunnerTest extends TestCase
 
         $result = $this->runner->run([PHP_BINARY, '-r', 'echo $argv[1];', '--', $argument]);
 
-        self::assertSame($argument, $result->stdout());
+        static::assertSame($argument, $result->stdout());
     }
 
     #[Test]
@@ -34,8 +34,8 @@ final class ProcessRunnerTest extends TestCase
 
         $result = $this->runner->run([PHP_BINARY, '-r', 'echo $argv[1];', '--', $argument]);
 
-        self::assertTrue($result->successful());
-        self::assertSame($argument, $result->stdout());
+        static::assertTrue($result->successful());
+        static::assertSame($argument, $result->stdout());
     }
 
     #[Test]
@@ -43,8 +43,8 @@ final class ProcessRunnerTest extends TestCase
     {
         $result = $this->runner->run([PHP_BINARY, '-r', 'fwrite(STDERR, "warning");']);
 
-        self::assertTrue($result->successful());
-        self::assertSame('warning', $result->stderr());
+        static::assertTrue($result->successful());
+        static::assertSame('warning', $result->stderr());
     }
 
     #[Test]
@@ -52,11 +52,11 @@ final class ProcessRunnerTest extends TestCase
     {
         $result = $this->runner->run([PHP_BINARY, '-r', 'echo "hello";']);
 
-        self::assertTrue($result->successful());
-        self::assertSame(0, $result->exitCode());
-        self::assertSame('hello', $result->stdout());
-        self::assertSame('', $result->stderr());
-        self::assertFalse($result->timedOut());
+        static::assertTrue($result->successful());
+        static::assertSame(0, $result->exitCode());
+        static::assertSame('hello', $result->stdout());
+        static::assertSame('', $result->stderr());
+        static::assertFalse($result->timedOut());
     }
 
     #[Test]
@@ -64,7 +64,7 @@ final class ProcessRunnerTest extends TestCase
     {
         $result = $this->runner->run([PHP_BINARY, '-r', 'exit(0);']);
 
-        self::assertStringContainsString(PHP_BINARY, $result->describeCommand());
+        static::assertStringContainsString(PHP_BINARY, $result->describeCommand());
     }
 
     #[Test]
@@ -72,7 +72,7 @@ final class ProcessRunnerTest extends TestCase
     {
         $result = $this->runner->mustRun([PHP_BINARY, '-r', 'echo "ok";']);
 
-        self::assertSame('ok', $result->stdout());
+        static::assertSame('ok', $result->stdout());
     }
 
     #[Test]
@@ -82,10 +82,10 @@ final class ProcessRunnerTest extends TestCase
             $this->runner->mustRun([PHP_BINARY, '-r', 'echo "out"; fwrite(STDERR, "boom"); exit(2);']);
             self::fail('A non-zero exit should have raised an exception.');
         } catch (ProcessFailedException $exception) {
-            self::assertSame(2, $exception->result()->exitCode());
-            self::assertSame('out', $exception->result()->stdout());
-            self::assertSame('boom', $exception->result()->stderr());
-            self::assertStringContainsString('boom', $exception->getMessage());
+            static::assertSame(2, $exception->result()->exitCode());
+            static::assertSame('out', $exception->result()->stdout());
+            static::assertSame('boom', $exception->result()->stderr());
+            static::assertStringContainsString('boom', $exception->getMessage());
         }
     }
 
@@ -94,9 +94,9 @@ final class ProcessRunnerTest extends TestCase
     {
         $result = $this->runner->run([PHP_BINARY, '-r', 'exit(3);']);
 
-        self::assertFalse($result->successful());
-        self::assertSame(3, $result->exitCode());
-        self::assertStringContainsString('exited with code 3', $result->describeFailure());
+        static::assertFalse($result->successful());
+        static::assertSame(3, $result->exitCode());
+        static::assertStringContainsString('exited with code 3', $result->describeFailure());
     }
 
     #[Test]
@@ -104,9 +104,9 @@ final class ProcessRunnerTest extends TestCase
     {
         $result = $this->runner->run([PHP_BINARY, '-r', 'sleep(10);'], null, 0.2);
 
-        self::assertTrue($result->timedOut());
-        self::assertFalse($result->successful());
-        self::assertStringContainsString('timed out', $result->describeFailure());
+        static::assertTrue($result->timedOut());
+        static::assertFalse($result->successful());
+        static::assertStringContainsString('timed out', $result->describeFailure());
     }
 
     #[Test]
@@ -116,8 +116,8 @@ final class ProcessRunnerTest extends TestCase
 
         $result = $this->runner->run([PHP_BINARY, '-r', 'echo getcwd();'], $directory);
 
-        self::assertTrue($result->successful());
-        self::assertSame(
+        static::assertTrue($result->successful());
+        static::assertSame(
             strtolower(str_replace('\\', '/', (string) realpath($directory))),
             strtolower(str_replace('\\', '/', $result->stdout())),
         );

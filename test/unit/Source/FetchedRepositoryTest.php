@@ -28,13 +28,13 @@ final class FetchedRepositoryTest extends TestCase
     {
         $fetched = new FetchedRepository('versioned', 'abc123', '/r', 'docs', ['docs-extra/index.adoc']);
 
-        self::assertFalse($fetched->hasDocumentation());
+        static::assertFalse($fetched->hasDocumentation());
     }
 
     #[Test]
     public function anEmptyFileListHasNoDocumentation(): void
     {
-        self::assertFalse(new FetchedRepository('versioned', 'abc123', '/r', 'docs', [])->hasDocumentation());
+        static::assertFalse(new FetchedRepository('versioned', 'abc123', '/r', 'docs', [])->hasDocumentation());
     }
 
     #[Test]
@@ -42,7 +42,7 @@ final class FetchedRepositoryTest extends TestCase
     {
         $fetched = new FetchedRepository('versioned', 'abc123', '/r', 'docs', ['README.md', 'src/Docs.php']);
 
-        self::assertFalse($fetched->hasDocumentation());
+        static::assertFalse($fetched->hasDocumentation());
     }
 
     #[Test]
@@ -50,7 +50,7 @@ final class FetchedRepositoryTest extends TestCase
     {
         $fetched = new FetchedRepository('versioned', 'abc123', '/r', 'docs', ['README.md', 'docs/index.adoc']);
 
-        self::assertTrue($fetched->hasDocumentation());
+        static::assertTrue($fetched->hasDocumentation());
     }
 
     #[Test]
@@ -58,8 +58,8 @@ final class FetchedRepositoryTest extends TestCase
     {
         $fetched = new FetchedRepository('versioned', 'abc123', '/cache/versioned', 'docs', []);
 
-        self::assertSame(1, $fetched->attempts());
-        self::assertTrue($fetched->checkedOut());
+        static::assertSame(1, $fetched->attempts());
+        static::assertTrue($fetched->checkedOut());
     }
 
     #[Test]
@@ -67,7 +67,7 @@ final class FetchedRepositoryTest extends TestCase
     {
         $fetched = new FetchedRepository('versioned', 'abc123', '/cache/versioned', 'docs', []);
 
-        self::assertSame(Path::join('/cache/versioned', 'docs'), $fetched->docPath());
+        static::assertSame(Path::join('/cache/versioned', 'docs'), $fetched->docPath());
     }
 
     #[Test]
@@ -83,12 +83,12 @@ final class FetchedRepositoryTest extends TestCase
             false,
         );
 
-        self::assertSame('versioned', $fetched->repositoryName());
-        self::assertSame('abc123', $fetched->revision());
-        self::assertSame('/cache/versioned', $fetched->rootPath());
-        self::assertSame('docs', $fetched->documentationDirectory());
-        self::assertSame(['docs/index.adoc'], $fetched->files());
-        self::assertSame(2, $fetched->attempts());
-        self::assertFalse($fetched->checkedOut());
+        static::assertSame('versioned', $fetched->repositoryName());
+        static::assertSame('abc123', $fetched->revision());
+        static::assertSame('/cache/versioned', $fetched->rootPath());
+        static::assertSame('docs', $fetched->documentationDirectory());
+        static::assertSame(['docs/index.adoc'], $fetched->files());
+        static::assertSame(2, $fetched->attempts());
+        static::assertFalse($fetched->checkedOut());
     }
 }

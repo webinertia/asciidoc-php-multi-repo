@@ -49,10 +49,10 @@ final class TocExtractorTest extends TestCase
     {
         $entries = new TocExtractor()->extract($this->document("= Title\n\n== First & <second>\n\nText.\n"), [2]);
 
-        self::assertCount(1, $entries);
-        self::assertSame(2, $entries[0]->level());
-        self::assertSame('_first_second', $entries[0]->id());
-        self::assertSame('First & <second>', $entries[0]->title());
+        static::assertCount(1, $entries);
+        static::assertSame(2, $entries[0]->level());
+        static::assertSame('_first_second', $entries[0]->id());
+        static::assertSame('First & <second>', $entries[0]->title());
     }
 
     #[Test]
@@ -63,7 +63,7 @@ final class TocExtractorTest extends TestCase
             [2, 3],
         );
 
-        self::assertSame([], $entries);
+        static::assertSame([], $entries);
     }
 
     #[Test]
@@ -74,7 +74,7 @@ final class TocExtractorTest extends TestCase
             [2],
         );
 
-        self::assertSame(['_one', '_two'], array_map(static fn(TocEntry $entry): string => $entry->id(), $entries));
+        static::assertSame(['_one', '_two'], array_map(static fn(TocEntry $entry): string => $entry->id(), $entries));
     }
 
     #[Test]
@@ -88,8 +88,8 @@ final class TocExtractorTest extends TestCase
 
         $entries = new TocExtractor()->extract($document, [2]);
 
-        self::assertCount(1, $entries);
-        self::assertSame('spaced-id', $entries[0]->id());
+        static::assertCount(1, $entries);
+        static::assertSame('spaced-id', $entries[0]->id());
     }
 
     #[Test]
@@ -107,10 +107,10 @@ final class TocExtractorTest extends TestCase
         } catch (SourceException $exception) {
             $error = $exception->error();
 
-            self::assertSame(ReasonCode::TocTargetMissing, $error->reasonCode());
-            self::assertSame('docs/v1/index.adoc', $error->path());
-            self::assertStringContainsString('Orphan heading', $error->message());
-            self::assertNotNull($error->correctiveAction());
+            static::assertSame(ReasonCode::TocTargetMissing, $error->reasonCode());
+            static::assertSame('docs/v1/index.adoc', $error->path());
+            static::assertStringContainsString('Orphan heading', $error->message());
+            static::assertNotNull($error->correctiveAction());
         }
     }
 
@@ -119,7 +119,7 @@ final class TocExtractorTest extends TestCase
     {
         $entries = new TocExtractor()->extract($this->document(self::ORDERED_SOURCE), [2, 3]);
 
-        self::assertSame(
+        static::assertSame(
             [
                 ['level' => 2, 'id' => '_second_level_heading', 'title' => 'Second level heading'],
                 ['level' => 3, 'id' => '_third_level_heading', 'title' => 'Third level heading'],
@@ -134,8 +134,8 @@ final class TocExtractorTest extends TestCase
     {
         $entries = new TocExtractor()->extract($this->document(self::ORDERED_SOURCE), [2]);
 
-        self::assertCount(2, $entries);
-        self::assertSame([2, 2], array_map(static fn(TocEntry $entry): int => $entry->level(), $entries));
+        static::assertCount(2, $entries);
+        static::assertSame([2, 2], array_map(static fn(TocEntry $entry): int => $entry->level(), $entries));
     }
 
     #[Test]
@@ -146,7 +146,7 @@ final class TocExtractorTest extends TestCase
             [2, 3],
         );
 
-        self::assertSame(
+        static::assertSame(
             [
                 ['level' => 2, 'id' => '_first', 'title' => 'First'],
                 ['level' => 3, 'id' => '_second', 'title' => 'Second'],
@@ -162,7 +162,7 @@ final class TocExtractorTest extends TestCase
         Asciidoc::convert($source, ['converter' => $converter, 'header_footer' => false]);
 
         $document = $converter->lastDocument();
-        self::assertInstanceOf(Document::class, $document);
+        static::assertInstanceOf(Document::class, $document);
 
         return $document;
     }

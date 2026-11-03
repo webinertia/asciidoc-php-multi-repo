@@ -390,7 +390,7 @@ final class WatchCommandTest extends TestCase
     {
         $contents = file_get_contents(Path::join($this->outputDirectory(), $relative));
 
-        self::assertIsString($contents);
+        static::assertIsString($contents);
 
         return $contents;
     }

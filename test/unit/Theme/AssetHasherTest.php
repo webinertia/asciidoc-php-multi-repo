@@ -32,8 +32,8 @@ final class AssetHasherTest extends TestCase
     {
         $hasher = new AssetHasher(1);
 
-        self::assertSame(substr(hash('sha256', self::CONTENTS), 0, 1), $hasher->hash(self::CONTENTS));
-        self::assertSame(1, strlen($hasher->hash(self::CONTENTS)));
+        static::assertSame(substr(hash('sha256', self::CONTENTS), 0, 1), $hasher->hash(self::CONTENTS));
+        static::assertSame(1, strlen($hasher->hash(self::CONTENTS)));
     }
 
     #[Test]
@@ -41,20 +41,20 @@ final class AssetHasherTest extends TestCase
     {
         $hasher = new AssetHasher();
 
-        self::assertSame($hasher->hash('a'), $hasher->hash('a'));
-        self::assertNotSame($hasher->hash('a'), $hasher->hash('b'));
+        static::assertSame($hasher->hash('a'), $hasher->hash('a'));
+        static::assertNotSame($hasher->hash('a'), $hasher->hash('b'));
     }
 
     #[Test]
     public function theHashIsSixCharactersByDefault(): void
     {
-        self::assertSame(6, strlen(new AssetHasher()->hash(self::CONTENTS)));
+        static::assertSame(6, strlen(new AssetHasher()->hash(self::CONTENTS)));
     }
 
     #[Test]
     public function theHashIsTheLeadingCharactersOfTheContentDigest(): void
     {
-        self::assertSame(
+        static::assertSame(
             substr(hash('sha256', self::CONTENTS), 0, 6),
             new AssetHasher()->hash(self::CONTENTS),
         );
@@ -65,7 +65,7 @@ final class AssetHasherTest extends TestCase
     {
         $hasher = new AssetHasher();
 
-        self::assertSame(
+        static::assertSame(
             "site.{$hasher->hash(self::CONTENTS)}.css",
             $hasher->hashedName('site', 'css', self::CONTENTS),
         );

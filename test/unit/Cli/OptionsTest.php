@@ -17,27 +17,27 @@ final class OptionsTest extends TestCase
     {
         $options = new Options();
 
-        self::assertSame('', $options->command);
-        self::assertNull($options->config);
-        self::assertSame(Options::DEFAULT_CONFIG, $options->configPath());
-        self::assertNull($options->out);
-        self::assertNull($options->cache);
-        self::assertNull($options->report);
-        self::assertNull($options->concurrency);
-        self::assertSame([], $options->projects);
-        self::assertSame([], $options->refs);
-        self::assertNull($options->manifest);
-        self::assertFalse($options->full);
-        self::assertNull($options->basePath);
-        self::assertSame(8080, $options->port);
-        self::assertFalse($options->force);
-        self::assertFalse($options->quiet);
-        self::assertFalse($options->verbose);
-        self::assertFalse($options->timings);
-        self::assertFalse($options->noColor);
-        self::assertFalse($options->help);
-        self::assertFalse($options->version);
-        self::assertFalse($options->hasProjectFilter());
+        static::assertSame('', $options->command);
+        static::assertNull($options->config);
+        static::assertSame(Options::DEFAULT_CONFIG, $options->configPath());
+        static::assertNull($options->out);
+        static::assertNull($options->cache);
+        static::assertNull($options->report);
+        static::assertNull($options->concurrency);
+        static::assertSame([], $options->projects);
+        static::assertSame([], $options->refs);
+        static::assertNull($options->manifest);
+        static::assertFalse($options->full);
+        static::assertNull($options->basePath);
+        static::assertSame(8080, $options->port);
+        static::assertFalse($options->force);
+        static::assertFalse($options->quiet);
+        static::assertFalse($options->verbose);
+        static::assertFalse($options->timings);
+        static::assertFalse($options->noColor);
+        static::assertFalse($options->help);
+        static::assertFalse($options->version);
+        static::assertFalse($options->hasProjectFilter());
     }
 
     #[Test]
@@ -45,7 +45,7 @@ final class OptionsTest extends TestCase
     {
         $options = new Options(config: '/tmp/site.json');
 
-        self::assertSame('/tmp/site.json', $options->configPath());
+        static::assertSame('/tmp/site.json', $options->configPath());
     }
 
     #[Test]
@@ -53,7 +53,7 @@ final class OptionsTest extends TestCase
     {
         $options = new Options(projects: ['message-bus']);
 
-        self::assertTrue($options->hasProjectFilter());
+        static::assertTrue($options->hasProjectFilter());
     }
 
     #[Test]

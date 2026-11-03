@@ -27,9 +27,9 @@ final class SlugCollisionDetectorTest extends TestCase
 
             self::fail('Expected a SlugException.');
         } catch (SlugException $exception) {
-            self::assertStringContainsString('message-bus', $exception->getMessage());
-            self::assertStringContainsString('message.bus', $exception->getMessage());
-            self::assertStringContainsString('"message-bus"', $exception->getMessage());
+            static::assertStringContainsString('message-bus', $exception->getMessage());
+            static::assertStringContainsString('message.bus', $exception->getMessage());
+            static::assertStringContainsString('"message-bus"', $exception->getMessage());
         }
     }
 
@@ -64,9 +64,9 @@ final class SlugCollisionDetectorTest extends TestCase
 
             self::fail('Expected a SlugException.');
         } catch (SlugException $exception) {
-            self::assertStringContainsString('alpha', $exception->getMessage());
-            self::assertStringContainsString('beta', $exception->getMessage());
-            self::assertStringNotContainsString('gamma', $exception->getMessage());
+            static::assertStringContainsString('alpha', $exception->getMessage());
+            static::assertStringContainsString('beta', $exception->getMessage());
+            static::assertStringNotContainsString('gamma', $exception->getMessage());
         }
     }
 
@@ -81,7 +81,7 @@ final class SlugCollisionDetectorTest extends TestCase
 
             self::fail('Expected a SlugException.');
         } catch (SlugException $exception) {
-            self::assertStringContainsString('projects.message.bus.slug', $exception->getMessage());
+            static::assertStringContainsString('projects.message.bus.slug', $exception->getMessage());
         }
     }
 

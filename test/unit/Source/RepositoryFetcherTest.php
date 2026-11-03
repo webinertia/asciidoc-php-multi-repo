@@ -48,8 +48,8 @@ final class RepositoryFetcherTest extends TestCase
             "{$this->tempDirectory}/cache",
         );
 
-        self::assertSame($commit, $fetched->revision());
-        self::assertMatchesRegularExpression('/^[0-9a-f]{40}$/', $fetched->revision());
+        static::assertSame($commit, $fetched->revision());
+        static::assertMatchesRegularExpression('/^[0-9a-f]{40}$/', $fetched->revision());
     }
 
     #[Test]
@@ -66,11 +66,11 @@ final class RepositoryFetcherTest extends TestCase
             "{$this->tempDirectory}/cache",
         );
 
-        self::assertSame($root, $fetched->rootPath());
-        self::assertSame(['README.md', 'docs/v1/index.adoc'], $fetched->files());
-        self::assertTrue($fetched->hasDocumentation());
-        self::assertSame(1, $fetched->attempts());
-        self::assertSame('docs', $fetched->documentationDirectory());
+        static::assertSame($root, $fetched->rootPath());
+        static::assertSame(['README.md', 'docs/v1/index.adoc'], $fetched->files());
+        static::assertTrue($fetched->hasDocumentation());
+        static::assertSame(1, $fetched->attempts());
+        static::assertSame('docs', $fetched->documentationDirectory());
     }
 
     #[Test]
@@ -93,10 +93,10 @@ final class RepositoryFetcherTest extends TestCase
         } catch (SourceException $exception) {
             $error = $exception->error();
 
-            self::assertSame(ReasonCode::FetchFailed, $error->reasonCode());
-            self::assertStringContainsString('versioned', $error->message());
-            self::assertStringContainsString('1 attempt(s)', $error->message());
-            self::assertNotNull($error->correctiveAction());
+            static::assertSame(ReasonCode::FetchFailed, $error->reasonCode());
+            static::assertStringContainsString('versioned', $error->message());
+            static::assertStringContainsString('1 attempt(s)', $error->message());
+            static::assertNotNull($error->correctiveAction());
         }
     }
 
@@ -111,7 +111,7 @@ final class RepositoryFetcherTest extends TestCase
             "{$this->tempDirectory}/cache",
         );
 
-        self::assertMatchesRegularExpression('/^[0-9a-f]{64}$/', $fetched->revision());
+        static::assertMatchesRegularExpression('/^[0-9a-f]{64}$/', $fetched->revision());
     }
 
     #[Test]
@@ -131,11 +131,11 @@ final class RepositoryFetcherTest extends TestCase
                 $cache,
             );
 
-        self::assertSame(Path::join($cache, 'versioned'), $fetched->rootPath());
-        self::assertSame(['docs/v1/index.adoc'], $fetched->files());
-        self::assertSame($this->head($origin), $fetched->revision());
-        self::assertSame(1, $fetched->attempts());
-        self::assertTrue($fetched->checkedOut());
+        static::assertSame(Path::join($cache, 'versioned'), $fetched->rootPath());
+        static::assertSame(['docs/v1/index.adoc'], $fetched->files());
+        static::assertSame($this->head($origin), $fetched->revision());
+        static::assertSame(1, $fetched->attempts());
+        static::assertTrue($fetched->checkedOut());
     }
 
     #[Test]
@@ -149,8 +149,8 @@ final class RepositoryFetcherTest extends TestCase
             "{$this->tempDirectory}/cache",
         );
 
-        self::assertFalse($fetched->hasDocumentation());
-        self::assertSame(['README.md'], $fetched->files());
+        static::assertFalse($fetched->hasDocumentation());
+        static::assertSame(['README.md'], $fetched->files());
     }
 
     #[Test]
@@ -171,7 +171,7 @@ final class RepositoryFetcherTest extends TestCase
 
             self::fail('Expected a SourceException.');
         } catch (SourceException $exception) {
-            self::assertStringContainsString('1 attempt(s)', $exception->error()->message());
+            static::assertStringContainsString('1 attempt(s)', $exception->error()->message());
         }
     }
 
@@ -186,9 +186,9 @@ final class RepositoryFetcherTest extends TestCase
         $first   = $fetcher->fetch(SourceFixture::repository(), SourceFixture::config(), $cache);
         $second  = $fetcher->fetch(SourceFixture::repository(), SourceFixture::config(), $cache);
 
-        self::assertTrue($first->checkedOut());
-        self::assertFalse($second->checkedOut());
-        self::assertSame($first->revision(), $second->revision());
+        static::assertTrue($first->checkedOut());
+        static::assertFalse($second->checkedOut());
+        static::assertSame($first->revision(), $second->revision());
     }
 
     #[Test]
@@ -209,7 +209,7 @@ final class RepositoryFetcherTest extends TestCase
 
             self::fail('Expected a SourceException.');
         } catch (SourceException $exception) {
-            self::assertStringContainsString('3 attempt(s)', $exception->error()->message());
+            static::assertStringContainsString('3 attempt(s)', $exception->error()->message());
         }
     }
 
@@ -238,7 +238,7 @@ final class RepositoryFetcherTest extends TestCase
             )
             ->revision();
 
-        self::assertNotSame($before, $after);
+        static::assertNotSame($before, $after);
     }
 
     #[Test]
@@ -264,7 +264,7 @@ final class RepositoryFetcherTest extends TestCase
             )
             ->revision();
 
-        self::assertSame($first, $second);
+        static::assertSame($first, $second);
     }
 
     #[Test]
@@ -280,7 +280,7 @@ final class RepositoryFetcherTest extends TestCase
                 Path::join($this->tempDirectory, 'cache'),
             );
 
-        self::assertSame($this->head($origin), $fetched->revision());
+        static::assertSame($this->head($origin), $fetched->revision());
     }
 
     #[Test]
@@ -294,8 +294,8 @@ final class RepositoryFetcherTest extends TestCase
             "{$this->tempDirectory}/cache",
         );
 
-        self::assertSame('documentation', $fetched->documentationDirectory());
-        self::assertTrue($fetched->hasDocumentation());
+        static::assertSame('documentation', $fetched->documentationDirectory());
+        static::assertTrue($fetched->hasDocumentation());
     }
 
     #[Test]
@@ -309,7 +309,7 @@ final class RepositoryFetcherTest extends TestCase
             "{$this->tempDirectory}/cache",
         );
 
-        self::assertSame(['docs/index.adoc'], $fetched->files());
+        static::assertSame(['docs/index.adoc'], $fetched->files());
     }
 
     #[Test]
@@ -346,7 +346,7 @@ final class RepositoryFetcherTest extends TestCase
                 'v9.9.9',
             );
 
-        self::assertSame($tagged, $fetched->revision());
+        static::assertSame($tagged, $fetched->revision());
     }
 
     #[Test]
@@ -374,7 +374,7 @@ final class RepositoryFetcherTest extends TestCase
             Path::join($this->tempDirectory, 'cache'),
         );
 
-        self::assertSame(['fixture-org', 'message-bus'], $seen);
+        static::assertSame(['fixture-org', 'message-bus'], $seen);
     }
 
     protected function setUp(): void

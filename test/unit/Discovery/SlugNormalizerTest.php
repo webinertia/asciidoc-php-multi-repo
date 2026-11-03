@@ -43,8 +43,8 @@ final class SlugNormalizerTest extends TestCase
 
             self::fail('Expected a SlugException.');
         } catch (SlugException $exception) {
-            self::assertStringContainsString('___', $exception->getMessage());
-            self::assertStringContainsString('slug', $exception->getMessage());
+            static::assertStringContainsString('___', $exception->getMessage());
+            static::assertStringContainsString('slug', $exception->getMessage());
         }
     }
 
@@ -59,7 +59,7 @@ final class SlugNormalizerTest extends TestCase
     #[Test]
     public function aNonAsciiNameCollapsesToSeparators(): void
     {
-        self::assertSame('na-ve', new SlugNormalizer()->normalise('naïve'));
+        static::assertSame('na-ve', new SlugNormalizer()->normalise('naïve'));
     }
 
     #[Test]
@@ -73,20 +73,20 @@ final class SlugNormalizerTest extends TestCase
             $normalizer->normalise('MESSAGE BUS'),
         ];
 
-        self::assertCount(1, array_unique($slugs));
+        static::assertCount(1, array_unique($slugs));
     }
 
     #[Test]
     #[DataProvider('equivalentNames')]
     public function theNameIsReducedToALowercaseHyphenatedSlug(string $name, string $expected): void
     {
-        self::assertSame($expected, new SlugNormalizer()->normalise($name));
+        static::assertSame($expected, new SlugNormalizer()->normalise($name));
     }
 
     #[Test]
     public function theResultContainsOnlyLowercaseAsciiAndHyphens(): void
     {
-        self::assertMatchesRegularExpression(
+        static::assertMatchesRegularExpression(
             '/^[a-z0-9]+(-[a-z0-9]+)*$/',
             new SlugNormalizer()->normalise('Webware.Asciidoc PHP_Multi Repo'),
         );
@@ -97,8 +97,8 @@ final class SlugNormalizerTest extends TestCase
     {
         $slug = new SlugNormalizer()->normalise('__Message_Bus__');
 
-        self::assertSame('message-bus', $slug);
-        self::assertStringStartsNotWith('-', $slug);
-        self::assertStringEndsNotWith('-', $slug);
+        static::assertSame('message-bus', $slug);
+        static::assertStringStartsNotWith('-', $slug);
+        static::assertStringEndsNotWith('-', $slug);
     }
 }

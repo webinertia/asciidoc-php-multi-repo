@@ -39,11 +39,11 @@ final class PageEnumeratorTest extends TestCase
         } catch (SourceException $exception) {
             $error = $exception->error();
 
-            self::assertSame(ReasonCode::MissingEntry, $error->reasonCode());
-            self::assertStringContainsString('index.adoc', $error->message());
-            self::assertStringContainsString('README.adoc', $error->message());
-            self::assertStringContainsString('missing-entry', $error->message());
-            self::assertNotNull($error->correctiveAction());
+            static::assertSame(ReasonCode::MissingEntry, $error->reasonCode());
+            static::assertStringContainsString('index.adoc', $error->message());
+            static::assertStringContainsString('README.adoc', $error->message());
+            static::assertStringContainsString('missing-entry', $error->message());
+            static::assertNotNull($error->correctiveAction());
         }
     }
 
@@ -66,7 +66,7 @@ final class PageEnumeratorTest extends TestCase
             $config,
         );
 
-        self::assertSame(
+        static::assertSame(
             ['docs/index.adoc'],
             array_map(static fn(DocPage $page): string => $page->relativePath(), $set->pages()),
         );
@@ -88,7 +88,7 @@ final class PageEnumeratorTest extends TestCase
             $config,
         );
 
-        self::assertSame(
+        static::assertSame(
             ['docs/v1/index.adoc'],
             array_map(static fn(DocPage $page): string => $page->relativePath(), $set->pages()),
         );
@@ -103,7 +103,7 @@ final class PageEnumeratorTest extends TestCase
             SourceFixture::config(),
         );
 
-        self::assertSame(
+        static::assertSame(
             ['docs/index.adoc'],
             array_map(static fn(DocPage $page): string => $page->relativePath(), $set->pages()),
         );
@@ -118,7 +118,7 @@ final class PageEnumeratorTest extends TestCase
             SourceFixture::config(),
         );
 
-        self::assertSame(
+        static::assertSame(
             ['docs/index.adoc'],
             array_map(static fn(DocPage $page): string => $page->relativePath(), $set->pages()),
         );
@@ -140,7 +140,7 @@ final class PageEnumeratorTest extends TestCase
             $config,
         );
 
-        self::assertSame(
+        static::assertSame(
             ['docs/index.adoc', 'docs/reference/deep.adoc'],
             array_map(static fn(DocPage $page): string => $page->relativePath(), $set->pages()),
         );
@@ -160,9 +160,9 @@ final class PageEnumeratorTest extends TestCase
         } catch (SourceException $exception) {
             $error = $exception->error();
 
-            self::assertSame(ReasonCode::NoAsciidocSources, $error->reasonCode());
-            self::assertStringContainsString('.adoc', $error->message());
-            self::assertStringContainsString('markdown-only', $error->message());
+            static::assertSame(ReasonCode::NoAsciidocSources, $error->reasonCode());
+            static::assertStringContainsString('.adoc', $error->message());
+            static::assertStringContainsString('markdown-only', $error->message());
         }
     }
 
@@ -175,7 +175,7 @@ final class PageEnumeratorTest extends TestCase
             SourceFixture::config(),
         );
 
-        self::assertSame(
+        static::assertSame(
             ['docs/index.adoc', 'docs/guide.asciidoc'],
             array_map(static fn(DocPage $page): string => $page->relativePath(), $set->pages()),
         );
@@ -190,7 +190,7 @@ final class PageEnumeratorTest extends TestCase
             SourceFixture::config(),
         );
 
-        self::assertSame(
+        static::assertSame(
             ['docs/v2/index.adoc'],
             array_map(static fn(DocPage $page): string => $page->relativePath(), $set->pages()),
         );
@@ -206,9 +206,9 @@ final class PageEnumeratorTest extends TestCase
         );
         $page = $set->entry();
 
-        self::assertSame('docs/index.adoc', $page->relativePath());
-        self::assertStringContainsString('example', $page->absolutePath());
-        self::assertStringEndsWith('index.adoc', $page->absolutePath());
+        static::assertSame('docs/index.adoc', $page->relativePath());
+        static::assertStringContainsString('example', $page->absolutePath());
+        static::assertStringEndsWith('index.adoc', $page->absolutePath());
     }
 
     #[Test]
@@ -229,7 +229,7 @@ final class PageEnumeratorTest extends TestCase
             ]),
         );
 
-        self::assertSame(
+        static::assertSame(
             ['docs/index.adoc'],
             array_map(static fn(DocPage $page): string => $page->relativePath(), $set->pages()),
         );
@@ -246,7 +246,7 @@ final class PageEnumeratorTest extends TestCase
             $config,
         );
 
-        self::assertSame('docs/v1/README.adoc', $set->entry()->relativePath());
+        static::assertSame('docs/v1/README.adoc', $set->entry()->relativePath());
     }
 
     #[Test]
@@ -259,9 +259,9 @@ final class PageEnumeratorTest extends TestCase
                 SourceFixture::config(),
             );
         } catch (SourceException $exception) {
-            self::assertSame(ReasonCode::MissingEntry, $exception->error()->reasonCode());
-            self::assertSame('v1', $exception->error()->version());
-            self::assertSame('docs/v1', $exception->error()->path());
+            static::assertSame(ReasonCode::MissingEntry, $exception->error()->reasonCode());
+            static::assertSame('v1', $exception->error()->version());
+            static::assertSame('docs/v1', $exception->error()->path());
 
             return;
         }
@@ -283,13 +283,13 @@ final class PageEnumeratorTest extends TestCase
             SourceFixture::config(),
         );
 
-        self::assertSame(
+        static::assertSame(
             ['docs/v1/guide.adoc', 'docs/v1/index.adoc', 'docs/v1/reference/nested.adoc'],
             array_map(static fn(DocPage $page): string => $page->relativePath(), $set->pages()),
         );
-        self::assertSame('docs/v1/index.adoc', $set->entry()->relativePath());
-        self::assertSame('v1', $set->entry()->version());
-        self::assertSame('v1', $set->version()->label());
+        static::assertSame('docs/v1/index.adoc', $set->entry()->relativePath());
+        static::assertSame('v1', $set->entry()->version());
+        static::assertSame('v1', $set->version()->label());
     }
 
     #[Test]
@@ -305,7 +305,7 @@ final class PageEnumeratorTest extends TestCase
             SourceFixture::config(),
         );
 
-        self::assertSame(
+        static::assertSame(
             ['docs/index.adoc'],
             array_map(static fn(DocPage $page): string => $page->relativePath(), $set->pages()),
         );

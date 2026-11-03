@@ -62,9 +62,9 @@ final class FetchCommandTest extends TestCase
             transport: new StubHttpTransport(['properties/values' => StubHttpResponse::create(401, '{}')]),
         );
 
-        self::assertSame(ExitCode::DiscoveryError, $exit);
-        self::assertFalse(is_file($this->manifestPath()));
-        self::assertStringContainsString('error: ', $this->captured->stderr);
+        static::assertSame(ExitCode::DiscoveryError, $exit);
+        static::assertFalse(is_file($this->manifestPath()));
+        static::assertStringContainsString('error: ', $this->captured->stderr);
     }
 
     #[Test]
@@ -72,8 +72,8 @@ final class FetchCommandTest extends TestCase
     {
         $this->executeCommand(SourceFixture::path('manifest.json'));
 
-        self::assertNull($this->entry('unversioned')['error']);
-        self::assertNull($this->entry('mixed')['error']);
+        static::assertNull($this->entry('unversioned')['error']);
+        static::assertNull($this->entry('mixed')['error']);
     }
 
     #[Test]
@@ -87,9 +87,9 @@ final class FetchCommandTest extends TestCase
 
         $exit = $this->executeCommand($manifest);
 
-        self::assertSame(ExitCode::Success, $exit);
-        self::assertSame('no-asciidoc-sources', $this->entry('versioned')['error']['reasonCode']);
-        self::assertStringContainsString('versioned: 0 version(s), 0 page(s), revision ', $this->captured->stderr);
+        static::assertSame(ExitCode::Success, $exit);
+        static::assertSame('no-asciidoc-sources', $this->entry('versioned')['error']['reasonCode']);
+        static::assertStringContainsString('versioned: 0 version(s), 0 page(s), revision ', $this->captured->stderr);
     }
 
     #[Test]
@@ -99,8 +99,8 @@ final class FetchCommandTest extends TestCase
 
         $entry = $this->entry('markdown-only');
 
-        self::assertSame('no-asciidoc-sources', $entry['error']['reasonCode']);
-        self::assertSame('docs', $entry['documentationPath']);
+        static::assertSame('no-asciidoc-sources', $entry['error']['reasonCode']);
+        static::assertSame('docs', $entry['documentationPath']);
     }
 
     #[Test]
@@ -113,13 +113,13 @@ final class FetchCommandTest extends TestCase
 
         $this->executeCommand($manifest, $this->configWithoutExclusions());
 
-        self::assertSame('archived', $this->entry('archived')['error']['reasonCode']);
-        self::assertNull($this->entry('archived')['revision']);
-        self::assertSame(
+        static::assertSame('archived', $this->entry('archived')['error']['reasonCode']);
+        static::assertNull($this->entry('archived')['revision']);
+        static::assertSame(
             ['archived', 'versioned'],
             array_column($this->manifest()['repositories'], 'name'),
         );
-        self::assertStringContainsString('archived: archived, skipped', $this->captured->stderr);
+        static::assertStringContainsString('archived: archived, skipped', $this->captured->stderr);
     }
 
     #[Test]
@@ -133,8 +133,8 @@ final class FetchCommandTest extends TestCase
         $this->verbose = true;
         $this->executeCommand($manifest);
 
-        self::assertSame(['zeta'], array_column($this->manifest()['repositories'], 'name'));
-        self::assertStringContainsString('alpha: not onboarded, skipped', $this->captured->stderr);
+        static::assertSame(['zeta'], array_column($this->manifest()['repositories'], 'name'));
+        static::assertStringContainsString('alpha: not onboarded, skipped', $this->captured->stderr);
     }
 
     #[Test]
@@ -147,7 +147,7 @@ final class FetchCommandTest extends TestCase
 
         $this->executeCommand($manifest);
 
-        self::assertSame(['unversioned'], array_column($this->manifest()['repositories'], 'name'));
+        static::assertSame(['unversioned'], array_column($this->manifest()['repositories'], 'name'));
     }
 
     #[Test]
@@ -168,10 +168,10 @@ final class FetchCommandTest extends TestCase
             ),
         );
 
-        self::assertSame(ExitCode::Success, $exit);
-        self::assertSame('fetch-failed', $this->entry('versioned')['error']['reasonCode']);
-        self::assertNull($this->entry('versioned')['revision']);
-        self::assertStringContainsString(
+        static::assertSame(ExitCode::Success, $exit);
+        static::assertSame('fetch-failed', $this->entry('versioned')['error']['reasonCode']);
+        static::assertNull($this->entry('versioned')['revision']);
+        static::assertStringContainsString(
             'versioned: 0 version(s), 0 page(s), revision unknown',
             $this->captured->stderr,
         );
@@ -182,7 +182,7 @@ final class FetchCommandTest extends TestCase
     {
         $this->executeCommand(SourceFixture::path('manifest.json'));
 
-        self::assertSame('missing-entry', $this->entry('missing-entry')['error']['reasonCode']);
+        static::assertSame('missing-entry', $this->entry('missing-entry')['error']['reasonCode']);
     }
 
     #[Test]
@@ -192,9 +192,9 @@ final class FetchCommandTest extends TestCase
 
         $versioned = $this->entry('versioned');
 
-        self::assertNull($versioned['error']);
-        self::assertSame('docs', $versioned['documentationPath']);
-        self::assertMatchesRegularExpression('/^[0-9a-f]{64}$/', $versioned['revision']);
+        static::assertNull($versioned['error']);
+        static::assertSame('docs', $versioned['documentationPath']);
+        static::assertMatchesRegularExpression('/^[0-9a-f]{64}$/', $versioned['revision']);
     }
 
     #[Test]
@@ -206,9 +206,9 @@ final class FetchCommandTest extends TestCase
             transport: $this->collidingTransport(),
         );
 
-        self::assertSame(ExitCode::ConfigError, $exit);
-        self::assertFalse(is_file($this->manifestPath()));
-        self::assertStringContainsString('message-bus', $this->captured->stderr);
+        static::assertSame(ExitCode::ConfigError, $exit);
+        static::assertFalse(is_file($this->manifestPath()));
+        static::assertStringContainsString('message-bus', $this->captured->stderr);
     }
 
     #[Test]
@@ -219,10 +219,10 @@ final class FetchCommandTest extends TestCase
             config  : SourceFixture::config(['projects' => ['versioned' => ['slug' => 'mixed']]]),
         );
 
-        self::assertSame(ExitCode::ConfigError, $exit);
-        self::assertStringContainsString('"mixed"', $this->captured->stderr);
-        self::assertStringNotContainsString(': fetching', $this->captured->stderr);
-        self::assertFalse(is_file($this->manifestPath()));
+        static::assertSame(ExitCode::ConfigError, $exit);
+        static::assertStringContainsString('"mixed"', $this->captured->stderr);
+        static::assertStringNotContainsString(': fetching', $this->captured->stderr);
+        static::assertFalse(is_file($this->manifestPath()));
     }
 
     #[Test]
@@ -230,7 +230,7 @@ final class FetchCommandTest extends TestCase
     {
         $this->executeCommand(SourceFixture::path('manifest.json'));
 
-        self::assertSame(
+        static::assertSame(
             ['broken-include', 'markdown-only', 'missing-entry', 'mixed', 'unversioned', 'versioned'],
             array_column($this->manifest()['repositories'], 'name'),
         );
@@ -241,7 +241,7 @@ final class FetchCommandTest extends TestCase
     {
         $this->executeCommand(SourceFixture::path('manifest.json'));
 
-        self::assertSame(1, $this->manifest()['schemaVersion']);
+        static::assertSame(1, $this->manifest()['schemaVersion']);
     }
 
     #[Test]
@@ -252,7 +252,7 @@ final class FetchCommandTest extends TestCase
 
         $this->executeCommand(SourceFixture::path('manifest.json'));
 
-        self::assertSame($first, $this->filesystem->read($this->manifestPath()));
+        static::assertSame($first, $this->filesystem->read($this->manifestPath()));
     }
 
     #[Test]
@@ -260,8 +260,8 @@ final class FetchCommandTest extends TestCase
     {
         $command = new FetchCommand();
 
-        self::assertSame('fetch', $command->name());
-        self::assertNotSame('', $command->summary());
+        static::assertSame('fetch', $command->name());
+        static::assertNotSame('', $command->summary());
     }
 
     #[Test]
@@ -271,10 +271,10 @@ final class FetchCommandTest extends TestCase
 
         $exit = $this->executeCommand(SourceFixture::path('manifest.json'));
 
-        self::assertSame(ExitCode::Success, $exit);
-        self::assertTrue(is_file($this->manifestPath()));
-        self::assertStringContainsString('versioned: fetching', $this->captured->stderr);
-        self::assertMatchesRegularExpression(
+        static::assertSame(ExitCode::Success, $exit);
+        static::assertTrue(is_file($this->manifestPath()));
+        static::assertStringContainsString('versioned: fetching', $this->captured->stderr);
+        static::assertMatchesRegularExpression(
             '/versioned: \d+ version\(s\), \d+ page\(s\), revision [0-9a-f]{64}\b/',
             $this->captured->stderr,
         );
@@ -285,9 +285,9 @@ final class FetchCommandTest extends TestCase
     {
         $this->executeCommand(SourceFixture::path('manifest.json'));
 
-        self::assertStringContainsString('no-asciidoc-sources', $this->captured->stderr);
-        self::assertStringContainsString('missing-entry', $this->captured->stderr);
-        self::assertStringContainsString('outside a version directory were ignored', $this->captured->stderr);
+        static::assertStringContainsString('no-asciidoc-sources', $this->captured->stderr);
+        static::assertStringContainsString('missing-entry', $this->captured->stderr);
+        static::assertStringContainsString('outside a version directory were ignored', $this->captured->stderr);
     }
 
     #[Test]
@@ -295,7 +295,7 @@ final class FetchCommandTest extends TestCase
     {
         $this->executeCommand(SourceFixture::path('manifest.json'), projects: ['versioned']);
 
-        self::assertSame(['versioned'], array_column($this->manifest()['repositories'], 'name'));
+        static::assertSame(['versioned'], array_column($this->manifest()['repositories'], 'name'));
     }
 
     #[Test]
@@ -311,8 +311,8 @@ final class FetchCommandTest extends TestCase
             ),
         );
 
-        self::assertSame('6 repositories, 4 with sources, 2 with problems', $lines[0]);
-        self::assertSame("cache manifest: {$this->manifestPath()}", $lines[1]);
+        static::assertSame('6 repositories, 4 with sources, 2 with problems', $lines[0]);
+        static::assertSame("cache manifest: {$this->manifestPath()}", $lines[1]);
     }
 
     protected function setUp(): void
@@ -428,7 +428,7 @@ final class FetchCommandTest extends TestCase
             flags      : JSON_THROW_ON_ERROR,
         );
 
-        self::assertIsArray($decoded);
+        static::assertIsArray($decoded);
 
         return $decoded;
     }

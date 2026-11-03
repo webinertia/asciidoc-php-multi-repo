@@ -36,7 +36,7 @@ final class ContrastTest extends TestCase
     {
         $tokens = new ThemeResolver()->lightColors();
 
-        self::assertGreaterThanOrEqual(
+        static::assertGreaterThanOrEqual(
             self::MINIMUM_RATIO,
             $this->ratio($tokens['--text-body'], $tokens['--surface-page']),
             $this->describe('--text-body', $tokens['--text-body'], '--surface-page', $tokens['--surface-page']),
@@ -48,13 +48,13 @@ final class ContrastTest extends TestCase
     {
         $tokens = new ThemeResolver()->lightColors();
 
-        self::assertGreaterThanOrEqual(
+        static::assertGreaterThanOrEqual(
             self::MINIMUM_RATIO,
             $this->ratio($tokens['--color-link'], $tokens['--surface-page']),
             $this->describe('--color-link', $tokens['--color-link'], '--surface-page', $tokens['--surface-page']),
         );
 
-        self::assertGreaterThanOrEqual(
+        static::assertGreaterThanOrEqual(
             self::MINIMUM_RATIO,
             $this->ratio($tokens['--color-link'], $tokens['--surface-raised']),
             $this->describe('--color-link', $tokens['--color-link'], '--surface-raised', $tokens['--surface-raised']),
@@ -66,13 +66,13 @@ final class ContrastTest extends TestCase
     {
         $tokens = new ThemeResolver()->lightColors();
 
-        self::assertGreaterThanOrEqual(
+        static::assertGreaterThanOrEqual(
             self::MINIMUM_RATIO,
             $this->ratio($tokens['--text-muted'], $tokens['--surface-page']),
             $this->describe('--text-muted', $tokens['--text-muted'], '--surface-page', $tokens['--surface-page']),
         );
 
-        self::assertGreaterThanOrEqual(
+        static::assertGreaterThanOrEqual(
             self::MINIMUM_RATIO,
             $this->ratio($tokens['--text-muted'], $tokens['--surface-raised']),
             $this->describe('--text-muted', $tokens['--text-muted'], '--surface-raised', $tokens['--surface-raised']),
@@ -98,7 +98,7 @@ final class ContrastTest extends TestCase
 
     private function luminance(string $colour): float
     {
-        self::assertSame(1, preg_match('/^#([0-9a-fA-F]{6})$/', $colour), "Unexpected colour: {$colour}");
+        static::assertSame(1, preg_match('/^#([0-9a-fA-F]{6})$/', $colour), "Unexpected colour: {$colour}");
 
         $value    = (string) substr($colour, 1);
         $channels = [

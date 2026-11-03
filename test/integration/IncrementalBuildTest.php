@@ -59,8 +59,8 @@ final class IncrementalBuildTest extends TestCase
 
         $this->build(full: false);
 
-        self::assertNotSame([], $this->cacheTimestamps(), 'the build stored nothing in the cache');
-        self::assertSame([], $this->rewritten(), 'an unchanged rebuild rendered pages again');
+        static::assertNotSame([], $this->cacheTimestamps(), 'the build stored nothing in the cache');
+        static::assertSame([], $this->rewritten(), 'an unchanged rebuild rendered pages again');
     }
 
     #[Test]
@@ -74,8 +74,8 @@ final class IncrementalBuildTest extends TestCase
 
         $changed = ['assets' => ['site.2.css', 'theme.1.js']] + $base;
 
-        self::assertNotSame($cache->key($base), $cache->key($changed));
-        self::assertSame($cache->key($base), $cache->key($base));
+        static::assertNotSame($cache->key($base), $cache->key($changed));
+        static::assertSame($cache->key($base), $cache->key($base));
     }
 
     #[Test]
@@ -87,7 +87,7 @@ final class IncrementalBuildTest extends TestCase
 
         $page = Path::join($this->workspace, 'org', 'versioned', 'docs', 'v1', 'guide.adoc');
 
-        self::assertNotFalse(file_put_contents(
+        static::assertNotFalse(file_put_contents(
             $page,
             (string) file_get_contents($page) . "\nAn added paragraph.\n",
         ));
@@ -97,7 +97,7 @@ final class IncrementalBuildTest extends TestCase
         // A local source is identified by a content digest of the whole repository, so one edited
         // page re-renders that project's pages and nothing else. Five is every page `versioned`
         // publishes; the other five projects stay on their cache entries.
-        self::assertCount(5, $this->rewritten(), 'editing one page re-rendered pages outside its project');
+        static::assertCount(5, $this->rewritten(), 'editing one page re-rendered pages outside its project');
     }
 
     protected function setUp(): void
@@ -120,7 +120,7 @@ final class IncrementalBuildTest extends TestCase
     private function backdateCache(): void
     {
         foreach (array_keys($this->cacheTimestamps()) as $entry) {
-            self::assertTrue(touch(
+            static::assertTrue(touch(
                 Path::join($this->tempDirectory, 'cache', 'pages', $entry),
                 self::BACKDATED,
             ));
@@ -144,7 +144,7 @@ final class IncrementalBuildTest extends TestCase
             ),
         );
 
-        self::assertSame(ExitCode::Degraded, $exitCode);
+        static::assertSame(ExitCode::Degraded, $exitCode);
     }
 
     /**
@@ -175,12 +175,12 @@ final class IncrementalBuildTest extends TestCase
     private function copyDirectory(string $source, string $target, array $skip = []): void
     {
         if (! is_dir($target)) {
-            self::assertTrue(mkdir($target, 0o777, true));
+            static::assertTrue(mkdir($target, 0o777, true));
         }
 
         $entries = scandir($source);
 
-        self::assertIsArray($entries);
+        static::assertIsArray($entries);
 
         foreach ($entries as $entry) {
             if ('.' === $entry || '..' === $entry || in_array($entry, $skip, true)) {
@@ -196,7 +196,7 @@ final class IncrementalBuildTest extends TestCase
                 continue;
             }
 
-            self::assertTrue(copy($from, $to));
+            static::assertTrue(copy($from, $to));
         }
     }
 

@@ -21,8 +21,8 @@ final class OrganizationSectionTest extends TestCase
             'excludeRepositories' => ['docs.webinertia.net'],
         ]);
 
-        self::assertTrue($section->excludes('docs.webinertia.net'));
-        self::assertFalse($section->excludes('docs'));
+        static::assertTrue($section->excludes('docs.webinertia.net'));
+        static::assertFalse($section->excludes('docs'));
     }
 
     #[Test]
@@ -33,9 +33,9 @@ final class OrganizationSectionTest extends TestCase
             'propertyName' => 'doc-target',
         ]);
 
-        self::assertSame('true', $section->onboardValue());
-        self::assertNull($section->tokenEnvVar());
-        self::assertSame([], $section->excludeRepositories());
+        static::assertSame('true', $section->onboardValue());
+        static::assertNull($section->tokenEnvVar());
+        static::assertSame([], $section->excludeRepositories());
     }
 
     #[Test]
@@ -49,10 +49,10 @@ final class OrganizationSectionTest extends TestCase
             'excludeRepositories' => ['docs.webinertia.net', '.github'],
         ]);
 
-        self::assertSame('webinertia', $section->name());
-        self::assertSame('doc-target', $section->propertyName());
-        self::assertSame('yes', $section->onboardValue());
-        self::assertSame('DOC_DISCOVERY_TOKEN', $section->tokenEnvVar());
-        self::assertSame(['docs.webinertia.net', '.github'], $section->excludeRepositories());
+        static::assertSame('webinertia', $section->name());
+        static::assertSame('doc-target', $section->propertyName());
+        static::assertSame('yes', $section->onboardValue());
+        static::assertSame('DOC_DISCOVERY_TOKEN', $section->tokenEnvVar());
+        static::assertSame(['docs.webinertia.net', '.github'], $section->excludeRepositories());
     }
 }

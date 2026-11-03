@@ -20,8 +20,8 @@ final class VersionTest extends TestCase
     {
         $version = Version::current();
 
-        self::assertNotSame('', $version);
-        self::assertSame(
+        static::assertNotSame('', $version);
+        static::assertSame(
             1,
             preg_match('/^[0-9]+\.[0-9]+\.[0-9]+/', $version),
             sprintf('Version "%s" must start with a three part release number.', $version),
@@ -31,12 +31,12 @@ final class VersionTest extends TestCase
     #[Test]
     public function fallbackMatchesTheReportSchemaPattern(): void
     {
-        self::assertSame(1, preg_match('/^[0-9]+\.[0-9]+\.[0-9]+/', Version::FALLBACK));
+        static::assertSame(1, preg_match('/^[0-9]+\.[0-9]+\.[0-9]+/', Version::FALLBACK));
     }
 
     #[Test]
     public function packageNameMatchesComposer(): void
     {
-        self::assertSame('webware/asciidoc-php-multi-repo', Version::PACKAGE);
+        static::assertSame('webware/asciidoc-php-multi-repo', Version::PACKAGE);
     }
 }

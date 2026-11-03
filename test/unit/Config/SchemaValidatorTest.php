@@ -27,9 +27,9 @@ final class SchemaValidatorTest extends TestCase
             ],
         );
 
-        self::assertFalse($result->isValid());
-        self::assertSame('/typo', $result->errors()[0]->pointer());
-        self::assertStringContainsString('not an allowed property', $result->errors()[0]->message());
+        static::assertFalse($result->isValid());
+        static::assertSame('/typo', $result->errors()[0]->pointer());
+        static::assertStringContainsString('not an allowed property', $result->errors()[0]->message());
     }
 
     #[Test]
@@ -41,8 +41,8 @@ final class SchemaValidatorTest extends TestCase
             'additionalProperties' => ['type' => 'string'],
         ];
 
-        self::assertTrue($this->validator->validate(['a' => 'x'], $schema)->isValid());
-        self::assertFalse($this->validator->validate(['a' => 1], $schema)->isValid());
+        static::assertTrue($this->validator->validate(['a' => 'x'], $schema)->isValid());
+        static::assertFalse($this->validator->validate(['a' => 1], $schema)->isValid());
     }
 
     #[Test]
@@ -57,18 +57,18 @@ final class SchemaValidatorTest extends TestCase
             'properties'  => ['a' => ['type' => 'string', 'default' => 'x']],
         ];
 
-        self::assertTrue($this->validator->validate(['a' => 'y'], $schema)->isValid());
+        static::assertTrue($this->validator->validate(['a' => 'y'], $schema)->isValid());
     }
 
     #[Test]
     public function constKeywordFails(): void
     {
-        self::assertTrue($this->validator->validate(1, ['const' => 1])->isValid());
+        static::assertTrue($this->validator->validate(1, ['const' => 1])->isValid());
 
         $result = $this->validator->validate(2, ['const' => 1]);
 
-        self::assertFalse($result->isValid());
-        self::assertStringContainsString('must equal', $result->errors()[0]->message());
+        static::assertFalse($result->isValid());
+        static::assertStringContainsString('must equal', $result->errors()[0]->message());
     }
 
     #[Test]
@@ -76,8 +76,8 @@ final class SchemaValidatorTest extends TestCase
     {
         $result = $this->validator->validate('other', ['enum' => ['safe', 'secure']]);
 
-        self::assertFalse($result->isValid());
-        self::assertStringContainsString('allowed values', $result->errors()[0]->message());
+        static::assertFalse($result->isValid());
+        static::assertStringContainsString('allowed values', $result->errors()[0]->message());
     }
 
     #[Test]
@@ -93,10 +93,10 @@ final class SchemaValidatorTest extends TestCase
 
         $result = $this->validator->validate(['a' => 1, 'b' => 2], $schema);
 
-        self::assertSame(2, $result->errorCount());
-        self::assertSame('/a', $result->errors()[0]->pointer());
-        self::assertSame('/b', $result->errors()[1]->pointer());
-        self::assertStringContainsString('/a', $result->describe());
+        static::assertSame(2, $result->errorCount());
+        static::assertSame('/a', $result->errors()[0]->pointer());
+        static::assertSame('/b', $result->errors()[1]->pointer());
+        static::assertStringContainsString('/a', $result->describe());
     }
 
     #[Test]
@@ -104,56 +104,56 @@ final class SchemaValidatorTest extends TestCase
     {
         $schema = ['type' => 'array', 'items' => ['type' => 'integer']];
 
-        self::assertTrue($this->validator->validate([1, 2], $schema)->isValid());
+        static::assertTrue($this->validator->validate([1, 2], $schema)->isValid());
 
         $result = $this->validator->validate([1, 'two'], $schema);
 
-        self::assertFalse($result->isValid());
-        self::assertSame('/1', $result->errors()[0]->pointer());
+        static::assertFalse($result->isValid());
+        static::assertSame('/1', $result->errors()[0]->pointer());
     }
 
     #[Test]
     public function maximumKeywordFails(): void
     {
-        self::assertTrue($this->validator->validate(6, ['type' => 'integer', 'maximum' => 6])->isValid());
+        static::assertTrue($this->validator->validate(6, ['type' => 'integer', 'maximum' => 6])->isValid());
 
         $result = $this->validator->validate(7, ['type' => 'integer', 'maximum' => 6]);
 
-        self::assertFalse($result->isValid());
-        self::assertStringContainsString('less than or equal to 6', $result->errors()[0]->message());
+        static::assertFalse($result->isValid());
+        static::assertStringContainsString('less than or equal to 6', $result->errors()[0]->message());
     }
 
     #[Test]
     public function minimumKeywordFails(): void
     {
-        self::assertTrue($this->validator->validate(1, ['type' => 'integer', 'minimum' => 1])->isValid());
+        static::assertTrue($this->validator->validate(1, ['type' => 'integer', 'minimum' => 1])->isValid());
 
         $result = $this->validator->validate(0, ['type' => 'integer', 'minimum' => 1]);
 
-        self::assertFalse($result->isValid());
-        self::assertStringContainsString('greater than or equal to 1', $result->errors()[0]->message());
+        static::assertFalse($result->isValid());
+        static::assertStringContainsString('greater than or equal to 1', $result->errors()[0]->message());
     }
 
     #[Test]
     public function minItemsKeywordFails(): void
     {
-        self::assertTrue($this->validator->validate([1], ['type' => 'array', 'minItems' => 1])->isValid());
+        static::assertTrue($this->validator->validate([1], ['type' => 'array', 'minItems' => 1])->isValid());
 
         $result = $this->validator->validate([], ['type' => 'array', 'minItems' => 1]);
 
-        self::assertFalse($result->isValid());
-        self::assertStringContainsString('at least 1 items', $result->errors()[0]->message());
+        static::assertFalse($result->isValid());
+        static::assertStringContainsString('at least 1 items', $result->errors()[0]->message());
     }
 
     #[Test]
     public function minLengthKeywordFails(): void
     {
-        self::assertTrue($this->validator->validate('a', ['type' => 'string', 'minLength' => 1])->isValid());
+        static::assertTrue($this->validator->validate('a', ['type' => 'string', 'minLength' => 1])->isValid());
 
         $result = $this->validator->validate('', ['type' => 'string', 'minLength' => 1]);
 
-        self::assertFalse($result->isValid());
-        self::assertStringContainsString('at least 1 characters', $result->errors()[0]->message());
+        static::assertFalse($result->isValid());
+        static::assertStringContainsString('at least 1 characters', $result->errors()[0]->message());
     }
 
     #[Test]
@@ -175,10 +175,10 @@ final class SchemaValidatorTest extends TestCase
             $schema,
         );
 
-        self::assertTrue($result->isValid());
-        self::assertSame(0, $result->errorCount());
-        self::assertSame([], $result->errors());
-        self::assertSame('', $result->describe());
+        static::assertTrue($result->isValid());
+        static::assertSame(0, $result->errorCount());
+        static::assertSame([], $result->errors());
+        static::assertSame('', $result->describe());
     }
 
     #[Test]
@@ -186,19 +186,19 @@ final class SchemaValidatorTest extends TestCase
     {
         $schema = ['type' => 'string', 'pattern' => '^[a-z]+$'];
 
-        self::assertTrue($this->validator->validate('abc', $schema)->isValid());
+        static::assertTrue($this->validator->validate('abc', $schema)->isValid());
 
         $result = $this->validator->validate('ABC', $schema);
 
-        self::assertFalse($result->isValid());
-        self::assertStringContainsString('pattern', $result->errors()[0]->message());
+        static::assertFalse($result->isValid());
+        static::assertStringContainsString('pattern', $result->errors()[0]->message());
     }
 
     #[Test]
     public function patternWithSlashAndHashCharacters(): void
     {
-        self::assertTrue($this->validator->validate('/docs/', ['pattern' => '^(/|/[^\\s]*/)$'])->isValid());
-        self::assertFalse($this->validator->validate('docs', ['pattern' => '^(/|/[^\\s]*/)$'])->isValid());
+        static::assertTrue($this->validator->validate('/docs/', ['pattern' => '^(/|/[^\\s]*/)$'])->isValid());
+        static::assertFalse($this->validator->validate('docs', ['pattern' => '^(/|/[^\\s]*/)$'])->isValid());
     }
 
     #[Test]
@@ -212,7 +212,7 @@ final class SchemaValidatorTest extends TestCase
 
         $result = $this->validator->validate(['a/b~c' => 1], $schema);
 
-        self::assertSame('/a~1b~0c', $result->errors()[0]->pointer());
+        static::assertSame('/a~1b~0c', $result->errors()[0]->pointer());
     }
 
     #[Test]
@@ -231,8 +231,8 @@ final class SchemaValidatorTest extends TestCase
             ],
         );
 
-        self::assertFalse($result->isValid());
-        self::assertSame('/site/name', $result->errors()[0]->pointer());
+        static::assertFalse($result->isValid());
+        static::assertSame('/site/name', $result->errors()[0]->pointer());
     }
 
     #[Test]
@@ -250,12 +250,12 @@ final class SchemaValidatorTest extends TestCase
             ],
         ];
 
-        self::assertTrue($this->validator->validate(['project' => ['slug' => 'a']], $schema)->isValid());
+        static::assertTrue($this->validator->validate(['project' => ['slug' => 'a']], $schema)->isValid());
 
         $result = $this->validator->validate(['project' => ['slug' => 5]], $schema);
 
-        self::assertFalse($result->isValid());
-        self::assertSame('/project/slug', $result->errors()[0]->pointer());
+        static::assertFalse($result->isValid());
+        static::assertSame('/project/slug', $result->errors()[0]->pointer());
     }
 
     #[Test]
@@ -271,8 +271,8 @@ final class SchemaValidatorTest extends TestCase
     {
         $result = $this->validator->validate([], ['type' => 'object', 'required' => ['name']]);
 
-        self::assertFalse($result->isValid());
-        self::assertStringContainsString('"name"', $result->errors()[0]->message());
+        static::assertFalse($result->isValid());
+        static::assertStringContainsString('"name"', $result->errors()[0]->message());
     }
 
     #[Test]
@@ -280,18 +280,18 @@ final class SchemaValidatorTest extends TestCase
     {
         $result = $this->validator->validate('text', ['type' => 'integer']);
 
-        self::assertFalse($result->isValid());
-        self::assertSame(1, $result->errorCount());
-        self::assertSame('', $result->errors()[0]->pointer());
-        self::assertStringContainsString('integer', $result->errors()[0]->message());
+        static::assertFalse($result->isValid());
+        static::assertSame(1, $result->errorCount());
+        static::assertSame('', $result->errors()[0]->pointer());
+        static::assertStringContainsString('integer', $result->errors()[0]->message());
     }
 
     #[Test]
     public function typeListAcceptsAnyListedType(): void
     {
-        self::assertTrue($this->validator->validate('text', ['type' => ['string', 'null']])->isValid());
-        self::assertTrue($this->validator->validate(null, ['type' => ['string', 'null']])->isValid());
-        self::assertFalse($this->validator->validate(1, ['type' => ['string', 'null']])->isValid());
+        static::assertTrue($this->validator->validate('text', ['type' => ['string', 'null']])->isValid());
+        static::assertTrue($this->validator->validate(null, ['type' => ['string', 'null']])->isValid());
+        static::assertFalse($this->validator->validate(1, ['type' => ['string', 'null']])->isValid());
     }
 
     #[Test]

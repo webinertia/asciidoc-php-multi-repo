@@ -20,7 +20,7 @@ final class SiteSectionTest extends TestCase
             'baseUrl' => 'https://docs.example.test',
         ]);
 
-        self::assertSame('docs.example.test', $section->effectiveHostname());
+        static::assertSame('docs.example.test', $section->effectiveHostname());
     }
 
     #[Test]
@@ -32,7 +32,7 @@ final class SiteSectionTest extends TestCase
             'hostname' => 'docs.example.test',
         ]);
 
-        self::assertSame('docs.example.test', $section->effectiveHostname());
+        static::assertSame('docs.example.test', $section->effectiveHostname());
     }
 
     #[Test]
@@ -43,9 +43,9 @@ final class SiteSectionTest extends TestCase
             'baseUrl' => 'https://example.test',
         ]);
 
-        self::assertSame('/', $section->basePath());
-        self::assertNull($section->hostname());
-        self::assertSame('latest', $section->defaultVersionLabel());
+        static::assertSame('/', $section->basePath());
+        static::assertNull($section->hostname());
+        static::assertSame('latest', $section->defaultVersionLabel());
     }
 
     #[Test]
@@ -59,18 +59,18 @@ final class SiteSectionTest extends TestCase
             'defaultVersionLabel' => 'stable',
         ]);
 
-        self::assertSame('Webware Documentation', $section->name());
-        self::assertSame('https://docs.webinertia.net', $section->baseUrl());
-        self::assertSame('/docs/', $section->basePath());
-        self::assertSame('docs.webinertia.net', $section->hostname());
-        self::assertSame('stable', $section->defaultVersionLabel());
+        static::assertSame('Webware Documentation', $section->name());
+        static::assertSame('https://docs.webinertia.net', $section->baseUrl());
+        static::assertSame('/docs/', $section->basePath());
+        static::assertSame('docs.webinertia.net', $section->hostname());
+        static::assertSame('stable', $section->defaultVersionLabel());
     }
 
     #[Test]
     public function isRootBasePath(): void
     {
-        self::assertTrue(SiteSection::fromArray(['name' => 'D', 'baseUrl' => 'https://e.test'])->isRootBasePath());
-        self::assertFalse(
+        static::assertTrue(SiteSection::fromArray(['name' => 'D', 'baseUrl' => 'https://e.test'])->isRootBasePath());
+        static::assertFalse(
             SiteSection::fromArray([
                 'name'     => 'D',
                 'baseUrl'  => 'https://e.test',
@@ -82,17 +82,17 @@ final class SiteSectionTest extends TestCase
     #[Test]
     public function normaliseBasePathAddsBothSlashes(): void
     {
-        self::assertSame('/docs/', SiteSection::normaliseBasePath('docs'));
-        self::assertSame('/docs/', SiteSection::normaliseBasePath('/docs'));
-        self::assertSame('/docs/', SiteSection::normaliseBasePath('docs/'));
-        self::assertSame('/docs/', SiteSection::normaliseBasePath('/docs/'));
+        static::assertSame('/docs/', SiteSection::normaliseBasePath('docs'));
+        static::assertSame('/docs/', SiteSection::normaliseBasePath('/docs'));
+        static::assertSame('/docs/', SiteSection::normaliseBasePath('docs/'));
+        static::assertSame('/docs/', SiteSection::normaliseBasePath('/docs/'));
     }
 
     #[Test]
     public function normaliseBasePathKeepsRoot(): void
     {
-        self::assertSame('/', SiteSection::normaliseBasePath('/'));
-        self::assertSame('/', SiteSection::normaliseBasePath(''));
+        static::assertSame('/', SiteSection::normaliseBasePath('/'));
+        static::assertSame('/', SiteSection::normaliseBasePath(''));
     }
 
     #[Test]
@@ -101,8 +101,8 @@ final class SiteSectionTest extends TestCase
         $section = SiteSection::fromArray(['name' => 'Docs', 'baseUrl' => 'https://example.test']);
         $updated = $section->withBasePath('/manual');
 
-        self::assertNotSame($section, $updated);
-        self::assertSame('/manual/', $updated->basePath());
-        self::assertSame('/', $section->basePath());
+        static::assertNotSame($section, $updated);
+        static::assertSame('/manual/', $updated->basePath());
+        static::assertSame('/', $section->basePath());
     }
 }

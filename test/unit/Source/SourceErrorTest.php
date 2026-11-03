@@ -34,17 +34,17 @@ final class SourceErrorTest extends TestCase
             'Add an index.adoc.',
         );
 
-        self::assertSame(ReasonCode::MissingEntry, $error->reasonCode());
-        self::assertSame('example: docs has no entry page.', $error->message());
-        self::assertSame('v1', $error->version());
-        self::assertSame('docs/v1', $error->path());
-        self::assertSame('Add an index.adoc.', $error->correctiveAction());
+        static::assertSame(ReasonCode::MissingEntry, $error->reasonCode());
+        static::assertSame('example: docs has no entry page.', $error->message());
+        static::assertSame('v1', $error->version());
+        static::assertSame('docs/v1', $error->path());
+        static::assertSame('Add an index.adoc.', $error->correctiveAction());
     }
 
     #[Test]
     public function theArrayKeepsEveryKeyWhenTheDetailsAreAbsent(): void
     {
-        self::assertSame(
+        static::assertSame(
             [
                 'reasonCode'       => 'archived',
                 'message'          => 'example: archived.',
@@ -61,7 +61,7 @@ final class SourceErrorTest extends TestCase
     {
         $error = new SourceError(ReasonCode::InvalidEncoding, 'bad', 'v2', 'docs/v2/a.adoc', 'Re-save it.');
 
-        self::assertSame(
+        static::assertSame(
             [
                 'reasonCode'       => 'invalid-encoding',
                 'message'          => 'bad',
@@ -79,8 +79,8 @@ final class SourceErrorTest extends TestCase
         $error     = new SourceError(ReasonCode::FetchFailed, 'example: fetch failed.');
         $exception = new SourceException($error);
 
-        self::assertSame($error, $exception->error());
-        self::assertSame('example: fetch failed.', $exception->getMessage());
+        static::assertSame($error, $exception->error());
+        static::assertSame('example: fetch failed.', $exception->getMessage());
     }
 
     #[Test]
@@ -88,7 +88,7 @@ final class SourceErrorTest extends TestCase
     {
         $error = new SourceError(ReasonCode::NoAsciidocSources, 'example: nothing to render.');
 
-        self::assertSame($error->message(), new SourceException($error)->getMessage());
+        static::assertSame($error->message(), new SourceException($error)->getMessage());
     }
 
     #[Test]
@@ -96,8 +96,8 @@ final class SourceErrorTest extends TestCase
     {
         $error = new SourceError(ReasonCode::Archived, 'example: archived.');
 
-        self::assertNull($error->version());
-        self::assertNull($error->path());
-        self::assertNull($error->correctiveAction());
+        static::assertNull($error->version());
+        static::assertNull($error->path());
+        static::assertNull($error->correctiveAction());
     }
 }

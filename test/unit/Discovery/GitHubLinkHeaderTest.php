@@ -17,13 +17,13 @@ final class GitHubLinkHeaderTest extends TestCase
     #[Test]
     public function aHeaderWithoutANextRelationHasNoNextPage(): void
     {
-        self::assertNull(GitHubLinkHeader::next('<https://api.github.com/repositories/1?page=1>; rel="prev"'));
+        static::assertNull(GitHubLinkHeader::next('<https://api.github.com/repositories/1?page=1>; rel="prev"'));
     }
 
     #[Test]
     public function aNullHeaderHasNoNextPage(): void
     {
-        self::assertNull(GitHubLinkHeader::next(null));
+        static::assertNull(GitHubLinkHeader::next(null));
     }
 
     #[Test]
@@ -33,6 +33,6 @@ final class GitHubLinkHeaderTest extends TestCase
             '<https://api.github.com/repositories/1?page=2>; rel="next", '
             . '<https://api.github.com/repositories/1?page=4>; rel="last"';
 
-        self::assertSame('https://api.github.com/repositories/1?page=2', GitHubLinkHeader::next($header));
+        static::assertSame('https://api.github.com/repositories/1?page=2', GitHubLinkHeader::next($header));
     }
 }

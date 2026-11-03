@@ -18,10 +18,10 @@ final class ThemeConfigTest extends TestCase
         $defaults  = ThemeConfig::defaults();
         $fromArray = ThemeConfig::fromArray([]);
 
-        self::assertSame($defaults->name(), $fromArray->name());
-        self::assertSame($defaults->defaultAccent(), $fromArray->defaultAccent());
-        self::assertSame($defaults->colorMode(), $fromArray->colorMode());
-        self::assertSame($defaults->defaultColorMode(), $fromArray->defaultColorMode());
+        static::assertSame($defaults->name(), $fromArray->name());
+        static::assertSame($defaults->defaultAccent(), $fromArray->defaultAccent());
+        static::assertSame($defaults->colorMode(), $fromArray->colorMode());
+        static::assertSame($defaults->defaultColorMode(), $fromArray->defaultColorMode());
     }
 
     #[Test]
@@ -29,10 +29,10 @@ final class ThemeConfigTest extends TestCase
     {
         $theme = ThemeConfig::fromArray([]);
 
-        self::assertSame('webware', $theme->name());
-        self::assertSame('#7e5ae0', $theme->defaultAccent());
-        self::assertSame('system', $theme->colorMode());
-        self::assertSame('dark', $theme->defaultColorMode());
+        static::assertSame('webware', $theme->name());
+        static::assertSame('#7e5ae0', $theme->defaultAccent());
+        static::assertSame('system', $theme->colorMode());
+        static::assertSame('dark', $theme->defaultColorMode());
     }
 
     #[Test]
@@ -45,16 +45,16 @@ final class ThemeConfigTest extends TestCase
             'defaultColorMode' => 'light',
         ]);
 
-        self::assertSame('webware', $theme->name());
-        self::assertSame('#05a578', $theme->defaultAccent());
-        self::assertSame('light', $theme->colorMode());
-        self::assertSame('light', $theme->defaultColorMode());
+        static::assertSame('webware', $theme->name());
+        static::assertSame('#05a578', $theme->defaultAccent());
+        static::assertSame('light', $theme->colorMode());
+        static::assertSame('light', $theme->defaultColorMode());
     }
 
     #[Test]
     public function isBuiltIn(): void
     {
-        self::assertTrue(ThemeConfig::defaults()->isBuiltIn());
-        self::assertFalse(ThemeConfig::fromArray(['name' => 'custom'])->isBuiltIn());
+        static::assertTrue(ThemeConfig::defaults()->isBuiltIn());
+        static::assertFalse(ThemeConfig::fromArray(['name' => 'custom'])->isBuiltIn());
     }
 }

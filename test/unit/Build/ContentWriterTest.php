@@ -34,9 +34,9 @@ final class ContentWriterTest extends TestCase
         $directory = $this->createTempDirectory();
         $path      = new ContentWriter()->write($directory, 'project/v1/guide/index.html', '<p>Hi</p>');
 
-        self::assertSame(Path::join($directory, 'project', 'v1', 'guide', 'index.html'), $path);
-        self::assertTrue(is_file($path));
-        self::assertSame('<p>Hi</p>', file_get_contents($path));
+        static::assertSame(Path::join($directory, 'project', 'v1', 'guide', 'index.html'), $path);
+        static::assertTrue(is_file($path));
+        static::assertSame('<p>Hi</p>', file_get_contents($path));
     }
 
     #[Test]
@@ -48,7 +48,7 @@ final class ContentWriterTest extends TestCase
         $writer->write($directory, 'index.html', 'first');
         $path = $writer->write($directory, 'index.html', 'second');
 
-        self::assertSame('second', file_get_contents($path));
+        static::assertSame('second', file_get_contents($path));
     }
 
     protected function tearDown(): void

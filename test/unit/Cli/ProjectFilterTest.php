@@ -21,7 +21,7 @@ final class ProjectFilterTest extends TestCase
     {
         $repositories = [SourceFixture::repository('message-bus', 'bus')];
 
-        self::assertSame([], ProjectFilter::apply($repositories, new Options(projects: ['other'])));
+        static::assertSame([], ProjectFilter::apply($repositories, new Options(projects: ['other'])));
     }
 
     #[Test]
@@ -31,8 +31,8 @@ final class ProjectFilterTest extends TestCase
 
         $filtered = ProjectFilter::apply($repositories, new Options(projects: ['message-bus']));
 
-        self::assertCount(1, $filtered);
-        self::assertSame('bus', $filtered[0]->slug());
+        static::assertCount(1, $filtered);
+        static::assertSame('bus', $filtered[0]->slug());
     }
 
     #[Test]
@@ -42,8 +42,8 @@ final class ProjectFilterTest extends TestCase
 
         $filtered = ProjectFilter::apply($repositories, new Options(projects: ['bus']));
 
-        self::assertCount(1, $filtered);
-        self::assertSame('message-bus', $filtered[0]->name());
+        static::assertCount(1, $filtered);
+        static::assertSame('message-bus', $filtered[0]->name());
     }
 
     #[Test]
@@ -54,6 +54,6 @@ final class ProjectFilterTest extends TestCase
             SourceFixture::repository('versioned', 'versioned'),
         ];
 
-        self::assertCount(2, ProjectFilter::apply($repositories, new Options()));
+        static::assertCount(2, ProjectFilter::apply($repositories, new Options()));
     }
 }

@@ -17,26 +17,26 @@ final class OnboardValueTest extends TestCase
     #[Test]
     public function aBooleanTrueMatchesTheConfiguredString(): void
     {
-        self::assertTrue(OnboardValue::matches(true, 'true'));
-        self::assertFalse(OnboardValue::matches(true, 'yes'));
+        static::assertTrue(OnboardValue::matches(true, 'true'));
+        static::assertFalse(OnboardValue::matches(true, 'yes'));
     }
 
     #[Test]
     public function aNonScalarValueNeverMatches(): void
     {
-        self::assertFalse(OnboardValue::matches(null, 'yes'));
-        self::assertFalse(OnboardValue::matches(['yes'], 'yes'));
+        static::assertFalse(OnboardValue::matches(null, 'yes'));
+        static::assertFalse(OnboardValue::matches(['yes'], 'yes'));
     }
 
     #[Test]
     public function aValueIsComparedCaseInsensitivelyAndTrimmed(): void
     {
-        self::assertTrue(OnboardValue::matches('  Yes  ', 'yes'));
+        static::assertTrue(OnboardValue::matches('  Yes  ', 'yes'));
     }
 
     #[Test]
     public function theConfiguredValueIsTrimmedAndLowercased(): void
     {
-        self::assertTrue(OnboardValue::matches('yes', ' YES '));
+        static::assertTrue(OnboardValue::matches('yes', ' YES '));
     }
 }

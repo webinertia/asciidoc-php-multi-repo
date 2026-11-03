@@ -29,13 +29,13 @@ final class JsonTest extends TestCase
     #[Test]
     public function decodeObjectReturnsTheDocument(): void
     {
-        self::assertSame(['a' => 1], $this->json->decodeObject('{"a": 1}', 'site.json'));
+        static::assertSame(['a' => 1], $this->json->decodeObject('{"a": 1}', 'site.json'));
     }
 
     #[Test]
     public function decodeReturnsAssociativeArrays(): void
     {
-        self::assertSame(
+        static::assertSame(
             ['site' => ['name' => 'Docs']],
             $this->json->decode('{"site": {"name": "Docs"}}'),
         );
@@ -52,7 +52,7 @@ final class JsonTest extends TestCase
     #[Test]
     public function encodeCompactHasNoInsignificantWhitespace(): void
     {
-        self::assertSame("{\"a\":1,\"b\":[1,2]}\n", $this->json->encodeCompact(['a' => 1, 'b' => [1, 2]]));
+        static::assertSame("{\"a\":1,\"b\":[1,2]}\n", $this->json->encodeCompact(['a' => 1, 'b' => [1, 2]]));
     }
 
     #[Test]
@@ -60,8 +60,8 @@ final class JsonTest extends TestCase
     {
         $encoded = $this->json->encode(['url' => 'https://example.test/docs/v1']);
 
-        self::assertStringContainsString('https://example.test/docs/v1', $encoded);
-        self::assertFalse(str_contains($encoded, '\\/'));
+        static::assertStringContainsString('https://example.test/docs/v1', $encoded);
+        static::assertFalse(str_contains($encoded, '\\/'));
     }
 
     #[Test]
@@ -69,8 +69,8 @@ final class JsonTest extends TestCase
     {
         $encoded = $this->json->encode(['a' => 1]);
 
-        self::assertTrue(str_ends_with($encoded, "}\n"));
-        self::assertFalse(str_ends_with($encoded, "}\n\n"));
+        static::assertTrue(str_ends_with($encoded, "}\n"));
+        static::assertFalse(str_ends_with($encoded, "}\n\n"));
     }
 
     #[Test]
@@ -78,13 +78,13 @@ final class JsonTest extends TestCase
     {
         $value = ['b' => 1, 'a' => ['z' => true, 'y' => null]];
 
-        self::assertSame($this->json->encode($value), $this->json->encode($value));
+        static::assertSame($this->json->encode($value), $this->json->encode($value));
     }
 
     #[Test]
     public function encodePreservesZeroFraction(): void
     {
-        self::assertStringContainsString('1.0', $this->json->encodeCompact(['value' => 1.0]));
+        static::assertStringContainsString('1.0', $this->json->encodeCompact(['value' => 1.0]));
     }
 
     #[Test]
@@ -92,7 +92,7 @@ final class JsonTest extends TestCase
     {
         $encoded = $this->json->encode(['a' => 1]);
 
-        self::assertStringContainsString("\n    \"a\": 1", $encoded);
+        static::assertStringContainsString("\n    \"a\": 1", $encoded);
     }
 
     #[Test]
@@ -102,8 +102,8 @@ final class JsonTest extends TestCase
             $this->json->decode('{"projects": [1, ]}', 'manifest.json');
             self::fail('Invalid JSON should raise a decode exception.');
         } catch (JsonDecodeException $exception) {
-            self::assertSame('/projects/1', $exception->pointer());
-            self::assertSame(17, $exception->offset());
+            static::assertSame('/projects/1', $exception->pointer());
+            static::assertSame(17, $exception->offset());
         }
     }
 
@@ -114,11 +114,11 @@ final class JsonTest extends TestCase
             $this->json->decode('{"site": }', 'site.json');
             self::fail('Invalid JSON should raise a decode exception.');
         } catch (JsonDecodeException $exception) {
-            self::assertSame('site.json', $exception->source());
-            self::assertSame('/site', $exception->pointer());
-            self::assertSame(9, $exception->offset());
-            self::assertStringContainsString('byte offset 9', $exception->getMessage());
-            self::assertStringContainsString('/site', $exception->getMessage());
+            static::assertSame('site.json', $exception->source());
+            static::assertSame('/site', $exception->pointer());
+            static::assertSame(9, $exception->offset());
+            static::assertStringContainsString('byte offset 9', $exception->getMessage());
+            static::assertStringContainsString('/site', $exception->getMessage());
         }
     }
 
@@ -129,8 +129,8 @@ final class JsonTest extends TestCase
             $this->json->decode('{"site": ', 'site.json');
             self::fail('Invalid JSON should raise a decode exception.');
         } catch (JsonDecodeException $exception) {
-            self::assertSame(9, $exception->offset());
-            self::assertSame('/site', $exception->pointer());
+            static::assertSame(9, $exception->offset());
+            static::assertSame('/site', $exception->pointer());
         }
     }
 

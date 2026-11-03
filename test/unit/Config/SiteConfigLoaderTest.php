@@ -45,7 +45,7 @@ final class SiteConfigLoaderTest extends TestCase
 
         $config = new SiteConfigLoader()->load($path);
 
-        self::assertSame($absolute, $config->output()->directory());
+        static::assertSame($absolute, $config->output()->directory());
     }
 
     #[Test]
@@ -53,16 +53,16 @@ final class SiteConfigLoaderTest extends TestCase
     {
         $loader = new SiteConfigLoader();
 
-        self::assertSame(
+        static::assertSame(
             Path::join(Path::normalise(dirname(__DIR__, 3)), 'config', 'site.schema.json'),
             $loader->schemaPath(),
         );
-        self::assertFileExists($loader->schemaPath());
+        static::assertFileExists($loader->schemaPath());
 
         $schema = $loader->schema();
 
-        self::assertSame('object', $schema['type']);
-        self::assertTrue(isset($schema['$defs']));
+        static::assertSame('object', $schema['type']);
+        static::assertTrue(isset($schema['$defs']));
     }
 
     #[Test]
@@ -83,9 +83,9 @@ final class SiteConfigLoaderTest extends TestCase
             JSON_THROW_ON_ERROR,
         );
 
-        self::assertIsArray($contract);
-        self::assertFalse(array_is_list($contract));
-        self::assertSame($contract, new SiteConfigLoader()->schema());
+        static::assertIsArray($contract);
+        static::assertFalse(array_is_list($contract));
+        static::assertSame($contract, new SiteConfigLoader()->schema());
     }
 
     #[Test]
@@ -99,18 +99,18 @@ final class SiteConfigLoaderTest extends TestCase
 
         $config = new SiteConfigLoader()->load($path);
 
-        self::assertSame(1, $config->schemaVersion());
-        self::assertSame('Docs', $config->site()->name());
-        self::assertSame('webinertia', $config->organization()->name());
-        self::assertSame('doc-target', $config->organization()->propertyName());
-        self::assertSame('true', $config->organization()->onboardValue());
-        self::assertSame('docs', $config->source()->directory());
-        self::assertSame([2, 3], $config->render()->tocLevels());
-        self::assertSame(4, $config->render()->concurrency());
-        self::assertSame('webware', $config->theme()->name());
-        self::assertSame([], $config->projects());
-        self::assertSame(Path::normalise($path), $config->configPath());
-        self::assertSame(Path::normalise($this->directory), $config->configDirectory());
+        static::assertSame(1, $config->schemaVersion());
+        static::assertSame('Docs', $config->site()->name());
+        static::assertSame('webinertia', $config->organization()->name());
+        static::assertSame('doc-target', $config->organization()->propertyName());
+        static::assertSame('true', $config->organization()->onboardValue());
+        static::assertSame('docs', $config->source()->directory());
+        static::assertSame([2, 3], $config->render()->tocLevels());
+        static::assertSame(4, $config->render()->concurrency());
+        static::assertSame('webware', $config->theme()->name());
+        static::assertSame([], $config->projects());
+        static::assertSame(Path::normalise($path), $config->configPath());
+        static::assertSame(Path::normalise($this->directory), $config->configDirectory());
     }
 
     #[Test]
@@ -148,8 +148,8 @@ final class SiteConfigLoaderTest extends TestCase
             new SiteConfigLoader()->load($path);
             self::fail('Expected a ConfigException.');
         } catch (ConfigException $exception) {
-            self::assertSame('', $exception->pointer());
-            self::assertStringContainsString('organization', $exception->getMessage());
+            static::assertSame('', $exception->pointer());
+            static::assertStringContainsString('organization', $exception->getMessage());
         }
     }
 
@@ -176,7 +176,7 @@ final class SiteConfigLoaderTest extends TestCase
 
         $config = new SiteConfigLoader()->load($path);
 
-        self::assertSame(Path::join($nested, 'build', 'site'), $config->output()->directory());
+        static::assertSame(Path::join($nested, 'build', 'site'), $config->output()->directory());
     }
 
     #[Test]
@@ -192,9 +192,9 @@ final class SiteConfigLoaderTest extends TestCase
 
         $config = new SiteConfigLoader()->load($path);
 
-        self::assertSame(Path::join($this->directory, 'out'), $config->output()->directory());
-        self::assertSame(Path::join($this->directory, 'cache'), $config->output()->cacheDirectory());
-        self::assertSame(Path::join($this->directory, 'r.json'), $config->output()->reportPath());
+        static::assertSame(Path::join($this->directory, 'out'), $config->output()->directory());
+        static::assertSame(Path::join($this->directory, 'cache'), $config->output()->cacheDirectory());
+        static::assertSame(Path::join($this->directory, 'r.json'), $config->output()->reportPath());
     }
 
     #[Test]
@@ -213,10 +213,10 @@ final class SiteConfigLoaderTest extends TestCase
 
         $config = new SiteConfigLoader()->load($path);
 
-        self::assertSame(['message-bus', 'messagebus-event'], array_keys($config->projects()));
-        self::assertSame('bus', $config->project('message-bus')?->slug());
-        self::assertSame(1, $config->project('message-bus')?->order());
-        self::assertNull($config->project('missing'));
+        static::assertSame(['message-bus', 'messagebus-event'], array_keys($config->projects()));
+        static::assertSame('bus', $config->project('message-bus')?->slug());
+        static::assertSame(1, $config->project('message-bus')?->order());
+        static::assertNull($config->project('missing'));
     }
 
     #[Test]
@@ -228,7 +228,7 @@ final class SiteConfigLoaderTest extends TestCase
 
         $config = new SiteConfigLoader()->load($relative);
 
-        self::assertSame(Path::join($this->directory, 'site.json'), $config->configPath());
+        static::assertSame(Path::join($this->directory, 'site.json'), $config->configPath());
     }
 
     #[Test]
@@ -240,9 +240,9 @@ final class SiteConfigLoaderTest extends TestCase
             new SiteConfigLoader()->load($path);
             self::fail('Expected a ConfigException.');
         } catch (ConfigException $exception) {
-            self::assertSame('/typo', $exception->pointer());
-            self::assertStringContainsString('typo', $exception->getMessage());
-            self::assertStringContainsString('/typo', $exception->getMessage());
+            static::assertSame('/typo', $exception->pointer());
+            static::assertStringContainsString('typo', $exception->getMessage());
+            static::assertStringContainsString('/typo', $exception->getMessage());
         }
     }
 
@@ -258,8 +258,8 @@ final class SiteConfigLoaderTest extends TestCase
             new SiteConfigLoader()->load($path);
             self::fail('Expected a ConfigException.');
         } catch (ConfigException $exception) {
-            self::assertSame('/schemaVersion', $exception->pointer());
-            self::assertStringContainsString('schemaVersion', $exception->getMessage());
+            static::assertSame('/schemaVersion', $exception->pointer());
+            static::assertStringContainsString('schemaVersion', $exception->getMessage());
         }
     }
 
@@ -275,7 +275,7 @@ final class SiteConfigLoaderTest extends TestCase
             new SiteConfigLoader()->load($path);
             self::fail('Expected a ConfigException.');
         } catch (ConfigException $exception) {
-            self::assertSame('/site/name', $exception->pointer());
+            static::assertSame('/site/name', $exception->pointer());
         }
     }
 

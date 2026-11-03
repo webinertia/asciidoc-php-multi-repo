@@ -40,7 +40,7 @@ final class BuildConfigTest extends TestCase
                 workingDirectory: sys_get_temp_dir(),
             );
 
-        self::assertSame(Path::normalise($absolute), $build->outputDirectory());
+        static::assertSame(Path::normalise($absolute), $build->outputDirectory());
     }
 
     #[Test]
@@ -49,12 +49,12 @@ final class BuildConfigTest extends TestCase
         $site  = self::siteConfig();
         $build = BuildConfig::fromSiteConfig($site);
 
-        self::assertSame($site->output()->directory(), $build->outputDirectory());
-        self::assertSame($site->output()->cacheDirectory(), $build->cacheDirectory());
-        self::assertSame($site->output()->reportPath(), $build->reportPath());
-        self::assertSame(4, $build->concurrency());
-        self::assertSame('/', $build->basePath());
-        self::assertFalse($build->full());
+        static::assertSame($site->output()->directory(), $build->outputDirectory());
+        static::assertSame($site->output()->cacheDirectory(), $build->cacheDirectory());
+        static::assertSame($site->output()->reportPath(), $build->reportPath());
+        static::assertSame(4, $build->concurrency());
+        static::assertSame('/', $build->basePath());
+        static::assertFalse($build->full());
     }
 
     #[Test]
@@ -72,12 +72,12 @@ final class BuildConfigTest extends TestCase
             workingDirectory: $working,
         );
 
-        self::assertSame(Path::join($working, 'out'), $build->outputDirectory());
-        self::assertSame(Path::join($working, 'cache2'), $build->cacheDirectory());
-        self::assertSame(Path::join($working, 'report2.json'), $build->reportPath());
-        self::assertSame(8, $build->concurrency());
-        self::assertSame('/manual/', $build->basePath());
-        self::assertTrue($build->full());
+        static::assertSame(Path::join($working, 'out'), $build->outputDirectory());
+        static::assertSame(Path::join($working, 'cache2'), $build->cacheDirectory());
+        static::assertSame(Path::join($working, 'report2.json'), $build->reportPath());
+        static::assertSame(8, $build->concurrency());
+        static::assertSame('/manual/', $build->basePath());
+        static::assertTrue($build->full());
     }
 
     #[Test]
@@ -86,11 +86,11 @@ final class BuildConfigTest extends TestCase
         $original = BuildConfig::fromSiteConfig(self::siteConfig());
         $updated  = $original->withOverrides(workingDirectory: sys_get_temp_dir());
 
-        self::assertSame($original->outputDirectory(), $updated->outputDirectory());
-        self::assertSame($original->cacheDirectory(), $updated->cacheDirectory());
-        self::assertSame($original->reportPath(), $updated->reportPath());
-        self::assertSame($original->concurrency(), $updated->concurrency());
-        self::assertSame($original->basePath(), $updated->basePath());
-        self::assertSame($original->full(), $updated->full());
+        static::assertSame($original->outputDirectory(), $updated->outputDirectory());
+        static::assertSame($original->cacheDirectory(), $updated->cacheDirectory());
+        static::assertSame($original->reportPath(), $updated->reportPath());
+        static::assertSame($original->concurrency(), $updated->concurrency());
+        static::assertSame($original->basePath(), $updated->basePath());
+        static::assertSame($original->full(), $updated->full());
     }
 }

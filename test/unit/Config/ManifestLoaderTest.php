@@ -33,7 +33,7 @@ final class ManifestLoaderTest extends TestCase
             'repositories'  => [['name' => 'only', 'path' => $absolute]],
         ]);
 
-        self::assertSame(
+        static::assertSame(
             $absolute,
             new ManifestLoader()
                 ->load($path)
@@ -46,8 +46,8 @@ final class ManifestLoaderTest extends TestCase
     {
         $loader = new ManifestLoader();
 
-        self::assertFileExists($loader->schemaPath());
-        self::assertSame(
+        static::assertFileExists($loader->schemaPath());
+        static::assertSame(
             Path::join(Path::normalise(dirname(__DIR__, 3)), 'config', 'manifest.schema.json'),
             $loader->schemaPath(),
         );
@@ -65,7 +65,7 @@ final class ManifestLoaderTest extends TestCase
             new ManifestLoader()->load($path);
             self::fail('Expected a ConfigException.');
         } catch (ConfigException $exception) {
-            self::assertSame('/repositories', $exception->pointer());
+            static::assertSame('/repositories', $exception->pointer());
         }
     }
 
@@ -81,12 +81,12 @@ final class ManifestLoaderTest extends TestCase
             ->load($path)
             ->repositories()[0];
 
-        self::assertSame('only', $entry->name());
-        self::assertNull($entry->slug());
-        self::assertSame('main', $entry->defaultBranch());
-        self::assertFalse($entry->archived());
-        self::assertTrue($entry->onboarded());
-        self::assertNull($entry->path());
+        static::assertSame('only', $entry->name());
+        static::assertNull($entry->slug());
+        static::assertSame('main', $entry->defaultBranch());
+        static::assertFalse($entry->archived());
+        static::assertTrue($entry->onboarded());
+        static::assertNull($entry->path());
     }
 
     #[Test]
@@ -95,10 +95,10 @@ final class ManifestLoaderTest extends TestCase
         $path     = Path::join(Path::normalise(dirname(__DIR__, 2)), 'fixtures', 'manifest.json');
         $manifest = new ManifestLoader()->load($path);
 
-        self::assertSame(1, $manifest->schemaVersion());
-        self::assertSame(Path::normalise($path), $manifest->path());
-        self::assertCount(7, $manifest->repositories());
-        self::assertSame('versioned', $manifest->names()[0]);
+        static::assertSame(1, $manifest->schemaVersion());
+        static::assertSame(Path::normalise($path), $manifest->path());
+        static::assertCount(7, $manifest->repositories());
+        static::assertSame('versioned', $manifest->names()[0]);
     }
 
     #[Test]
@@ -124,7 +124,7 @@ final class ManifestLoaderTest extends TestCase
             ->load($path)
             ->repositories()[0];
 
-        self::assertSame(Path::join($this->tempDirectory, 'org', 'only'), $entry->path());
+        static::assertSame(Path::join($this->tempDirectory, 'org', 'only'), $entry->path());
     }
 
     #[Test]
@@ -139,7 +139,7 @@ final class ManifestLoaderTest extends TestCase
             new ManifestLoader()->load($path);
             self::fail('Expected a ConfigException.');
         } catch (ConfigException $exception) {
-            self::assertSame('/repositories/0/typo', $exception->pointer());
+            static::assertSame('/repositories/0/typo', $exception->pointer());
         }
     }
 
@@ -156,8 +156,8 @@ final class ManifestLoaderTest extends TestCase
             new ManifestLoader()->load($path);
             self::fail('Expected a ConfigException.');
         } catch (ConfigException $exception) {
-            self::assertSame('/typo', $exception->pointer());
-            self::assertStringContainsString('/typo', $exception->getMessage());
+            static::assertSame('/typo', $exception->pointer());
+            static::assertStringContainsString('/typo', $exception->getMessage());
         }
     }
 
@@ -173,7 +173,7 @@ final class ManifestLoaderTest extends TestCase
             new ManifestLoader()->load($path);
             self::fail('Expected a ConfigException.');
         } catch (ConfigException $exception) {
-            self::assertSame('/schemaVersion', $exception->pointer());
+            static::assertSame('/schemaVersion', $exception->pointer());
         }
     }
 

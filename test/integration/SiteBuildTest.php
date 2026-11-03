@@ -67,12 +67,12 @@ final class SiteBuildTest extends TestCase
     {
         $html = (string) file_get_contents(Path::join($this->output, 'versioned', 'v1', 'index.html'));
 
-        self::assertStringContainsString('<article class="doc">', $html);
-        self::assertStringContainsString('Welcome to version 1.', $html);
-        self::assertStringContainsString('href="/versioned/v1/reference/nested.html"', $html);
-        self::assertStringContainsString('data-theme-mode="system"', $html);
-        self::assertStringNotContainsString('stylesheet!', $html);
-        self::assertStringNotContainsString('C:\\', $html);
+        static::assertStringContainsString('<article class="doc">', $html);
+        static::assertStringContainsString('Welcome to version 1.', $html);
+        static::assertStringContainsString('href="/versioned/v1/reference/nested.html"', $html);
+        static::assertStringContainsString('data-theme-mode="system"', $html);
+        static::assertStringNotContainsString('stylesheet!', $html);
+        static::assertStringNotContainsString('C:\\', $html);
     }
 
     #[Test]
@@ -80,17 +80,17 @@ final class SiteBuildTest extends TestCase
     {
         $versioned = (string) file_get_contents(Path::join($this->output, 'versioned', 'index.html'));
 
-        self::assertStringContainsString('http-equiv="refresh"', $versioned);
-        self::assertStringContainsString('/versioned/v2/', $versioned);
-        self::assertStringContainsString('rel="canonical"', $versioned);
-        self::assertStringContainsString('noindex', $versioned);
-        self::assertStringContainsString('<a href="/versioned/v2/"', $versioned);
+        static::assertStringContainsString('http-equiv="refresh"', $versioned);
+        static::assertStringContainsString('/versioned/v2/', $versioned);
+        static::assertStringContainsString('rel="canonical"', $versioned);
+        static::assertStringContainsString('noindex', $versioned);
+        static::assertStringContainsString('<a href="/versioned/v2/"', $versioned);
 
         $unversioned = (string) file_get_contents(Path::join($this->output, 'unversioned', 'index.html'));
 
-        self::assertStringContainsString('http-equiv="refresh"', $unversioned);
-        self::assertStringContainsString('/unversioned/latest/', $unversioned);
-        self::assertStringContainsString('noindex', $unversioned);
+        static::assertStringContainsString('http-equiv="refresh"', $unversioned);
+        static::assertStringContainsString('/unversioned/latest/', $unversioned);
+        static::assertStringContainsString('noindex', $unversioned);
     }
 
     #[Test]
@@ -106,11 +106,11 @@ final class SiteBuildTest extends TestCase
         $slugs = [];
 
         foreach ($site['projects'] as $project) {
-            self::assertIsArray($project);
+            static::assertIsArray($project);
 
             $index = $project['index'] ?? '';
-            self::assertIsString($index);
-            self::assertTrue(
+            static::assertIsString($index);
+            static::assertTrue(
                 is_file(Path::join($this->output, ...explode('/', ltrim($index, '/')))),
                 "the site index points at a missing file: {$index}",
             );
@@ -118,7 +118,7 @@ final class SiteBuildTest extends TestCase
             $slugs[] = $project['slug'] ?? '';
         }
 
-        self::assertSame(['mixed', 'unversioned', 'versioned'], $slugs);
+        static::assertSame(['mixed', 'unversioned', 'versioned'], $slugs);
 
         foreach (['versioned', 'unversioned', 'mixed'] as $slug) {
             $index = $json->decodeObject(
@@ -134,17 +134,17 @@ final class SiteBuildTest extends TestCase
                 ),
             );
 
-            self::assertTrue($result->isValid(), $result->describe());
+            static::assertTrue($result->isValid(), $result->describe());
 
             foreach ($index['versions'] as $version) {
-                self::assertIsArray($version);
+                static::assertIsArray($version);
 
                 foreach ($version['pages'] as $page) {
-                    self::assertIsArray($page);
+                    static::assertIsArray($page);
 
                     $url = $page['url'] ?? '';
-                    self::assertIsString($url);
-                    self::assertTrue(
+                    static::assertIsString($url);
+                    static::assertTrue(
                         is_file(Path::join($this->output, ...explode('/', ltrim($url, '/')))),
                         "the {$slug} index points at a missing page: {$url}",
                     );
@@ -174,32 +174,32 @@ final class SiteBuildTest extends TestCase
             ),
         );
 
-        self::assertSame(ExitCode::Success, $exit);
+        static::assertSame(ExitCode::Success, $exit);
 
         $landing = (string) file_get_contents(Path::join($output, 'index.html'));
 
-        self::assertSame(1, substr_count($landing, 'class="project-card"'));
-        self::assertStringContainsString('href="/versioned/"', $landing);
-        self::assertStringNotContainsString('mixed', $landing);
+        static::assertSame(1, substr_count($landing, 'class="project-card"'));
+        static::assertStringContainsString('href="/versioned/"', $landing);
+        static::assertStringNotContainsString('mixed', $landing);
 
-        self::assertTrue(is_file(Path::join($output, 'versioned', 'index.html')));
-        self::assertFalse(is_file(Path::join($output, 'mixed', 'index.html')));
+        static::assertTrue(is_file(Path::join($output, 'versioned', 'index.html')));
+        static::assertFalse(is_file(Path::join($output, 'mixed', 'index.html')));
 
         $page = (string) file_get_contents(Path::join($output, 'versioned', 'v1', 'index.html'));
 
-        self::assertSame(1, substr_count($page, 'class="project-item'));
+        static::assertSame(1, substr_count($page, 'class="project-item'));
     }
 
     #[Test]
     public function theBuildPrintsExactlyOneSummaryBlockOnStandardOutput(): void
     {
-        self::assertCount(1, $this->stdout, 'standard output carried more than one block');
+        static::assertCount(1, $this->stdout, 'standard output carried more than one block');
 
         $summary = $this->summary();
 
-        self::assertStringContainsString('ok: 3, partial: 1, failed: 2, skipped: 0', $summary);
-        self::assertStringContainsString("output directory: {$this->output}", $summary);
-        self::assertStringContainsString('report: ', $summary);
+        static::assertStringContainsString('ok: 3, partial: 1, failed: 2, skipped: 0', $summary);
+        static::assertStringContainsString("output directory: {$this->output}", $summary);
+        static::assertStringContainsString('report: ', $summary);
     }
 
     #[Test]
@@ -207,13 +207,13 @@ final class SiteBuildTest extends TestCase
     {
         $stderr = implode("\n", $this->stderr);
 
-        self::assertStringContainsString('versioned: 5 page(s) ok', $stderr);
-        self::assertStringContainsString('unversioned: 1 page(s) ok', $stderr);
-        self::assertStringContainsString('mixed: 2 page(s) ok', $stderr);
-        self::assertStringContainsString('broken-include: 0 page(s) partial', $stderr);
-        self::assertStringContainsString('markdown-only: 0 page(s) failed', $stderr);
-        self::assertStringContainsString('missing-entry: 0 page(s) failed', $stderr);
-        self::assertStringNotContainsString('page(s)', implode("\n", $this->stdout));
+        static::assertStringContainsString('versioned: 5 page(s) ok', $stderr);
+        static::assertStringContainsString('unversioned: 1 page(s) ok', $stderr);
+        static::assertStringContainsString('mixed: 2 page(s) ok', $stderr);
+        static::assertStringContainsString('broken-include: 0 page(s) partial', $stderr);
+        static::assertStringContainsString('markdown-only: 0 page(s) failed', $stderr);
+        static::assertStringContainsString('missing-entry: 0 page(s) failed', $stderr);
+        static::assertStringNotContainsString('page(s)', implode("\n", $this->stdout));
     }
 
     #[Test]
@@ -229,7 +229,7 @@ final class SiteBuildTest extends TestCase
             'mixed/v1/index.html',
             'mixed/v2/index.html',
         ] as $path) {
-            self::assertTrue(
+            static::assertTrue(
                 is_file(Path::join($this->output, ...explode('/', $path))),
                 "{$path} was not published.",
             );
@@ -239,22 +239,22 @@ final class SiteBuildTest extends TestCase
     #[Test]
     public function theBuildWritesTheSharedAssetsOnce(): void
     {
-        self::assertCount(1, $this->assetsMatching('site.*.css'));
-        self::assertCount(1, $this->assetsMatching('theme.*.js'));
-        self::assertNotSame([], $this->assetsMatching('accent.*.css'));
+        static::assertCount(1, $this->assetsMatching('site.*.css'));
+        static::assertCount(1, $this->assetsMatching('theme.*.js'));
+        static::assertNotSame([], $this->assetsMatching('accent.*.css'));
     }
 
     #[Test]
     public function theFixtureSetExitsDegradedBecauseTwoProjectsFail(): void
     {
-        self::assertSame(ExitCode::Degraded, $this->exitCode);
-        self::assertSame(1, $this->exitCode->value);
+        static::assertSame(ExitCode::Degraded, $this->exitCode);
+        static::assertSame(1, $this->exitCode->value);
 
         $errors = implode("\n", $this->errors());
 
-        self::assertStringContainsString('render-failed', $errors);
-        self::assertStringContainsString('no-asciidoc-sources', $errors);
-        self::assertStringContainsString('missing-entry', $errors);
+        static::assertStringContainsString('render-failed', $errors);
+        static::assertStringContainsString('no-asciidoc-sources', $errors);
+        static::assertStringContainsString('missing-entry', $errors);
     }
 
     #[Test]
@@ -262,12 +262,12 @@ final class SiteBuildTest extends TestCase
     {
         $html = (string) file_get_contents(Path::join($this->output, 'index.html'));
 
-        self::assertSame(3, substr_count($html, 'class="project-card"'));
-        self::assertStringContainsString('href="/mixed/"', $html);
-        self::assertStringContainsString('href="/unversioned/"', $html);
-        self::assertStringContainsString('href="/versioned/"', $html);
-        self::assertStringNotContainsString('markdown-only', $html);
-        self::assertStringNotContainsString('broken-include', $html);
+        static::assertSame(3, substr_count($html, 'class="project-card"'));
+        static::assertStringContainsString('href="/mixed/"', $html);
+        static::assertStringContainsString('href="/unversioned/"', $html);
+        static::assertStringContainsString('href="/versioned/"', $html);
+        static::assertStringNotContainsString('markdown-only', $html);
+        static::assertStringNotContainsString('broken-include', $html);
     }
 
     #[Test]
@@ -275,10 +275,10 @@ final class SiteBuildTest extends TestCase
     {
         $html = (string) file_get_contents(Path::join($this->output, '404.html'));
 
-        self::assertStringContainsString('href="/"', $html);
-        self::assertStringContainsString('href="/mixed/"', $html);
-        self::assertStringContainsString('href="/unversioned/"', $html);
-        self::assertStringContainsString('href="/versioned/"', $html);
+        static::assertStringContainsString('href="/"', $html);
+        static::assertStringContainsString('href="/mixed/"', $html);
+        static::assertStringContainsString('href="/unversioned/"', $html);
+        static::assertStringContainsString('href="/versioned/"', $html);
     }
 
     #[Test]
@@ -286,28 +286,28 @@ final class SiteBuildTest extends TestCase
     {
         $twin = (string) file_get_contents(Path::join($this->output, 'versioned', 'v1', 'guide.html'));
 
-        self::assertStringContainsString('class="outdated-banner"', $twin);
-        self::assertStringContainsString('The current version is <a href="/versioned/v2/guide.html">v2</a>', $twin);
+        static::assertStringContainsString('class="outdated-banner"', $twin);
+        static::assertStringContainsString('The current version is <a href="/versioned/v2/guide.html">v2</a>', $twin);
 
         $lonely = (string) file_get_contents(
             Path::join($this->output, 'versioned', 'v1', 'reference', 'nested.html'),
         );
 
-        self::assertStringContainsString('class="outdated-banner"', $lonely);
-        self::assertStringContainsString('The current version is <a href="/versioned/v2/index.html">v2</a>', $lonely);
+        static::assertStringContainsString('class="outdated-banner"', $lonely);
+        static::assertStringContainsString('The current version is <a href="/versioned/v2/index.html">v2</a>', $lonely);
 
         $latest = (string) file_get_contents(Path::join($this->output, 'versioned', 'v2', 'index.html'));
 
-        self::assertStringNotContainsString('outdated-banner', $latest);
+        static::assertStringNotContainsString('outdated-banner', $latest);
     }
 
     #[Test]
     public function theOutputRootCarriesTheNoJekyllMarkerAndTheHostname(): void
     {
-        self::assertTrue(is_file(Path::join($this->output, '.nojekyll')));
-        self::assertSame('', (string) file_get_contents(Path::join($this->output, '.nojekyll')));
-        self::assertTrue(is_file(Path::join($this->output, 'CNAME')));
-        self::assertSame("docs.example.test\n", (string) file_get_contents(Path::join($this->output, 'CNAME')));
+        static::assertTrue(is_file(Path::join($this->output, '.nojekyll')));
+        static::assertSame('', (string) file_get_contents(Path::join($this->output, '.nojekyll')));
+        static::assertTrue(is_file(Path::join($this->output, 'CNAME')));
+        static::assertSame("docs.example.test\n", (string) file_get_contents(Path::join($this->output, 'CNAME')));
     }
 
     #[Test]
@@ -315,7 +315,7 @@ final class SiteBuildTest extends TestCase
     {
         $report = Path::join($this->tempDirectory, 'report.json');
 
-        self::assertTrue(is_file($report), 'the build wrote no report');
+        static::assertTrue(is_file($report), 'the build wrote no report');
 
         $json    = new Json();
         $decoded = $json->decodeObject((string) file_get_contents($report), $report);
@@ -328,17 +328,17 @@ final class SiteBuildTest extends TestCase
             ),
         );
 
-        self::assertTrue($result->isValid(), $result->describe());
-        self::assertSame(1, $decoded['exitCode']);
-        self::assertCount(6, $decoded['projects']);
-        self::assertSame(
+        static::assertTrue($result->isValid(), $result->describe());
+        static::assertSame(1, $decoded['exitCode']);
+        static::assertCount(6, $decoded['projects']);
+        static::assertSame(
             ['ok' => 3, 'partial' => 1, 'failed' => 2, 'skipped' => 0, 'pages' => 9, 'renderedPages' => 8],
             $decoded['totals'],
         );
 
         foreach ($decoded['projects'] as $project) {
-            self::assertIsArray($project);
-            self::assertGreaterThanOrEqual(1, $project['fetchAttempts'] ?? 0);
+            static::assertIsArray($project);
+            static::assertGreaterThanOrEqual(1, $project['fetchAttempts'] ?? 0);
         }
     }
 
@@ -347,7 +347,7 @@ final class SiteBuildTest extends TestCase
     {
         $html = (string) file_get_contents(Path::join($this->output, 'versioned', 'v1', 'index.html'));
 
-        self::assertMatchesRegularExpression(
+        static::assertMatchesRegularExpression(
             '/<div class="site-search"([^>]*)>/',
             $html,
         );
@@ -357,10 +357,10 @@ final class SiteBuildTest extends TestCase
 
         $attributes = $matches[1] ?? '';
 
-        self::assertStringContainsString(' hidden', $attributes, 'the control is reachable before scripting runs');
-        self::assertStringContainsString('data-project-slug="versioned"', $attributes);
-        self::assertStringContainsString('data-project-index="/versioned/search-index.json"', $attributes);
-        self::assertStringNotContainsString('disabled', $html);
+        static::assertStringContainsString(' hidden', $attributes, 'the control is reachable before scripting runs');
+        static::assertStringContainsString('data-project-slug="versioned"', $attributes);
+        static::assertStringContainsString('data-project-index="/versioned/search-index.json"', $attributes);
+        static::assertStringNotContainsString('disabled', $html);
     }
 
     #[Test]
@@ -368,7 +368,7 @@ final class SiteBuildTest extends TestCase
     {
         $html = (string) file_get_contents(Path::join($this->output, 'versioned', 'v1', 'index.html'));
 
-        self::assertStringContainsString(
+        static::assertStringContainsString(
             '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">',
             $html,
         );
@@ -382,11 +382,11 @@ final class SiteBuildTest extends TestCase
             'caution'   => '\f06d',
             'important' => '\f06a',
         ] as $name => $codepoint) {
-            self::assertStringContainsString(".icon-{$name}::before", $css);
-            self::assertStringContainsString($codepoint, $css);
+            static::assertStringContainsString(".icon-{$name}::before", $css);
+            static::assertStringContainsString($codepoint, $css);
         }
 
-        self::assertStringContainsString('.admonitionblock td.icon [class^="fa icon-"]', $css);
+        static::assertStringContainsString('.admonitionblock td.icon [class^="fa icon-"]', $css);
     }
 
     #[Test]
@@ -394,20 +394,20 @@ final class SiteBuildTest extends TestCase
     {
         $html = (string) file_get_contents(Path::join($this->output, 'versioned', 'v1', 'index.html'));
 
-        self::assertSame(3, substr_count($html, 'class="project-item'));
+        static::assertSame(3, substr_count($html, 'class="project-item'));
 
         $current = [];
         preg_match('~<a href="/versioned/" aria-current="page">([^<]+)</a>~', $html, $current);
 
-        self::assertSame('versioned', $current[1] ?? '');
+        static::assertSame('versioned', $current[1] ?? '');
 
         foreach (['mixed', 'unversioned'] as $slug) {
-            self::assertStringContainsString("<a href=\"/{$slug}/\">{$slug}</a>", $html);
+            static::assertStringContainsString("<a href=\"/{$slug}/\">{$slug}</a>", $html);
         }
 
-        self::assertStringNotContainsString('broken-include', $html);
-        self::assertStringNotContainsString('markdown-only', $html);
-        self::assertStringNotContainsString('archived', $html);
+        static::assertStringNotContainsString('broken-include', $html);
+        static::assertStringNotContainsString('markdown-only', $html);
+        static::assertStringNotContainsString('archived', $html);
     }
 
     protected function setUp(): void

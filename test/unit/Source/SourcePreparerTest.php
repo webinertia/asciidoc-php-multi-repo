@@ -34,7 +34,7 @@ final class SourcePreparerTest extends TestCase
     {
         $source = new SourcePreparer()->prepare($this->page('docs/bom.adoc', "\xEF\xBB\xBF= Title\n"));
 
-        self::assertSame("= Title\n", $source->text());
+        static::assertSame("= Title\n", $source->text());
     }
 
     #[Test]
@@ -42,7 +42,7 @@ final class SourcePreparerTest extends TestCase
     {
         $source = new SourcePreparer()->prepare($this->page('docs/old.adoc', "= Title\rBody.\r"));
 
-        self::assertSame("= Title\nBody.\n", $source->text());
+        static::assertSame("= Title\nBody.\n", $source->text());
     }
 
     #[Test]
@@ -57,11 +57,11 @@ final class SourcePreparerTest extends TestCase
         } catch (SourceException $exception) {
             $error = $exception->error();
 
-            self::assertSame(ReasonCode::NoAsciidocSources, $error->reasonCode());
-            self::assertSame('docs/v1/guide.md', $error->path());
-            self::assertSame('v1', $error->version());
-            self::assertStringContainsString('markdown', $error->message());
-            self::assertNotNull($error->correctiveAction());
+            static::assertSame(ReasonCode::NoAsciidocSources, $error->reasonCode());
+            static::assertSame('docs/v1/guide.md', $error->path());
+            static::assertSame('v1', $error->version());
+            static::assertStringContainsString('markdown', $error->message());
+            static::assertNotNull($error->correctiveAction());
         }
     }
 
@@ -70,7 +70,7 @@ final class SourcePreparerTest extends TestCase
     {
         $source = new SourcePreparer()->prepare($this->page('docs/INDEX.ADOC', "= Title\n"));
 
-        self::assertSame(SourceFormat::AsciiDoc, $source->format());
+        static::assertSame(SourceFormat::AsciiDoc, $source->format());
     }
 
     #[Test]
@@ -89,10 +89,10 @@ final class SourcePreparerTest extends TestCase
         $page   = $this->page('docs/index.adoc', "= Title\n\nBody.\n");
         $source = new SourcePreparer()->prepare($page);
 
-        self::assertSame("= Title\n\nBody.\n", $source->text());
-        self::assertSame(SourceFormat::AsciiDoc, $source->format());
-        self::assertSame($page, $source->page());
-        self::assertSame($this->filesystem->hashContents("= Title\n\nBody.\n"), $source->hash());
+        static::assertSame("= Title\n\nBody.\n", $source->text());
+        static::assertSame(SourceFormat::AsciiDoc, $source->format());
+        static::assertSame($page, $source->page());
+        static::assertSame($this->filesystem->hashContents("= Title\n\nBody.\n"), $source->hash());
     }
 
     #[Test]
@@ -103,8 +103,8 @@ final class SourcePreparerTest extends TestCase
 
         $preparer = new SourcePreparer();
 
-        self::assertSame($preparer->prepare($lf)->text(), $preparer->prepare($crlf)->text());
-        self::assertSame($preparer->prepare($lf)->hash(), $preparer->prepare($crlf)->hash());
+        static::assertSame($preparer->prepare($lf)->text(), $preparer->prepare($crlf)->text());
+        static::assertSame($preparer->prepare($lf)->hash(), $preparer->prepare($crlf)->hash());
     }
 
     #[Test]
@@ -119,10 +119,10 @@ final class SourcePreparerTest extends TestCase
         } catch (SourceException $exception) {
             $error = $exception->error();
 
-            self::assertSame(ReasonCode::InvalidEncoding, $error->reasonCode());
-            self::assertSame('docs/v1/latin1.adoc', $error->path());
-            self::assertSame('v1', $error->version());
-            self::assertStringContainsString('docs/v1/latin1.adoc', $error->message());
+            static::assertSame(ReasonCode::InvalidEncoding, $error->reasonCode());
+            static::assertSame('docs/v1/latin1.adoc', $error->path());
+            static::assertSame('v1', $error->version());
+            static::assertStringContainsString('docs/v1/latin1.adoc', $error->message());
         }
     }
 
@@ -131,8 +131,8 @@ final class SourcePreparerTest extends TestCase
     {
         $source = new SourcePreparer()->prepare($this->page('docs/crlf.adoc', "= Title\r\n"));
 
-        self::assertSame($this->filesystem->hashContents("= Title\n"), $source->hash());
-        self::assertNotSame($this->filesystem->hashContents("= Title\r\n"), $source->hash());
+        static::assertSame($this->filesystem->hashContents("= Title\n"), $source->hash());
+        static::assertNotSame($this->filesystem->hashContents("= Title\r\n"), $source->hash());
     }
 
     #[Test]
@@ -141,8 +141,8 @@ final class SourcePreparerTest extends TestCase
         $page   = $this->page('docs/index.adoc', "= Title\n");
         $source = new SourcePreparer()->prepare($page);
 
-        self::assertSame('docs/index.adoc', $source->page()->relativePath());
-        self::assertSame('v1', $source->page()->version());
+        static::assertSame('docs/index.adoc', $source->page()->relativePath());
+        static::assertSame('v1', $source->page()->version());
     }
 
     protected function setUp(): void

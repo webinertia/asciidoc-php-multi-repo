@@ -36,36 +36,36 @@ final class SourceFormatTest extends TestCase
     #[Test]
     public function onlyAsciiDocIsAccepted(): void
     {
-        self::assertTrue(SourceFormat::AsciiDoc->isAsciiDoc());
-        self::assertFalse(SourceFormat::Markdown->isAsciiDoc());
-        self::assertFalse(SourceFormat::Unknown->isAsciiDoc());
+        static::assertTrue(SourceFormat::AsciiDoc->isAsciiDoc());
+        static::assertFalse(SourceFormat::Markdown->isAsciiDoc());
+        static::assertFalse(SourceFormat::Unknown->isAsciiDoc());
     }
 
     #[Test]
     public function theEnumValueIsTheLowercaseFormatName(): void
     {
-        self::assertSame('asciidoc', SourceFormat::AsciiDoc->value);
-        self::assertSame('markdown', SourceFormat::Markdown->value);
-        self::assertSame('unknown', SourceFormat::Unknown->value);
+        static::assertSame('asciidoc', SourceFormat::AsciiDoc->value);
+        static::assertSame('markdown', SourceFormat::Markdown->value);
+        static::assertSame('unknown', SourceFormat::Unknown->value);
     }
 
     #[Test]
     public function theExtensionComesFromTheLastDot(): void
     {
-        self::assertSame('.adoc', SourceFormat::extension('docs/v1.2/index.adoc'));
+        static::assertSame('.adoc', SourceFormat::extension('docs/v1.2/index.adoc'));
     }
 
     #[Test]
     public function theExtensionIsLowercasedAndKeepsTheDot(): void
     {
-        self::assertSame('.adoc', SourceFormat::extension('docs/INDEX.ADOC'));
-        self::assertSame('', SourceFormat::extension('docs/README'));
+        static::assertSame('.adoc', SourceFormat::extension('docs/INDEX.ADOC'));
+        static::assertSame('', SourceFormat::extension('docs/README'));
     }
 
     #[Test]
     #[DataProvider('extensions')]
     public function theFormatComesFromTheExtension(string $path, SourceFormat $expected): void
     {
-        self::assertSame($expected, SourceFormat::fromPath($path));
+        static::assertSame($expected, SourceFormat::fromPath($path));
     }
 }

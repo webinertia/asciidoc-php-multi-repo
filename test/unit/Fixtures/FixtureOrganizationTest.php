@@ -53,8 +53,8 @@ final class FixtureOrganizationTest extends TestCase
         $page    = Path::join($this->repository('broken-include'), 'docs', 'v1', 'index.adoc');
         $include = $this->firstIncludeTarget($this->filesystem->read($page));
 
-        self::assertNotNull($include);
-        self::assertFileDoesNotExist(Path::join($this->repository('broken-include'), 'docs', 'v1', $include));
+        static::assertNotNull($include);
+        static::assertFileDoesNotExist(Path::join($this->repository('broken-include'), 'docs', 'v1', $include));
     }
 
     #[Test]
@@ -65,11 +65,11 @@ final class FixtureOrganizationTest extends TestCase
         foreach ($manifest->repositories() as $entry) {
             $path = $entry->path();
 
-            self::assertNotNull($path, $entry->name());
-            self::assertDirectoryExists($path);
-            self::assertSame($entry->name(), basename($path));
-            self::assertSame('main', $entry->defaultBranch());
-            self::assertTrue($entry->onboarded());
+            static::assertNotNull($path, $entry->name());
+            static::assertDirectoryExists($path);
+            static::assertSame($entry->name(), basename($path));
+            static::assertSame('main', $entry->defaultBranch());
+            static::assertTrue($entry->onboarded());
         }
     }
 
@@ -88,13 +88,13 @@ final class FixtureOrganizationTest extends TestCase
             $archived[] = $entry->name();
         }
 
-        self::assertSame(['archived'], $archived);
+        static::assertSame(['archived'], $archived);
     }
 
     #[Test]
     public function fixtureOrganizationContainsExactlyTheDocumentedRepositories(): void
     {
-        self::assertSame(self::REPOSITORIES, $this->repositoryDirectories());
+        static::assertSame(self::REPOSITORIES, $this->repositoryDirectories());
     }
 
     #[Test]
@@ -105,7 +105,7 @@ final class FixtureOrganizationTest extends TestCase
         $names = $manifest->names();
         sort($names);
 
-        self::assertSame($this->repositoryDirectories(), $names);
+        static::assertSame($this->repositoryDirectories(), $names);
     }
 
     #[Test]
@@ -119,7 +119,7 @@ final class FixtureOrganizationTest extends TestCase
             $slugs[] = $entry->slug();
         }
 
-        self::assertSame($slugs, array_values(array_unique($slugs)));
+        static::assertSame($slugs, array_values(array_unique($slugs)));
     }
 
     #[Test]
@@ -127,10 +127,10 @@ final class FixtureOrganizationTest extends TestCase
     {
         $files = $this->filesystem->scan(Path::join($this->repository('markdown-only'), 'docs'));
 
-        self::assertNotSame([], $files);
+        static::assertNotSame([], $files);
 
         foreach ($files as $file) {
-            self::assertTrue(
+            static::assertTrue(
                 str_ends_with($file, '.md'),
                 "The markdown-only fixture must not ship {$file}.",
             );
@@ -143,34 +143,34 @@ final class FixtureOrganizationTest extends TestCase
         $docs = Path::join($this->repository('missing-entry'), 'docs', 'v1');
 
         foreach (SourceSection::fromArray([])->entryCandidates() as $candidate) {
-            self::assertFileDoesNotExist(Path::join($docs, $candidate));
+            static::assertFileDoesNotExist(Path::join($docs, $candidate));
         }
 
-        self::assertFileExists(Path::join($docs, 'other.adoc'));
+        static::assertFileExists(Path::join($docs, 'other.adoc'));
     }
 
     #[Test]
     public function mixedFixtureHasVersionDirectoriesAndALoosePage(): void
     {
-        self::assertSame(['v1', 'v2'], $this->versionDirectories('mixed'));
-        self::assertFileExists(Path::join($this->repository('mixed'), 'docs', 'loose.adoc'));
+        static::assertSame(['v1', 'v2'], $this->versionDirectories('mixed'));
+        static::assertFileExists(Path::join($this->repository('mixed'), 'docs', 'loose.adoc'));
     }
 
     #[Test]
     public function unversionedFixtureHasADocsEntryPage(): void
     {
-        self::assertFileExists(Path::join($this->repository('unversioned'), 'docs', 'index.adoc'));
-        self::assertSame([], $this->versionDirectories('unversioned'));
+        static::assertFileExists(Path::join($this->repository('unversioned'), 'docs', 'index.adoc'));
+        static::assertSame([], $this->versionDirectories('unversioned'));
     }
 
     #[Test]
     public function versionedFixtureHasTwoVersionsWithEntryPages(): void
     {
-        self::assertFileExists(Path::join($this->repository('versioned'), 'docs', 'v1', 'index.adoc'));
-        self::assertFileExists(Path::join($this->repository('versioned'), 'docs', 'v2', 'index.adoc'));
-        self::assertFileExists(Path::join($this->repository('versioned'), 'docs', 'v1', 'guide.adoc'));
-        self::assertDirectoryExists(Path::join($this->repository('versioned'), 'docs', 'v1', 'reference'));
-        self::assertFileExists(Path::join($this->repository('versioned'), 'docs', 'v1', 'reference', 'nested.adoc'));
+        static::assertFileExists(Path::join($this->repository('versioned'), 'docs', 'v1', 'index.adoc'));
+        static::assertFileExists(Path::join($this->repository('versioned'), 'docs', 'v2', 'index.adoc'));
+        static::assertFileExists(Path::join($this->repository('versioned'), 'docs', 'v1', 'guide.adoc'));
+        static::assertDirectoryExists(Path::join($this->repository('versioned'), 'docs', 'v1', 'reference'));
+        static::assertFileExists(Path::join($this->repository('versioned'), 'docs', 'v1', 'reference', 'nested.adoc'));
     }
 
     protected function setUp(): void
@@ -212,7 +212,7 @@ final class FixtureOrganizationTest extends TestCase
     {
         $entries = scandir(Path::join($this->fixtures, 'org'));
 
-        self::assertIsArray($entries);
+        static::assertIsArray($entries);
 
         $directories = [];
 
@@ -238,7 +238,7 @@ final class FixtureOrganizationTest extends TestCase
     {
         $entries = scandir(Path::join($this->repository($repository), 'docs'));
 
-        self::assertIsArray($entries);
+        static::assertIsArray($entries);
 
         $directories = [];
 

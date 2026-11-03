@@ -39,7 +39,7 @@ final class CommandStubTest extends TestCase
     #[DataProvider('contractCommands')]
     public function everyCommandHasANonEmptySummary(string $name): void
     {
-        self::assertNotSame('', $this->command($name)->summary());
+        static::assertNotSame('', $this->command($name)->summary());
     }
 
     #[Test]
@@ -51,7 +51,7 @@ final class CommandStubTest extends TestCase
             Application::defaultCommands(),
         );
 
-        self::assertContains($name, $names);
+        static::assertContains($name, $names);
     }
 
     #[Test]
@@ -62,8 +62,8 @@ final class CommandStubTest extends TestCase
             Application::defaultCommands(),
         );
 
-        self::assertSame($names, array_values(array_unique($names)));
-        self::assertCount(7, $names);
+        static::assertSame($names, array_values(array_unique($names)));
+        static::assertCount(7, $names);
     }
 
     private function command(string $name): CommandInterface

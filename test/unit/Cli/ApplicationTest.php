@@ -46,13 +46,13 @@ final class ApplicationTest extends TestCase
             '--full',
         ]);
 
-        self::assertSame(ExitCode::Degraded->value, $exit);
-        self::assertSame(1, $command->calls);
-        self::assertInstanceOf(Options::class, $command->options);
-        self::assertSame(['message-bus'], $command->options->projects);
-        self::assertTrue($command->options->full);
-        self::assertSame('Fixture Site', $command->config?->site()->name());
-        self::assertInstanceOf(Output::class, $command->output);
+        static::assertSame(ExitCode::Degraded->value, $exit);
+        static::assertSame(1, $command->calls);
+        static::assertInstanceOf(Options::class, $command->options);
+        static::assertSame(['message-bus'], $command->options->projects);
+        static::assertTrue($command->options->full);
+        static::assertSame('Fixture Site', $command->config?->site()->name());
+        static::assertInstanceOf(Output::class, $command->output);
     }
 
     #[Test]
@@ -60,11 +60,11 @@ final class ApplicationTest extends TestCase
     {
         $exit = $this->application()->run(['asciidoc-php-multi-repo', '--help']);
 
-        self::assertSame(ExitCode::Success->value, $exit);
-        self::assertSame('', $this->captured->stderr);
+        static::assertSame(ExitCode::Success->value, $exit);
+        static::assertSame('', $this->captured->stderr);
 
         foreach (['discover', 'fetch', 'build', 'watch', 'serve', 'validate', 'clean'] as $command) {
-            self::assertStringContainsString($command, $this->captured->stdout);
+            static::assertStringContainsString($command, $this->captured->stdout);
         }
 
         foreach ([
@@ -87,7 +87,7 @@ final class ApplicationTest extends TestCase
             '--help',
             '--version',
         ] as $option) {
-            self::assertStringContainsString($option, $this->captured->stdout);
+            static::assertStringContainsString($option, $this->captured->stdout);
         }
     }
 
@@ -98,8 +98,8 @@ final class ApplicationTest extends TestCase
 
         $exit = $this->application()->run(['asciidoc-php-multi-repo', 'build', '-c', $missing]);
 
-        self::assertSame(ExitCode::ConfigError->value, $exit);
-        self::assertStringContainsString('error:', $this->captured->stderr);
+        static::assertSame(ExitCode::ConfigError->value, $exit);
+        static::assertStringContainsString('error:', $this->captured->stderr);
     }
 
     #[Test]
@@ -107,10 +107,10 @@ final class ApplicationTest extends TestCase
     {
         $exit = $this->application()->run(['asciidoc-php-multi-repo']);
 
-        self::assertSame(ExitCode::ConfigError->value, $exit);
-        self::assertSame('', $this->captured->stdout);
-        self::assertStringContainsString('no command given', $this->captured->stderr);
-        self::assertStringContainsString('asciidoc-php-multi-repo <command> [options]', $this->captured->stderr);
+        static::assertSame(ExitCode::ConfigError->value, $exit);
+        static::assertSame('', $this->captured->stdout);
+        static::assertStringContainsString('no command given', $this->captured->stderr);
+        static::assertStringContainsString('asciidoc-php-multi-repo <command> [options]', $this->captured->stderr);
     }
 
     #[Test]
@@ -118,8 +118,8 @@ final class ApplicationTest extends TestCase
     {
         $this->application()->run(['asciidoc-php-multi-repo', 'build', '--nope']);
 
-        self::assertStringNotContainsString("\033[", $this->captured->stderr);
-        self::assertStringNotContainsString("\033[", $this->captured->stdout);
+        static::assertStringNotContainsString("\033[", $this->captured->stderr);
+        static::assertStringNotContainsString("\033[", $this->captured->stdout);
     }
 
     #[Test]
@@ -133,8 +133,8 @@ final class ApplicationTest extends TestCase
             '--quiet',
         ]);
 
-        self::assertSame(ExitCode::ConfigError->value, $exit);
-        self::assertStringContainsString('error:', $this->captured->stderr);
+        static::assertSame(ExitCode::ConfigError->value, $exit);
+        static::assertStringContainsString('error:', $this->captured->stderr);
     }
 
     #[Test]
@@ -164,8 +164,8 @@ final class ApplicationTest extends TestCase
             $this->fixtureConfig(),
         ]);
 
-        self::assertSame(ExitCode::InternalError->value, $exit);
-        self::assertStringContainsString('converter failed', $this->captured->stderr);
+        static::assertSame(ExitCode::InternalError->value, $exit);
+        static::assertStringContainsString('converter failed', $this->captured->stderr);
     }
 
     #[Test]
@@ -173,8 +173,8 @@ final class ApplicationTest extends TestCase
     {
         $exit = $this->application()->run(['asciidoc-php-multi-repo', 'publish']);
 
-        self::assertSame(ExitCode::ConfigError->value, $exit);
-        self::assertStringContainsString('unknown command "publish"', $this->captured->stderr);
+        static::assertSame(ExitCode::ConfigError->value, $exit);
+        static::assertStringContainsString('unknown command "publish"', $this->captured->stderr);
     }
 
     #[Test]
@@ -182,9 +182,9 @@ final class ApplicationTest extends TestCase
     {
         $exit = $this->application()->run(['asciidoc-php-multi-repo', 'build', '--nope']);
 
-        self::assertSame(ExitCode::ConfigError->value, $exit);
-        self::assertStringContainsString('unknown option "--nope"', $this->captured->stderr);
-        self::assertStringContainsString('Global options:', $this->captured->stderr);
+        static::assertSame(ExitCode::ConfigError->value, $exit);
+        static::assertStringContainsString('unknown option "--nope"', $this->captured->stderr);
+        static::assertStringContainsString('Global options:', $this->captured->stderr);
     }
 
     #[Test]
@@ -205,8 +205,8 @@ final class ApplicationTest extends TestCase
 
         $exit = $this->application()->run(['asciidoc-php-multi-repo', 'build', '-c', $path]);
 
-        self::assertSame(ExitCode::ConfigError->value, $exit);
-        self::assertStringContainsString('schemaVersion', $this->captured->stderr);
+        static::assertSame(ExitCode::ConfigError->value, $exit);
+        static::assertStringContainsString('schemaVersion', $this->captured->stderr);
     }
 
     #[Test]
@@ -214,9 +214,9 @@ final class ApplicationTest extends TestCase
     {
         $exit = $this->application()->run(['asciidoc-php-multi-repo', '--version']);
 
-        self::assertSame(ExitCode::Success->value, $exit);
-        self::assertSame("asciidoc-php-multi-repo 1.2.3\n", $this->captured->stdout);
-        self::assertSame('', $this->captured->stderr);
+        static::assertSame(ExitCode::Success->value, $exit);
+        static::assertSame("asciidoc-php-multi-repo 1.2.3\n", $this->captured->stdout);
+        static::assertSame('', $this->captured->stderr);
     }
 
     protected function setUp(): void

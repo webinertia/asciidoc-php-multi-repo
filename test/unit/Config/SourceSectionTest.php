@@ -17,12 +17,12 @@ final class SourceSectionTest extends TestCase
     {
         $section = SourceSection::fromArray([]);
 
-        self::assertSame('docs', $section->directory());
-        self::assertTrue($section->defaultBranchOnly());
-        self::assertSame(['index.adoc', 'README.adoc'], $section->entryCandidates());
-        self::assertSame(['.adoc', '.asciidoc'], $section->extensions());
-        self::assertSame('^v[1-9][0-9]*$', $section->versionPattern());
-        self::assertSame(['**/_*.adoc', '**/_*.asciidoc'], $section->excludePatterns());
+        static::assertSame('docs', $section->directory());
+        static::assertTrue($section->defaultBranchOnly());
+        static::assertSame(['index.adoc', 'README.adoc'], $section->entryCandidates());
+        static::assertSame(['.adoc', '.asciidoc'], $section->extensions());
+        static::assertSame('^v[1-9][0-9]*$', $section->versionPattern());
+        static::assertSame(['**/_*.adoc', '**/_*.asciidoc'], $section->excludePatterns());
     }
 
     #[Test]
@@ -37,11 +37,11 @@ final class SourceSectionTest extends TestCase
             'excludePatterns'   => ['drafts/**'],
         ]);
 
-        self::assertSame('documentation', $section->directory());
-        self::assertFalse($section->defaultBranchOnly());
-        self::assertSame(['README.adoc'], $section->entryCandidates());
-        self::assertSame(['.adoc'], $section->extensions());
-        self::assertSame('^release-[0-9]+$', $section->versionPattern());
-        self::assertSame(['drafts/**'], $section->excludePatterns());
+        static::assertSame('documentation', $section->directory());
+        static::assertFalse($section->defaultBranchOnly());
+        static::assertSame(['README.adoc'], $section->entryCandidates());
+        static::assertSame(['.adoc'], $section->extensions());
+        static::assertSame('^release-[0-9]+$', $section->versionPattern());
+        static::assertSame(['drafts/**'], $section->excludePatterns());
     }
 }

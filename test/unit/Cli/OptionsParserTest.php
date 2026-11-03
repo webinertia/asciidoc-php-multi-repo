@@ -79,32 +79,32 @@ final class OptionsParserTest extends TestCase
             '--version',
         ]);
 
-        self::assertTrue($options->full);
-        self::assertTrue($options->force);
-        self::assertTrue($options->quiet);
-        self::assertTrue($options->verbose);
-        self::assertTrue($options->timings);
-        self::assertTrue($options->noColor);
-        self::assertTrue($options->help);
-        self::assertTrue($options->version);
+        static::assertTrue($options->full);
+        static::assertTrue($options->force);
+        static::assertTrue($options->quiet);
+        static::assertTrue($options->verbose);
+        static::assertTrue($options->timings);
+        static::assertTrue($options->noColor);
+        static::assertTrue($options->help);
+        static::assertTrue($options->version);
     }
 
     #[Test]
     public function configLongOptionWithInlineValue(): void
     {
-        self::assertSame('docs/site.json', $this->parser->parse(['--config=docs/site.json'])->config);
+        static::assertSame('docs/site.json', $this->parser->parse(['--config=docs/site.json'])->config);
     }
 
     #[Test]
     public function configLongOptionWithSeparateValue(): void
     {
-        self::assertSame('docs/site.json', $this->parser->parse(['--config', 'docs/site.json'])->config);
+        static::assertSame('docs/site.json', $this->parser->parse(['--config', 'docs/site.json'])->config);
     }
 
     #[Test]
     public function configShortOption(): void
     {
-        self::assertSame('docs/site.json', $this->parser->parse(['build', '-c', 'docs/site.json'])->configPath());
+        static::assertSame('docs/site.json', $this->parser->parse(['build', '-c', 'docs/site.json'])->configPath());
     }
 
     #[Test]
@@ -112,7 +112,7 @@ final class OptionsParserTest extends TestCase
     {
         $options = $this->parser->parse(['--', 'build']);
 
-        self::assertSame('build', $options->command);
+        static::assertSame('build', $options->command);
     }
 
     #[Test]
@@ -120,15 +120,15 @@ final class OptionsParserTest extends TestCase
     {
         $options = $this->parser->parse([]);
 
-        self::assertSame('', $options->command);
-        self::assertSame('site.json', $options->configPath());
-        self::assertSame(Options::DEFAULT_PORT, $options->port);
+        static::assertSame('', $options->command);
+        static::assertSame('site.json', $options->configPath());
+        static::assertSame(Options::DEFAULT_PORT, $options->port);
     }
 
     #[Test]
     public function firstPositionalIsTheCommand(): void
     {
-        self::assertSame('build', $this->parser->parse(['build'])->command);
+        static::assertSame('build', $this->parser->parse(['build'])->command);
     }
 
     /**
@@ -147,9 +147,9 @@ final class OptionsParserTest extends TestCase
     #[Test]
     public function outOptionAcceptsShortLongAndDocumentedAlias(): void
     {
-        self::assertSame('build/site', $this->parser->parse(['-o', 'build/site'])->out);
-        self::assertSame('build/site', $this->parser->parse(['--out', 'build/site'])->out);
-        self::assertSame('build/site', $this->parser->parse(['--output', 'build/site'])->out);
+        static::assertSame('build/site', $this->parser->parse(['-o', 'build/site'])->out);
+        static::assertSame('build/site', $this->parser->parse(['--out', 'build/site'])->out);
+        static::assertSame('build/site', $this->parser->parse(['--output', 'build/site'])->out);
     }
 
     #[Test]
@@ -157,7 +157,7 @@ final class OptionsParserTest extends TestCase
     {
         $options = $this->parser->parse(['build', '--project', 'message-bus', '--project=messagebus-event']);
 
-        self::assertSame(['message-bus', 'messagebus-event'], $options->projects);
+        static::assertSame(['message-bus', 'messagebus-event'], $options->projects);
     }
 
     #[Test]
@@ -165,7 +165,7 @@ final class OptionsParserTest extends TestCase
     {
         $options = $this->parser->parse(['--ref', 'message-bus=feature=thing']);
 
-        self::assertSame(['message-bus' => 'feature=thing'], $options->refs);
+        static::assertSame(['message-bus' => 'feature=thing'], $options->refs);
     }
 
     #[Test]
@@ -173,7 +173,7 @@ final class OptionsParserTest extends TestCase
     {
         $options = $this->parser->parse(['build', '--ref', 'message-bus=main', '--ref=webware-tools=v2']);
 
-        self::assertSame(
+        static::assertSame(
             ['message-bus' => 'main', 'webware-tools' => 'v2'],
             $options->refs,
         );
@@ -198,12 +198,12 @@ final class OptionsParserTest extends TestCase
             '9000',
         ]);
 
-        self::assertSame('build/cache', $options->cache);
-        self::assertSame('build/report.json', $options->report);
-        self::assertSame(8, $options->concurrency);
-        self::assertSame('test/fixtures/manifest.json', $options->manifest);
-        self::assertSame('/docs/', $options->basePath);
-        self::assertSame(9000, $options->port);
+        static::assertSame('build/cache', $options->cache);
+        static::assertSame('build/report.json', $options->report);
+        static::assertSame(8, $options->concurrency);
+        static::assertSame('test/fixtures/manifest.json', $options->manifest);
+        static::assertSame('/docs/', $options->basePath);
+        static::assertSame(9000, $options->port);
     }
 
     #[Test]
@@ -211,15 +211,15 @@ final class OptionsParserTest extends TestCase
     {
         $options = $this->parser->parse(['build', '-qvt']);
 
-        self::assertTrue($options->quiet);
-        self::assertTrue($options->verbose);
-        self::assertTrue($options->timings);
+        static::assertTrue($options->quiet);
+        static::assertTrue($options->verbose);
+        static::assertTrue($options->timings);
     }
 
     #[Test]
     public function shortHelpFlag(): void
     {
-        self::assertTrue($this->parser->parse(['-h'])->help);
+        static::assertTrue($this->parser->parse(['-h'])->help);
     }
 
     protected function setUp(): void

@@ -34,11 +34,11 @@ final class ExitCodeTest extends TestCase
     #[Test]
     public function documentedValues(): void
     {
-        self::assertSame(0, ExitCode::Success->value);
-        self::assertSame(1, ExitCode::Degraded->value);
-        self::assertSame(2, ExitCode::ConfigError->value);
-        self::assertSame(3, ExitCode::DiscoveryError->value);
-        self::assertSame(4, ExitCode::InternalError->value);
+        static::assertSame(0, ExitCode::Success->value);
+        static::assertSame(1, ExitCode::Degraded->value);
+        static::assertSame(2, ExitCode::ConfigError->value);
+        static::assertSame(3, ExitCode::DiscoveryError->value);
+        static::assertSame(4, ExitCode::InternalError->value);
     }
 
     #[Test]
@@ -51,7 +51,7 @@ final class ExitCodeTest extends TestCase
             ],
         ];
 
-        self::assertSame(ExitCode::Degraded, ExitCode::fromBuildReport($report));
+        static::assertSame(ExitCode::Degraded, ExitCode::fromBuildReport($report));
     }
 
     #[Test]
@@ -64,7 +64,7 @@ final class ExitCodeTest extends TestCase
             ],
         ];
 
-        self::assertSame(ExitCode::Success, ExitCode::fromBuildReport($report));
+        static::assertSame(ExitCode::Success, ExitCode::fromBuildReport($report));
     }
 
     #[Test]
@@ -78,13 +78,13 @@ final class ExitCodeTest extends TestCase
             ],
         ];
 
-        self::assertSame(ExitCode::Success, ExitCode::fromBuildReport($report));
+        static::assertSame(ExitCode::Success, ExitCode::fromBuildReport($report));
     }
 
     #[Test]
     public function fromBuildReportToleratesAMissingProjectList(): void
     {
-        self::assertSame(ExitCode::Success, ExitCode::fromBuildReport([]));
+        static::assertSame(ExitCode::Success, ExitCode::fromBuildReport([]));
     }
 
     /**
@@ -94,16 +94,16 @@ final class ExitCodeTest extends TestCase
     #[DataProvider('statusCombinations')]
     public function fromProjectStatuses(array $statuses, ExitCode $expected): void
     {
-        self::assertSame($expected, ExitCode::fromProjectStatuses(...$statuses));
+        static::assertSame($expected, ExitCode::fromProjectStatuses(...$statuses));
     }
 
     #[Test]
     public function labelsMatchTheContractNames(): void
     {
-        self::assertSame('Success', ExitCode::Success->label());
-        self::assertSame('Degraded', ExitCode::Degraded->label());
-        self::assertSame('ConfigError', ExitCode::ConfigError->label());
-        self::assertSame('DiscoveryError', ExitCode::DiscoveryError->label());
-        self::assertSame('InternalError', ExitCode::InternalError->label());
+        static::assertSame('Success', ExitCode::Success->label());
+        static::assertSame('Degraded', ExitCode::Degraded->label());
+        static::assertSame('ConfigError', ExitCode::ConfigError->label());
+        static::assertSame('DiscoveryError', ExitCode::DiscoveryError->label());
+        static::assertSame('InternalError', ExitCode::InternalError->label());
     }
 }

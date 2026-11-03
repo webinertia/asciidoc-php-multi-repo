@@ -26,7 +26,7 @@ final class SourceExceptionTest extends TestCase
             $previous,
         );
 
-        self::assertSame($previous, $exception->getPrevious());
+        static::assertSame($previous, $exception->getPrevious());
     }
 
     #[Test]
@@ -35,9 +35,9 @@ final class SourceExceptionTest extends TestCase
         $error     = new SourceError(ReasonCode::MissingEntry, 'No entry document.', 'latest', 'index.adoc');
         $exception = new SourceException($error);
 
-        self::assertSame($error, $exception->error());
-        self::assertSame('No entry document.', $exception->getMessage());
-        self::assertSame(0, $exception->getCode());
-        self::assertNull($exception->getPrevious());
+        static::assertSame($error, $exception->error());
+        static::assertSame('No entry document.', $exception->getMessage());
+        static::assertSame(0, $exception->getCode());
+        static::assertNull($exception->getPrevious());
     }
 }

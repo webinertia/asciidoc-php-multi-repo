@@ -41,7 +41,7 @@ final class FilesystemTest extends TestCase
         $this->filesystem->ensureDirectory($directory);
         $this->filesystem->ensureDirectory($directory);
 
-        self::assertTrue(is_dir($directory));
+        static::assertTrue(is_dir($directory));
     }
 
     #[Test]
@@ -49,12 +49,12 @@ final class FilesystemTest extends TestCase
     {
         $target = Path::join($this->directory, 'index.adoc');
 
-        self::assertFalse($this->filesystem->exists($target));
+        static::assertFalse($this->filesystem->exists($target));
 
         $this->filesystem->writeAtomic($target, 'contents');
 
-        self::assertTrue($this->filesystem->exists($target));
-        self::assertSame('contents', $this->filesystem->read($target));
+        static::assertTrue($this->filesystem->exists($target));
+        static::assertSame('contents', $this->filesystem->read($target));
     }
 
     #[Test]
@@ -69,17 +69,17 @@ final class FilesystemTest extends TestCase
             $this->filesystem->writeAtomic($target, 'content');
             self::fail('Writing below a file should fail.');
         } catch (RuntimeException $exception) {
-            self::assertStringContainsString('blocker', $exception->getMessage());
+            static::assertStringContainsString('blocker', $exception->getMessage());
         }
 
-        self::assertSame([], glob(Path::join($this->directory, '.tmp-*')) ?: []);
-        self::assertFalse(is_file($target));
+        static::assertSame([], glob(Path::join($this->directory, '.tmp-*')) ?: []);
+        static::assertFalse(is_file($target));
     }
 
     #[Test]
     public function hashContentsMatchesSha256(): void
     {
-        self::assertSame(hash('sha256', 'contents'), $this->filesystem->hashContents('contents'));
+        static::assertSame(hash('sha256', 'contents'), $this->filesystem->hashContents('contents'));
     }
 
     #[Test]
@@ -96,7 +96,7 @@ final class FilesystemTest extends TestCase
         $target = Path::join($this->directory, 'index.adoc');
         $this->filesystem->writeAtomic($target, 'contents');
 
-        self::assertSame(hash('sha256', 'contents'), $this->filesystem->hash($target));
+        static::assertSame(hash('sha256', 'contents'), $this->filesystem->hash($target));
     }
 
     #[Test]
@@ -114,11 +114,11 @@ final class FilesystemTest extends TestCase
 
         $this->filesystem->ensureDirectory(Path::join($tree, 'deep/nested'));
 
-        self::assertNotFalse(file_put_contents(Path::join($tree, 'index.html'), data: '<html></html>'));
-        self::assertNotFalse(file_put_contents(Path::join($tree, 'deep/nested/page.html'), data: '<html></html>'));
+        static::assertNotFalse(file_put_contents(Path::join($tree, 'index.html'), data: '<html></html>'));
+        static::assertNotFalse(file_put_contents(Path::join($tree, 'deep/nested/page.html'), data: '<html></html>'));
 
-        self::assertTrue($this->filesystem->remove($tree));
-        self::assertFalse(is_dir($tree));
+        static::assertTrue($this->filesystem->remove($tree));
+        static::assertFalse(is_dir($tree));
     }
 
     #[Test]
@@ -126,16 +126,16 @@ final class FilesystemTest extends TestCase
     {
         $file = Path::join($this->directory, 'report.json');
 
-        self::assertNotFalse(file_put_contents($file, data: '{}'));
+        static::assertNotFalse(file_put_contents($file, data: '{}'));
 
-        self::assertTrue($this->filesystem->remove($file));
-        self::assertFalse(is_file($file));
+        static::assertTrue($this->filesystem->remove($file));
+        static::assertFalse(is_file($file));
     }
 
     #[Test]
     public function removeTreatsAMissingPathAsAlreadyRemoved(): void
     {
-        self::assertTrue($this->filesystem->remove(Path::join($this->directory, 'absent')));
+        static::assertTrue($this->filesystem->remove(Path::join($this->directory, 'absent')));
     }
 
     #[Test]
@@ -143,13 +143,13 @@ final class FilesystemTest extends TestCase
     {
         $this->filesystem->writeAtomic(Path::join($this->directory, 'a', 'b.adoc'), 'b');
 
-        self::assertSame(['a/b.adoc'], $this->filesystem->scan($this->directory));
+        static::assertSame(['a/b.adoc'], $this->filesystem->scan($this->directory));
     }
 
     #[Test]
     public function scanReturnsEmptyListForMissingDirectory(): void
     {
-        self::assertSame([], $this->filesystem->scan(Path::join($this->directory, 'missing')));
+        static::assertSame([], $this->filesystem->scan(Path::join($this->directory, 'missing')));
     }
 
     #[Test]
@@ -159,7 +159,7 @@ final class FilesystemTest extends TestCase
         $this->filesystem->writeAtomic(Path::join($this->directory, 'a', 'c.adoc'), 'c');
         $this->filesystem->writeAtomic(Path::join($this->directory, 'a', 'b.adoc'), 'b');
 
-        self::assertSame(
+        static::assertSame(
             ['a/b.adoc', 'a/c.adoc', 'b.adoc'],
             $this->filesystem->scan($this->directory),
         );
@@ -172,7 +172,7 @@ final class FilesystemTest extends TestCase
 
         $this->filesystem->writeAtomic($target, '<html></html>');
 
-        self::assertSame('<html></html>', file_get_contents($target));
+        static::assertSame('<html></html>', file_get_contents($target));
     }
 
     #[Test]
@@ -183,7 +183,7 @@ final class FilesystemTest extends TestCase
         $this->filesystem->writeIfChanged($target, 'first');
         $this->filesystem->writeIfChanged($target, 'second');
 
-        self::assertSame([], glob(Path::join($this->directory, '.tmp-*')) ?: []);
+        static::assertSame([], glob(Path::join($this->directory, '.tmp-*')) ?: []);
     }
 
     #[Test]
@@ -193,7 +193,7 @@ final class FilesystemTest extends TestCase
 
         $this->filesystem->writeIfChanged($target, 'first');
 
-        self::assertTrue($this->filesystem->writeIfChanged($target, 'second'));
+        static::assertTrue($this->filesystem->writeIfChanged($target, 'second'));
         static::assertSame('second', file_get_contents($target));
     }
 
@@ -227,7 +227,7 @@ final class FilesystemTest extends TestCase
         $this->directory  = Path::join(sys_get_temp_dir(), 'asciidoc-fs-' . bin2hex(random_bytes(6)));
         $this->filesystem = new Filesystem();
 
-        self::assertTrue(mkdir($this->directory, 0o777, true));
+        static::assertTrue(mkdir($this->directory, 0o777, true));
     }
 
     protected function tearDown(): void

@@ -130,7 +130,7 @@ final class PathTest extends TestCase
     #[DataProvider('isAbsoluteProvider')]
     public function isAbsolute(string $path, bool $expected): void
     {
-        self::assertSame($expected, Path::isAbsolute($path));
+        static::assertSame($expected, Path::isAbsolute($path));
     }
 
     /**
@@ -140,27 +140,27 @@ final class PathTest extends TestCase
     #[DataProvider('joinProvider')]
     public function join(array $parts, string $expected): void
     {
-        self::assertSame($expected, Path::join(...$parts));
+        static::assertSame($expected, Path::join(...$parts));
     }
 
     #[Test]
     #[DataProvider('normaliseProvider')]
     public function normalise(string $path, string $expected): void
     {
-        self::assertSame($expected, Path::normalise($path));
+        static::assertSame($expected, Path::normalise($path));
     }
 
     #[Test]
     #[DataProvider('relativeToProvider')]
     public function relativeTo(string $from, string $to, string $expected): void
     {
-        self::assertSame($expected, Path::relativeTo($from, $to));
+        static::assertSame($expected, Path::relativeTo($from, $to));
     }
 
     #[Test]
     public function resolveJoinsRelativePaths(): void
     {
-        self::assertSame(
+        static::assertSame(
             'C:' . self::DS . 'base' . self::DS . 'out',
             Path::resolve('C:' . self::DS . 'base', 'out'),
         );
@@ -169,7 +169,7 @@ final class PathTest extends TestCase
     #[Test]
     public function resolveKeepsAbsolutePaths(): void
     {
-        self::assertSame(
+        static::assertSame(
             Path::normalise('C:' . self::DS . 'other'),
             Path::resolve('C:' . self::DS . 'base', 'C:' . self::DS . 'other'),
         );
@@ -178,20 +178,20 @@ final class PathTest extends TestCase
     #[Test]
     public function resolveWithoutPathReturnsBase(): void
     {
-        self::assertSame('C:' . self::DS . 'base', Path::resolve('C:' . self::DS . 'base', ''));
+        static::assertSame('C:' . self::DS . 'base', Path::resolve('C:' . self::DS . 'base', ''));
     }
 
     #[Test]
     #[DataProvider('urlPathProvider')]
     public function toUrlPath(string $path, string $expected): void
     {
-        self::assertSame($expected, Path::toUrlPath($path));
+        static::assertSame($expected, Path::toUrlPath($path));
     }
 
     #[Test]
     #[DataProvider('withExtensionProvider')]
     public function withExtension(string $path, string $extension, string $expected): void
     {
-        self::assertSame($expected, Path::withExtension($path, $extension));
+        static::assertSame($expected, Path::withExtension($path, $extension));
     }
 }

@@ -47,10 +47,10 @@ final class ContractDocumentationTest extends TestCase
 
         $documented = $this->documentedCommands();
 
-        self::assertNotSame([], $documented, 'No commands were found in contracts/cli.md.');
+        static::assertNotSame([], $documented, 'No commands were found in contracts/cli.md.');
 
         foreach ($documented as $command) {
-            self::assertContains(
+            static::assertContains(
                 $command,
                 $registered,
                 sprintf('Command "%s" is documented but not registered.', $command),
@@ -63,13 +63,13 @@ final class ContractDocumentationTest extends TestCase
     {
         $documented = $this->documentedExitCodes();
 
-        self::assertCount(5, $documented, 'The exit code table must document five codes.');
+        static::assertCount(5, $documented, 'The exit code table must document five codes.');
 
         foreach ($documented as $name => $code) {
             $case = ExitCode::from($code);
 
-            self::assertSame($name, $case->label(), sprintf('Exit code %d is documented as "%s".', $code, $name));
-            self::assertSame($code, $case->value);
+            static::assertSame($name, $case->label(), sprintf('Exit code %d is documented as "%s".', $code, $name));
+            static::assertSame($code, $case->value);
         }
     }
 
@@ -79,7 +79,7 @@ final class ContractDocumentationTest extends TestCase
         $help = $this->application()->usage();
 
         foreach ($this->documentedOptions() as $option) {
-            self::assertStringContainsString(
+            static::assertStringContainsString(
                 $option['flag'],
                 $help,
                 sprintf('Option "%s" is documented but missing from the help text.', $option['flag']),
@@ -92,7 +92,7 @@ final class ContractDocumentationTest extends TestCase
     {
         $options = $this->documentedOptions();
 
-        self::assertNotSame([], $options, 'No options were found in contracts/cli.md.');
+        static::assertNotSame([], $options, 'No options were found in contracts/cli.md.');
 
         foreach ($options as $option) {
             $arguments = ['asciidoc-php-multi-repo', '--help', $option['flag']];
@@ -103,12 +103,12 @@ final class ContractDocumentationTest extends TestCase
 
             $exit = $this->application()->run($arguments);
 
-            self::assertSame(
+            static::assertSame(
                 ExitCode::Success->value,
                 $exit,
                 sprintf('Option "%s" is documented but was not accepted: %s', $option['flag'], $this->captured->stderr),
             );
-            self::assertSame('', $this->captured->stderr, sprintf('Option "%s" produced an error.', $option['flag']));
+            static::assertSame('', $this->captured->stderr, sprintf('Option "%s" produced an error.', $option['flag']));
         }
     }
 
@@ -118,12 +118,12 @@ final class ContractDocumentationTest extends TestCase
         $documented = $this->documentedExitCodes();
 
         foreach (ExitCode::cases() as $case) {
-            self::assertArrayHasKey(
+            static::assertArrayHasKey(
                 $case->label(),
                 $documented,
                 sprintf('Exit code "%s" is not documented in contracts/cli.md.', $case->label()),
             );
-            self::assertSame($case->value, $documented[$case->label()]);
+            static::assertSame($case->value, $documented[$case->label()]);
         }
     }
 
@@ -132,7 +132,7 @@ final class ContractDocumentationTest extends TestCase
         $this->captured = new CapturedOutput();
         $contents       = file_get_contents(Path::join(dirname(__DIR__, 2), 'contracts', 'cli.md'));
 
-        self::assertIsString($contents);
+        static::assertIsString($contents);
 
         $this->contract = $contents;
     }

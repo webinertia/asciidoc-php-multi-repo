@@ -116,7 +116,7 @@ final class SchemaContractTest extends TestCase
     {
         $result = new SchemaValidator()->validate($document, $this->schema($name));
 
-        self::assertTrue(
+        static::assertTrue(
             $result->isValid(),
             "{$name} schema rejected a minimal document: {$this->json->encodeCompact($result->errors())}",
         );
@@ -140,13 +140,13 @@ final class SchemaContractTest extends TestCase
 
         $result = new SchemaValidator()->validate($broken, $schema);
 
-        self::assertFalse($result->isValid(), "{$name} schema accepted a document missing a required member.");
+        static::assertFalse($result->isValid(), "{$name} schema accepted a document missing a required member.");
     }
 
     #[Test]
     public function thePackagedSiteSchemaIsThePublishedCopy(): void
     {
-        self::assertSame(
+        static::assertSame(
             $this->json->encode($this->schema('site')),
             $this->json->encode($this->json->decode($this->read('config', 'site.schema.json'))),
             'config/site.schema.json and contracts/site.schema.json have drifted apart.',
@@ -163,7 +163,7 @@ final class SchemaContractTest extends TestCase
         $path = Path::join($this->root(), $directory, $file);
         $json = file_get_contents($path);
 
-        self::assertIsString($json, "Unable to read {$path}");
+        static::assertIsString($json, "Unable to read {$path}");
 
         return $json;
     }

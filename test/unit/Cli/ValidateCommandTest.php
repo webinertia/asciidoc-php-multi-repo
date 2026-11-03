@@ -51,10 +51,10 @@ final class ValidateCommandTest extends TestCase
     {
         $exit = $this->validate(['broken-include']);
 
-        self::assertSame(ExitCode::Degraded, $exit);
-        self::assertStringContainsString('broken-include: partial', $this->captured->stderr);
-        self::assertStringContainsString('(render-failed)', $this->captured->stderr);
-        self::assertStringContainsString('Add the missing file', $this->captured->stderr);
+        static::assertSame(ExitCode::Degraded, $exit);
+        static::assertStringContainsString('broken-include: partial', $this->captured->stderr);
+        static::assertStringContainsString('(render-failed)', $this->captured->stderr);
+        static::assertStringContainsString('Add the missing file', $this->captured->stderr);
     }
 
     #[Test]
@@ -62,9 +62,9 @@ final class ValidateCommandTest extends TestCase
     {
         $exit = $this->validate(['versioned']);
 
-        self::assertSame(ExitCode::Success, $exit);
-        self::assertStringContainsString('versioned: ok', $this->captured->stderr);
-        self::assertStringContainsString('ok: 1, partial: 0, failed: 0, skipped: 0', $this->captured->stdout);
+        static::assertSame(ExitCode::Success, $exit);
+        static::assertStringContainsString('versioned: ok', $this->captured->stderr);
+        static::assertStringContainsString('ok: 1, partial: 0, failed: 0, skipped: 0', $this->captured->stdout);
     }
 
     #[Test]
@@ -72,10 +72,10 @@ final class ValidateCommandTest extends TestCase
     {
         $exit = $this->validate(['missing-entry']);
 
-        self::assertSame(ExitCode::Degraded, $exit);
-        self::assertStringContainsString('missing-entry: failed', $this->captured->stderr);
-        self::assertStringContainsString('(missing-entry)', $this->captured->stderr);
-        self::assertStringContainsString('Add one of the entry candidates', $this->captured->stderr);
+        static::assertSame(ExitCode::Degraded, $exit);
+        static::assertStringContainsString('missing-entry: failed', $this->captured->stderr);
+        static::assertStringContainsString('(missing-entry)', $this->captured->stderr);
+        static::assertStringContainsString('Add one of the entry candidates', $this->captured->stderr);
     }
 
     #[Test]
@@ -86,9 +86,9 @@ final class ValidateCommandTest extends TestCase
             $this->entry('versioned', SourceFixture::path('org/versioned')),
         ]));
 
-        self::assertSame(ExitCode::Success, $exit);
-        self::assertStringContainsString('legacy: skipped', $this->captured->stderr);
-        self::assertStringContainsString('ok: 1, partial: 0, failed: 0, skipped: 1', $this->captured->stdout);
+        static::assertSame(ExitCode::Success, $exit);
+        static::assertStringContainsString('legacy: skipped', $this->captured->stderr);
+        static::assertStringContainsString('ok: 1, partial: 0, failed: 0, skipped: 1', $this->captured->stdout);
     }
 
     #[Test]
@@ -96,8 +96,8 @@ final class ValidateCommandTest extends TestCase
     {
         $exit = $this->validate(['markdown-only']);
 
-        self::assertSame(ExitCode::Degraded, $exit);
-        self::assertStringContainsString('(no-asciidoc-sources)', $this->captured->stderr);
+        static::assertSame(ExitCode::Degraded, $exit);
+        static::assertStringContainsString('(no-asciidoc-sources)', $this->captured->stderr);
     }
 
     #[Test]
@@ -108,9 +108,9 @@ final class ValidateCommandTest extends TestCase
 
         $this->validate(['versioned'], $out);
 
-        self::assertFalse(is_dir($out), 'validate created the output directory');
-        self::assertFalse(is_file(Path::join($this->tempDirectory, 'report.json')));
-        self::assertSame('published', file_get_contents(Path::join($this->tempDirectory, 'marker.txt')));
+        static::assertFalse(is_dir($out), 'validate created the output directory');
+        static::assertFalse(is_file(Path::join($this->tempDirectory, 'report.json')));
+        static::assertSame('published', file_get_contents(Path::join($this->tempDirectory, 'marker.txt')));
     }
 
     #[Test]
@@ -118,7 +118,7 @@ final class ValidateCommandTest extends TestCase
     {
         $this->validate(['versioned']);
 
-        self::assertStringContainsString('no site output was written', $this->captured->stdout);
+        static::assertStringContainsString('no site output was written', $this->captured->stdout);
     }
 
     protected function setUp(): void

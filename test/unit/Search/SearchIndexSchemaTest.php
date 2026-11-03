@@ -47,10 +47,10 @@ final class SearchIndexSchemaTest extends TestCase
 
         $page = $index['versions'][2]['pages'][1];
 
-        self::assertSame('/message-bus/v2/index.html', $page['url']);
-        self::assertSame('Message Bus', $page['title']);
-        self::assertSame('The message bus routes a message.', $page['text']);
-        self::assertSame([['id' => 'overview', 'title' => 'Overview', 'level' => 2]], $page['headings']);
+        static::assertSame('/message-bus/v2/index.html', $page['url']);
+        static::assertSame('Message Bus', $page['title']);
+        static::assertSame('The message bus routes a message.', $page['text']);
+        static::assertSame([['id' => 'overview', 'title' => 'Overview', 'level' => 2]], $page['headings']);
     }
 
     #[Test]
@@ -60,7 +60,7 @@ final class SearchIndexSchemaTest extends TestCase
 
         $urls = array_column($index['versions'][2]['pages'], 'url');
 
-        self::assertSame(['/message-bus/v2/guide.html', '/message-bus/v2/index.html'], $urls);
+        static::assertSame(['/message-bus/v2/guide.html', '/message-bus/v2/index.html'], $urls);
     }
 
     #[Test]
@@ -70,7 +70,7 @@ final class SearchIndexSchemaTest extends TestCase
 
         $result = new SchemaValidator()->validate($index, $this->schema('search-index'));
 
-        self::assertTrue($result->isValid(), $result->describe());
+        static::assertTrue($result->isValid(), $result->describe());
     }
 
     #[Test]
@@ -79,7 +79,7 @@ final class SearchIndexSchemaTest extends TestCase
         $builder = new SearchIndexBuilder();
         $pages   = $this->pages();
 
-        self::assertSame(
+        static::assertSame(
             $this->json->encode($builder->build('message-bus', 'Message Bus', $pages, 'v2')),
             $builder->toJson('message-bus', 'Message Bus', $pages, 'v2'),
         );
@@ -91,8 +91,8 @@ final class SearchIndexSchemaTest extends TestCase
         $builder = new SiteIndexBuilder();
         $index   = $builder->build([], new UrlBuilder());
 
-        self::assertSame($this->json->encode($index), $builder->toJson([], new UrlBuilder()));
-        self::assertSame([], $index['projects']);
+        static::assertSame($this->json->encode($index), $builder->toJson([], new UrlBuilder()));
+        static::assertSame([], $index['projects']);
     }
 
     #[Test]
@@ -119,8 +119,8 @@ final class SearchIndexSchemaTest extends TestCase
 
         $index = new SiteIndexBuilder()->build($summaries, new UrlBuilder());
 
-        self::assertSame(1, $index['schemaVersion']);
-        self::assertSame(
+        static::assertSame(1, $index['schemaVersion']);
+        static::assertSame(
             [
                 ['slug' => 'message-bus', 'title' => 'Message Bus', 'index' => '/message-bus/search-index.json'],
                 ['slug' => 'job-queue', 'title' => 'Job Queue', 'index' => '/job-queue/search-index.json'],
@@ -134,9 +134,9 @@ final class SearchIndexSchemaTest extends TestCase
     {
         $index = new SearchIndexBuilder()->build('message-bus', 'Message Bus', $this->pages(), 'v2');
 
-        self::assertSame(['v10', 'v9', 'v2', 'v1'], array_column($index['versions'], 'label'));
-        self::assertSame([false, false, true, false], array_column($index['versions'], 'latest'));
-        self::assertSame('/message-bus/v2/', $index['versions'][2]['url']);
+        static::assertSame(['v10', 'v9', 'v2', 'v1'], array_column($index['versions'], 'label'));
+        static::assertSame([false, false, true, false], array_column($index['versions'], 'latest'));
+        static::assertSame('/message-bus/v2/', $index['versions'][2]['url']);
     }
 
     protected function setUp(): void
@@ -182,7 +182,7 @@ final class SearchIndexSchemaTest extends TestCase
 
         $schema = $this->json->decodeObject((string) file_get_contents($path), $path);
 
-        self::assertTrue(is_array($schema));
+        static::assertTrue(is_array($schema));
 
         return $schema;
     }

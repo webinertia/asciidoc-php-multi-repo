@@ -143,7 +143,7 @@ final class PageShellTest extends TestCase
             '<link rel="canonical" href="https://docs.example.test/widgets/v1/usage.html">',
             $html,
         );
-        static::assertSame(2, substr_count($html, needle: '<link rel="stylesheet"'));
+        static::assertSame(3, substr_count($html, needle: '<link rel="stylesheet"'));
         static::assertStringContainsString('<a class="skip-link" href="#main">Skip to content</a>', $html);
         static::assertStringContainsString('<header class="site-header">', $html);
         static::assertStringContainsString('<nav class="sidebar" aria-label="On this page">', $html);
@@ -225,7 +225,11 @@ final class PageShellTest extends TestCase
             canonicalUrl    : 'https://docs.example.test/widgets/v1/usage.html',
             body            : $body,
             toc             : $toc,
-            stylesheets     : ['/assets/site.abc123.css', '/assets/accent.def456.css'],
+            stylesheets     : [
+                '/assets/asciidoctor.012def.css',
+                '/assets/site.abc123.css',
+                '/assets/accent.def456.css',
+            ],
             scripts         : ['/assets/theme.012abc.js'],
             sourceUrl       : $sourceUrl,
             colorMode       : 'system',

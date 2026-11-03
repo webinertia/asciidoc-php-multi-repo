@@ -179,6 +179,7 @@ final class BuildRunner
             searchIndexes  : $searchIndexes,
             siteSearchIndex: new SiteIndexBuilder()->toJson($summaries, $urls),
             assets         : $assets,
+            baseStylesheet : $urls->asset($theme->baseName()),
             stylesheet     : $urls->asset($theme->siteName()),
         );
 
@@ -256,6 +257,7 @@ final class BuildRunner
     private function assets(ThemeResolver $theme, SiteConfig $config, array $repositories): array
     {
         $assets = [
+            $theme->baseName()         => $theme->baseCss(),
             $theme->siteName()         => $theme->siteCss(),
             $theme->themeScriptName()  => $theme->themeScript(),
             $theme->navScriptName()    => $theme->navScript(),

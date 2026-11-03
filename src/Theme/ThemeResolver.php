@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Webware\AsciidocPhp\MultiRepo\Theme;
 
+use ReflectionObject;
 use RuntimeException;
+use Webware\AsciidocPhp\Converter\Html5Converter;
 use Webware\AsciidocPhp\MultiRepo\Config\ThemeConfig;
 
 use function dirname;
@@ -26,8 +28,12 @@ use const PREG_SET_ORDER;
  *
  * The colour tokens live in `resources/css/site.css` and nowhere else. This class reads them rather
  * than restating them, so the contrast test and the stylesheet cannot drift apart. The print rules
- * live in `resources/css/print.css` and are appended to the site stylesheet, which is why the shell
- * links exactly two stylesheets and the site stylesheet needs no `@import`.
+ * live in `resources/css/print.css` and are appended to the site stylesheet, which is why the site
+ * stylesheet needs no `@import`.
+ *
+ * The base stylesheet is the converter's own `resources/css/asciidoctor.css`. It is published as an
+ * asset and linked before the site stylesheet, so the shell links three stylesheets in a fixed
+ * order: the base layer, the site overrides, then the accent rule.
  *
  * @api
  */
@@ -87,6 +93,33 @@ final readonly class ThemeResolver
     public function assetUrl(string $basePath, string $name): string
     {
         return rtrim($basePath, characters: '/') . '/assets/' . $name;
+    }
+
+    /**
+     * The converter's base stylesheet, which the site publishes and links before its overrides.
+     *
+     * The converter keeps the path in a private constant, so the package root is derived from the
+     * converter class file rather than restated here. `Html5Converter` is a userland class in an
+     * installed package, so reflection always yields a source file and the only failure left is the
+     * stylesheet itself being missing or unreadable.
+     *
+     * @throws RuntimeException when the shipped stylesheet is missing or unreadable
+     */
+    public function baseCss(): string
+    {
+        $file = new ReflectionObject(new Html5Converter())->getFileName();
+
+        return $this->readFile(dirname((string) $file, levels: 3) . '/resources/css', 'asciidoctor.css');
+    }
+
+    /**
+     * The published base stylesheet name.
+     *
+     * @throws RuntimeException when the shipped stylesheet is missing or unreadable
+     */
+    public function baseName(): string
+    {
+        return $this->hasher->hashedName('asciidoctor', 'css', $this->baseCss());
     }
 
     /**

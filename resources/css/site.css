@@ -1,5 +1,14 @@
 /*
- * Site stylesheet for the aggregated documentation site.
+ * Override stylesheet for the aggregated documentation site.
+ *
+ * This is the second of the three stylesheets the page shell links, in this order:
+ *
+ *   1. asciidoctor.css, the converter's own base stylesheet, published as a hashed asset
+ *   2. this file, which themes the site around that base
+ *   3. accent.css, the single --color-accent rule for the project
+ *
+ * The base sheet owns document typography and structure. This file owns the colour tokens, the
+ * site chrome, and the overrides a fixed light palette needs under the dark theme.
  *
  * Hand authored, no build step, no import rules, and no absolute URL: every asset the shell
  * references is hashed and served from the same origin.
@@ -50,12 +59,6 @@
     --text-muted: #a8a2ba;
     --border-subtle: #332d42;
     --focus-ring: #b29cec;
-}
-
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
 }
 
 html {
@@ -203,6 +206,7 @@ main {
     line-height: 1.25;
     margin-top: var(--space-5);
     margin-bottom: var(--space-2);
+    color: var(--text-body);
 }
 
 .doc h1 {
@@ -241,6 +245,7 @@ main {
     padding: 0.1em 0.3em;
     border-radius: var(--radius-small);
     background-color: var(--surface-raised);
+    color: var(--text-body);
 }
 
 .doc pre {
@@ -249,6 +254,7 @@ main {
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-medium);
     background-color: var(--surface-raised);
+    color: var(--text-body);
 }
 
 .doc pre code {
@@ -265,6 +271,8 @@ main {
 .doc table {
     width: 100%;
     border-collapse: collapse;
+    border-color: var(--border-subtle);
+    background-color: transparent;
 }
 
 .doc th,
@@ -272,13 +280,52 @@ main {
     padding: var(--space-2);
     border: 1px solid var(--border-subtle);
     text-align: left;
+    color: var(--text-body);
     /* Only `anywhere` lowers a cell's min-content width; `break-word` lets a
        long unbreakable token keep dictating the table's width. */
     overflow-wrap: anywhere;
 }
 
+.doc th p {
+    color: inherit;
+}
+
 .doc th {
     background-color: var(--surface-raised);
+}
+
+/*
+ * The base stylesheet is a fixed light palette with no custom properties, so the block types it
+ * paints need a colour override to survive the dark theme. Only colour, background, and border
+ * colour are restated here; typography and spacing stay with the base rules.
+ */
+.doc tr.even,
+.doc tr.alt {
+    background-color: transparent;
+}
+
+.doc .exampleblock > .content,
+.doc .sidebarblock {
+    border-color: var(--border-subtle);
+    background-color: var(--surface-raised);
+}
+
+.doc .admonitionblock > table td.content {
+    border-left-color: var(--border-subtle);
+    color: var(--text-body);
+}
+
+.doc .quoteblock p {
+    color: var(--text-muted);
+}
+
+.doc .quoteblock blockquote::before,
+.doc .sidebarblock > .content > .title {
+    color: var(--color-secondary);
+}
+
+.doc hr {
+    border-color: var(--border-subtle);
 }
 
 .doc .admonitionblock {
@@ -290,41 +337,9 @@ main {
 }
 
 /*
- * Admonition glyphs, ported from the converter stylesheet so a document that sets `icons: font`
- * keeps its icons without the site importing the whole converter sheet. Codepoints match
- * asciidoctor.css; the CDN stylesheet that carries the font is linked from the page shell.
+ * Admonition glyphs come from the base stylesheet, which defines both the icon sizing and the
+ * five `fa icon-*` codepoints. Nothing is restated here.
  */
-.admonitionblock td.icon [class^="fa icon-"] {
-    font-size: 2.5em;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-    cursor: default;
-}
-
-.admonitionblock td.icon .icon-note::before {
-    content: "\f05a";
-    color: #19407c;
-}
-
-.admonitionblock td.icon .icon-tip::before {
-    content: "\f0eb";
-    text-shadow: 1px 1px 2px rgba(155, 155, 0, 0.8);
-    color: #111;
-}
-
-.admonitionblock td.icon .icon-warning::before {
-    content: "\f071";
-    color: #bf6900;
-}
-
-.admonitionblock td.icon .icon-caution::before {
-    content: "\f06d";
-    color: #bf3400;
-}
-
-.admonitionblock td.icon .icon-important::before {
-    content: "\f06a";
-    color: #bf0000;
-}
 
 .site-footer {
     display: flex;

@@ -6,6 +6,7 @@ declare(strict_types=1);
  * @var Closure(string): string $e
  * @var string $siteName
  * @var string $landingUrl
+ * @var string $baseStylesheet
  * @var string $stylesheet
  * @var list<array{title: string, url: string}> $projects
  */
@@ -18,6 +19,7 @@ declare(strict_types=1);
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= $e("Page not found | {$siteName}") ?></title>
 <meta name="robots" content="noindex">
+<link rel="stylesheet" href="<?= $e($baseStylesheet) ?>">
 <link rel="stylesheet" href="<?= $e($stylesheet) ?>">
 </head>
 <body>

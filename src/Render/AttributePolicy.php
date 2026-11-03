@@ -8,9 +8,13 @@ namespace Webware\AsciidocPhp\MultiRepo\Render;
  * The document attributes every published page is rendered with.
  *
  * The policy exists so a page cannot inherit the converter's document chrome by accident: the
- * stylesheet, the embedded stylesheet, the external stylesheet link, the built-in table of
- * contents, docinfo files, and the syntax highlighter are all switched off, because the site shell
- * owns every one of them.
+ * stylesheet, the embedded stylesheet, the built-in table of contents, docinfo files, and the
+ * syntax highlighter are all switched off, because the site shell owns every one of them.
+ *
+ * `noembed` and `linkcss` are both set even though `SiteConverter::renderStylesheet()` returns an
+ * empty string. They are the second and third defences behind it: if a future converter release
+ * emitted a stylesheet anyway, the attributes force it to be a link rather than an inline `<style>`
+ * block, which is the only delivery form the multi-repo output allows.
  *
  * The six clock attributes are pinned to an empty string. The converter seeds them from `date()` at
  * document construction, so leaving them alone would put the build date into every page and make
@@ -54,7 +58,7 @@ final readonly class AttributePolicy
         $attributes = [
             'stylesheet' => false,
             'noembed'    => '',
-            'linkcss'    => false,
+            'linkcss'    => '',
             'toc'        => false,
             'docinfo'    => false,
         ];

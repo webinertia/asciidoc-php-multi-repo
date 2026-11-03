@@ -146,6 +146,7 @@ final readonly class PageRenderer
             body            : $body,
             toc             : $entries,
             stylesheets     : [
+                $this->theme->assetUrl($basePath, $this->theme->baseName()),
                 $this->theme->assetUrl($basePath, $this->theme->siteName()),
                 $this->theme->assetUrl($basePath, $this->theme->accentName($accent)),
             ],

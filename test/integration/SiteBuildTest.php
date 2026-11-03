@@ -18,6 +18,9 @@ use Webware\AsciidocPhp\MultiRepo\Cli\Output;
 use Webware\AsciidocPhp\MultiRepo\Config\SchemaValidator;
 use Webware\AsciidocPhp\MultiRepo\Config\SiteConfigLoader;
 use Webware\AsciidocPhp\MultiRepo\Render\PageRenderer;
+use Webware\AsciidocPhp\MultiRepo\Site\SiteAssembler;
+use Webware\AsciidocPhp\MultiRepo\Site\SiteAssembly;
+use Webware\AsciidocPhp\MultiRepo\Site\StaticAssetWriter;
 use Webware\AsciidocPhp\MultiRepo\Support\Json;
 use Webware\AsciidocPhp\MultiRepo\Support\Path;
 use WebwareTest\AsciidocPhp\MultiRepo\Support\TempDirectoryTrait;
@@ -32,6 +35,7 @@ use function implode;
 use function is_array;
 use function is_file;
 use function str_contains;
+use function strpos;
 use function trim;
 
 /**
@@ -48,6 +52,9 @@ use function trim;
 #[CoversClass(DeterminismGuard::class)]
 #[CoversClass(IncrementalCache::class)]
 #[CoversClass(PageRenderer::class)]
+#[CoversClass(SiteAssembler::class)]
+#[CoversClass(SiteAssembly::class)]
+#[CoversClass(StaticAssetWriter::class)]
 final class SiteBuildTest extends TestCase
 {
     use TempDirectoryTrait;
@@ -72,7 +79,14 @@ final class SiteBuildTest extends TestCase
         static::assertStringContainsString('href="/versioned/v1/reference/nested.html"', $html);
         static::assertStringContainsString('data-theme-mode="system"', $html);
         static::assertStringNotContainsString('stylesheet!', $html);
+        static::assertStringNotContainsString('<style', $html, 'no page inlines a stylesheet');
         static::assertStringNotContainsString('C:\\', $html);
+
+        static::assertLessThan(
+            strpos($html, needle: '/assets/site.'),
+            strpos($html, needle: '/assets/asciidoctor.'),
+            'the base stylesheet is linked before the site overrides',
+        );
     }
 
     #[Test]
@@ -239,6 +253,7 @@ final class SiteBuildTest extends TestCase
     #[Test]
     public function theBuildWritesTheSharedAssetsOnce(): void
     {
+        static::assertCount(1, $this->assetsMatching('asciidoctor.*.css'));
         static::assertCount(1, $this->assetsMatching('site.*.css'));
         static::assertCount(1, $this->assetsMatching('theme.*.js'));
         static::assertNotSame([], $this->assetsMatching('accent.*.css'));
@@ -364,7 +379,7 @@ final class SiteBuildTest extends TestCase
     }
 
     #[Test]
-    public function theShellLinksTheIconFontAndTheStylesheetCarriesTheGlyphRules(): void
+    public function theShellLinksTheIconFontAndTheBaseStylesheetCarriesTheGlyphRules(): void
     {
         $html = (string) file_get_contents(Path::join($this->output, 'versioned', 'v1', 'index.html'));
 
@@ -373,7 +388,7 @@ final class SiteBuildTest extends TestCase
             $html,
         );
 
-        $css = (string) file_get_contents((string) $this->assetsMatching('site.*.css')[0]);
+        $css = (string) file_get_contents((string) $this->assetsMatching('asciidoctor.*.css')[0]);
 
         foreach ([
             'note'      => '\f05a',

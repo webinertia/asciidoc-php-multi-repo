@@ -80,7 +80,7 @@ final class AttributePolicyTest extends TestCase
 
         static::assertFalse($attributes['stylesheet']);
         static::assertSame('', $attributes['noembed']);
-        static::assertFalse($attributes['linkcss']);
+        static::assertSame('', $attributes['linkcss']);
         static::assertFalse($attributes['toc']);
         static::assertFalse($attributes['docinfo']);
         static::assertFalse($attributes['source-highlighter']);

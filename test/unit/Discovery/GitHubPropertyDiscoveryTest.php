@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Discovery;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
@@ -56,14 +57,16 @@ final class GitHubPropertyDiscoveryTest extends TestCase
 
     private ?string $previousToken = null;
 
-    public function testABooleanPropertyValueIsAccepted(): void
+    #[Test]
+    public function aBooleanPropertyValueIsAccepted(): void
     {
         $repositories = $this->discover($this->twoPageTransport());
 
         self::assertTrue($this->named($repositories, 'theme-kit')->onboarded());
     }
 
-    public function testAMissingTokenEnvironmentVariableIsReportedByName(): void
+    #[Test]
+    public function aMissingTokenEnvironmentVariableIsReportedByName(): void
     {
         putenv('FIXTURE_DISCOVERY_TOKEN');
 
@@ -76,7 +79,8 @@ final class GitHubPropertyDiscoveryTest extends TestCase
         }
     }
 
-    public function testAnExcludedRepositoryIsDropped(): void
+    #[Test]
+    public function anExcludedRepositoryIsDropped(): void
     {
         $names = array_map(
             static fn(DiscoveredRepository $repository): string => $repository->name(),
@@ -86,7 +90,8 @@ final class GitHubPropertyDiscoveryTest extends TestCase
         self::assertNotContains('archived', $names);
     }
 
-    public function testAnInvalidJsonBodyIsReportedAsADiscoveryFailure(): void
+    #[Test]
+    public function anInvalidJsonBodyIsReportedAsADiscoveryFailure(): void
     {
         $transport = new class implements ClientInterface {
             public function sendRequest(RequestInterface $request): ResponseInterface
@@ -100,7 +105,8 @@ final class GitHubPropertyDiscoveryTest extends TestCase
         $this->discover($transport);
     }
 
-    public function testARepositoryMissingFromTheSearchFallsBackToTheDefaults(): void
+    #[Test]
+    public function aRepositoryMissingFromTheSearchFallsBackToTheDefaults(): void
     {
         $repositories = $this->discover($this->twoPageTransport([
             'search' => ['items' => []],
@@ -110,7 +116,8 @@ final class GitHubPropertyDiscoveryTest extends TestCase
         self::assertFalse($this->named($repositories, 'message-bus')->archived());
     }
 
-    public function testOnlyTheConfiguredOnboardValueIsOnboarded(): void
+    #[Test]
+    public function onlyTheConfiguredOnboardValueIsOnboarded(): void
     {
         $repositories = $this->discover($this->twoPageTransport());
 
@@ -118,7 +125,8 @@ final class GitHubPropertyDiscoveryTest extends TestCase
         self::assertFalse($this->named($repositories, 'job-queue')->onboarded());
     }
 
-    public function testTheApiBaseIsHonoured(): void
+    #[Test]
+    public function theApiBaseIsHonoured(): void
     {
         $transport = $this->twoPageTransport();
 
@@ -133,7 +141,8 @@ final class GitHubPropertyDiscoveryTest extends TestCase
         );
     }
 
-    public function testTheDefaultBranchAndArchivedFlagComeFromTheRepositorySearch(): void
+    #[Test]
+    public function theDefaultBranchAndArchivedFlagComeFromTheRepositorySearch(): void
     {
         $repositories = $this->discover($this->twoPageTransport());
 
@@ -141,7 +150,8 @@ final class GitHubPropertyDiscoveryTest extends TestCase
         self::assertSame('main', $this->named($repositories, 'message-bus')->defaultBranch());
     }
 
-    public function testTheOnboardedRepositoriesAreDiscoveredAcrossTwoPages(): void
+    #[Test]
+    public function theOnboardedRepositoriesAreDiscoveredAcrossTwoPages(): void
     {
         $repositories = $this->discover($this->twoPageTransport());
 
@@ -151,7 +161,8 @@ final class GitHubPropertyDiscoveryTest extends TestCase
         );
     }
 
-    public function testTheTokenNeverAppearsInAFailureMessage(): void
+    #[Test]
+    public function theTokenNeverAppearsInAFailureMessage(): void
     {
         $transport = new class implements ClientInterface {
             public function sendRequest(RequestInterface $request): ResponseInterface
@@ -172,7 +183,8 @@ final class GitHubPropertyDiscoveryTest extends TestCase
         }
     }
 
-    public function testTheTokenNeverAppearsWhenTheTransportItselfFails(): void
+    #[Test]
+    public function theTokenNeverAppearsWhenTheTransportItselfFails(): void
     {
         $transport = new class implements ClientInterface {
             public function sendRequest(RequestInterface $request): ResponseInterface
@@ -191,7 +203,8 @@ final class GitHubPropertyDiscoveryTest extends TestCase
         }
     }
 
-    public function testTheTokenTravelsAsABearerHeader(): void
+    #[Test]
+    public function theTokenTravelsAsABearerHeader(): void
     {
         $transport = $this->twoPageTransport();
 
@@ -201,7 +214,8 @@ final class GitHubPropertyDiscoveryTest extends TestCase
         self::assertSame(sprintf('Bearer %s', self::ENV_VALUE), $transport->requests[0]['headers']['Authorization']);
     }
 
-    public function testTwoPagesProduceTheSameSetAsOnePage(): void
+    #[Test]
+    public function twoPagesProduceTheSameSetAsOnePage(): void
     {
         $paged  = $this->describe($this->discover($this->twoPageTransport()));
         $single = $this->describe($this->discover($this->singlePageTransport()));

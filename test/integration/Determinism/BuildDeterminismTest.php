@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebwareTestIntegration\AsciidocPhp\MultiRepo\Determinism;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Build\BuildRunner;
 use Webware\AsciidocPhp\MultiRepo\Build\DeterminismGuard;
@@ -56,7 +57,8 @@ final class BuildDeterminismTest extends TestCase
     /** @var list<string> */
     private array $stderr = [];
 
-    public function testAnIncrementalBuildProducesTheSameBytesAsAFreshFullBuild(): void
+    #[Test]
+    public function anIncrementalBuildProducesTheSameBytesAsAFreshFullBuild(): void
     {
         $incremental = $this->siteDirectory('incremental');
         $full        = $this->siteDirectory('fresh');
@@ -76,7 +78,8 @@ final class BuildDeterminismTest extends TestCase
         self::assertSame([], $this->differences($incremental, $full));
     }
 
-    public function testATimestampInTheOutputIsReported(): void
+    #[Test]
+    public function aTimestampInTheOutputIsReported(): void
     {
         $output = $this->siteDirectory('stamped');
 
@@ -99,7 +102,8 @@ final class BuildDeterminismTest extends TestCase
         self::assertStringContainsString('a build timestamp', $violations[0]);
     }
 
-    public function testTheCleanBuildReportsNoNonDeterminism(): void
+    #[Test]
+    public function theCleanBuildReportsNoNonDeterminism(): void
     {
         $output = $this->siteDirectory('clean');
 
@@ -112,7 +116,8 @@ final class BuildDeterminismTest extends TestCase
         );
     }
 
-    public function testTwoConsecutiveFullBuildsProduceTheSameBytes(): void
+    #[Test]
+    public function twoConsecutiveFullBuildsProduceTheSameBytes(): void
     {
         $first  = $this->siteDirectory('first');
         $second = $this->siteDirectory('second');

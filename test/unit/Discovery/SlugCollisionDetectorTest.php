@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Discovery;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Discovery\DiscoveredRepository;
 use Webware\AsciidocPhp\MultiRepo\Discovery\SlugCollisionDetector;
@@ -15,7 +16,8 @@ use Webware\AsciidocPhp\MultiRepo\Discovery\SlugException;
 #[CoversMethod(SlugCollisionDetector::class, 'detect')]
 final class SlugCollisionDetectorTest extends TestCase
 {
-    public function testACollisionNamesBothRepositoriesAndTheSlug(): void
+    #[Test]
+    public function aCollisionNamesBothRepositoriesAndTheSlug(): void
     {
         try {
             new SlugCollisionDetector()->detect([
@@ -31,14 +33,16 @@ final class SlugCollisionDetectorTest extends TestCase
         }
     }
 
-    public function testAnEmptySetPasses(): void
+    #[Test]
+    public function anEmptySetPasses(): void
     {
         $this->expectNotToPerformAssertions();
 
         new SlugCollisionDetector()->detect([]);
     }
 
-    public function testDistinctSlugsPass(): void
+    #[Test]
+    public function distinctSlugsPass(): void
     {
         $this->expectNotToPerformAssertions();
 
@@ -48,7 +52,8 @@ final class SlugCollisionDetectorTest extends TestCase
         ]);
     }
 
-    public function testTheFirstDuplicateIsReported(): void
+    #[Test]
+    public function theFirstDuplicateIsReported(): void
     {
         try {
             new SlugCollisionDetector()->detect([
@@ -65,7 +70,8 @@ final class SlugCollisionDetectorTest extends TestCase
         }
     }
 
-    public function testTheMessageNamesTheRemedy(): void
+    #[Test]
+    public function theMessageNamesTheRemedy(): void
     {
         try {
             new SlugCollisionDetector()->detect([
@@ -79,7 +85,8 @@ final class SlugCollisionDetectorTest extends TestCase
         }
     }
 
-    public function testThreeRepositoriesSharingASlugStillRaise(): void
+    #[Test]
+    public function threeRepositoriesSharingASlugStillRaise(): void
     {
         $this->expectException(SlugException::class);
 

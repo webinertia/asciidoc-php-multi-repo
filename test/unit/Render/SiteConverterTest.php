@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Render;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\Asciidoc;
 use Webware\AsciidocPhp\Converter\Html5Converter;
@@ -49,7 +50,8 @@ final class SiteConverterTest extends TestCase
         A paragraph in the second section.
         ADOC;
 
-    public function testANonDocumentNodeIsDelegatedToTheParentConverter(): void
+    #[Test]
+    public function aNonDocumentNodeIsDelegatedToTheParentConverter(): void
     {
         $converter = new SiteConverter();
 
@@ -65,19 +67,22 @@ final class SiteConverterTest extends TestCase
         self::assertStringContainsString('<article class="doc">', $converter->convert($document));
     }
 
-    public function testHeadingIdsMatchTheParentConverter(): void
+    #[Test]
+    public function headingIdsMatchTheParentConverter(): void
     {
         self::assertSame($this->parentIds(), $this->siteIds());
         self::assertNotSame([], $this->siteIds());
     }
 
-    public function testSectionMarkupMatchesTheParentConverter(): void
+    #[Test]
+    public function sectionMarkupMatchesTheParentConverter(): void
     {
         self::assertSame($this->parentSections(), $this->siteSections());
         self::assertNotSame([], $this->siteSections());
     }
 
-    public function testTheArticleFragmentIsAvailableWithoutTheConvertEntryPoint(): void
+    #[Test]
+    public function theArticleFragmentIsAvailableWithoutTheConvertEntryPoint(): void
     {
         $converter = new SiteConverter();
 
@@ -92,7 +97,8 @@ final class SiteConverterTest extends TestCase
         self::assertStringContainsString('<h2 id="_first_section">First section</h2>', $html);
     }
 
-    public function testTheConverterDelegatesEveryOtherTransformToTheParent(): void
+    #[Test]
+    public function theConverterDelegatesEveryOtherTransformToTheParent(): void
     {
         $converter = new SiteConverter();
 
@@ -101,12 +107,14 @@ final class SiteConverterTest extends TestCase
         self::assertFalse($converter->handles('not-a-transform'));
     }
 
-    public function testTheConverterHandlesTheDocumentTransform(): void
+    #[Test]
+    public function theConverterHandlesTheDocumentTransform(): void
     {
         self::assertTrue(new SiteConverter()->handles('document'));
     }
 
-    public function testTheDocumentIsCapturedForLaterInspection(): void
+    #[Test]
+    public function theDocumentIsCapturedForLaterInspection(): void
     {
         $converter = new SiteConverter();
 
@@ -118,7 +126,8 @@ final class SiteConverterTest extends TestCase
         self::assertSame('Golden Page', $document->getDocTitle());
     }
 
-    public function testTheDocumentIsWrappedInAnArticleAndNothingElse(): void
+    #[Test]
+    public function theDocumentIsWrappedInAnArticleAndNothingElse(): void
     {
         $html = $this->convertWithSiteConverter();
 
@@ -130,7 +139,8 @@ final class SiteConverterTest extends TestCase
         self::assertStringNotContainsString('id="content"', $html);
     }
 
-    public function testTheStylesheetIsEmpty(): void
+    #[Test]
+    public function theStylesheetIsEmpty(): void
     {
         $converter = new SiteConverter();
 

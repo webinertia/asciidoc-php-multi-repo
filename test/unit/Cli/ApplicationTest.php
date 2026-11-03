@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebwareTest\AsciidocPhp\MultiRepo\Cli;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Webware\AsciidocPhp\MultiRepo\Cli\Application;
@@ -30,7 +31,8 @@ final class ApplicationTest extends TestCase
 
     private string $scratch;
 
-    public function testCommandReceivesParsedOptionsAndTheValidatedConfig(): void
+    #[Test]
+    public function commandReceivesParsedOptionsAndTheValidatedConfig(): void
     {
         $command = new RecordingCommand('build', ExitCode::Degraded);
 
@@ -53,7 +55,8 @@ final class ApplicationTest extends TestCase
         self::assertInstanceOf(Output::class, $command->output);
     }
 
-    public function testHelpExitsZeroAndListsEveryCommandAndOption(): void
+    #[Test]
+    public function helpExitsZeroAndListsEveryCommandAndOption(): void
     {
         $exit = $this->application()->run(['asciidoc-php-multi-repo', '--help']);
 
@@ -88,7 +91,8 @@ final class ApplicationTest extends TestCase
         }
     }
 
-    public function testMissingConfigExitsTwo(): void
+    #[Test]
+    public function missingConfigExitsTwo(): void
     {
         $missing = Path::join($this->scratch, 'absent.json');
 
@@ -98,7 +102,8 @@ final class ApplicationTest extends TestCase
         self::assertStringContainsString('error:', $this->captured->stderr);
     }
 
-    public function testNoArgumentsExitsTwoWithUsageOnStandardError(): void
+    #[Test]
+    public function noArgumentsExitsTwoWithUsageOnStandardError(): void
     {
         $exit = $this->application()->run(['asciidoc-php-multi-repo']);
 
@@ -108,7 +113,8 @@ final class ApplicationTest extends TestCase
         self::assertStringContainsString('asciidoc-php-multi-repo <command> [options]', $this->captured->stderr);
     }
 
-    public function testNonInteractiveRunEmitsNoAnsiEscapes(): void
+    #[Test]
+    public function nonInteractiveRunEmitsNoAnsiEscapes(): void
     {
         $this->application()->run(['asciidoc-php-multi-repo', 'build', '--nope']);
 
@@ -116,7 +122,8 @@ final class ApplicationTest extends TestCase
         self::assertStringNotContainsString("\033[", $this->captured->stdout);
     }
 
-    public function testQuietModeStillReportsConfigurationErrors(): void
+    #[Test]
+    public function quietModeStillReportsConfigurationErrors(): void
     {
         $exit = $this->application()->run([
             'asciidoc-php-multi-repo',
@@ -130,7 +137,8 @@ final class ApplicationTest extends TestCase
         self::assertStringContainsString('error:', $this->captured->stderr);
     }
 
-    public function testUnexpectedExceptionMapsToInternalError(): void
+    #[Test]
+    public function unexpectedExceptionMapsToInternalError(): void
     {
         $command = new class implements CommandInterface {
             public function execute(Options $options, SiteConfig $config, Output $output): ExitCode
@@ -160,7 +168,8 @@ final class ApplicationTest extends TestCase
         self::assertStringContainsString('converter failed', $this->captured->stderr);
     }
 
-    public function testUnknownCommandExitsTwo(): void
+    #[Test]
+    public function unknownCommandExitsTwo(): void
     {
         $exit = $this->application()->run(['asciidoc-php-multi-repo', 'publish']);
 
@@ -168,7 +177,8 @@ final class ApplicationTest extends TestCase
         self::assertStringContainsString('unknown command "publish"', $this->captured->stderr);
     }
 
-    public function testUnknownOptionExitsTwoWithUsageOnStandardError(): void
+    #[Test]
+    public function unknownOptionExitsTwoWithUsageOnStandardError(): void
     {
         $exit = $this->application()->run(['asciidoc-php-multi-repo', 'build', '--nope']);
 
@@ -177,7 +187,8 @@ final class ApplicationTest extends TestCase
         self::assertStringContainsString('Global options:', $this->captured->stderr);
     }
 
-    public function testUnsupportedSchemaVersionExitsTwo(): void
+    #[Test]
+    public function unsupportedSchemaVersionExitsTwo(): void
     {
         $path = Path::join($this->scratch, 'site.json');
 
@@ -198,7 +209,8 @@ final class ApplicationTest extends TestCase
         self::assertStringContainsString('schemaVersion', $this->captured->stderr);
     }
 
-    public function testVersionExitsZeroAndPrintsThePackageName(): void
+    #[Test]
+    public function versionExitsZeroAndPrintsThePackageName(): void
     {
         $exit = $this->application()->run(['asciidoc-php-multi-repo', '--version']);
 

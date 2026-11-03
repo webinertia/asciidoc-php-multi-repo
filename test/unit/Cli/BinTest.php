@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebwareTest\AsciidocPhp\MultiRepo\Cli;
 
 use PHPUnit\Framework\Attributes\CoversNothing;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Cli\ExitCode;
 use Webware\AsciidocPhp\MultiRepo\Support\Path;
@@ -26,7 +27,8 @@ final class BinTest extends TestCase
 
     private string $scratch;
 
-    public function testAnAbsoluteConfigResolvesFromAnotherWorkingDirectory(): void
+    #[Test]
+    public function anAbsoluteConfigResolvesFromAnotherWorkingDirectory(): void
     {
         $result = new ProcessRunner($this->scratch)->run([
             PHP_BINARY,
@@ -46,7 +48,8 @@ final class BinTest extends TestCase
         self::assertStringNotContainsString('unable to locate', $result->stderr());
     }
 
-    public function testHelpExitsZero(): void
+    #[Test]
+    public function helpExitsZero(): void
     {
         $result = new ProcessRunner($this->root())->run([PHP_BINARY, $this->binary(), '--help']);
 
@@ -56,7 +59,8 @@ final class BinTest extends TestCase
         self::assertSame('', $result->stderr());
     }
 
-    public function testNoArgumentsPrintsUsageAndExitsTwo(): void
+    #[Test]
+    public function noArgumentsPrintsUsageAndExitsTwo(): void
     {
         $result = new ProcessRunner($this->root())->run([PHP_BINARY, $this->binary()]);
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebwareTest\AsciidocPhp\MultiRepo\Config;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Config\ConfigException;
 use Webware\AsciidocPhp\MultiRepo\Config\SiteConfigLoader;
@@ -29,7 +30,8 @@ final class SiteConfigLoaderTest extends TestCase
 
     private Filesystem $filesystem;
 
-    public function testAbsoluteOutputPathsArePreserved(): void
+    #[Test]
+    public function absoluteOutputPathsArePreserved(): void
     {
         $absolute = Path::join($this->directory, 'elsewhere');
 
@@ -46,7 +48,8 @@ final class SiteConfigLoaderTest extends TestCase
         self::assertSame($absolute, $config->output()->directory());
     }
 
-    public function testBundledSchemaIsShippedWithThePackage(): void
+    #[Test]
+    public function bundledSchemaIsShippedWithThePackage(): void
     {
         $loader = new SiteConfigLoader();
 
@@ -62,7 +65,8 @@ final class SiteConfigLoaderTest extends TestCase
         self::assertTrue(isset($schema['$defs']));
     }
 
-    public function testBundledSchemaMatchesTheContract(): void
+    #[Test]
+    public function bundledSchemaMatchesTheContract(): void
     {
         $contract = json_decode(
             (string) file_get_contents(
@@ -84,7 +88,8 @@ final class SiteConfigLoaderTest extends TestCase
         self::assertSame($contract, new SiteConfigLoader()->schema());
     }
 
-    public function testLoadsMinimalDocumentAndAppliesDefaults(): void
+    #[Test]
+    public function loadsMinimalDocumentAndAppliesDefaults(): void
     {
         $path = $this->writeConfig('site.json', [
             'schemaVersion' => 1,
@@ -108,7 +113,8 @@ final class SiteConfigLoaderTest extends TestCase
         self::assertSame(Path::normalise($this->directory), $config->configDirectory());
     }
 
-    public function testMalformedJsonFailsNamingTheFile(): void
+    #[Test]
+    public function malformedJsonFailsNamingTheFile(): void
     {
         $path = Path::join($this->directory, 'site.json');
         $this->filesystem->writeAtomic($path, "{\n  \"schemaVersion\": 1,\n");
@@ -119,7 +125,8 @@ final class SiteConfigLoaderTest extends TestCase
         new SiteConfigLoader()->load($path);
     }
 
-    public function testMissingFileFails(): void
+    #[Test]
+    public function missingFileFails(): void
     {
         $path = Path::join($this->directory, 'absent.json');
 
@@ -129,7 +136,8 @@ final class SiteConfigLoaderTest extends TestCase
         new SiteConfigLoader()->load($path);
     }
 
-    public function testMissingRequiredSectionFails(): void
+    #[Test]
+    public function missingRequiredSectionFails(): void
     {
         $path = $this->writeConfig('site.json', [
             'schemaVersion' => 1,
@@ -145,7 +153,8 @@ final class SiteConfigLoaderTest extends TestCase
         }
     }
 
-    public function testMissingSchemaVersionFails(): void
+    #[Test]
+    public function missingSchemaVersionFails(): void
     {
         $document = $this->minimalDocument();
         unset($document['schemaVersion']);
@@ -157,7 +166,8 @@ final class SiteConfigLoaderTest extends TestCase
         new SiteConfigLoader()->load($path);
     }
 
-    public function testNestedConfigResolvesAgainstItsOwnDirectory(): void
+    #[Test]
+    public function nestedConfigResolvesAgainstItsOwnDirectory(): void
     {
         $nested = Path::join($this->directory, 'conf');
         $this->filesystem->ensureDirectory($nested);
@@ -169,7 +179,8 @@ final class SiteConfigLoaderTest extends TestCase
         self::assertSame(Path::join($nested, 'build', 'site'), $config->output()->directory());
     }
 
-    public function testOutputPathsResolveAgainstTheConfigDirectory(): void
+    #[Test]
+    public function outputPathsResolveAgainstTheConfigDirectory(): void
     {
         $path = $this->writeConfig(
             'site.json',
@@ -186,7 +197,8 @@ final class SiteConfigLoaderTest extends TestCase
         self::assertSame(Path::join($this->directory, 'r.json'), $config->output()->reportPath());
     }
 
-    public function testProjectsAreParsedAndSorted(): void
+    #[Test]
+    public function projectsAreParsedAndSorted(): void
     {
         $path = $this->writeConfig(
             'site.json',
@@ -207,7 +219,8 @@ final class SiteConfigLoaderTest extends TestCase
         self::assertNull($config->project('missing'));
     }
 
-    public function testRelativePathResolvesAgainstTheWorkingDirectory(): void
+    #[Test]
+    public function relativePathResolvesAgainstTheWorkingDirectory(): void
     {
         $this->writeConfig('site.json', $this->minimalDocument());
 
@@ -218,7 +231,8 @@ final class SiteConfigLoaderTest extends TestCase
         self::assertSame(Path::join($this->directory, 'site.json'), $config->configPath());
     }
 
-    public function testUnknownTopLevelKeyFailsNamingTheKeyAndPointer(): void
+    #[Test]
+    public function unknownTopLevelKeyFailsNamingTheKeyAndPointer(): void
     {
         $path = $this->writeConfig('site.json', $this->minimalDocument() + ['typo' => true]);
 
@@ -232,7 +246,8 @@ final class SiteConfigLoaderTest extends TestCase
         }
     }
 
-    public function testUnsupportedSchemaVersionFails(): void
+    #[Test]
+    public function unsupportedSchemaVersionFails(): void
     {
         $document                  = $this->minimalDocument();
         $document['schemaVersion'] = 2;
@@ -248,7 +263,8 @@ final class SiteConfigLoaderTest extends TestCase
         }
     }
 
-    public function testWrongPropertyTypeFailsAtThePropertyPointer(): void
+    #[Test]
+    public function wrongPropertyTypeFailsAtThePropertyPointer(): void
     {
         $document         = $this->minimalDocument();
         $document['site'] = ['name' => 42, 'baseUrl' => 'https://example.test'];

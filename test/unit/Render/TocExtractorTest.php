@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Render;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\Asciidoc;
 use Webware\AsciidocPhp\Document;
@@ -43,7 +44,8 @@ final class TocExtractorTest extends TestCase
         == Another second level heading
         ADOC;
 
-    public function testAnEntryExposesItsLevelIdAndTitle(): void
+    #[Test]
+    public function anEntryExposesItsLevelIdAndTitle(): void
     {
         $entries = new TocExtractor()->extract($this->document("= Title\n\n== First & <second>\n\nText.\n"), [2]);
 
@@ -53,7 +55,8 @@ final class TocExtractorTest extends TestCase
         self::assertSame('First & <second>', $entries[0]->title());
     }
 
-    public function testAnH1OnlyPageYieldsAnEmptyTableOfContents(): void
+    #[Test]
+    public function anH1OnlyPageYieldsAnEmptyTableOfContents(): void
     {
         $entries = new TocExtractor()->extract(
             $this->document("= Title only\n\nA paragraph with no section below it."),
@@ -63,7 +66,8 @@ final class TocExtractorTest extends TestCase
         self::assertSame([], $entries);
     }
 
-    public function testAParagraphBeforeTheFirstSectionDoesNotStopTheScan(): void
+    #[Test]
+    public function aParagraphBeforeTheFirstSectionDoesNotStopTheScan(): void
     {
         $entries = new TocExtractor()->extract(
             $this->document("= Title\n\nAn opening paragraph.\n\n== One\n\nText.\n\n== Two\n\nText.\n"),
@@ -73,7 +77,8 @@ final class TocExtractorTest extends TestCase
         self::assertSame(['_one', '_two'], array_map(static fn(TocEntry $entry): string => $entry->id(), $entries));
     }
 
-    public function testASectionIdIsTrimmedBeforeItBecomesAnAnchor(): void
+    #[Test]
+    public function aSectionIdIsTrimmedBeforeItBecomesAnAnchor(): void
     {
         $document = new Document();
         $section  = new Section($document, $document, 1);
@@ -87,7 +92,8 @@ final class TocExtractorTest extends TestCase
         self::assertSame('spaced-id', $entries[0]->id());
     }
 
-    public function testASectionWithoutAnIdFailsWithTocTargetMissing(): void
+    #[Test]
+    public function aSectionWithoutAnIdFailsWithTocTargetMissing(): void
     {
         $document = new Document();
         $section  = new Section($document, $document, 1);
@@ -108,7 +114,8 @@ final class TocExtractorTest extends TestCase
         }
     }
 
-    public function testHeadingsAreReturnedInDocumentOrder(): void
+    #[Test]
+    public function headingsAreReturnedInDocumentOrder(): void
     {
         $entries = new TocExtractor()->extract($this->document(self::ORDERED_SOURCE), [2, 3]);
 
@@ -122,7 +129,8 @@ final class TocExtractorTest extends TestCase
         );
     }
 
-    public function testOnlyTheConfiguredLevelsAreReturned(): void
+    #[Test]
+    public function onlyTheConfiguredLevelsAreReturned(): void
     {
         $entries = new TocExtractor()->extract($this->document(self::ORDERED_SOURCE), [2]);
 
@@ -130,7 +138,8 @@ final class TocExtractorTest extends TestCase
         self::assertSame([2, 2], array_map(static fn(TocEntry $entry): int => $entry->level(), $entries));
     }
 
-    public function testSectionsAfterABlockThatIsNotASectionAreStillReturned(): void
+    #[Test]
+    public function sectionsAfterABlockThatIsNotASectionAreStillReturned(): void
     {
         $entries = new TocExtractor()->extract(
             $this->document("= Page\n\nA paragraph before any section.\n\n== First\n\n=== Second"),

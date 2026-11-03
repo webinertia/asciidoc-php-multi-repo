@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Cli;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Cli\Commands\DiscoverCommand;
 use Webware\AsciidocPhp\MultiRepo\Cli\ExitCode;
@@ -34,7 +35,8 @@ final class DiscoverCommandTest extends TestCase
 {
     private CapturedOutput $captured;
 
-    public function testADiscoveryFailureExitsThree(): void
+    #[Test]
+    public function aDiscoveryFailureExitsThree(): void
     {
         $exit = $this->executeCommand(
             config   : SourceFixture::config(),
@@ -45,7 +47,8 @@ final class DiscoverCommandTest extends TestCase
         self::assertSame('', $this->captured->stdout);
     }
 
-    public function testADiscoveryFailureNamesTheOrganizationAndProperty(): void
+    #[Test]
+    public function aDiscoveryFailureNamesTheOrganizationAndProperty(): void
     {
         $this->executeCommand(
             config   : SourceFixture::config(),
@@ -58,7 +61,8 @@ final class DiscoverCommandTest extends TestCase
         self::assertStringStartsWith('error: ', $this->captured->stderr);
     }
 
-    public function testAMissingTokenExitsThree(): void
+    #[Test]
+    public function aMissingTokenExitsThree(): void
     {
         putenv('FIXTURE_DISCOVERY_TOKEN');
 
@@ -71,7 +75,8 @@ final class DiscoverCommandTest extends TestCase
         self::assertStringContainsString('FIXTURE_DISCOVERY_TOKEN', $this->captured->stderr);
     }
 
-    public function testASlugCollisionExitsTwo(): void
+    #[Test]
+    public function aSlugCollisionExitsTwo(): void
     {
         $exit = $this->executeCommand(
             config   : SourceFixture::config(),
@@ -84,7 +89,8 @@ final class DiscoverCommandTest extends TestCase
         self::assertSame('', $this->captured->stdout);
     }
 
-    public function testNothingElseIsWrittenToStandardOutput(): void
+    #[Test]
+    public function nothingElseIsWrittenToStandardOutput(): void
     {
         $this->executeCommand(manifest: SourceFixture::path('manifest.json'));
 
@@ -92,7 +98,8 @@ final class DiscoverCommandTest extends TestCase
         self::assertCount(6, $this->stdoutLines());
     }
 
-    public function testTheCommandNameAndSummaryAreSet(): void
+    #[Test]
+    public function theCommandNameAndSummaryAreSet(): void
     {
         $command = new DiscoverCommand();
 
@@ -100,14 +107,16 @@ final class DiscoverCommandTest extends TestCase
         self::assertNotSame('', $command->summary());
     }
 
-    public function testTheExcludedRepositoryIsNotPrinted(): void
+    #[Test]
+    public function theExcludedRepositoryIsNotPrinted(): void
     {
         $this->executeCommand(manifest: SourceFixture::path('manifest.json'));
 
         self::assertStringNotContainsString('archived', $this->captured->stdout);
     }
 
-    public function testTheFixtureManifestIsPrintedInSlugOrder(): void
+    #[Test]
+    public function theFixtureManifestIsPrintedInSlugOrder(): void
     {
         $exit = $this->executeCommand(manifest: SourceFixture::path('manifest.json'));
 
@@ -125,7 +134,8 @@ final class DiscoverCommandTest extends TestCase
         );
     }
 
-    public function testTheProjectFilterAcceptsTheSlug(): void
+    #[Test]
+    public function theProjectFilterAcceptsTheSlug(): void
     {
         $this->executeCommand(
             manifest: SourceFixture::path('manifest.json'),
@@ -135,7 +145,8 @@ final class DiscoverCommandTest extends TestCase
         self::assertSame(['name=markdown-only slug=markdown-only onboarded=yes'], $this->stdoutLines());
     }
 
-    public function testTheProjectFilterCanSelectNothing(): void
+    #[Test]
+    public function theProjectFilterCanSelectNothing(): void
     {
         $exit = $this->executeCommand(
             manifest: SourceFixture::path('manifest.json'),
@@ -146,7 +157,8 @@ final class DiscoverCommandTest extends TestCase
         self::assertSame('', $this->captured->stdout);
     }
 
-    public function testTheProjectFilterSelectsOneRepository(): void
+    #[Test]
+    public function theProjectFilterSelectsOneRepository(): void
     {
         $this->executeCommand(
             manifest: SourceFixture::path('manifest.json'),

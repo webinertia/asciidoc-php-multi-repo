@@ -7,6 +7,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Source;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Source\SourceFormat;
 
@@ -32,33 +33,38 @@ final class SourceFormatTest extends TestCase
         yield 'dot in the path' => ['docs/v1.2/index', SourceFormat::Unknown];
     }
 
-    public function testOnlyAsciiDocIsAccepted(): void
+    #[Test]
+    public function onlyAsciiDocIsAccepted(): void
     {
         self::assertTrue(SourceFormat::AsciiDoc->isAsciiDoc());
         self::assertFalse(SourceFormat::Markdown->isAsciiDoc());
         self::assertFalse(SourceFormat::Unknown->isAsciiDoc());
     }
 
-    public function testTheEnumValueIsTheLowercaseFormatName(): void
+    #[Test]
+    public function theEnumValueIsTheLowercaseFormatName(): void
     {
         self::assertSame('asciidoc', SourceFormat::AsciiDoc->value);
         self::assertSame('markdown', SourceFormat::Markdown->value);
         self::assertSame('unknown', SourceFormat::Unknown->value);
     }
 
-    public function testTheExtensionComesFromTheLastDot(): void
+    #[Test]
+    public function theExtensionComesFromTheLastDot(): void
     {
         self::assertSame('.adoc', SourceFormat::extension('docs/v1.2/index.adoc'));
     }
 
-    public function testTheExtensionIsLowercasedAndKeepsTheDot(): void
+    #[Test]
+    public function theExtensionIsLowercasedAndKeepsTheDot(): void
     {
         self::assertSame('.adoc', SourceFormat::extension('docs/INDEX.ADOC'));
         self::assertSame('', SourceFormat::extension('docs/README'));
     }
 
+    #[Test]
     #[DataProvider('extensions')]
-    public function testTheFormatComesFromTheExtension(string $path, SourceFormat $expected): void
+    public function theFormatComesFromTheExtension(string $path, SourceFormat $expected): void
     {
         self::assertSame($expected, SourceFormat::fromPath($path));
     }

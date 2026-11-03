@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Report;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Report\ReasonCode;
 use Webware\AsciidocPhp\MultiRepo\Support\Json;
@@ -31,7 +32,8 @@ use function sort;
 #[CoversMethod(ReasonCode::class, 'label')]
 final class ReasonCodeTest extends TestCase
 {
-    public function testEnumMatchesThePublishedSchemaExactly(): void
+    #[Test]
+    public function enumMatchesThePublishedSchemaExactly(): void
     {
         $published = $this->publishedCodes();
         $codes     = array_map(static fn(ReasonCode $code): string => $code->value, ReasonCode::cases());
@@ -46,28 +48,32 @@ final class ReasonCodeTest extends TestCase
         );
     }
 
-    public function testEveryCaseIsReachableFromItsValue(): void
+    #[Test]
+    public function everyCaseIsReachableFromItsValue(): void
     {
         foreach (ReasonCode::cases() as $case) {
             self::assertSame($case, ReasonCode::from($case->value));
         }
     }
 
-    public function testLabelIsTheSchemaValue(): void
+    #[Test]
+    public function labelIsTheSchemaValue(): void
     {
         foreach (ReasonCode::cases() as $case) {
             self::assertSame($case->value, $case->label());
         }
     }
 
-    public function testTheEnumCarriesNoDuplicateValue(): void
+    #[Test]
+    public function theEnumCarriesNoDuplicateValue(): void
     {
         $codes = array_map(static fn(ReasonCode $code): string => $code->value, ReasonCode::cases());
 
         self::assertSame($codes, array_values(array_unique($codes)));
     }
 
-    public function testTheSchemaEnumIsNonEmpty(): void
+    #[Test]
+    public function theSchemaEnumIsNonEmpty(): void
     {
         self::assertNotSame([], $this->publishedCodes());
     }

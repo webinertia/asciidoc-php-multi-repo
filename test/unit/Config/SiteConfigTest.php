@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebwareTest\AsciidocPhp\MultiRepo\Config;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Config\ProjectOverride;
 use Webware\AsciidocPhp\MultiRepo\Config\SiteConfig;
@@ -47,7 +48,8 @@ final class SiteConfigTest extends TestCase
         ];
     }
 
-    public function testAbsoluteOutputPathsAreKept(): void
+    #[Test]
+    public function absoluteOutputPathsAreKept(): void
     {
         $absolute           = Path::join(sys_get_temp_dir(), 'elsewhere', 'site');
         $document           = self::document();
@@ -58,18 +60,21 @@ final class SiteConfigTest extends TestCase
         self::assertSame(Path::normalise($absolute), $config->output()->directory());
     }
 
-    public function testConfigPathIsNormalised(): void
+    #[Test]
+    public function configPathIsNormalised(): void
     {
         self::assertSame(Path::normalise(self::configPath()), $this->config()->configPath());
         self::assertSame(Path::join(sys_get_temp_dir(), 'site-fixture'), $this->config()->configDirectory());
     }
 
-    public function testOrganizationSectionIsRead(): void
+    #[Test]
+    public function organizationSectionIsRead(): void
     {
         self::assertSame('doc-target', $this->config()->organization()->propertyName());
     }
 
-    public function testOutputSectionIsResolvedAgainstTheConfigDirectory(): void
+    #[Test]
+    public function outputSectionIsResolvedAgainstTheConfigDirectory(): void
     {
         $directory = Path::join(sys_get_temp_dir(), 'site-fixture');
         $output    = $this->config()->output();
@@ -79,13 +84,15 @@ final class SiteConfigTest extends TestCase
         self::assertSame(Path::join($directory, 'reports', 'report.json'), $output->reportPath());
     }
 
-    public function testProjectLookupReturnsNullForUnknownName(): void
+    #[Test]
+    public function projectLookupReturnsNullForUnknownName(): void
     {
         self::assertNull($this->config()->project('missing'));
         self::assertSame(20, $this->config()->project('messagebus-event')?->order());
     }
 
-    public function testProjectsAreReadAndSortedByName(): void
+    #[Test]
+    public function projectsAreReadAndSortedByName(): void
     {
         $projects = $this->config()->projects();
 
@@ -94,32 +101,38 @@ final class SiteConfigTest extends TestCase
         self::assertSame('Message Bus', $projects['message-bus']->title());
     }
 
-    public function testRenderSectionUsesDefaults(): void
+    #[Test]
+    public function renderSectionUsesDefaults(): void
     {
         self::assertSame(4, $this->config()->render()->concurrency());
     }
 
-    public function testSchemaVersionIsRead(): void
+    #[Test]
+    public function schemaVersionIsRead(): void
     {
         self::assertSame(1, $this->config()->schemaVersion());
     }
 
-    public function testSiteSectionIsRead(): void
+    #[Test]
+    public function siteSectionIsRead(): void
     {
         self::assertSame('Webware Documentation', $this->config()->site()->name());
     }
 
-    public function testSourceSectionUsesDefaults(): void
+    #[Test]
+    public function sourceSectionUsesDefaults(): void
     {
         self::assertSame('docs', $this->config()->source()->directory());
     }
 
-    public function testThemeSectionUsesDefaults(): void
+    #[Test]
+    public function themeSectionUsesDefaults(): void
     {
         self::assertSame('webware', $this->config()->theme()->name());
     }
 
-    public function testWithSiteReturnsANewInstance(): void
+    #[Test]
+    public function withSiteReturnsANewInstance(): void
     {
         $config  = $this->config();
         $updated = $config->withSite($config->site()->withBasePath('/docs'));

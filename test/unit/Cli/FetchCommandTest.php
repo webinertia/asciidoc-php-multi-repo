@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Cli;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Cli\Commands\FetchCommand;
 use Webware\AsciidocPhp\MultiRepo\Cli\ExitCode;
@@ -52,7 +53,8 @@ final class FetchCommandTest extends TestCase
 
     private bool $verbose = false;
 
-    public function testADiscoveryFailureExitsThreeAndWritesNoManifest(): void
+    #[Test]
+    public function aDiscoveryFailureExitsThreeAndWritesNoManifest(): void
     {
         $exit = $this->executeCommand(
             manifest : null,
@@ -65,7 +67,8 @@ final class FetchCommandTest extends TestCase
         self::assertStringContainsString('error: ', $this->captured->stderr);
     }
 
-    public function testAHealthyRepositoryIsRecordedWithoutAnError(): void
+    #[Test]
+    public function aHealthyRepositoryIsRecordedWithoutAnError(): void
     {
         $this->executeCommand(SourceFixture::path('manifest.json'));
 
@@ -73,7 +76,8 @@ final class FetchCommandTest extends TestCase
         self::assertNull($this->entry('mixed')['error']);
     }
 
-    public function testALocalPathThatDoesNotExistIsRecordedWithNoAsciidocSources(): void
+    #[Test]
+    public function aLocalPathThatDoesNotExistIsRecordedWithNoAsciidocSources(): void
     {
         $manifest = $this->writeManifest([
             ['name' => 'versioned', 'path' => Path::join($this->tempDirectory, 'absent')],
@@ -88,7 +92,8 @@ final class FetchCommandTest extends TestCase
         self::assertStringContainsString('versioned: 0 version(s), 0 page(s), revision ', $this->captured->stderr);
     }
 
-    public function testAMarkdownOnlyRepositoryIsRecordedWithNoAsciidocSources(): void
+    #[Test]
+    public function aMarkdownOnlyRepositoryIsRecordedWithNoAsciidocSources(): void
     {
         $this->executeCommand(SourceFixture::path('manifest.json'));
 
@@ -98,7 +103,8 @@ final class FetchCommandTest extends TestCase
         self::assertSame('docs', $entry['documentationPath']);
     }
 
-    public function testAnArchivedRepositoryIsRecordedWithTheArchivedReasonCode(): void
+    #[Test]
+    public function anArchivedRepositoryIsRecordedWithTheArchivedReasonCode(): void
     {
         $manifest = $this->writeManifest([
             ['name' => 'archived', 'path' => SourceFixture::fixtureDirectory('archived'), 'archived' => true],
@@ -116,7 +122,8 @@ final class FetchCommandTest extends TestCase
         self::assertStringContainsString('archived: archived, skipped', $this->captured->stderr);
     }
 
-    public function testARepositoryThatIsNotOnboardedIsAnnouncedAndDoesNotStopTheLoop(): void
+    #[Test]
+    public function aRepositoryThatIsNotOnboardedIsAnnouncedAndDoesNotStopTheLoop(): void
     {
         $manifest = $this->writeManifest([
             ['name' => 'alpha', 'path' => SourceFixture::fixtureDirectory('versioned'), 'onboarded' => false],
@@ -130,7 +137,8 @@ final class FetchCommandTest extends TestCase
         self::assertStringContainsString('alpha: not onboarded, skipped', $this->captured->stderr);
     }
 
-    public function testARepositoryThatIsNotOnboardedIsSkippedEntirely(): void
+    #[Test]
+    public function aRepositoryThatIsNotOnboardedIsSkippedEntirely(): void
     {
         $manifest = $this->writeManifest([
             ['name' => 'versioned', 'path' => SourceFixture::fixtureDirectory('versioned'), 'onboarded' => false],
@@ -142,7 +150,8 @@ final class FetchCommandTest extends TestCase
         self::assertSame(['unversioned'], array_column($this->manifest()['repositories'], 'name'));
     }
 
-    public function testARepositoryWhoseFetchFailsIsReportedWithAnUnknownRevision(): void
+    #[Test]
+    public function aRepositoryWhoseFetchFailsIsReportedWithAnUnknownRevision(): void
     {
         $manifest = $this->writeManifest([
             ['name' => 'versioned'],
@@ -168,14 +177,16 @@ final class FetchCommandTest extends TestCase
         );
     }
 
-    public function testARepositoryWithoutAnEntryPageIsRecordedWithMissingEntry(): void
+    #[Test]
+    public function aRepositoryWithoutAnEntryPageIsRecordedWithMissingEntry(): void
     {
         $this->executeCommand(SourceFixture::path('manifest.json'));
 
         self::assertSame('missing-entry', $this->entry('missing-entry')['error']['reasonCode']);
     }
 
-    public function testAResolvedRepositoryRecordsItsRevisionAndDocumentationPath(): void
+    #[Test]
+    public function aResolvedRepositoryRecordsItsRevisionAndDocumentationPath(): void
     {
         $this->executeCommand(SourceFixture::path('manifest.json'));
 
@@ -186,7 +197,8 @@ final class FetchCommandTest extends TestCase
         self::assertMatchesRegularExpression('/^[0-9a-f]{64}$/', $versioned['revision']);
     }
 
-    public function testASlugCollisionExitsTwoAndWritesNoManifest(): void
+    #[Test]
+    public function aSlugCollisionExitsTwoAndWritesNoManifest(): void
     {
         $exit = $this->executeCommand(
             manifest : null,
@@ -199,7 +211,8 @@ final class FetchCommandTest extends TestCase
         self::assertStringContainsString('message-bus', $this->captured->stderr);
     }
 
-    public function testASlugOverrideCollisionExitsTwoBeforeAnyFetch(): void
+    #[Test]
+    public function aSlugOverrideCollisionExitsTwoBeforeAnyFetch(): void
     {
         $exit = $this->executeCommand(
             manifest: SourceFixture::path('manifest.json'),
@@ -212,7 +225,8 @@ final class FetchCommandTest extends TestCase
         self::assertFalse(is_file($this->manifestPath()));
     }
 
-    public function testTheCacheManifestCarriesOneEntryPerOnboardedRepository(): void
+    #[Test]
+    public function theCacheManifestCarriesOneEntryPerOnboardedRepository(): void
     {
         $this->executeCommand(SourceFixture::path('manifest.json'));
 
@@ -222,14 +236,16 @@ final class FetchCommandTest extends TestCase
         );
     }
 
-    public function testTheCacheManifestDeclaresItsSchemaVersion(): void
+    #[Test]
+    public function theCacheManifestDeclaresItsSchemaVersion(): void
     {
         $this->executeCommand(SourceFixture::path('manifest.json'));
 
         self::assertSame(1, $this->manifest()['schemaVersion']);
     }
 
-    public function testTheCacheManifestIsRewrittenOnASecondRun(): void
+    #[Test]
+    public function theCacheManifestIsRewrittenOnASecondRun(): void
     {
         $this->executeCommand(SourceFixture::path('manifest.json'));
         $first = $this->filesystem->read($this->manifestPath());
@@ -239,7 +255,8 @@ final class FetchCommandTest extends TestCase
         self::assertSame($first, $this->filesystem->read($this->manifestPath()));
     }
 
-    public function testTheCommandNameAndSummaryAreSet(): void
+    #[Test]
+    public function theCommandNameAndSummaryAreSet(): void
     {
         $command = new FetchCommand();
 
@@ -247,7 +264,8 @@ final class FetchCommandTest extends TestCase
         self::assertNotSame('', $command->summary());
     }
 
-    public function testTheFixtureManifestIsFetchedSuccessfully(): void
+    #[Test]
+    public function theFixtureManifestIsFetchedSuccessfully(): void
     {
         $this->verbose = true;
 
@@ -262,7 +280,8 @@ final class FetchCommandTest extends TestCase
         );
     }
 
-    public function testTheProblemsAreReportedOnTheErrorStreamWithTheirReasonCode(): void
+    #[Test]
+    public function theProblemsAreReportedOnTheErrorStreamWithTheirReasonCode(): void
     {
         $this->executeCommand(SourceFixture::path('manifest.json'));
 
@@ -271,14 +290,16 @@ final class FetchCommandTest extends TestCase
         self::assertStringContainsString('outside a version directory were ignored', $this->captured->stderr);
     }
 
-    public function testTheProjectFilterLimitsTheCacheManifest(): void
+    #[Test]
+    public function theProjectFilterLimitsTheCacheManifest(): void
     {
         $this->executeCommand(SourceFixture::path('manifest.json'), projects: ['versioned']);
 
         self::assertSame(['versioned'], array_column($this->manifest()['repositories'], 'name'));
     }
 
-    public function testTheSummaryGoesToStandardOutput(): void
+    #[Test]
+    public function theSummaryGoesToStandardOutput(): void
     {
         $this->executeCommand(SourceFixture::path('manifest.json'));
 

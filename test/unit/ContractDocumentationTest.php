@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebwareTest\AsciidocPhp\MultiRepo;
 
 use PHPUnit\Framework\Attributes\CoversNothing;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Cli\Application;
 use Webware\AsciidocPhp\MultiRepo\Cli\Commands\CommandInterface;
@@ -36,7 +37,8 @@ final class ContractDocumentationTest extends TestCase
 
     private string $contract;
 
-    public function testEveryDocumentedCommandIsRegistered(): void
+    #[Test]
+    public function everyDocumentedCommandIsRegistered(): void
     {
         $registered = array_map(
             static fn(CommandInterface $command): string => $command->name(),
@@ -56,7 +58,8 @@ final class ContractDocumentationTest extends TestCase
         }
     }
 
-    public function testEveryDocumentedExitCodeMatchesTheEnum(): void
+    #[Test]
+    public function everyDocumentedExitCodeMatchesTheEnum(): void
     {
         $documented = $this->documentedExitCodes();
 
@@ -70,7 +73,8 @@ final class ContractDocumentationTest extends TestCase
         }
     }
 
-    public function testEveryDocumentedOptionAppearsInTheHelpText(): void
+    #[Test]
+    public function everyDocumentedOptionAppearsInTheHelpText(): void
     {
         $help = $this->application()->usage();
 
@@ -83,7 +87,8 @@ final class ContractDocumentationTest extends TestCase
         }
     }
 
-    public function testEveryDocumentedOptionIsAccepted(): void
+    #[Test]
+    public function everyDocumentedOptionIsAccepted(): void
     {
         $options = $this->documentedOptions();
 
@@ -107,7 +112,8 @@ final class ContractDocumentationTest extends TestCase
         }
     }
 
-    public function testEveryEnumExitCodeIsDocumented(): void
+    #[Test]
+    public function everyEnumExitCodeIsDocumented(): void
     {
         $documented = $this->documentedExitCodes();
 

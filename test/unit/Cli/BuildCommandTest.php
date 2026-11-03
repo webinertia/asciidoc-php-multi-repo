@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Cli;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Build\ContentWriter;
 use Webware\AsciidocPhp\MultiRepo\Cli\Commands\BuildCommand;
@@ -49,7 +50,8 @@ final class BuildCommandTest extends TestCase
 
     private CapturedOutput $captured;
 
-    public function testACollectionErrorDegradesTheRunAndNamesTheReasonCode(): void
+    #[Test]
+    public function aCollectionErrorDegradesTheRunAndNamesTheReasonCode(): void
     {
         $exit = $this->build(['missing-entry']);
 
@@ -59,7 +61,8 @@ final class BuildCommandTest extends TestCase
         self::assertStringContainsString('(missing-entry)', $this->captured->stderr);
     }
 
-    public function testACollectorWarningIsReported(): void
+    #[Test]
+    public function aCollectorWarningIsReported(): void
     {
         $exit = $this->build(['mixed']);
 
@@ -69,7 +72,8 @@ final class BuildCommandTest extends TestCase
         self::assertStringContainsString('docs/loose.adoc', $this->captured->stderr);
     }
 
-    public function testAnArchivedProjectDoesNotStopTheProjectsAfterIt(): void
+    #[Test]
+    public function anArchivedProjectDoesNotStopTheProjectsAfterIt(): void
     {
         $manifest = $this->writeManifest([
             $this->entry('legacy', SourceFixture::path('org/archived'), archived: true),
@@ -83,7 +87,8 @@ final class BuildCommandTest extends TestCase
         self::assertStringContainsString('versioned: 5 page(s) ok', $this->captured->stderr);
     }
 
-    public function testAnArchivedProjectIsSkippedWithAWarning(): void
+    #[Test]
+    public function anArchivedProjectIsSkippedWithAWarning(): void
     {
         $manifest = $this->writeManifest([
             $this->entry('legacy', SourceFixture::path('org/archived'), archived: true),
@@ -96,7 +101,8 @@ final class BuildCommandTest extends TestCase
         self::assertStringNotContainsString('page(s)', $this->captured->stdout);
     }
 
-    public function testANonOnboardedProjectIsSkipped(): void
+    #[Test]
+    public function aNonOnboardedProjectIsSkipped(): void
     {
         $manifest = $this->writeManifest([
             $this->entry('draft', SourceFixture::path('org/versioned'), onboarded: false),
@@ -110,7 +116,8 @@ final class BuildCommandTest extends TestCase
         self::assertFalse(is_file(Path::join($this->tempDirectory, 'site', 'draft', 'v1', 'index.html')));
     }
 
-    public function testAnUnauthorisedDiscoveryExitsThree(): void
+    #[Test]
+    public function anUnauthorisedDiscoveryExitsThree(): void
     {
         $exit = $this->discover($this->unauthorisedTransport());
 
@@ -120,7 +127,8 @@ final class BuildCommandTest extends TestCase
         self::assertSame('', $this->captured->stdout);
     }
 
-    public function testAProjectThatRenderedEveryPageExitsSuccess(): void
+    #[Test]
+    public function aProjectThatRenderedEveryPageExitsSuccess(): void
     {
         $exit = $this->build(['versioned']);
 
@@ -133,7 +141,8 @@ final class BuildCommandTest extends TestCase
         self::assertStringNotContainsString('error: ', $this->captured->stderr);
     }
 
-    public function testARenderFailureDegradesTheRunAndNamesThePage(): void
+    #[Test]
+    public function aRenderFailureDegradesTheRunAndNamesThePage(): void
     {
         $exit = $this->build(['broken-include']);
 
@@ -143,7 +152,8 @@ final class BuildCommandTest extends TestCase
         self::assertStringContainsString('(render-failed)', $this->captured->stderr);
     }
 
-    public function testARenderFailureDoesNotStopThePagesAfterIt(): void
+    #[Test]
+    public function aRenderFailureDoesNotStopThePagesAfterIt(): void
     {
         $repository = Path::join($this->tempDirectory, 'local');
         new Filesystem()->ensureDirectory(Path::join($repository, 'docs', 'v1'));
@@ -164,7 +174,8 @@ final class BuildCommandTest extends TestCase
         self::assertTrue(is_file(Path::join($this->tempDirectory, 'site', 'local', 'v1', 'index.html')));
     }
 
-    public function testASlugCollisionExitsTwo(): void
+    #[Test]
+    public function aSlugCollisionExitsTwo(): void
     {
         $exit = $this->discover($this->collidingTransport());
 
@@ -174,7 +185,8 @@ final class BuildCommandTest extends TestCase
         self::assertSame('', $this->captured->stdout);
     }
 
-    public function testTheBasePathOptionOverridesTheConfiguredBasePath(): void
+    #[Test]
+    public function theBasePathOptionOverridesTheConfiguredBasePath(): void
     {
         $out = Path::join($this->tempDirectory, 'site');
 
@@ -198,7 +210,8 @@ final class BuildCommandTest extends TestCase
         self::assertStringNotContainsString('href="/assets/site.', $html);
     }
 
-    public function testTheCommandNameAndSummaryAreSet(): void
+    #[Test]
+    public function theCommandNameAndSummaryAreSet(): void
     {
         $command = new BuildCommand();
 
@@ -206,7 +219,8 @@ final class BuildCommandTest extends TestCase
         self::assertNotSame('', $command->summary());
     }
 
-    public function testTheConfiguredDirectoriesAreUsedWhenNoOptionOverridesThem(): void
+    #[Test]
+    public function theConfiguredDirectoriesAreUsedWhenNoOptionOverridesThem(): void
     {
         $out = Path::join($this->tempDirectory, 'configured-site');
 
@@ -231,7 +245,8 @@ final class BuildCommandTest extends TestCase
         self::assertTrue(is_file(Path::join($this->tempDirectory, 'report.json')));
     }
 
-    public function testTheVerboseOutputNamesEveryRenderedPage(): void
+    #[Test]
+    public function theVerboseOutputNamesEveryRenderedPage(): void
     {
         $this->build(['mixed'], verbose: true);
 

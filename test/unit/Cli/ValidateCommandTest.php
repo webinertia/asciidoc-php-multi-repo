@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Cli;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Build\BuildRunner;
 use Webware\AsciidocPhp\MultiRepo\Cli\Commands\ValidateCommand;
@@ -45,7 +46,8 @@ final class ValidateCommandTest extends TestCase
 
     private CapturedOutput $captured;
 
-    public function testABrokenIncludeIsCaughtEvenThoughNothingIsWritten(): void
+    #[Test]
+    public function aBrokenIncludeIsCaughtEvenThoughNothingIsWritten(): void
     {
         $exit = $this->validate(['broken-include']);
 
@@ -55,7 +57,8 @@ final class ValidateCommandTest extends TestCase
         self::assertStringContainsString('Add the missing file', $this->captured->stderr);
     }
 
-    public function testAHealthyProjectIsReportedAsBuildable(): void
+    #[Test]
+    public function aHealthyProjectIsReportedAsBuildable(): void
     {
         $exit = $this->validate(['versioned']);
 
@@ -64,7 +67,8 @@ final class ValidateCommandTest extends TestCase
         self::assertStringContainsString('ok: 1, partial: 0, failed: 0, skipped: 0', $this->captured->stdout);
     }
 
-    public function testAMissingEntryIsReportedWithItsReasonCodeAndCorrectiveAction(): void
+    #[Test]
+    public function aMissingEntryIsReportedWithItsReasonCodeAndCorrectiveAction(): void
     {
         $exit = $this->validate(['missing-entry']);
 
@@ -74,7 +78,8 @@ final class ValidateCommandTest extends TestCase
         self::assertStringContainsString('Add one of the entry candidates', $this->captured->stderr);
     }
 
-    public function testAnArchivedProjectIsSkippedAndDoesNotDegradeTheRun(): void
+    #[Test]
+    public function anArchivedProjectIsSkippedAndDoesNotDegradeTheRun(): void
     {
         $exit = $this->validate(manifest: $this->writeManifest([
             $this->entry('legacy', SourceFixture::path('org/archived'), archived: true),
@@ -86,7 +91,8 @@ final class ValidateCommandTest extends TestCase
         self::assertStringContainsString('ok: 1, partial: 0, failed: 0, skipped: 1', $this->captured->stdout);
     }
 
-    public function testAProjectWithoutAsciiDocSourcesIsReportedAsUnbuildable(): void
+    #[Test]
+    public function aProjectWithoutAsciiDocSourcesIsReportedAsUnbuildable(): void
     {
         $exit = $this->validate(['markdown-only']);
 
@@ -94,7 +100,8 @@ final class ValidateCommandTest extends TestCase
         self::assertStringContainsString('(no-asciidoc-sources)', $this->captured->stderr);
     }
 
-    public function testTheOutputDirectoryIsUntouched(): void
+    #[Test]
+    public function theOutputDirectoryIsUntouched(): void
     {
         $out = Path::join($this->tempDirectory, 'site');
         file_put_contents(Path::join($this->tempDirectory, 'marker.txt'), 'published');
@@ -106,7 +113,8 @@ final class ValidateCommandTest extends TestCase
         self::assertSame('published', file_get_contents(Path::join($this->tempDirectory, 'marker.txt')));
     }
 
-    public function testTheSummarySaysNoSiteOutputWasWritten(): void
+    #[Test]
+    public function theSummarySaysNoSiteOutputWasWritten(): void
     {
         $this->validate(['versioned']);
 

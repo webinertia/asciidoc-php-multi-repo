@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebwareTestIntegration\AsciidocPhp\MultiRepo;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Build\BuildRunner;
 use Webware\AsciidocPhp\MultiRepo\Build\ContentWriter;
@@ -61,7 +62,8 @@ final class SiteBuildTest extends TestCase
 
     private string $output;
 
-    public function testAPublishedPageCarriesTheShellAndTheRewrittenLink(): void
+    #[Test]
+    public function aPublishedPageCarriesTheShellAndTheRewrittenLink(): void
     {
         $html = (string) file_get_contents(Path::join($this->output, 'versioned', 'v1', 'index.html'));
 
@@ -73,7 +75,8 @@ final class SiteBuildTest extends TestCase
         self::assertStringNotContainsString('C:\\', $html);
     }
 
-    public function testAVersionlessProjectUrlRedirectsToTheNewestVersion(): void
+    #[Test]
+    public function aVersionlessProjectUrlRedirectsToTheNewestVersion(): void
     {
         $versioned = (string) file_get_contents(Path::join($this->output, 'versioned', 'index.html'));
 
@@ -90,7 +93,8 @@ final class SiteBuildTest extends TestCase
         self::assertStringContainsString('noindex', $unversioned);
     }
 
-    public function testEverySearchIndexUrlResolvesToAPublishedPage(): void
+    #[Test]
+    public function everySearchIndexUrlResolvesToAPublishedPage(): void
     {
         $json = new Json();
 
@@ -149,7 +153,8 @@ final class SiteBuildTest extends TestCase
         }
     }
 
-    public function testRestrictingThePublishableSetRebuildsTheAggregatePages(): void
+    #[Test]
+    public function restrictingThePublishableSetRebuildsTheAggregatePages(): void
     {
         $output = Path::join($this->tempDirectory, 'narrow');
 
@@ -185,7 +190,8 @@ final class SiteBuildTest extends TestCase
         self::assertSame(1, substr_count($page, 'class="project-item'));
     }
 
-    public function testTheBuildPrintsExactlyOneSummaryBlockOnStandardOutput(): void
+    #[Test]
+    public function theBuildPrintsExactlyOneSummaryBlockOnStandardOutput(): void
     {
         self::assertCount(1, $this->stdout, 'standard output carried more than one block');
 
@@ -196,7 +202,8 @@ final class SiteBuildTest extends TestCase
         self::assertStringContainsString('report: ', $summary);
     }
 
-    public function testTheBuildPrintsOnePageCountPerProjectOnStandardError(): void
+    #[Test]
+    public function theBuildPrintsOnePageCountPerProjectOnStandardError(): void
     {
         $stderr = implode("\n", $this->stderr);
 
@@ -209,7 +216,8 @@ final class SiteBuildTest extends TestCase
         self::assertStringNotContainsString('page(s)', implode("\n", $this->stdout));
     }
 
-    public function testTheBuildPublishesEveryPageOfEveryVersion(): void
+    #[Test]
+    public function theBuildPublishesEveryPageOfEveryVersion(): void
     {
         foreach ([
             'versioned/v1/index.html',
@@ -228,14 +236,16 @@ final class SiteBuildTest extends TestCase
         }
     }
 
-    public function testTheBuildWritesTheSharedAssetsOnce(): void
+    #[Test]
+    public function theBuildWritesTheSharedAssetsOnce(): void
     {
         self::assertCount(1, $this->assetsMatching('site.*.css'));
         self::assertCount(1, $this->assetsMatching('theme.*.js'));
         self::assertNotSame([], $this->assetsMatching('accent.*.css'));
     }
 
-    public function testTheFixtureSetExitsDegradedBecauseTwoProjectsFail(): void
+    #[Test]
+    public function theFixtureSetExitsDegradedBecauseTwoProjectsFail(): void
     {
         self::assertSame(ExitCode::Degraded, $this->exitCode);
         self::assertSame(1, $this->exitCode->value);
@@ -247,7 +257,8 @@ final class SiteBuildTest extends TestCase
         self::assertStringContainsString('missing-entry', $errors);
     }
 
-    public function testTheLandingPageCarriesOneCardPerPublishableProject(): void
+    #[Test]
+    public function theLandingPageCarriesOneCardPerPublishableProject(): void
     {
         $html = (string) file_get_contents(Path::join($this->output, 'index.html'));
 
@@ -259,7 +270,8 @@ final class SiteBuildTest extends TestCase
         self::assertStringNotContainsString('broken-include', $html);
     }
 
-    public function testTheNotFoundPageLinksHomeAndListsEveryProject(): void
+    #[Test]
+    public function theNotFoundPageLinksHomeAndListsEveryProject(): void
     {
         $html = (string) file_get_contents(Path::join($this->output, '404.html'));
 
@@ -269,7 +281,8 @@ final class SiteBuildTest extends TestCase
         self::assertStringContainsString('href="/versioned/"', $html);
     }
 
-    public function testTheOutdatedBannerLinksToTheTwinOrToTheLatestEntryPage(): void
+    #[Test]
+    public function theOutdatedBannerLinksToTheTwinOrToTheLatestEntryPage(): void
     {
         $twin = (string) file_get_contents(Path::join($this->output, 'versioned', 'v1', 'guide.html'));
 
@@ -288,7 +301,8 @@ final class SiteBuildTest extends TestCase
         self::assertStringNotContainsString('outdated-banner', $latest);
     }
 
-    public function testTheOutputRootCarriesTheNoJekyllMarkerAndTheHostname(): void
+    #[Test]
+    public function theOutputRootCarriesTheNoJekyllMarkerAndTheHostname(): void
     {
         self::assertTrue(is_file(Path::join($this->output, '.nojekyll')));
         self::assertSame('', (string) file_get_contents(Path::join($this->output, '.nojekyll')));
@@ -296,7 +310,8 @@ final class SiteBuildTest extends TestCase
         self::assertSame("docs.example.test\n", (string) file_get_contents(Path::join($this->output, 'CNAME')));
     }
 
-    public function testTheReportIsWrittenAndValidatesAgainstTheContract(): void
+    #[Test]
+    public function theReportIsWrittenAndValidatesAgainstTheContract(): void
     {
         $report = Path::join($this->tempDirectory, 'report.json');
 
@@ -327,7 +342,8 @@ final class SiteBuildTest extends TestCase
         }
     }
 
-    public function testTheSearchControlIsHiddenUntilScriptingRuns(): void
+    #[Test]
+    public function theSearchControlIsHiddenUntilScriptingRuns(): void
     {
         $html = (string) file_get_contents(Path::join($this->output, 'versioned', 'v1', 'index.html'));
 
@@ -347,7 +363,8 @@ final class SiteBuildTest extends TestCase
         self::assertStringNotContainsString('disabled', $html);
     }
 
-    public function testTheShellLinksTheIconFontAndTheStylesheetCarriesTheGlyphRules(): void
+    #[Test]
+    public function theShellLinksTheIconFontAndTheStylesheetCarriesTheGlyphRules(): void
     {
         $html = (string) file_get_contents(Path::join($this->output, 'versioned', 'v1', 'index.html'));
 
@@ -372,7 +389,8 @@ final class SiteBuildTest extends TestCase
         self::assertStringContainsString('.admonitionblock td.icon [class^="fa icon-"]', $css);
     }
 
-    public function testTheSwitcherCarriesExactlyThePublishableProjects(): void
+    #[Test]
+    public function theSwitcherCarriesExactlyThePublishableProjects(): void
     {
         $html = (string) file_get_contents(Path::join($this->output, 'versioned', 'v1', 'index.html'));
 

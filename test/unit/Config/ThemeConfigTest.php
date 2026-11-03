@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace WebwareTest\AsciidocPhp\MultiRepo\Config;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Config\ThemeConfig;
 
 #[CoversClass(ThemeConfig::class)]
 final class ThemeConfigTest extends TestCase
 {
-    public function testDefaultsMatchesFromArrayOnEmptyInput(): void
+    #[Test]
+    public function defaultsMatchesFromArrayOnEmptyInput(): void
     {
         $defaults  = ThemeConfig::defaults();
         $fromArray = ThemeConfig::fromArray([]);
@@ -22,7 +24,8 @@ final class ThemeConfigTest extends TestCase
         self::assertSame($defaults->defaultColorMode(), $fromArray->defaultColorMode());
     }
 
-    public function testFromArrayAppliesDefaults(): void
+    #[Test]
+    public function fromArrayAppliesDefaults(): void
     {
         $theme = ThemeConfig::fromArray([]);
 
@@ -32,7 +35,8 @@ final class ThemeConfigTest extends TestCase
         self::assertSame('dark', $theme->defaultColorMode());
     }
 
-    public function testFromArrayReadsEveryField(): void
+    #[Test]
+    public function fromArrayReadsEveryField(): void
     {
         $theme = ThemeConfig::fromArray([
             'name'             => 'webware',
@@ -47,7 +51,8 @@ final class ThemeConfigTest extends TestCase
         self::assertSame('light', $theme->defaultColorMode());
     }
 
-    public function testIsBuiltIn(): void
+    #[Test]
+    public function isBuiltIn(): void
     {
         self::assertTrue(ThemeConfig::defaults()->isBuiltIn());
         self::assertFalse(ThemeConfig::fromArray(['name' => 'custom'])->isBuiltIn());

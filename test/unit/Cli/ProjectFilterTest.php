@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Cli;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Cli\Options;
 use Webware\AsciidocPhp\MultiRepo\Cli\ProjectFilter;
@@ -15,14 +16,16 @@ use WebwareTest\AsciidocPhp\MultiRepo\Support\SourceFixture;
 #[CoversMethod(ProjectFilter::class, 'apply')]
 final class ProjectFilterTest extends TestCase
 {
-    public function testAnUnrelatedProjectIsDropped(): void
+    #[Test]
+    public function anUnrelatedProjectIsDropped(): void
     {
         $repositories = [SourceFixture::repository('message-bus', 'bus')];
 
         self::assertSame([], ProjectFilter::apply($repositories, new Options(projects: ['other'])));
     }
 
-    public function testAProjectIsMatchedByItsName(): void
+    #[Test]
+    public function aProjectIsMatchedByItsName(): void
     {
         $repositories = [SourceFixture::repository('message-bus', 'bus')];
 
@@ -32,7 +35,8 @@ final class ProjectFilterTest extends TestCase
         self::assertSame('bus', $filtered[0]->slug());
     }
 
-    public function testAProjectIsMatchedByItsSlug(): void
+    #[Test]
+    public function aProjectIsMatchedByItsSlug(): void
     {
         $repositories = [SourceFixture::repository('message-bus', 'bus')];
 
@@ -42,7 +46,8 @@ final class ProjectFilterTest extends TestCase
         self::assertSame('message-bus', $filtered[0]->name());
     }
 
-    public function testWithoutAFilterEveryProjectIsKept(): void
+    #[Test]
+    public function withoutAFilterEveryProjectIsKept(): void
     {
         $repositories = [
             SourceFixture::repository('message-bus', 'bus'),

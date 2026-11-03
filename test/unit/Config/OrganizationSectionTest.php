@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace WebwareTest\AsciidocPhp\MultiRepo\Config;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Config\OrganizationSection;
 
 #[CoversClass(OrganizationSection::class)]
 final class OrganizationSectionTest extends TestCase
 {
-    public function testExcludesMatchesExactly(): void
+    #[Test]
+    public function excludesMatchesExactly(): void
     {
         $section = OrganizationSection::fromArray([
             'name'                => 'webinertia',
@@ -23,7 +25,8 @@ final class OrganizationSectionTest extends TestCase
         self::assertFalse($section->excludes('docs'));
     }
 
-    public function testFromArrayAppliesDefaults(): void
+    #[Test]
+    public function fromArrayAppliesDefaults(): void
     {
         $section = OrganizationSection::fromArray([
             'name'         => 'webinertia',
@@ -35,7 +38,8 @@ final class OrganizationSectionTest extends TestCase
         self::assertSame([], $section->excludeRepositories());
     }
 
-    public function testFromArrayReadsEveryField(): void
+    #[Test]
+    public function fromArrayReadsEveryField(): void
     {
         $section = OrganizationSection::fromArray([
             'name'                => 'webinertia',

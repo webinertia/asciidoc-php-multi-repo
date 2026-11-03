@@ -12,7 +12,8 @@ use Webware\AsciidocPhp\MultiRepo\Cli\Options;
 #[CoversClass(Options::class)]
 final class OptionsTest extends TestCase
 {
-    public function testDefaultsMatchTheContract(): void
+    #[Test]
+    public function defaultsMatchTheContract(): void
     {
         $options = new Options();
 
@@ -39,14 +40,16 @@ final class OptionsTest extends TestCase
         self::assertFalse($options->hasProjectFilter());
     }
 
-    public function testExplicitConfigPathWins(): void
+    #[Test]
+    public function explicitConfigPathWins(): void
     {
         $options = new Options(config: '/tmp/site.json');
 
         self::assertSame('/tmp/site.json', $options->configPath());
     }
 
-    public function testProjectFilterReportsWhenProjectsAreSelected(): void
+    #[Test]
+    public function projectFilterReportsWhenProjectsAreSelected(): void
     {
         $options = new Options(projects: ['message-bus']);
 

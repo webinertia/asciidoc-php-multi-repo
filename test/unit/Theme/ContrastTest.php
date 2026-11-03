@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Theme;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Theme\ThemeResolver;
 
@@ -30,7 +31,8 @@ final class ContrastTest extends TestCase
 {
     private const float MINIMUM_RATIO = 4.5;
 
-    public function testTheBodyTextTokenClearsTheContrastMinimum(): void
+    #[Test]
+    public function theBodyTextTokenClearsTheContrastMinimum(): void
     {
         $tokens = new ThemeResolver()->lightColors();
 
@@ -41,7 +43,8 @@ final class ContrastTest extends TestCase
         );
     }
 
-    public function testTheLinkTokenClearsTheContrastMinimumOnBothSurfaces(): void
+    #[Test]
+    public function theLinkTokenClearsTheContrastMinimumOnBothSurfaces(): void
     {
         $tokens = new ThemeResolver()->lightColors();
 
@@ -58,7 +61,8 @@ final class ContrastTest extends TestCase
         );
     }
 
-    public function testTheMutedTextTokenClearsTheContrastMinimumOnBothSurfaces(): void
+    #[Test]
+    public function theMutedTextTokenClearsTheContrastMinimumOnBothSurfaces(): void
     {
         $tokens = new ThemeResolver()->lightColors();
 

@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Build;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Build\ContentWriter;
 use Webware\AsciidocPhp\MultiRepo\Support\Path;
@@ -27,7 +28,8 @@ final class ContentWriterTest extends TestCase
 {
     use TempDirectoryTrait;
 
-    public function testANestedPathIsCreatedAndTheFileIsWritten(): void
+    #[Test]
+    public function aNestedPathIsCreatedAndTheFileIsWritten(): void
     {
         $directory = $this->createTempDirectory();
         $path      = new ContentWriter()->write($directory, 'project/v1/guide/index.html', '<p>Hi</p>');
@@ -37,7 +39,8 @@ final class ContentWriterTest extends TestCase
         self::assertSame('<p>Hi</p>', file_get_contents($path));
     }
 
-    public function testASecondWriteReplacesTheContents(): void
+    #[Test]
+    public function aSecondWriteReplacesTheContents(): void
     {
         $directory = $this->createTempDirectory();
         $writer    = new ContentWriter();

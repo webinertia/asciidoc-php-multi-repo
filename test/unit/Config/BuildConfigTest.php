@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebwareTest\AsciidocPhp\MultiRepo\Config;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Config\BuildConfig;
 use Webware\AsciidocPhp\MultiRepo\Config\SiteConfig;
@@ -28,7 +29,8 @@ final class BuildConfigTest extends TestCase
         );
     }
 
-    public function testAbsoluteOverridePathsAreKept(): void
+    #[Test]
+    public function absoluteOverridePathsAreKept(): void
     {
         $absolute = Path::join(sys_get_temp_dir(), 'absolute', 'site');
 
@@ -41,7 +43,8 @@ final class BuildConfigTest extends TestCase
         self::assertSame(Path::normalise($absolute), $build->outputDirectory());
     }
 
-    public function testFromSiteConfigCopiesResolvedValues(): void
+    #[Test]
+    public function fromSiteConfigCopiesResolvedValues(): void
     {
         $site  = self::siteConfig();
         $build = BuildConfig::fromSiteConfig($site);
@@ -54,7 +57,8 @@ final class BuildConfigTest extends TestCase
         self::assertFalse($build->full());
     }
 
-    public function testWithOverridesAppliesEveryOverride(): void
+    #[Test]
+    public function withOverridesAppliesEveryOverride(): void
     {
         $working = Path::join(sys_get_temp_dir(), 'work');
 
@@ -76,7 +80,8 @@ final class BuildConfigTest extends TestCase
         self::assertTrue($build->full());
     }
 
-    public function testWithOverridesKeepsValuesWhenNotSupplied(): void
+    #[Test]
+    public function withOverridesKeepsValuesWhenNotSupplied(): void
     {
         $original = BuildConfig::fromSiteConfig(self::siteConfig());
         $updated  = $original->withOverrides(workingDirectory: sys_get_temp_dir());

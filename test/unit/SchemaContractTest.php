@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo;
 
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Config\SchemaValidator;
 use Webware\AsciidocPhp\MultiRepo\Support\Json;
@@ -109,8 +110,9 @@ final class SchemaContractTest extends TestCase
     /**
      * @param array<string, mixed> $document
      */
+    #[Test]
     #[DataProvider('publishedSchemas')]
-    public function testSchemaAcceptsAMinimalConformingDocument(string $name, array $document): void
+    public function schemaAcceptsAMinimalConformingDocument(string $name, array $document): void
     {
         $result = new SchemaValidator()->validate($document, $this->schema($name));
 
@@ -123,8 +125,9 @@ final class SchemaContractTest extends TestCase
     /**
      * @param array<string, mixed> $document
      */
+    #[Test]
     #[DataProvider('publishedSchemas')]
-    public function testSchemaRejectsADocumentMissingARequiredMember(string $name, array $document): void
+    public function schemaRejectsADocumentMissingARequiredMember(string $name, array $document): void
     {
         $schema = $this->schema($name);
         $broken = $document;
@@ -140,7 +143,8 @@ final class SchemaContractTest extends TestCase
         self::assertFalse($result->isValid(), "{$name} schema accepted a document missing a required member.");
     }
 
-    public function testThePackagedSiteSchemaIsThePublishedCopy(): void
+    #[Test]
+    public function thePackagedSiteSchemaIsThePublishedCopy(): void
     {
         self::assertSame(
             $this->json->encode($this->schema('site')),

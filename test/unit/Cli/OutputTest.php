@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Cli;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Cli\Options;
 use Webware\AsciidocPhp\MultiRepo\Cli\Output;
@@ -38,8 +39,9 @@ final class OutputTest extends TestCase
     /**
      * @param list<string> $flags
      */
+    #[Test]
     #[DataProvider('colourDecisions')]
-    public function testColourEnabledMatrix(
+    public function colourEnabledMatrix(
         bool $noColor,
         ?string $environment,
         bool $interactive,
@@ -48,7 +50,8 @@ final class OutputTest extends TestCase
         self::assertSame($expected, Output::colourEnabled($noColor, $environment, $interactive));
     }
 
-    public function testColourIsUsedOnlyWhenEnabled(): void
+    #[Test]
+    public function colourIsUsedOnlyWhenEnabled(): void
     {
         $plain = $this->makeOutput();
         $plain->error('missing entry');
@@ -63,7 +66,8 @@ final class OutputTest extends TestCase
         self::assertSame("\033[31merror: missing entry\n\033[0m", $this->captured->stderr);
     }
 
-    public function testDetailRequiresVerbose(): void
+    #[Test]
+    public function detailRequiresVerbose(): void
     {
         $quiet = $this->makeOutput();
         $quiet->detail('rendering index.adoc');
@@ -76,7 +80,8 @@ final class OutputTest extends TestCase
         self::assertStringContainsString('rendering index.adoc', $this->captured->stderr);
     }
 
-    public function testForCliCarriesTheFlagState(): void
+    #[Test]
+    public function forCliCarriesTheFlagState(): void
     {
         $options = new Options(
             quiet  : true,
@@ -91,7 +96,8 @@ final class OutputTest extends TestCase
         self::assertFalse($output->usesColour());
     }
 
-    public function testForCliReadsTheEnvironment(): void
+    #[Test]
+    public function forCliReadsTheEnvironment(): void
     {
         $options = new Options();
 
@@ -100,7 +106,8 @@ final class OutputTest extends TestCase
         self::assertFalse(Output::forCli($options, true, '1')->usesColour());
     }
 
-    public function testProgressGoesToStandardErrorOnly(): void
+    #[Test]
+    public function progressGoesToStandardErrorOnly(): void
     {
         $output = $this->makeOutput();
 
@@ -110,7 +117,8 @@ final class OutputTest extends TestCase
         self::assertSame("fetching message-bus\n", $this->captured->stderr);
     }
 
-    public function testQuietKeepsErrorsAndSummaryButDropsProgress(): void
+    #[Test]
+    public function quietKeepsErrorsAndSummaryButDropsProgress(): void
     {
         $output = $this->makeOutput(quiet: true);
 
@@ -125,7 +133,8 @@ final class OutputTest extends TestCase
         self::assertStringContainsString('error: missing entry', $this->captured->stderr);
     }
 
-    public function testSummaryGoesToStandardOutputOnly(): void
+    #[Test]
+    public function summaryGoesToStandardOutputOnly(): void
     {
         $output = $this->makeOutput();
 
@@ -135,7 +144,8 @@ final class OutputTest extends TestCase
         self::assertSame('', $this->captured->stderr);
     }
 
-    public function testTheDefaultFlagsAreOff(): void
+    #[Test]
+    public function theDefaultFlagsAreOff(): void
     {
         $output = new Output(
             stdout: $this->captured->stdoutWriter(),
@@ -150,7 +160,8 @@ final class OutputTest extends TestCase
         self::assertSame('', $this->captured->stderr);
     }
 
-    public function testTheEnvironmentFallbackIsUsedOnlyWhenNoneIsSupplied(): void
+    #[Test]
+    public function theEnvironmentFallbackIsUsedOnlyWhenNoneIsSupplied(): void
     {
         $previous = getenv('NO_COLOR');
 
@@ -164,7 +175,8 @@ final class OutputTest extends TestCase
         }
     }
 
-    public function testTimingRequiresTimings(): void
+    #[Test]
+    public function timingRequiresTimings(): void
     {
         $output = $this->makeOutput();
         $output->timing('render', 1.2345);
@@ -177,7 +189,8 @@ final class OutputTest extends TestCase
         self::assertSame("render: 1.234s\n", $this->captured->stderr);
     }
 
-    public function testUsageReachesStandardErrorEvenWhenQuiet(): void
+    #[Test]
+    public function usageReachesStandardErrorEvenWhenQuiet(): void
     {
         $output = $this->makeOutput(quiet: true);
 

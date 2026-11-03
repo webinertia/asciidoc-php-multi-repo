@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebwareTestIntegration\AsciidocPhp\MultiRepo;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Build\BuildRunner;
 use Webware\AsciidocPhp\MultiRepo\Build\IncrementalCache;
@@ -49,7 +50,8 @@ final class IncrementalBuildTest extends TestCase
 
     private string $workspace;
 
-    public function testAnUnchangedRebuildRendersNothing(): void
+    #[Test]
+    public function anUnchangedRebuildRendersNothing(): void
     {
         $this->build(full: true);
 
@@ -61,7 +63,8 @@ final class IncrementalBuildTest extends TestCase
         self::assertSame([], $this->rewritten(), 'an unchanged rebuild rendered pages again');
     }
 
-    public function testAStylesheetChangeInvalidatesEveryPage(): void
+    #[Test]
+    public function aStylesheetChangeInvalidatesEveryPage(): void
     {
         // The published asset names carry a content hash and every page's cache key covers them, so
         // a stylesheet change reaches every project without the builder tracking it separately.
@@ -75,7 +78,8 @@ final class IncrementalBuildTest extends TestCase
         self::assertSame($cache->key($base), $cache->key($base));
     }
 
-    public function testEditingOnePageRendersOnlyThatProject(): void
+    #[Test]
+    public function editingOnePageRendersOnlyThatProject(): void
     {
         $this->build(full: true);
 

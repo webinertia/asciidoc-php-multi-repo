@@ -6,6 +6,7 @@ namespace WebwareTestIntegration\AsciidocPhp\MultiRepo;
 
 use Override;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
@@ -70,7 +71,8 @@ final class DocumentationPipelineTest extends TestCase
     /** @var array<string, RepositorySources> */
     private array $collected = [];
 
-    public function testABrokenIncludeStillReachesSourcePreparation(): void
+    #[Test]
+    public function aBrokenIncludeStillReachesSourcePreparation(): void
     {
         $sources = $this->sources('broken-include');
 
@@ -82,7 +84,8 @@ final class DocumentationPipelineTest extends TestCase
         );
     }
 
-    public function testAMarkdownOnlyProjectIsRejectedAfterVersionDetection(): void
+    #[Test]
+    public function aMarkdownOnlyProjectIsRejectedAfterVersionDetection(): void
     {
         $sources = $this->sources('markdown-only');
 
@@ -94,7 +97,8 @@ final class DocumentationPipelineTest extends TestCase
         self::assertSame([], $sources->sources());
     }
 
-    public function testAPageInANestedDirectoryKeepsItsVersion(): void
+    #[Test]
+    public function aPageInANestedDirectoryKeepsItsVersion(): void
     {
         $paths = array_map(
             static fn(PreparedSource $source): string => $source->relativePath(),
@@ -105,7 +109,8 @@ final class DocumentationPipelineTest extends TestCase
         self::assertContains('docs/v2/guide.adoc', $paths);
     }
 
-    public function testAPageOutsideEveryVersionDirectoryIsReportedAsAWarning(): void
+    #[Test]
+    public function aPageOutsideEveryVersionDirectoryIsReportedAsAWarning(): void
     {
         $sources = $this->sources('mixed');
 
@@ -114,7 +119,8 @@ final class DocumentationPipelineTest extends TestCase
         self::assertStringContainsString('docs/loose.adoc', $sources->warnings()[0]);
     }
 
-    public function testAProjectWithoutAnEntryPageIsReportedAsMissingEntry(): void
+    #[Test]
+    public function aProjectWithoutAnEntryPageIsReportedAsMissingEntry(): void
     {
         $sources = $this->sources('missing-entry');
 
@@ -123,12 +129,14 @@ final class DocumentationPipelineTest extends TestCase
         self::assertStringContainsString('index.adoc, README.adoc', $sources->errors()[0]->message());
     }
 
-    public function testDiscoverySelectsTheOnboardedFixtureProjects(): void
+    #[Test]
+    public function discoverySelectsTheOnboardedFixtureProjects(): void
     {
         self::assertSame(self::EXPECTED_PROJECTS, array_keys($this->collected));
     }
 
-    public function testEveryDiscoveredProjectResolvesToItsLocalFixture(): void
+    #[Test]
+    public function everyDiscoveredProjectResolvesToItsLocalFixture(): void
     {
         foreach (self::EXPECTED_PROJECTS as $name) {
             $fetched = $this->sources($name)->fetched();
@@ -140,7 +148,8 @@ final class DocumentationPipelineTest extends TestCase
         }
     }
 
-    public function testEveryEnumeratedPageIsPreparedAsAsciiDoc(): void
+    #[Test]
+    public function everyEnumeratedPageIsPreparedAsAsciiDoc(): void
     {
         $sources = $this->sources('versioned')->sources();
 
@@ -153,7 +162,8 @@ final class DocumentationPipelineTest extends TestCase
         }
     }
 
-    public function testEveryFetchedProjectCarriesAContentDigestRevision(): void
+    #[Test]
+    public function everyFetchedProjectCarriesAContentDigestRevision(): void
     {
         foreach (self::EXPECTED_PROJECTS as $name) {
             self::assertMatchesRegularExpression(
@@ -163,7 +173,8 @@ final class DocumentationPipelineTest extends TestCase
         }
     }
 
-    public function testTheEntryPageOfEveryVersionIsEnumerated(): void
+    #[Test]
+    public function theEntryPageOfEveryVersionIsEnumerated(): void
     {
         $sets = $this->sources('versioned')->pages();
 
@@ -172,12 +183,14 @@ final class DocumentationPipelineTest extends TestCase
         self::assertSame('docs/v2/index.adoc', $sets[1]->entry()->relativePath());
     }
 
-    public function testTheExcludedArchivedProjectNeverReachesThePipeline(): void
+    #[Test]
+    public function theExcludedArchivedProjectNeverReachesThePipeline(): void
     {
         self::assertArrayNotHasKey('archived', $this->collected);
     }
 
-    public function testThePreparedTextIsTheNormalisedFileOnDisk(): void
+    #[Test]
+    public function thePreparedTextIsTheNormalisedFileOnDisk(): void
     {
         $source = $this->prepared('versioned', 'docs/v1/index.adoc');
 
@@ -187,18 +200,21 @@ final class DocumentationPipelineTest extends TestCase
         self::assertSame($this->digestOf('versioned', 'docs/v1/index.adoc'), $source->hash());
     }
 
-    public function testTheUnversionedProjectFallsBackToTheDocumentationDirectory(): void
+    #[Test]
+    public function theUnversionedProjectFallsBackToTheDocumentationDirectory(): void
     {
         self::assertSame(['latest'], $this->labels('unversioned'));
         self::assertSame('docs', $this->sources('unversioned')->versions()[0]->directory());
     }
 
-    public function testTheVersionedProjectSelectsItsVersionDirectories(): void
+    #[Test]
+    public function theVersionedProjectSelectsItsVersionDirectories(): void
     {
         self::assertSame(['v1', 'v2'], $this->labels('versioned'));
     }
 
-    public function testTheWholeFixtureSetIsAccountedFor(): void
+    #[Test]
+    public function theWholeFixtureSetIsAccountedFor(): void
     {
         $prepared = 0;
 

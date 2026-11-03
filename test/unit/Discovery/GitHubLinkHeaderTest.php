@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Discovery;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Discovery\GitHubLinkHeader;
 
@@ -13,17 +14,20 @@ use Webware\AsciidocPhp\MultiRepo\Discovery\GitHubLinkHeader;
 #[CoversMethod(GitHubLinkHeader::class, 'next')]
 final class GitHubLinkHeaderTest extends TestCase
 {
-    public function testAHeaderWithoutANextRelationHasNoNextPage(): void
+    #[Test]
+    public function aHeaderWithoutANextRelationHasNoNextPage(): void
     {
         self::assertNull(GitHubLinkHeader::next('<https://api.github.com/repositories/1?page=1>; rel="prev"'));
     }
 
-    public function testANullHeaderHasNoNextPage(): void
+    #[Test]
+    public function aNullHeaderHasNoNextPage(): void
     {
         self::assertNull(GitHubLinkHeader::next(null));
     }
 
-    public function testTheNextRelationIsExtracted(): void
+    #[Test]
+    public function theNextRelationIsExtracted(): void
     {
         $header =
             '<https://api.github.com/repositories/1?page=2>; rel="next", '

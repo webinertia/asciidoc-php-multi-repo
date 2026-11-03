@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebwareTest\AsciidocPhp\MultiRepo\Support;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Support\ProcessFailedException;
 use Webware\AsciidocPhp\MultiRepo\Support\ProcessRunner;
@@ -16,7 +17,8 @@ final class ProcessRunnerTest extends TestCase
 {
     private ProcessRunner $runner;
 
-    public function testArgumentWithShellMetacharactersIsNotInterpolated(): void
+    #[Test]
+    public function argumentWithShellMetacharactersIsNotInterpolated(): void
     {
         $argument = 'x; echo injected && echo injected | echo injected';
 
@@ -25,7 +27,8 @@ final class ProcessRunnerTest extends TestCase
         self::assertSame($argument, $result->stdout());
     }
 
-    public function testArgumentWithSpaceAndQuoteReachesChildVerbatim(): void
+    #[Test]
+    public function argumentWithSpaceAndQuoteReachesChildVerbatim(): void
     {
         $argument = 'a b "c" d\'e';
 
@@ -35,7 +38,8 @@ final class ProcessRunnerTest extends TestCase
         self::assertSame($argument, $result->stdout());
     }
 
-    public function testCapturesStandardError(): void
+    #[Test]
+    public function capturesStandardError(): void
     {
         $result = $this->runner->run([PHP_BINARY, '-r', 'fwrite(STDERR, "warning");']);
 
@@ -43,7 +47,8 @@ final class ProcessRunnerTest extends TestCase
         self::assertSame('warning', $result->stderr());
     }
 
-    public function testCapturesStandardOutput(): void
+    #[Test]
+    public function capturesStandardOutput(): void
     {
         $result = $this->runner->run([PHP_BINARY, '-r', 'echo "hello";']);
 
@@ -54,21 +59,24 @@ final class ProcessRunnerTest extends TestCase
         self::assertFalse($result->timedOut());
     }
 
-    public function testDescribeCommandListsArguments(): void
+    #[Test]
+    public function describeCommandListsArguments(): void
     {
         $result = $this->runner->run([PHP_BINARY, '-r', 'exit(0);']);
 
         self::assertStringContainsString(PHP_BINARY, $result->describeCommand());
     }
 
-    public function testMustRunReturnsResultOnSuccess(): void
+    #[Test]
+    public function mustRunReturnsResultOnSuccess(): void
     {
         $result = $this->runner->mustRun([PHP_BINARY, '-r', 'echo "ok";']);
 
         self::assertSame('ok', $result->stdout());
     }
 
-    public function testMustRunThrowsWithBothStreamsPreserved(): void
+    #[Test]
+    public function mustRunThrowsWithBothStreamsPreserved(): void
     {
         try {
             $this->runner->mustRun([PHP_BINARY, '-r', 'echo "out"; fwrite(STDERR, "boom"); exit(2);']);
@@ -81,7 +89,8 @@ final class ProcessRunnerTest extends TestCase
         }
     }
 
-    public function testNonZeroExitCodeIsReported(): void
+    #[Test]
+    public function nonZeroExitCodeIsReported(): void
     {
         $result = $this->runner->run([PHP_BINARY, '-r', 'exit(3);']);
 
@@ -90,7 +99,8 @@ final class ProcessRunnerTest extends TestCase
         self::assertStringContainsString('exited with code 3', $result->describeFailure());
     }
 
-    public function testTimeoutTerminatesTheProcess(): void
+    #[Test]
+    public function timeoutTerminatesTheProcess(): void
     {
         $result = $this->runner->run([PHP_BINARY, '-r', 'sleep(10);'], null, 0.2);
 
@@ -99,7 +109,8 @@ final class ProcessRunnerTest extends TestCase
         self::assertStringContainsString('timed out', $result->describeFailure());
     }
 
-    public function testWorkingDirectoryIsUsed(): void
+    #[Test]
+    public function workingDirectoryIsUsed(): void
     {
         $directory = sys_get_temp_dir();
 

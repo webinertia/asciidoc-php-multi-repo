@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebwareTest\AsciidocPhp\MultiRepo\Config;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Config\OutputSection;
 
@@ -13,7 +14,8 @@ use function sys_get_temp_dir;
 #[CoversClass(OutputSection::class)]
 final class OutputSectionTest extends TestCase
 {
-    public function testFromArrayAppliesDefaults(): void
+    #[Test]
+    public function fromArrayAppliesDefaults(): void
     {
         $section = OutputSection::fromArray([]);
 
@@ -22,7 +24,8 @@ final class OutputSectionTest extends TestCase
         self::assertSame('build/report.json', $section->reportPath());
     }
 
-    public function testFromArrayReadsEveryField(): void
+    #[Test]
+    public function fromArrayReadsEveryField(): void
     {
         $section = OutputSection::fromArray([
             'directory'      => 'public',
@@ -35,7 +38,8 @@ final class OutputSectionTest extends TestCase
         self::assertSame('reports/report.json', $section->reportPath());
     }
 
-    public function testWithPathsReturnsANewInstance(): void
+    #[Test]
+    public function withPathsReturnsANewInstance(): void
     {
         $section = OutputSection::fromArray([]);
         $updated = $section->withPaths(

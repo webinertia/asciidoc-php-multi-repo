@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Source;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Report\ReasonCode;
 use Webware\AsciidocPhp\MultiRepo\Source\DocPage;
@@ -32,7 +33,8 @@ use WebwareTest\AsciidocPhp\MultiRepo\Support\SourceFixture;
 #[CoversMethod(RepositorySources::class, 'warnings')]
 final class RepositorySourcesTest extends TestCase
 {
-    public function testAFailureCarriesTheReasonCodeAndIsNotSuccessful(): void
+    #[Test]
+    public function aFailureCarriesTheReasonCodeAndIsNotSuccessful(): void
     {
         $error   = new SourceError(ReasonCode::FetchFailed, 'message-bus: fetch failed.');
         $sources = RepositorySources::failed(SourceFixture::repository(), null, $error);
@@ -44,7 +46,8 @@ final class RepositorySourcesTest extends TestCase
         self::assertNull($sources->documentationPath());
     }
 
-    public function testAFailureKeepsTheFetchItGotThatFarWith(): void
+    #[Test]
+    public function aFailureKeepsTheFetchItGotThatFarWith(): void
     {
         $fetched = SourceFixture::fetched('message-bus', ['README.md'], revision: 'deadbeef');
         $sources = RepositorySources::failed(
@@ -58,7 +61,8 @@ final class RepositorySourcesTest extends TestCase
         self::assertNull($sources->documentationPath());
     }
 
-    public function testAnEmptyResultIsSuccessful(): void
+    #[Test]
+    public function anEmptyResultIsSuccessful(): void
     {
         $sources = new RepositorySources(SourceFixture::repository());
 
@@ -70,7 +74,8 @@ final class RepositorySourcesTest extends TestCase
         self::assertSame([], $sources->warnings());
     }
 
-    public function testAWarningAloneDoesNotMakeTheResultUnsuccessful(): void
+    #[Test]
+    public function aWarningAloneDoesNotMakeTheResultUnsuccessful(): void
     {
         $sources = new RepositorySources(
             SourceFixture::repository(),
@@ -82,7 +87,8 @@ final class RepositorySourcesTest extends TestCase
         self::assertCount(1, $sources->warnings());
     }
 
-    public function testEveryStageOutputIsKept(): void
+    #[Test]
+    public function everyStageOutputIsKept(): void
     {
         $repository = SourceFixture::repository();
         $fetched    = SourceFixture::fetched('versioned', ['docs/index.adoc'], revision: 'abc');
@@ -107,7 +113,8 @@ final class RepositorySourcesTest extends TestCase
         self::assertTrue($sources->isSuccessful());
     }
 
-    public function testTheDocumentationPathIsNullWhenTheDirectoryIsAbsent(): void
+    #[Test]
+    public function theDocumentationPathIsNullWhenTheDirectoryIsAbsent(): void
     {
         $sources = new RepositorySources(
             SourceFixture::repository(),
@@ -117,7 +124,8 @@ final class RepositorySourcesTest extends TestCase
         self::assertNull($sources->documentationPath());
     }
 
-    public function testTheDocumentationPathIsReportedWhenTheDirectoryExists(): void
+    #[Test]
+    public function theDocumentationPathIsReportedWhenTheDirectoryExists(): void
     {
         $sources = new RepositorySources(
             SourceFixture::repository(),
@@ -127,7 +135,8 @@ final class RepositorySourcesTest extends TestCase
         self::assertSame('docs', $sources->documentationPath());
     }
 
-    public function testTheRepositoryIsAlwaysAvailable(): void
+    #[Test]
+    public function theRepositoryIsAlwaysAvailable(): void
     {
         $repository = SourceFixture::repository(
             name: 'message-bus',

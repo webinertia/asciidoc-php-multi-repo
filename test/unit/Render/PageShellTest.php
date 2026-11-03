@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Render;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Webware\AsciidocPhp\MultiRepo\Render\PageContext;
@@ -48,7 +49,8 @@ final class PageShellTest extends TestCase
 {
     use TempDirectoryTrait;
 
-    public function testABufferLeftOpenByTheTemplateDoesNotEscapeTheShell(): void
+    #[Test]
+    public function aBufferLeftOpenByTheTemplateDoesNotEscapeTheShell(): void
     {
         $directory = $this->createTempDirectory();
         file_put_contents("{$directory}/page.php", '<?php ob_start(); echo "leaked";');
@@ -65,7 +67,8 @@ final class PageShellTest extends TestCase
         }
     }
 
-    public function testAMissingTemplateIsReported(): void
+    #[Test]
+    public function aMissingTemplateIsReported(): void
     {
         $directory = $this->createTempDirectory();
 
@@ -79,7 +82,8 @@ final class PageShellTest extends TestCase
         }
     }
 
-    public function testAnOmittedTemplateDirectoryFallsBackToTheShippedTemplates(): void
+    #[Test]
+    public function anOmittedTemplateDirectoryFallsBackToTheShippedTemplates(): void
     {
         $directory = new PageShell(null)->templateDirectory();
 
@@ -88,7 +92,8 @@ final class PageShellTest extends TestCase
         self::assertSame($directory, new PageShell()->templateDirectory());
     }
 
-    public function testInterpolatedValuesAreEscaped(): void
+    #[Test]
+    public function interpolatedValuesAreEscaped(): void
     {
         $html = new PageShell()->render($this->context(
             pageTitle   : 'Tips <script>alert("x")</script> & tricks',
@@ -103,7 +108,8 @@ final class PageShellTest extends TestCase
         self::assertStringContainsString('<p class="project-name">R&amp;D &lt;Widgets&gt;</p>', $html);
     }
 
-    public function testTheArticleBodyIsNotEscaped(): void
+    #[Test]
+    public function theArticleBodyIsNotEscaped(): void
     {
         $body = '<article class="doc"><p>Escaped &amp; converted.</p></article>';
         $html = new PageShell()->render($this->context(body: $body));
@@ -111,13 +117,15 @@ final class PageShellTest extends TestCase
         self::assertStringContainsString($body, $html);
     }
 
-    public function testTheContextExposesItsPageTitle(): void
+    #[Test]
+    public function theContextExposesItsPageTitle(): void
     {
         self::assertSame('Usage examples', $this->context()->pageTitle());
         self::assertSame('Rendered & escaped', $this->context(pageTitle: 'Rendered & escaped')->pageTitle());
     }
 
-    public function testTheShellCarriesEveryDocumentedElement(): void
+    #[Test]
+    public function theShellCarriesEveryDocumentedElement(): void
     {
         $html = new PageShell()->render($this->context());
 
@@ -144,7 +152,8 @@ final class PageShellTest extends TestCase
         self::assertStringContainsString('aria-pressed="false"', $html);
     }
 
-    public function testTheShellHelpersAreCallableFromOutsideTheShell(): void
+    #[Test]
+    public function theShellHelpersAreCallableFromOutsideTheShell(): void
     {
         $shell = new PageShell();
 
@@ -152,14 +161,16 @@ final class PageShellTest extends TestCase
         self::assertStringContainsString('href="#_guide"', $shell->renderToc([new TocEntry(2, '_guide', 'Guide')]));
     }
 
-    public function testTheSourceLinkIsOmittedWhenThereIsNoSourceUrl(): void
+    #[Test]
+    public function theSourceLinkIsOmittedWhenThereIsNoSourceUrl(): void
     {
         $html = new PageShell()->render($this->context(sourceUrl: null));
 
         self::assertStringNotContainsString('class="source-link"', $html);
     }
 
-    public function testTheTableOfContentsIsRenderedAsAList(): void
+    #[Test]
+    public function theTableOfContentsIsRenderedAsAList(): void
     {
         $html = new PageShell()->render($this->context(toc: [
             new TocEntry(2, '_first', 'First'),
@@ -173,7 +184,8 @@ final class PageShellTest extends TestCase
         );
     }
 
-    public function testTheThemeModeReachesTheDocumentElement(): void
+    #[Test]
+    public function theThemeModeReachesTheDocumentElement(): void
     {
         $html = new PageShell()->render(new PageContext(
             siteName        : 'Fixture Site',

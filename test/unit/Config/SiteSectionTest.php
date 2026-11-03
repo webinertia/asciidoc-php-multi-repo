@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace WebwareTest\AsciidocPhp\MultiRepo\Config;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Config\SiteSection;
 
 #[CoversClass(SiteSection::class)]
 final class SiteSectionTest extends TestCase
 {
-    public function testEffectiveHostnameFallsBackToBaseUrlHost(): void
+    #[Test]
+    public function effectiveHostnameFallsBackToBaseUrlHost(): void
     {
         $section = SiteSection::fromArray([
             'name'    => 'Docs',
@@ -21,7 +23,8 @@ final class SiteSectionTest extends TestCase
         self::assertSame('docs.example.test', $section->effectiveHostname());
     }
 
-    public function testEffectiveHostnamePrefersConfiguredHostname(): void
+    #[Test]
+    public function effectiveHostnamePrefersConfiguredHostname(): void
     {
         $section = SiteSection::fromArray([
             'name'     => 'Docs',
@@ -32,7 +35,8 @@ final class SiteSectionTest extends TestCase
         self::assertSame('docs.example.test', $section->effectiveHostname());
     }
 
-    public function testFromArrayAppliesDefaults(): void
+    #[Test]
+    public function fromArrayAppliesDefaults(): void
     {
         $section = SiteSection::fromArray([
             'name'    => 'Docs',
@@ -44,7 +48,8 @@ final class SiteSectionTest extends TestCase
         self::assertSame('latest', $section->defaultVersionLabel());
     }
 
-    public function testFromArrayReadsEveryField(): void
+    #[Test]
+    public function fromArrayReadsEveryField(): void
     {
         $section = SiteSection::fromArray([
             'name'                => 'Webware Documentation',
@@ -61,7 +66,8 @@ final class SiteSectionTest extends TestCase
         self::assertSame('stable', $section->defaultVersionLabel());
     }
 
-    public function testIsRootBasePath(): void
+    #[Test]
+    public function isRootBasePath(): void
     {
         self::assertTrue(SiteSection::fromArray(['name' => 'D', 'baseUrl' => 'https://e.test'])->isRootBasePath());
         self::assertFalse(
@@ -73,7 +79,8 @@ final class SiteSectionTest extends TestCase
         );
     }
 
-    public function testNormaliseBasePathAddsBothSlashes(): void
+    #[Test]
+    public function normaliseBasePathAddsBothSlashes(): void
     {
         self::assertSame('/docs/', SiteSection::normaliseBasePath('docs'));
         self::assertSame('/docs/', SiteSection::normaliseBasePath('/docs'));
@@ -81,13 +88,15 @@ final class SiteSectionTest extends TestCase
         self::assertSame('/docs/', SiteSection::normaliseBasePath('/docs/'));
     }
 
-    public function testNormaliseBasePathKeepsRoot(): void
+    #[Test]
+    public function normaliseBasePathKeepsRoot(): void
     {
         self::assertSame('/', SiteSection::normaliseBasePath('/'));
         self::assertSame('/', SiteSection::normaliseBasePath(''));
     }
 
-    public function testWithBasePathReturnsANewInstance(): void
+    #[Test]
+    public function withBasePathReturnsANewInstance(): void
     {
         $section = SiteSection::fromArray(['name' => 'Docs', 'baseUrl' => 'https://example.test']);
         $updated = $section->withBasePath('/manual');

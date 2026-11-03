@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace WebwareTest\AsciidocPhp\MultiRepo\Config;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Config\RenderSection;
 
 #[CoversClass(RenderSection::class)]
 final class RenderSectionTest extends TestCase
 {
-    public function testFromArrayAppliesDefaults(): void
+    #[Test]
+    public function fromArrayAppliesDefaults(): void
     {
         $section = RenderSection::fromArray([]);
 
@@ -22,7 +24,8 @@ final class RenderSectionTest extends TestCase
         self::assertFalse($section->syntaxHighlighting());
     }
 
-    public function testFromArrayReadsEveryField(): void
+    #[Test]
+    public function fromArrayReadsEveryField(): void
     {
         $section = RenderSection::fromArray([
             'tocLevels'          => [1, 2],
@@ -39,7 +42,8 @@ final class RenderSectionTest extends TestCase
         self::assertTrue($section->syntaxHighlighting());
     }
 
-    public function testWithConcurrencyReturnsANewInstance(): void
+    #[Test]
+    public function withConcurrencyReturnsANewInstance(): void
     {
         $section = RenderSection::fromArray([]);
         $updated = $section->withConcurrency(16);

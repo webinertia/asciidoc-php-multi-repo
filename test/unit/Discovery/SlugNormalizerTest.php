@@ -7,6 +7,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Discovery;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Discovery\SlugException;
 use Webware\AsciidocPhp\MultiRepo\Discovery\SlugNormalizer;
@@ -34,7 +35,8 @@ final class SlugNormalizerTest extends TestCase
         yield 'already a slug' => ['asciidoc-php', 'asciidoc-php'];
     }
 
-    public function testANameWithNoUsableCharacterIsRejected(): void
+    #[Test]
+    public function aNameWithNoUsableCharacterIsRejected(): void
     {
         try {
             new SlugNormalizer()->normalise('___');
@@ -46,19 +48,22 @@ final class SlugNormalizerTest extends TestCase
         }
     }
 
-    public function testAnEmptyNameIsRejected(): void
+    #[Test]
+    public function anEmptyNameIsRejected(): void
     {
         $this->expectException(SlugException::class);
 
         new SlugNormalizer()->normalise('');
     }
 
-    public function testANonAsciiNameCollapsesToSeparators(): void
+    #[Test]
+    public function aNonAsciiNameCollapsesToSeparators(): void
     {
         self::assertSame('na-ve', new SlugNormalizer()->normalise('naïve'));
     }
 
-    public function testPunctuationVariantsCannotMoveTheUrl(): void
+    #[Test]
+    public function punctuationVariantsCannotMoveTheUrl(): void
     {
         $normalizer = new SlugNormalizer();
         $slugs      = [
@@ -71,13 +76,15 @@ final class SlugNormalizerTest extends TestCase
         self::assertCount(1, array_unique($slugs));
     }
 
+    #[Test]
     #[DataProvider('equivalentNames')]
-    public function testTheNameIsReducedToALowercaseHyphenatedSlug(string $name, string $expected): void
+    public function theNameIsReducedToALowercaseHyphenatedSlug(string $name, string $expected): void
     {
         self::assertSame($expected, new SlugNormalizer()->normalise($name));
     }
 
-    public function testTheResultContainsOnlyLowercaseAsciiAndHyphens(): void
+    #[Test]
+    public function theResultContainsOnlyLowercaseAsciiAndHyphens(): void
     {
         self::assertMatchesRegularExpression(
             '/^[a-z0-9]+(-[a-z0-9]+)*$/',
@@ -85,7 +92,8 @@ final class SlugNormalizerTest extends TestCase
         );
     }
 
-    public function testTheResultNeverStartsWithOrEndsWithAHyphen(): void
+    #[Test]
+    public function theResultNeverStartsWithOrEndsWithAHyphen(): void
     {
         $slug = new SlugNormalizer()->normalise('__Message_Bus__');
 

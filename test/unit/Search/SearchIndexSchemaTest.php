@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Search;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Config\SchemaValidator;
 use Webware\AsciidocPhp\MultiRepo\Render\RenderedPage;
@@ -39,7 +40,8 @@ final class SearchIndexSchemaTest extends TestCase
 {
     private Json $json;
 
-    public function testEveryPageCarriesItsUrlTitleHeadingsAndText(): void
+    #[Test]
+    public function everyPageCarriesItsUrlTitleHeadingsAndText(): void
     {
         $index = new SearchIndexBuilder()->build('message-bus', 'Message Bus', $this->pages(), 'v2');
 
@@ -51,7 +53,8 @@ final class SearchIndexSchemaTest extends TestCase
         self::assertSame([['id' => 'overview', 'title' => 'Overview', 'level' => 2]], $page['headings']);
     }
 
-    public function testPagesWithinAVersionAreOrderedByUrl(): void
+    #[Test]
+    public function pagesWithinAVersionAreOrderedByUrl(): void
     {
         $index = new SearchIndexBuilder()->build('message-bus', 'Message Bus', $this->pages(), 'v2');
 
@@ -60,7 +63,8 @@ final class SearchIndexSchemaTest extends TestCase
         self::assertSame(['/message-bus/v2/guide.html', '/message-bus/v2/index.html'], $urls);
     }
 
-    public function testTheProjectIndexValidatesAgainstTheContract(): void
+    #[Test]
+    public function theProjectIndexValidatesAgainstTheContract(): void
     {
         $index = new SearchIndexBuilder()->build('message-bus', 'Message Bus', $this->pages(), 'v2');
 
@@ -69,7 +73,8 @@ final class SearchIndexSchemaTest extends TestCase
         self::assertTrue($result->isValid(), $result->describe());
     }
 
-    public function testTheSerialisedIndexIsTheSameDocument(): void
+    #[Test]
+    public function theSerialisedIndexIsTheSameDocument(): void
     {
         $builder = new SearchIndexBuilder();
         $pages   = $this->pages();
@@ -80,7 +85,8 @@ final class SearchIndexSchemaTest extends TestCase
         );
     }
 
-    public function testTheSiteIndexIsSerialisedAsJson(): void
+    #[Test]
+    public function theSiteIndexIsSerialisedAsJson(): void
     {
         $builder = new SiteIndexBuilder();
         $index   = $builder->build([], new UrlBuilder());
@@ -89,7 +95,8 @@ final class SearchIndexSchemaTest extends TestCase
         self::assertSame([], $index['projects']);
     }
 
-    public function testTheSiteIndexListsEveryProjectOnce(): void
+    #[Test]
+    public function theSiteIndexListsEveryProjectOnce(): void
     {
         $summaries = [
             new ProjectSummary(
@@ -122,7 +129,8 @@ final class SearchIndexSchemaTest extends TestCase
         );
     }
 
-    public function testVersionsAreOrderedNewestFirstAndOnlyOneIsLatest(): void
+    #[Test]
+    public function versionsAreOrderedNewestFirstAndOnlyOneIsLatest(): void
     {
         $index = new SearchIndexBuilder()->build('message-bus', 'Message Bus', $this->pages(), 'v2');
 

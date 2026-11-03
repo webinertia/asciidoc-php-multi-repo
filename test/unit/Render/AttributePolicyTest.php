@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Render;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\Asciidoc;
 use Webware\AsciidocPhp\Document;
@@ -33,7 +34,8 @@ final class AttributePolicyTest extends TestCase
         A page that would carry a build date if the policy let it.
         ADOC;
 
-    public function testHighlightingLeavesTheHighlighterAttributeAlone(): void
+    #[Test]
+    public function highlightingLeavesTheHighlighterAttributeAlone(): void
     {
         $policy = new AttributePolicy(syntaxHighlighting: true);
 
@@ -41,7 +43,8 @@ final class AttributePolicyTest extends TestCase
         self::assertArrayNotHasKey('source-highlighter', $policy->attributes());
     }
 
-    public function testRenderingTwiceAcrossAClockChangeProducesIdenticalBytes(): void
+    #[Test]
+    public function renderingTwiceAcrossAClockChangeProducesIdenticalBytes(): void
     {
         $original = date_default_timezone_get();
 
@@ -58,7 +61,8 @@ final class AttributePolicyTest extends TestCase
         self::assertSame($first, $second);
     }
 
-    public function testTheClockAttributesCarryNoValueInTheDocument(): void
+    #[Test]
+    public function theClockAttributesCarryNoValueInTheDocument(): void
     {
         $document = $this->document(new AttributePolicy());
 
@@ -69,7 +73,8 @@ final class AttributePolicyTest extends TestCase
         }
     }
 
-    public function testTheConverterChromeIsSwitchedOff(): void
+    #[Test]
+    public function theConverterChromeIsSwitchedOff(): void
     {
         $attributes = new AttributePolicy()->attributes();
 
@@ -81,7 +86,8 @@ final class AttributePolicyTest extends TestCase
         self::assertFalse($attributes['source-highlighter']);
     }
 
-    public function testTheSixClockAttributesArePinnedToAnEmptyString(): void
+    #[Test]
+    public function theSixClockAttributesArePinnedToAnEmptyString(): void
     {
         $attributes = new AttributePolicy()->attributes();
 
@@ -96,7 +102,8 @@ final class AttributePolicyTest extends TestCase
         }
     }
 
-    public function testWithoutThePolicyTheClockAttributesCarryTheBuildDate(): void
+    #[Test]
+    public function withoutThePolicyTheClockAttributesCarryTheBuildDate(): void
     {
         $document = $this->document(null);
 

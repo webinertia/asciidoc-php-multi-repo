@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebwareTest\AsciidocPhp\MultiRepo\Config;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Config\ConfigException;
 use Webware\AsciidocPhp\MultiRepo\Config\ManifestLoader;
@@ -22,7 +23,8 @@ final class ManifestLoaderTest extends TestCase
 
     private Filesystem $filesystem;
 
-    public function testAbsoluteEntryPathsArePreserved(): void
+    #[Test]
+    public function absoluteEntryPathsArePreserved(): void
     {
         $absolute = Path::join($this->tempDirectory, 'elsewhere');
 
@@ -39,7 +41,8 @@ final class ManifestLoaderTest extends TestCase
         );
     }
 
-    public function testBundledSchemaIsShippedWithThePackage(): void
+    #[Test]
+    public function bundledSchemaIsShippedWithThePackage(): void
     {
         $loader = new ManifestLoader();
 
@@ -50,7 +53,8 @@ final class ManifestLoaderTest extends TestCase
         );
     }
 
-    public function testEmptyRepositoryListFails(): void
+    #[Test]
+    public function emptyRepositoryListFails(): void
     {
         $path = $this->writeManifest([
             'schemaVersion' => 1,
@@ -65,7 +69,8 @@ final class ManifestLoaderTest extends TestCase
         }
     }
 
-    public function testEntryDefaultsAreApplied(): void
+    #[Test]
+    public function entryDefaultsAreApplied(): void
     {
         $path = $this->writeManifest([
             'schemaVersion' => 1,
@@ -84,7 +89,8 @@ final class ManifestLoaderTest extends TestCase
         self::assertNull($entry->path());
     }
 
-    public function testLoadsTheFixtureManifest(): void
+    #[Test]
+    public function loadsTheFixtureManifest(): void
     {
         $path     = Path::join(Path::normalise(dirname(__DIR__, 2)), 'fixtures', 'manifest.json');
         $manifest = new ManifestLoader()->load($path);
@@ -95,7 +101,8 @@ final class ManifestLoaderTest extends TestCase
         self::assertSame('versioned', $manifest->names()[0]);
     }
 
-    public function testMissingFileFails(): void
+    #[Test]
+    public function missingFileFails(): void
     {
         $path = Path::join($this->tempDirectory, 'absent.json');
 
@@ -105,7 +112,8 @@ final class ManifestLoaderTest extends TestCase
         new ManifestLoader()->load($path);
     }
 
-    public function testRelativeEntryPathsResolveAgainstTheManifestDirectory(): void
+    #[Test]
+    public function relativeEntryPathsResolveAgainstTheManifestDirectory(): void
     {
         $path = $this->writeManifest([
             'schemaVersion' => 1,
@@ -119,7 +127,8 @@ final class ManifestLoaderTest extends TestCase
         self::assertSame(Path::join($this->tempDirectory, 'org', 'only'), $entry->path());
     }
 
-    public function testUnknownEntryKeyFailsAtTheEntryPointer(): void
+    #[Test]
+    public function unknownEntryKeyFailsAtTheEntryPointer(): void
     {
         $path = $this->writeManifest([
             'schemaVersion' => 1,
@@ -134,7 +143,8 @@ final class ManifestLoaderTest extends TestCase
         }
     }
 
-    public function testUnknownRootKeyFails(): void
+    #[Test]
+    public function unknownRootKeyFails(): void
     {
         $path = $this->writeManifest([
             'schemaVersion' => 1,
@@ -151,7 +161,8 @@ final class ManifestLoaderTest extends TestCase
         }
     }
 
-    public function testUnsupportedSchemaVersionFails(): void
+    #[Test]
+    public function unsupportedSchemaVersionFails(): void
     {
         $path = $this->writeManifest([
             'schemaVersion' => 2,

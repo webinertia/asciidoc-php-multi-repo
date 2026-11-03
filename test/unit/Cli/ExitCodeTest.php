@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Cli;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Cli\ExitCode;
 
@@ -30,7 +31,8 @@ final class ExitCodeTest extends TestCase
         yield 'unknown status degrades' => [['unknown'], ExitCode::Degraded];
     }
 
-    public function testDocumentedValues(): void
+    #[Test]
+    public function documentedValues(): void
     {
         self::assertSame(0, ExitCode::Success->value);
         self::assertSame(1, ExitCode::Degraded->value);
@@ -39,7 +41,8 @@ final class ExitCodeTest extends TestCase
         self::assertSame(4, ExitCode::InternalError->value);
     }
 
-    public function testFromBuildReportDegradesOnAFailedProject(): void
+    #[Test]
+    public function fromBuildReportDegradesOnAFailedProject(): void
     {
         $report = [
             'projects' => [
@@ -51,7 +54,8 @@ final class ExitCodeTest extends TestCase
         self::assertSame(ExitCode::Degraded, ExitCode::fromBuildReport($report));
     }
 
-    public function testFromBuildReportIgnoresEntriesWithoutAStatus(): void
+    #[Test]
+    public function fromBuildReportIgnoresEntriesWithoutAStatus(): void
     {
         $report = [
             'projects' => [
@@ -63,7 +67,8 @@ final class ExitCodeTest extends TestCase
         self::assertSame(ExitCode::Success, ExitCode::fromBuildReport($report));
     }
 
-    public function testFromBuildReportReadsProjectStatuses(): void
+    #[Test]
+    public function fromBuildReportReadsProjectStatuses(): void
     {
         $report = [
             'schemaVersion' => 1,
@@ -76,7 +81,8 @@ final class ExitCodeTest extends TestCase
         self::assertSame(ExitCode::Success, ExitCode::fromBuildReport($report));
     }
 
-    public function testFromBuildReportToleratesAMissingProjectList(): void
+    #[Test]
+    public function fromBuildReportToleratesAMissingProjectList(): void
     {
         self::assertSame(ExitCode::Success, ExitCode::fromBuildReport([]));
     }
@@ -84,13 +90,15 @@ final class ExitCodeTest extends TestCase
     /**
      * @param list<string> $statuses
      */
+    #[Test]
     #[DataProvider('statusCombinations')]
-    public function testFromProjectStatuses(array $statuses, ExitCode $expected): void
+    public function fromProjectStatuses(array $statuses, ExitCode $expected): void
     {
         self::assertSame($expected, ExitCode::fromProjectStatuses(...$statuses));
     }
 
-    public function testLabelsMatchTheContractNames(): void
+    #[Test]
+    public function labelsMatchTheContractNames(): void
     {
         self::assertSame('Success', ExitCode::Success->label());
         self::assertSame('Degraded', ExitCode::Degraded->label());

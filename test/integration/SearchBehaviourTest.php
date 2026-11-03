@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebwareTestIntegration\AsciidocPhp\MultiRepo;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Search\SearchIndexBuilder;
 use Webware\AsciidocPhp\MultiRepo\Support\Path;
@@ -37,7 +38,8 @@ final class SearchBehaviourTest extends TestCase
 {
     use TempDirectoryTrait;
 
-    public function testTheSearchHarnessFailsWhenTheIndexNoLongerSupportsTheAssertions(): void
+    #[Test]
+    public function theSearchHarnessFailsWhenTheIndexNoLongerSupportsTheAssertions(): void
     {
         $fixture = $this->fixture();
         $version = $fixture['versions'][0];
@@ -68,7 +70,8 @@ final class SearchBehaviourTest extends TestCase
         self::assertMatchesRegularExpression('/[1-9][0-9]* failures$/m', $output);
     }
 
-    public function testTheSearchHarnessPasses(): void
+    #[Test]
+    public function theSearchHarnessPasses(): void
     {
         [$status, $output] = $this->runHarness(null);
 

@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Source;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Source\FetchedRepository;
 use Webware\AsciidocPhp\MultiRepo\Support\Path;
@@ -22,33 +23,38 @@ use Webware\AsciidocPhp\MultiRepo\Support\Path;
 #[CoversMethod(FetchedRepository::class, 'rootPath')]
 final class FetchedRepositoryTest extends TestCase
 {
-    public function testADirectoryPrefixMatchIsNotEnough(): void
+    #[Test]
+    public function aDirectoryPrefixMatchIsNotEnough(): void
     {
         $fetched = new FetchedRepository('versioned', 'abc123', '/r', 'docs', ['docs-extra/index.adoc']);
 
         self::assertFalse($fetched->hasDocumentation());
     }
 
-    public function testAnEmptyFileListHasNoDocumentation(): void
+    #[Test]
+    public function anEmptyFileListHasNoDocumentation(): void
     {
         self::assertFalse(new FetchedRepository('versioned', 'abc123', '/r', 'docs', [])->hasDocumentation());
     }
 
-    public function testDocumentationIsAbsentWhenNothingSitsBelowTheDirectory(): void
+    #[Test]
+    public function documentationIsAbsentWhenNothingSitsBelowTheDirectory(): void
     {
         $fetched = new FetchedRepository('versioned', 'abc123', '/r', 'docs', ['README.md', 'src/Docs.php']);
 
         self::assertFalse($fetched->hasDocumentation());
     }
 
-    public function testDocumentationIsPresentWhenAFileSitsBelowTheDirectory(): void
+    #[Test]
+    public function documentationIsPresentWhenAFileSitsBelowTheDirectory(): void
     {
         $fetched = new FetchedRepository('versioned', 'abc123', '/r', 'docs', ['README.md', 'docs/index.adoc']);
 
         self::assertTrue($fetched->hasDocumentation());
     }
 
-    public function testOneAttemptAndAnUpdatedWorktreeAreTheDefaults(): void
+    #[Test]
+    public function oneAttemptAndAnUpdatedWorktreeAreTheDefaults(): void
     {
         $fetched = new FetchedRepository('versioned', 'abc123', '/cache/versioned', 'docs', []);
 
@@ -56,14 +62,16 @@ final class FetchedRepositoryTest extends TestCase
         self::assertTrue($fetched->checkedOut());
     }
 
-    public function testTheDocumentationPathIsJoinedOntoTheRoot(): void
+    #[Test]
+    public function theDocumentationPathIsJoinedOntoTheRoot(): void
     {
         $fetched = new FetchedRepository('versioned', 'abc123', '/cache/versioned', 'docs', []);
 
         self::assertSame(Path::join('/cache/versioned', 'docs'), $fetched->docPath());
     }
 
-    public function testTheRecordedFieldsAreReturned(): void
+    #[Test]
+    public function theRecordedFieldsAreReturned(): void
     {
         $fetched = new FetchedRepository(
             'versioned',

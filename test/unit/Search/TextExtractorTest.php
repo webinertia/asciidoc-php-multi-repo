@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Search;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Search\TextExtractor;
 
@@ -19,12 +20,14 @@ use function strlen;
 #[CoversMethod(TextExtractor::class, 'truncate')]
 final class TextExtractorTest extends TestCase
 {
-    public function testAHtmlFragmentWithoutAParagraphYieldsAnEmptyDescription(): void
+    #[Test]
+    public function aHtmlFragmentWithoutAParagraphYieldsAnEmptyDescription(): void
     {
         self::assertSame('', new TextExtractor()->firstParagraph('<h2>Only a heading</h2>'));
     }
 
-    public function testALimitOfZeroDisablesTruncation(): void
+    #[Test]
+    public function aLimitOfZeroDisablesTruncation(): void
     {
         $text = str_repeat('word ', 40);
 
@@ -32,7 +35,8 @@ final class TextExtractorTest extends TestCase
         self::assertSame(0, new TextExtractor(limit: 0)->limit());
     }
 
-    public function testATextUnderTheLimitIsUnchanged(): void
+    #[Test]
+    public function aTextUnderTheLimitIsUnchanged(): void
     {
         $text = 'A short description.';
 
@@ -40,7 +44,8 @@ final class TextExtractorTest extends TestCase
         self::assertSame($text, new TextExtractor(limit: 20)->truncate($text));
     }
 
-    public function testEntitiesAreDecodedInTheExtractedText(): void
+    #[Test]
+    public function entitiesAreDecodedInTheExtractedText(): void
     {
         self::assertSame(
             'AT&T <tag>',
@@ -48,7 +53,8 @@ final class TextExtractorTest extends TestCase
         );
     }
 
-    public function testMarkupIsStrippedAndWhitespaceCollapses(): void
+    #[Test]
+    public function markupIsStrippedAndWhitespaceCollapses(): void
     {
         $html =
             "<div class=\"paragraph\">\n<p>Alpha&nbsp;beta\tgamma\n"
@@ -60,14 +66,16 @@ final class TextExtractorTest extends TestCase
         );
     }
 
-    public function testScriptAndStyleContentIsNotIndexed(): void
+    #[Test]
+    public function scriptAndStyleContentIsNotIndexed(): void
     {
         $html = '<style>.a{color:red}</style><p>Kept</p><script>var a = 1;</script>';
 
         self::assertSame('Kept', new TextExtractor()->plain($html));
     }
 
-    public function testTheFirstParagraphIsUsedForADescription(): void
+    #[Test]
+    public function theFirstParagraphIsUsedForADescription(): void
     {
         $html =
             "<div class=\"sect1\">\n<h2 id=\"a\">Heading</h2>\n"
@@ -77,7 +85,8 @@ final class TextExtractorTest extends TestCase
         self::assertSame('The opening paragraph.', new TextExtractor()->firstParagraph($html));
     }
 
-    public function testTruncationDoesNotSplitAWord(): void
+    #[Test]
+    public function truncationDoesNotSplitAWord(): void
     {
         $text = str_repeat('word ', 40);
 

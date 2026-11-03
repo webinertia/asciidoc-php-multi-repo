@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Render;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Config\SiteConfig;
 use Webware\AsciidocPhp\MultiRepo\Render\PageRenderer;
@@ -63,7 +64,8 @@ final class PageRendererTest extends TestCase
     use SiteFixtureTrait;
     use TempDirectoryTrait;
 
-    public function testABlankProjectTitleOverrideFallsBackToTheProjectName(): void
+    #[Test]
+    public function aBlankProjectTitleOverrideFallsBackToTheProjectName(): void
     {
         $page = $this->renderFromTemp(
             "= Page\n\nText.\n",
@@ -73,7 +75,8 @@ final class PageRendererTest extends TestCase
         self::assertStringContainsString('<p class="project-name">Versioned</p>', $page->html());
     }
 
-    public function testABrokenIncludeFailsWithRenderFailedAndTheSourcePath(): void
+    #[Test]
+    public function aBrokenIncludeFailsWithRenderFailedAndTheSourcePath(): void
     {
         try {
             $this->render('docs/v1/index.adoc', repository: 'broken-include');
@@ -89,7 +92,8 @@ final class PageRendererTest extends TestCase
         }
     }
 
-    public function testACrlfSourceRendersIdenticallyToItsLfTwin(): void
+    #[Test]
+    public function aCrlfSourceRendersIdenticallyToItsLfTwin(): void
     {
         $lf = "= Twin Page\n\nIntro paragraph.\n\n== Section\n\nBody text.\n\n* one\n* two\n";
 
@@ -103,14 +107,16 @@ final class PageRendererTest extends TestCase
         self::assertSame($fromLf->html(), $fromCrlf->html());
     }
 
-    public function testAHumanisedNameFillsInWhenTheDocumentHasNoTitle(): void
+    #[Test]
+    public function aHumanisedNameFillsInWhenTheDocumentHasNoTitle(): void
     {
         $page = $this->renderFromTemp("Just a paragraph.\n", relativePath: 'docs/v1/UPPER-CASE_PAGE.adoc');
 
         self::assertSame('Upper Case Page', $page->title());
     }
 
-    public function testAnIncludeTargetIsTrimmedBeforeItIsResolved(): void
+    #[Test]
+    public function anIncludeTargetIsTrimmedBeforeItIsResolved(): void
     {
         try {
             $this->renderFromTemp("= Page\n\ninclude::   missing.adoc   []\n");
@@ -123,7 +129,8 @@ final class PageRendererTest extends TestCase
         }
     }
 
-    public function testAnIncludeThatNamesADirectoryIsNotAMissingFile(): void
+    #[Test]
+    public function anIncludeThatNamesADirectoryIsNotAMissingFile(): void
     {
         $directory = $this->createTempDirectory();
         new Filesystem()->ensureDirectory(Path::join($directory, 'partials'));
@@ -133,7 +140,8 @@ final class PageRendererTest extends TestCase
         self::assertSame('Page', $page->title());
     }
 
-    public function testAProjectTitleOverrideIsUsedWhenItIsNotBlank(): void
+    #[Test]
+    public function aProjectTitleOverrideIsUsedWhenItIsNotBlank(): void
     {
         $page = $this->renderFromTemp(
             "= Page\n\nText.\n",
@@ -143,7 +151,8 @@ final class PageRendererTest extends TestCase
         self::assertStringContainsString('<p class="project-name">Custom Widgets</p>', $page->html());
     }
 
-    public function testARemoteIncludeDoesNotStopTheCheckForTheNextOne(): void
+    #[Test]
+    public function aRemoteIncludeDoesNotStopTheCheckForTheNextOne(): void
     {
         try {
             $this->renderFromTemp(
@@ -158,14 +167,16 @@ final class PageRendererTest extends TestCase
         }
     }
 
-    public function testARemoteIncludeIsNotTreatedAsAMissingFile(): void
+    #[Test]
+    public function aRemoteIncludeIsNotTreatedAsAMissingFile(): void
     {
         $page = $this->renderFromTemp("= Page\n\ninclude::https://example.com/guide.adoc[]\n");
 
         self::assertSame('Page', $page->title());
     }
 
-    public function testASearchLimitOfZeroKeepsTheWholeText(): void
+    #[Test]
+    public function aSearchLimitOfZeroKeepsTheWholeText(): void
     {
         $page = $this->renderFromTemp(
             "= Long\n\n" . str_repeat('word ', 900) . "\n",
@@ -175,7 +186,8 @@ final class PageRendererTest extends TestCase
         self::assertGreaterThan(2000, mb_strlen($page->searchText()));
     }
 
-    public function testASubdirectoryBasePathIsAppliedToEveryAssetAndLink(): void
+    #[Test]
+    public function aSubdirectoryBasePathIsAppliedToEveryAssetAndLink(): void
     {
         $page = $this->render('docs/v1/index.adoc', basePath: '/docs/');
         $html = $page->html();
@@ -191,7 +203,8 @@ final class PageRendererTest extends TestCase
         self::assertStringNotContainsString('href="/versioned', $html);
     }
 
-    public function testEveryDocumentedSafeModeIsAccepted(): void
+    #[Test]
+    public function everyDocumentedSafeModeIsAccepted(): void
     {
         $repository = $this->fixtureRepository('versioned');
         $version    = $this->fixtureVersion();
@@ -214,7 +227,8 @@ final class PageRendererTest extends TestCase
         }
     }
 
-    public function testEveryIncludeIsCheckedNotJustTheFirst(): void
+    #[Test]
+    public function everyIncludeIsCheckedNotJustTheFirst(): void
     {
         $directory = $this->createTempDirectory();
         file_put_contents(Path::join($directory, 'guide.adoc'), "== Guide\n\nIncluded text.\n");
@@ -233,7 +247,8 @@ final class PageRendererTest extends TestCase
         }
     }
 
-    public function testTheCanonicalUrlKeepsASingleSlashWhenTheBaseUrlEndsWithOne(): void
+    #[Test]
+    public function theCanonicalUrlKeepsASingleSlashWhenTheBaseUrlEndsWithOne(): void
     {
         $page = $this->renderFromTemp(
             "= Page\n\nText.\n",
@@ -246,7 +261,8 @@ final class PageRendererTest extends TestCase
         );
     }
 
-    public function testTheConverterDoesNotEmitItsOwnHeaderAndFooter(): void
+    #[Test]
+    public function theConverterDoesNotEmitItsOwnHeaderAndFooter(): void
     {
         $html = $this->render('docs/v1/index.adoc')->html();
 
@@ -255,7 +271,8 @@ final class PageRendererTest extends TestCase
         self::assertStringNotContainsString('<div id="footer">', $html);
     }
 
-    public function testTheEntryPageRendersWithTheExpectedTitleAndPath(): void
+    #[Test]
+    public function theEntryPageRendersWithTheExpectedTitleAndPath(): void
     {
         $page = $this->render('docs/v1/index.adoc');
 
@@ -269,7 +286,8 @@ final class PageRendererTest extends TestCase
         self::assertStringContainsString('Welcome to version 1.', $page->html());
     }
 
-    public function testTheIncludedSectionIsRenderedIntoThePageUnderSafeMode(): void
+    #[Test]
+    public function theIncludedSectionIsRenderedIntoThePageUnderSafeMode(): void
     {
         $page = new PageRenderer()->render(
             $this->configWithSafeMode('safe'),
@@ -283,7 +301,8 @@ final class PageRendererTest extends TestCase
         self::assertSame(['Guide'], $page->headings());
     }
 
-    public function testTheOutputPathIsPartOfThePublicSurface(): void
+    #[Test]
+    public function theOutputPathIsPartOfThePublicSurface(): void
     {
         $renderer = new PageRenderer();
 
@@ -297,7 +316,8 @@ final class PageRendererTest extends TestCase
         );
     }
 
-    public function testThePageCarriesNoBuildDateAndNoAbsolutePath(): void
+    #[Test]
+    public function thePageCarriesNoBuildDateAndNoAbsolutePath(): void
     {
         $page = $this->render('docs/v1/index.adoc');
         $html = $page->html();
@@ -311,7 +331,8 @@ final class PageRendererTest extends TestCase
         self::assertStringNotContainsString('localdate', $html);
     }
 
-    public function testTheSafeModeIsReadWithoutRegardToCase(): void
+    #[Test]
+    public function theSafeModeIsReadWithoutRegardToCase(): void
     {
         $repository = $this->fixtureRepository('versioned');
         $version    = $this->fixtureVersion();
@@ -335,7 +356,8 @@ final class PageRendererTest extends TestCase
         self::assertStringNotContainsString('This is the version 1 guide.', $secure->html());
     }
 
-    public function testTheSearchTextHasNoSurroundingWhitespace(): void
+    #[Test]
+    public function theSearchTextHasNoSurroundingWhitespace(): void
     {
         $text = $this->render('docs/v1/index.adoc')->searchText();
 
@@ -343,7 +365,8 @@ final class PageRendererTest extends TestCase
         self::assertSame(trim($text), $text);
     }
 
-    public function testTheSearchTextIsATruncatedPrefixOfTheWholeText(): void
+    #[Test]
+    public function theSearchTextIsATruncatedPrefixOfTheWholeText(): void
     {
         $page = $this->renderFromTemp(
             "= Accents\n\nIntro text.\n\n" . str_repeat("\u{65e5}", 400) . "\n",
@@ -354,7 +377,8 @@ final class PageRendererTest extends TestCase
         self::assertStringStartsWith('Intro text.', $page->searchText());
     }
 
-    public function testTheSearchTextIsPlain(): void
+    #[Test]
+    public function theSearchTextIsPlain(): void
     {
         $page = $this->render('docs/v1/index.adoc');
 
@@ -366,7 +390,8 @@ final class PageRendererTest extends TestCase
         );
     }
 
-    public function testTheSearchTextIsTruncatedOnCharacterBoundaries(): void
+    #[Test]
+    public function theSearchTextIsTruncatedOnCharacterBoundaries(): void
     {
         $page = $this->renderFromTemp(
             "= Accents\n\n" . str_repeat("\u{e9}", 400) . "\n",
@@ -376,7 +401,8 @@ final class PageRendererTest extends TestCase
         self::assertSame(200, mb_strlen($page->searchText()));
     }
 
-    public function testTheSearchTextStopsAtTheConfiguredLimit(): void
+    #[Test]
+    public function theSearchTextStopsAtTheConfiguredLimit(): void
     {
         $directory = $this->createTempDirectory();
         $path      = Path::join($directory, 'long.adoc');
@@ -402,7 +428,8 @@ final class PageRendererTest extends TestCase
         self::assertStringEndsWith('word', trim($page->searchText()));
     }
 
-    public function testTheSourceLinkPointsAtTheRepository(): void
+    #[Test]
+    public function theSourceLinkPointsAtTheRepository(): void
     {
         $page = $this->render('docs/v1/index.adoc');
 
@@ -412,7 +439,8 @@ final class PageRendererTest extends TestCase
         );
     }
 
-    public function testTheTableOfContentsComesFromTheDocumentSections(): void
+    #[Test]
+    public function theTableOfContentsComesFromTheDocumentSections(): void
     {
         $page = $this->render('docs/v1/guide.adoc');
 

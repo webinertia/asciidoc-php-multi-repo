@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebwareTest\AsciidocPhp\MultiRepo\Support;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Support\Json;
 use Webware\AsciidocPhp\MultiRepo\Support\JsonDecodeException;
@@ -17,19 +18,22 @@ final class JsonTest extends TestCase
 {
     private Json $json;
 
-    public function testDecodeObjectRequiresAnObject(): void
+    #[Test]
+    public function decodeObjectRequiresAnObject(): void
     {
         $this->expectException(JsonDecodeException::class);
 
         $this->json->decodeObject('[1, 2]', 'site.json');
     }
 
-    public function testDecodeObjectReturnsTheDocument(): void
+    #[Test]
+    public function decodeObjectReturnsTheDocument(): void
     {
         self::assertSame(['a' => 1], $this->json->decodeObject('{"a": 1}', 'site.json'));
     }
 
-    public function testDecodeReturnsAssociativeArrays(): void
+    #[Test]
+    public function decodeReturnsAssociativeArrays(): void
     {
         self::assertSame(
             ['site' => ['name' => 'Docs']],
@@ -37,19 +41,22 @@ final class JsonTest extends TestCase
         );
     }
 
-    public function testEmptyDocumentReportsFirstByte(): void
+    #[Test]
+    public function emptyDocumentReportsFirstByte(): void
     {
         $this->expectException(JsonDecodeException::class);
 
         $this->json->decode('', 'site.json');
     }
 
-    public function testEncodeCompactHasNoInsignificantWhitespace(): void
+    #[Test]
+    public function encodeCompactHasNoInsignificantWhitespace(): void
     {
         self::assertSame("{\"a\":1,\"b\":[1,2]}\n", $this->json->encodeCompact(['a' => 1, 'b' => [1, 2]]));
     }
 
-    public function testEncodeDoesNotEscapeSlashes(): void
+    #[Test]
+    public function encodeDoesNotEscapeSlashes(): void
     {
         $encoded = $this->json->encode(['url' => 'https://example.test/docs/v1']);
 
@@ -57,7 +64,8 @@ final class JsonTest extends TestCase
         self::assertFalse(str_contains($encoded, '\\/'));
     }
 
-    public function testEncodeEndsWithSingleNewline(): void
+    #[Test]
+    public function encodeEndsWithSingleNewline(): void
     {
         $encoded = $this->json->encode(['a' => 1]);
 
@@ -65,26 +73,30 @@ final class JsonTest extends TestCase
         self::assertFalse(str_ends_with($encoded, "}\n\n"));
     }
 
-    public function testEncodeIsDeterministic(): void
+    #[Test]
+    public function encodeIsDeterministic(): void
     {
         $value = ['b' => 1, 'a' => ['z' => true, 'y' => null]];
 
         self::assertSame($this->json->encode($value), $this->json->encode($value));
     }
 
-    public function testEncodePreservesZeroFraction(): void
+    #[Test]
+    public function encodePreservesZeroFraction(): void
     {
         self::assertStringContainsString('1.0', $this->json->encodeCompact(['value' => 1.0]));
     }
 
-    public function testEncodeUsesFourSpaceIndentation(): void
+    #[Test]
+    public function encodeUsesFourSpaceIndentation(): void
     {
         $encoded = $this->json->encode(['a' => 1]);
 
         self::assertStringContainsString("\n    \"a\": 1", $encoded);
     }
 
-    public function testInvalidJsonInsideArrayReportsIndexPointer(): void
+    #[Test]
+    public function invalidJsonInsideArrayReportsIndexPointer(): void
     {
         try {
             $this->json->decode('{"projects": [1, ]}', 'manifest.json');
@@ -95,7 +107,8 @@ final class JsonTest extends TestCase
         }
     }
 
-    public function testInvalidJsonRaisesTypedExceptionWithOffsetAndPointer(): void
+    #[Test]
+    public function invalidJsonRaisesTypedExceptionWithOffsetAndPointer(): void
     {
         try {
             $this->json->decode('{"site": }', 'site.json');
@@ -109,7 +122,8 @@ final class JsonTest extends TestCase
         }
     }
 
-    public function testTruncatedDocumentReportsEndOfInput(): void
+    #[Test]
+    public function truncatedDocumentReportsEndOfInput(): void
     {
         try {
             $this->json->decode('{"site": ', 'site.json');

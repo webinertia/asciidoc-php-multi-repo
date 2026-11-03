@@ -300,7 +300,26 @@ final class RepositoryFetcherTest extends TestCase
     public function testTheRefArgumentOverridesTheDefaultBranch(): void
     {
         $origin = $this->gitRepository(['docs/index.adoc' => "= Index\n"]);
+        $tagged = $this->head($origin);
+
         $this->runner->mustRun(['git', 'tag', 'v9.9.9'], $origin, 60.0);
+        $this->runner->mustRun(
+            [
+                'git',
+                '-c',
+                'user.name=Fixture',
+                '-c',
+                'user.email=fixture@example.test',
+                'commit',
+                '--quiet',
+                '--allow-empty',
+                '-m',
+                'After the tag',
+            ],
+            $origin,
+            60.0,
+        );
+
         $bare = $this->bareClone($origin);
 
         $fetched = $this->fetcher(remoteUrl: static fn(): string => $bare)
@@ -311,7 +330,7 @@ final class RepositoryFetcherTest extends TestCase
                 'v9.9.9',
             );
 
-        self::assertSame($this->head($origin), $fetched->revision());
+        self::assertSame($tagged, $fetched->revision());
     }
 
     public function testTheRemoteUrlIsBuiltFromTheOrganizationAndRepositoryName(): void

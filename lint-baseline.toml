@@ -5597,3 +5597,51 @@ file = "test/unit/Build/IncrementalCacheTest.php"
 code = "string-style"
 message = "String concatenation can be replaced with interpolation."
 count = 2
+
+[[issues]]
+file = "test/unit/Source/RepositoryFetcherRefetchTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 9
+
+[[issues]]
+file = "test/unit/Source/RepositoryFetcherRefetchTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testADefaultFetcherReportsThreeAttempts`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/RepositoryFetcherRefetchTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAFetchFailureMessageCarriesNoTrailingWhitespace`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/RepositoryFetcherRefetchTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testARefetchChecksOutAMovedRevision`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/RepositoryFetcherRefetchTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testARefetchFollowsTheNewRemoteUrl`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/RepositoryFetcherRefetchTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testTheContentDigestCoversEveryFileInTheDirectory`."
+count = 1
+
+[[issues]]
+file = "test/unit/Source/SourceCollectorTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 5
+
+[[issues]]
+file = "test/unit/Source/SourceCollectorTest.php"
+code = "prefer-test-attribute"
+message = "Use `#[Test]` attribute instead of `test` prefix on method `testAVersionWithoutAnEntryPageDoesNotStopTheLaterVersions`."
+count = 1

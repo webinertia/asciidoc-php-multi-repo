@@ -272,6 +272,9 @@ main {
     padding: var(--space-2);
     border: 1px solid var(--border-subtle);
     text-align: left;
+    /* Only `anywhere` lowers a cell's min-content width; `break-word` lets a
+       long unbreakable token keep dictating the table's width. */
+    overflow-wrap: anywhere;
 }
 
 .doc th {

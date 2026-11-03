@@ -95,7 +95,8 @@ to this package and no change to the site configuration is required to onboard a
 
 == Credentials
 
-Two separate fine-grained personal access tokens, plus the site repository's own `GITHUB_TOKEN`.
+Two separate credentials, the discovery token and the publish App, plus the site repository's own
+`GITHUB_TOKEN`.
 
 === Discovery token
 
@@ -128,14 +129,41 @@ The `gh-pages` branch is pushed with the site repository's own `GITHUB_TOKEN`, n
 
 === Trigger credential in the site repository
 
-The site repository specification supersedes the trigger token with a GitHub App. The App is
-installed on `webinertia/docs.webinertia.net` only, with `repository_selection: selected`, and
-its only permission is Repository permissions, Contents, Read and write. It carries no
-organization permission and no other repository permission. The private key is an organization
-secret whose repository access list is limited to repositories that carry `doc-target: true`.
+The site repository specification supersedes the trigger token with a GitHub App named
+`AsciiDoc PHPublisher`. It belongs to the site repository alone: install it on
+`webinertia/docs.webinertia.net` only, which the API records as `repository_selection: selected`,
+and grant it one permission, Repository permissions, Contents, Read and write. It carries no
+organization permission and no other repository permission. The
+private key is an organization secret whose repository access list is limited to repositories
+that carry `doc-target: true`.
 
 The permissions are the same as the trigger token above: Contents, Read and write on the site
 repository. The App replaces the long-lived PAT, not the permission it grants.
+
+The App does not publish. The publish workflow pushes `gh-pages` with the site repository's own
+`GITHUB_TOKEN` at `contents: write`, which is the publishing credential described above. The App
+exists only so that a consumer repository can mint a short-lived installation token and send a
+`repository_dispatch`. Contents, Read and write is the exact permission that dispatch requires,
+which is why the App carries that permission and nothing broader.
+
+Discovery does not use the App either. Discovery uses `DOC_DISCOVERY_TOKEN`, the separate
+fine-grained PAT with Organization Custom properties Read. The two credentials are deliberately
+separate so that a leak in a consumer repository cannot enumerate the organization.
+
+=== Rotating the right credential
+
+The failure tells you which credential to look at, because the two are stored in different places.
+
+* A build that exits 3 means discovery failed. Rotate or reissue `DOC_DISCOVERY_TOKEN`, the
+  fine-grained PAT stored in the site repository. The App has no part in discovery.
+* A dispatch that never arrives, or a consumer run that fails while minting its token, means the
+  App credential or the App installation is the problem. Check the private key stored as
+  `DOCS_PUBLISH_APP_PRIVATE_KEY`, the App ID in `DOCS_PUBLISH_APP_ID`, and that the App is still
+  installed on `webinertia/docs.webinertia.net`. Rotate the private key in the App settings,
+  replace the organization secret, and re-run the consumer workflow.
+
+Do not swap the two. Replacing the discovery token never fixes a dispatch, and replacing the App
+key never fixes exit 3.
 
 == Site repository secrets and variables
 
@@ -169,6 +197,76 @@ The publish workflow lives in `webinertia/docs.webinertia.net`. It uses these cr
 `DOC_DISCOVERY_TOKEN` is the discovery token from the previous section, stored in the site
 repository. The site workflow never holds a trigger PAT: the trigger credential belongs to the
 consumer repository that dispatches the publish, not to the publish workflow itself.
+
+== Creating the publish App
+
+One organization owner creates the App once. Open the organization settings, then Developer
+settings, then GitHub Apps, and choose New GitHub App. Name it `AsciiDoc PHPublisher`, which is
+the name to search for when the App has to be found again later. GitHub App names are unique
+across all of GitHub, so if the name is already taken a single word change is enough; the name is
+a label and no workflow depends on it.
+
+Register the App with these fields:
+
+[cols="1,2"]
+|===
+| Field | Value
+
+| GitHub App name
+| `AsciiDoc PHPublisher`
+
+| Homepage URL
+| `https://docs.webinertia.net/`
+
+| Webhook
+| Inactive. Nothing consumes webhooks; the App exists only to mint tokens.
+
+| Repository permissions
+| Contents, Read and write. No other repository permission.
+
+| Organization permissions
+| None.
+
+| Where it can be installed
+| Only on the `webinertia` account.
+|===
+
+Then complete the setup in this order, because the App ID and the private key are needed as soon
+as they exist and the private key is shown only once:
+
+. Create the App, then record its App ID as the organization variable `DOCS_PUBLISH_APP_ID`,
+  scoped to all repositories so every consumer run can read it.
+. Generate a private key and store it immediately as the organization secret
+  `DOCS_PUBLISH_APP_PRIVATE_KEY`. The key is shown once, so a key that is generated and not
+  stored has to be revoked and replaced. Limit the secret's repository access list to the
+  repositories that carry `doc-target: true`.
+. Install the App. In the installation page choose Only select repositories, then pick
+  `webinertia/docs.webinertia.net`. The API equivalent is `repository_selection: selected` with
+  that one repository. Do not install the App on a consumer repository: the token is narrowed to
+  the site repository when it is minted, so the consumer never needs the App itself.
+
+=== Keeping the secret access list aligned with doc-target
+
+The custom property and the organization secret's repository access list are two separate
+switches, and both must be set for a repository to dispatch successfully.
+
+* The `doc-target` property selects the repository for the site build.
+* The secret access list lets the repository read `DOCS_PUBLISH_APP_PRIVATE_KEY` so its workflow
+  can mint a token.
+
+Setting only the property produces a repository that appears on the site after the next publish
+but whose notification step fails with a 403 when it tries to mint the token. Setting only the
+access list lets the repository mint a token, but the site never builds it.
+
+Keep the list in step by hand:
+
+* Onboarding a repository: add it to the secret access list.
+* Offboarding a repository: remove it from the secret access list.
+
+This manual alignment is a known, accepted cost. The alternative, a private key copy per
+repository, is one rotation event per copy. An over-broad access list only lets a repository that
+is already in the organization request a rebuild; it grants no discovery, no read of the
+organization, and no write to any content.
 
 == Publish triggers
 
@@ -211,25 +309,169 @@ gh api repos/webinertia/docs.webinertia.net/dispatches \
 The dispatch requires Contents, Read and write on the site repository, which is what the trigger
 token or the publish App provides.
 
+== Consumer notification workflow (optional)
+
+`doc-target: true` is the whole onboarding requirement. A repository appears on the site because
+the nightly publish discovers the property, whether or not it has a workflow of its own. The
+snippet below is optional: it notifies the site immediately after a push so the change appears
+without waiting for the nightly run. It reduces latency and does nothing else.
+
+Prerequisites:
+
+* The App `AsciiDoc PHPublisher` exists and is installed on `webinertia/docs.webinertia.net`.
+* `DOCS_PUBLISH_APP_ID` and `DOCS_PUBLISH_APP_PRIVATE_KEY` are set at organization scope.
+* The repository is on the secret's access list, which is the manual step in Keeping the secret
+  access list aligned with doc-target.
+* The repository carries `doc-target: true`. The snippet does not onboard it.
+
+Add these steps to an existing workflow in the consumer repository:
+
+[source,yaml]
+----
+- id: docs-publish-token
+  uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+  with:
+    app-id: ${{ vars.DOCS_PUBLISH_APP_ID }}
+    private-key: ${{ secrets.DOCS_PUBLISH_APP_PRIVATE_KEY }}
+    owner: webinertia
+    repositories: docs.webinertia.net
+
+- name: Request a docs site publish
+  continue-on-error: true
+  env:
+    GH_TOKEN: ${{ steps.docs-publish-token.outputs.token }}
+    REPOSITORY: ${{ github.repository }}
+    REF: ${{ github.sha }}
+    SOURCE: ${{ github.workflow }}
+  run: |
+    gh api --method POST \
+      repos/webinertia/docs.webinertia.net/dispatches \
+      -f event_type=docs-publish \
+      -f client_payload[repository]="$REPOSITORY" \
+      -f client_payload[ref]="$REF" \
+      -f client_payload[source]="$SOURCE"
+----
+
+The action is pinned by commit SHA, not by a tag, so a moved tag cannot change what runs in a
+consumer repository. The comment names the release the SHA belongs to.
+
+`repositories: docs.webinertia.net` narrows the installation token to the site repository. Even
+if the App were installed more widely, the token minted here could not read or write the
+consumer's own repository. That is why the consumer repository needs no secret of its own and no
+App installation.
+
+The event type is `docs-publish`. It is the only event type the site repository listens for. The
+`repository`, `ref` and `source` payload fields are advisory: they are recorded in the run summary
+for correlation, and they never select, restrict, or extend the set of projects that is published.
+That set comes from `doc-target` alone.
+
+The dispatch step is `continue-on-error: true` on purpose. A documentation notification must never
+fail the consumer's build, because the nightly run publishes the change anyway. A failed dispatch
+is a latency regression, not a broken build.
+
 == Onboarding a repository end to end
 
 . Confirm the repository's documentation tree satisfies the author guide: a version directory
   with an entry page and at least one AsciiDoc page.
 . As an organization owner, set `doc-target` to `true` for the repository. Do this in the
   organization settings, or through the API.
+. Add the repository to the repository access list of the organization secret
+  `DOCS_PUBLISH_APP_PRIVATE_KEY`. This is the manual step described in Keeping the secret access
+  list aligned with doc-target.
+. Optionally, add the consumer notification snippet from Consumer notification workflow so a push
+  publishes immediately instead of waiting for the nightly run.
 . Wait for the nightly run, or trigger a publish manually or with `repository_dispatch`.
 . Read the workflow run summary. The new project appears as a card on the landing page, in the
   project switcher, and in the site search index.
 . Open `/slug/` and confirm the entry page renders.
 
-No repository or site configuration change is part of these steps.
+No repository configuration change is part of these steps. The only site-side change is the
+organization secret access list, and the optional snippet is the only consumer-side change.
 
 == Offboarding a repository
 
-Set `doc-target` to `false`. The next full publish removes the project's pages, card, switcher
-entry, and search index, because the publish replaces the whole `gh-pages` tree. Do not delete
-the repository's `docs` directory as part of offboarding; keeping it makes re-onboarding a
-single property change.
+Set `doc-target` to `false`, and remove the repository from the repository access list of
+`DOCS_PUBLISH_APP_PRIVATE_KEY`. The next full publish removes the project's pages, card, switcher
+entry, and search index, because the publish replaces the whole `gh-pages` tree. A repository that
+keeps the notification snippet still runs it, but minting the token fails and `continue-on-error`
+keeps that harmless.
+
+Do not delete the repository's `docs` directory as part of offboarding; keeping it makes
+re-onboarding a single property change plus the access list step.
+
+== Operational items
+
+These are settings and known states outside the workflow. The workflow does not attempt to repair
+any of them.
+
+=== The custom domain certificate
+
+On 2026-11-01 the Pages API returned no `https_certificate` object for the site, and
+`https://docs.webinertia.net` served a certificate with `CN=*.github.io`, while `https_enforced`
+was true and `protected_domain_state` was `verified`. That was a provisioning delay, not a
+configuration error.
+
+The certificate was provisioned afterwards. The Pages API now returns `https_certificate` with
+`state: approved`, `domains: ["docs.webinertia.net"]` and `expires_at: 2027-01-30`, alongside
+`https_enforced: true`, `protected_domain_state: verified` and `status: built`. A request to
+`https://docs.webinertia.net/` therefore completes the TLS handshake and answers HTTP 404, which
+is the empty `gh-pages` branch described under Retired URLs, not a certificate fault.
+
+If a mismatch recurs, the remedy is a Pages setting and not a workflow behaviour: re-save the
+custom domain in the Pages settings, or remove and re-add it, then wait for provisioning. Do not
+add a workflow step that tries to repair it.
+
+=== Scheduled runs stop after 60 days of inactivity
+
+GitHub disables scheduled workflows in a repository that has had no activity for 60 days. If the
+site repository stays quiet long enough, the nightly run stops on its own. Run the workflow
+manually once to re-enable it:
+
+[source,sh]
+----
+gh workflow run publish-docs.yml --repo webinertia/docs.webinertia.net
+----
+
+=== gh-pages must stay unprotected
+
+There is no ruleset on `gh-pages` today. Keep it that way, or add a ruleset only if it grants the
+Actions bot a bypass. A ruleset that requires a pull request before merging would make every
+publish fail, because the workflow pushes directly to the branch.
+
+=== Retired URLs
+
+Commit `36dfe12` removed `aurora/`, `modelmanager/`, `index.md` and `_config.yml`, so those paths
+return 404 now, not at the first publish. The root path `https://docs.webinertia.net/` also returns
+404, because `gh-pages` holds only `.nojekyll` and `CNAME`: there is no landing page to serve
+until the first publish writes one. The certificate validates for the host, so a 404 here is a
+missing file, not a certificate or DNS problem.
+
+No redirect exists for any of these paths. Any inbound reference has to be repointed
+independently of this work.
+
+=== The App secret access list tracks doc-target
+
+The organization secret's repository access list must be kept in step with the property by hand.
+Keeping the secret access list aligned with doc-target states the procedure and the consequence of
+a stale list.
+
+=== The discovery token expires
+
+`DOC_DISCOVERY_TOKEN` is a fine-grained personal access token, so it expires. Record the expiry
+date when the token is issued, and choose an expiry far enough out that a scheduled run is not the
+first thing to discover it.
+
+Rotation procedure:
+
+. Issue a replacement token with Organization Custom properties Read and no write permission.
+. Store it as `DOC_DISCOVERY_TOKEN` in `webinertia/docs.webinertia.net`.
+. Run a publish and confirm it succeeds.
+. Revoke the old token.
+
+=== Which credential to rotate
+
+Use Rotating the right credential above. A build that exits 3 is the discovery token; a dispatch
+that never arrives is the App private key or its installation.
 
 == Non-organization deployments
 

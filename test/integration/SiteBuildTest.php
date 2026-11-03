@@ -18,6 +18,9 @@ use Webware\AsciidocPhp\MultiRepo\Cli\Output;
 use Webware\AsciidocPhp\MultiRepo\Config\SchemaValidator;
 use Webware\AsciidocPhp\MultiRepo\Config\SiteConfigLoader;
 use Webware\AsciidocPhp\MultiRepo\Render\PageRenderer;
+use Webware\AsciidocPhp\MultiRepo\Site\SiteAssembler;
+use Webware\AsciidocPhp\MultiRepo\Site\SiteAssembly;
+use Webware\AsciidocPhp\MultiRepo\Site\StaticAssetWriter;
 use Webware\AsciidocPhp\MultiRepo\Support\Json;
 use Webware\AsciidocPhp\MultiRepo\Support\Path;
 use WebwareTest\AsciidocPhp\MultiRepo\Support\TempDirectoryTrait;
@@ -49,6 +52,9 @@ use function trim;
 #[CoversClass(DeterminismGuard::class)]
 #[CoversClass(IncrementalCache::class)]
 #[CoversClass(PageRenderer::class)]
+#[CoversClass(SiteAssembler::class)]
+#[CoversClass(SiteAssembly::class)]
+#[CoversClass(StaticAssetWriter::class)]
 final class SiteBuildTest extends TestCase
 {
     use TempDirectoryTrait;

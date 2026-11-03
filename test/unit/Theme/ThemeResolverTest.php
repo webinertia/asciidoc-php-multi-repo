@@ -8,7 +8,9 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use ReflectionObject;
 use RuntimeException;
+use Webware\AsciidocPhp\Converter\Html5Converter;
 use Webware\AsciidocPhp\MultiRepo\Config\ThemeConfig;
 use Webware\AsciidocPhp\MultiRepo\Theme\AssetHasher;
 use Webware\AsciidocPhp\MultiRepo\Theme\ThemeResolver;
@@ -155,6 +157,17 @@ final class ThemeResolverTest extends TestCase
             $resolver->baseName(),
         );
         static::assertMatchesRegularExpression('/^asciidoctor\.[0-9a-f]+\.css$/', $resolver->baseName());
+    }
+
+    #[Test]
+    public function theBaseStylesheetIsReadFromTheConverterPackageResources(): void
+    {
+        $converterFile = new ReflectionObject(new Html5Converter())->getFileName();
+
+        $expected = dirname((string) $converterFile, levels: 3) . '/resources/css/asciidoctor.css';
+
+        static::assertFileExists($expected);
+        static::assertSame((string) file_get_contents($expected), new ThemeResolver()->baseCss());
     }
 
     #[Test]

@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Webware\AsciidocPhp\MultiRepo\Theme;
 
-use ReflectionClass;
-use ReflectionException;
+use ReflectionObject;
 use RuntimeException;
 use Webware\AsciidocPhp\Converter\Html5Converter;
 use Webware\AsciidocPhp\MultiRepo\Config\ThemeConfig;
@@ -100,36 +99,23 @@ final readonly class ThemeResolver
      * The converter's base stylesheet, which the site publishes and links before its overrides.
      *
      * The converter keeps the path in a private constant, so the package root is derived from the
-     * converter class file rather than restated here.
+     * converter class file rather than restated here. `Html5Converter` is a userland class in an
+     * installed package, so reflection always yields a source file and the only failure left is the
+     * stylesheet itself being missing or unreadable.
      *
-     * @throws RuntimeException when the converter class cannot be reflected or the shipped
-     *                          stylesheet is missing or unreadable
+     * @throws RuntimeException when the shipped stylesheet is missing or unreadable
      */
     public function baseCss(): string
     {
-        try {
-            $file = new ReflectionClass(Html5Converter::class)->getFileName();
-        } catch (ReflectionException $exception) {
-            throw new RuntimeException(
-                'The base stylesheet cannot be located because Html5Converter cannot be reflected.',
-                previous: $exception,
-            );
-        }
+        $file = new ReflectionObject(new Html5Converter())->getFileName();
 
-        if (false === $file) {
-            throw new RuntimeException(
-                'The base stylesheet cannot be located because Html5Converter has no source file.',
-            );
-        }
-
-        return $this->readFile(dirname($file, levels: 3) . '/resources/css', 'asciidoctor.css');
+        return $this->readFile(dirname((string) $file, levels: 3) . '/resources/css', 'asciidoctor.css');
     }
 
     /**
      * The published base stylesheet name.
      *
-     * @throws RuntimeException when the converter class cannot be reflected or the shipped
-     *                          stylesheet is missing or unreadable
+     * @throws RuntimeException when the shipped stylesheet is missing or unreadable
      */
     public function baseName(): string
     {

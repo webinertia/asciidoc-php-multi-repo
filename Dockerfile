@@ -4,9 +4,9 @@
 # Webware alignment development environment image
 #
 # Builds a self-contained, interactive PHP development environment carrying
-# the Webware toolchain: PHP CLI, Composer, Mago, and Xdebug. Developers work
-# inside this container: either through the VS Code Dev Container (backed by
-# compose.yml) or by `docker compose up -d` + `docker compose exec tooling`.
+# the Webware toolchain: PHP CLI, Composer, Node, Mago, and Xdebug. Developers
+# work inside this container: either through the VS Code Dev Container (backed
+# by compose.yml) or by `docker compose up -d` + `docker compose exec tooling`.
 # The host machine (Windows, WSL, Linux, or macOS) never needs a native PHP
 # toolchain.
 #
@@ -21,9 +21,20 @@ ARG PHP_VERSION=8.5.12
 # Composer version (copied from the official composer image at build time).
 ARG COMPOSER_VERSION=2.11.1
 
-# Named stage so Composer can be copied from it (--from does not support
-# inline variable expansion).
+# Node version (copied from the official node image at build time). PHPUnit
+# cannot execute JavaScript, so the search ranking assertions run in the Node
+# harness that test/integration/SearchBehaviourTest.php shells out to. Pinned
+# to a current release rather than the oldest one the harness runs on, because
+# Node carries CVEs.
+ARG NODE_VERSION=26.13.0
+
+# Named stages so Composer and Node can be copied from them (--from does not
+# support inline variable expansion).
 FROM composer:${COMPOSER_VERSION} AS composer
+
+# The tooling base image is Debian trixie, so the Node binary comes from the
+# trixie variant: its libstdc++6 and libgcc-s1 then match the target's glibc.
+FROM node:${NODE_VERSION}-trixie-slim AS node
 
 FROM php:${PHP_VERSION}-cli
 
@@ -76,6 +87,15 @@ RUN set -eux; \
 # Composer
 # ---------------------------------------------------------------------------
 COPY --from=composer /usr/bin/composer /usr/bin/composer
+
+# ---------------------------------------------------------------------------
+# Node
+# ---------------------------------------------------------------------------
+# Only the binary is copied: the harness imports `node:` builtins and one
+# relative module, so npm and friends are not installed. The binary is
+# dynamically linked, and the base image already provides the libraries it
+# needs (libstdc++6, libgcc-s1, libatomic1), so no extra package is added.
+COPY --from=node /usr/local/bin/node /usr/local/bin/node
 
 # ---------------------------------------------------------------------------
 # Mago (statically linked Rust binary).

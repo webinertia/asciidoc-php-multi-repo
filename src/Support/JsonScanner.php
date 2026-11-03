@@ -7,8 +7,8 @@ namespace Webware\AsciidocPhp\MultiRepo\Support;
 use function ctype_xdigit;
 use function hexdec;
 use function mb_chr;
+use function str_contains;
 use function strlen;
-use function strpos;
 use function strtr;
 use function substr;
 
@@ -137,7 +137,7 @@ final class JsonScanner
         $start = $this->offset;
 
         while ($this->offset < $this->length) {
-            if (strpos('-+.0123456789eE', $this->json[$this->offset]) === false) {
+            if (! str_contains('-+.0123456789eE', $this->json[$this->offset])) {
                 break;
             }
 

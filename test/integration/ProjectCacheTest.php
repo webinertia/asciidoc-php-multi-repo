@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebwareTestIntegration\AsciidocPhp\MultiRepo;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Build\BuildRunner;
 use Webware\AsciidocPhp\MultiRepo\Build\IncrementalCache;
@@ -38,25 +39,27 @@ final class ProjectCacheTest extends TestCase
 {
     use TempDirectoryTrait;
 
-    public function testAChangedProjectSlugIsNotServedFromTheCache(): void
+    #[Test]
+    public function aChangedProjectSlugIsNotServedFromTheCache(): void
     {
         $out = $this->rebuildInto('slug-azalea', ['slug' => 'azalea']);
 
-        self::assertFileExists(Path::join($out, 'azalea', 'v1', 'index.html'));
-        self::assertFileDoesNotExist(Path::join($out, 'alpha', 'v1', 'index.html'));
+        static::assertFileExists(Path::join($out, 'azalea', 'v1', 'index.html'));
+        static::assertFileDoesNotExist(Path::join($out, 'alpha', 'v1', 'index.html'));
     }
 
-    public function testAChangedProjectTitleIsNotServedFromTheCache(): void
+    #[Test]
+    public function aChangedProjectTitleIsNotServedFromTheCache(): void
     {
         $ledger = $this->rebuildWith('title-ledger', ['title' => 'Alpha Ledger']);
 
-        self::assertStringContainsString('<p class="project-name">Alpha Ledger</p>', $ledger);
-        self::assertStringContainsString('<p class="footer-project">Alpha Ledger</p>', $ledger);
+        static::assertStringContainsString('<p class="project-name">Alpha Ledger</p>', $ledger);
+        static::assertStringContainsString('<p class="footer-project">Alpha Ledger</p>', $ledger);
 
         $billing = $this->rebuildWith('title-billing', ['title' => 'Alpha Billing']);
 
-        self::assertStringContainsString('<p class="project-name">Alpha Billing</p>', $billing);
-        self::assertStringNotContainsString('Alpha Ledger', $billing);
+        static::assertStringContainsString('<p class="project-name">Alpha Billing</p>', $billing);
+        static::assertStringNotContainsString('Alpha Ledger', $billing);
     }
 
     protected function setUp(): void
@@ -83,12 +86,12 @@ final class ProjectCacheTest extends TestCase
 
     private function fixtureConfig(): string
     {
-        return Path::join(dirname(__DIR__, 2), 'test', 'fixtures', 'ordering', 'site.json');
+        return Path::join(dirname(__DIR__, levels: 2), 'test', 'fixtures', 'ordering', 'site.json');
     }
 
     private function fixtureManifest(): string
     {
-        return Path::join(dirname(__DIR__, 2), 'test', 'fixtures', 'ordering', 'manifest.json');
+        return Path::join(dirname(__DIR__, levels: 2), 'test', 'fixtures', 'ordering', 'manifest.json');
     }
 
     /**
@@ -101,11 +104,11 @@ final class ProjectCacheTest extends TestCase
     {
         $config = new Json()->decodeObject((string) file_get_contents($this->fixtureConfig()), $this->fixtureConfig());
         $alpha  = $config['projects']['alpha'] ?? [];
-        self::assertIsArray($alpha);
+        static::assertIsArray($alpha);
 
         $config['projects']['alpha'] = $override + $alpha;
 
-        $path = Path::join($this->tempDirectory, $label . '.json');
+        $path = Path::join($this->tempDirectory, "{$label}.json");
         file_put_contents($path, new Json()->encode($config));
 
         $out = Path::join($this->tempDirectory, $label);
@@ -116,7 +119,7 @@ final class ProjectCacheTest extends TestCase
                 manifest: $this->fixtureManifest(),
                 out     : $out,
                 cache   : Path::join($this->tempDirectory, 'cache'),
-                report  : Path::join($this->tempDirectory, $label . '-report.json'),
+                report  : Path::join($this->tempDirectory, "{$label}-report.json"),
             ),
             new SiteConfigLoader()->load($path),
             new Output(stderr: static function (string $line): void {}),

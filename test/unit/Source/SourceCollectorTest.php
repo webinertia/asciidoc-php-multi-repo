@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Source;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Report\ReasonCode;
 use Webware\AsciidocPhp\MultiRepo\Source\SourceCollector;
@@ -33,7 +34,8 @@ final class SourceCollectorTest extends TestCase
 
     private Filesystem $filesystem;
 
-    public function testAVersionWithoutAnEntryPageDoesNotStopTheLaterVersions(): void
+    #[Test]
+    public function aVersionWithoutAnEntryPageDoesNotStopTheLaterVersions(): void
     {
         $root = $this->repository([
             'docs/v1/index.adoc' => "= One\n",
@@ -47,16 +49,16 @@ final class SourceCollectorTest extends TestCase
             Path::join($this->tempDirectory, 'cache'),
         );
 
-        self::assertSame(['v1', 'v2', 'v3'], array_map(
+        static::assertSame(['v1', 'v2', 'v3'], array_map(
             static fn($version): string => $version->label(),
             $sources->versions(),
         ));
 
-        self::assertCount(1, $sources->errors());
-        self::assertSame(ReasonCode::MissingEntry, $sources->errors()[0]->reasonCode());
-        self::assertCount(2, $sources->pages());
+        static::assertCount(1, $sources->errors());
+        static::assertSame(ReasonCode::MissingEntry, $sources->errors()[0]->reasonCode());
+        static::assertCount(2, $sources->pages());
 
-        self::assertSame(
+        static::assertSame(
             ['docs/v1/index.adoc', 'docs/v3/index.adoc'],
             array_map(
                 static fn($source): string => $source->relativePath(),

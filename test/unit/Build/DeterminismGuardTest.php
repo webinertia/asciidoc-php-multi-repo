@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Build;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Build\DeterminismGuard;
 use Webware\AsciidocPhp\MultiRepo\Support\Filesystem;
@@ -33,98 +34,108 @@ final class DeterminismGuardTest extends TestCase
 {
     use TempDirectoryTrait;
 
-    public function testAFileWithoutAnExtensionIsNotScanned(): void
+    #[Test]
+    public function aFileWithoutAnExtensionIsNotScanned(): void
     {
         $directory = $this->createTempDirectory();
         $this->write($directory, 'LICENSE', "2026-11-02T18:19:02Z\n");
 
-        self::assertSame([], new DeterminismGuard()->inspect($directory));
+        static::assertSame([], new DeterminismGuard()->inspect($directory));
     }
 
-    public function testAGeneratedAtStampIsReported(): void
+    #[Test]
+    public function aGeneratedAtStampIsReported(): void
     {
         $directory = $this->createTempDirectory();
         $this->write($directory, 'page.html', "<p>Generated at 2026-11-02 by the build</p>\n");
 
-        self::assertSame(
+        static::assertSame(
             ['page.html line 1: a generated-at stamp'],
             new DeterminismGuard()->inspect($directory),
         );
     }
 
-    public function testAGeneratedOnStampIsReported(): void
+    #[Test]
+    public function aGeneratedOnStampIsReported(): void
     {
         $directory = $this->createTempDirectory();
         $this->write($directory, 'page.html', "<p>generated on 2026-11-02</p>\n");
 
-        self::assertSame(
+        static::assertSame(
             ['page.html line 1: a generated-at stamp'],
             new DeterminismGuard()->inspect($directory),
         );
     }
 
-    public function testALeftoverTemporaryFileNameIsReported(): void
+    #[Test]
+    public function aLeftoverTemporaryFileNameIsReported(): void
     {
         $directory = $this->createTempDirectory();
         $this->write($directory, 'page.html', "served from .tmp-a1b2c3\n");
 
-        self::assertSame(
+        static::assertSame(
             ['page.html line 1: a leftover temporary file name'],
             new DeterminismGuard()->inspect($directory),
         );
     }
 
-    public function testALongerExtensionlessNameIsNotScannedEither(): void
+    #[Test]
+    public function aLongerExtensionlessNameIsNotScannedEither(): void
     {
         $directory = $this->createTempDirectory();
         $this->write($directory, 'xhtml', "2026-11-02T18:19:02Z\n");
 
-        self::assertSame([], new DeterminismGuard()->inspect($directory));
+        static::assertSame([], new DeterminismGuard()->inspect($directory));
     }
 
-    public function testAnAbsolutePosixHomePathIsReported(): void
+    #[Test]
+    public function anAbsolutePosixHomePathIsReported(): void
     {
         $directory = $this->createTempDirectory();
         $this->write($directory, 'page.html', '/home/runner/site/page.html');
 
-        self::assertSame(
+        static::assertSame(
             ['page.html line 1: an absolute POSIX home path'],
             new DeterminismGuard()->inspect($directory),
         );
     }
 
-    public function testAnAbsoluteWindowsPathIsReported(): void
+    #[Test]
+    public function anAbsoluteWindowsPathIsReported(): void
     {
         $directory = $this->createTempDirectory();
         $this->write($directory, 'page.html', 'C:/build/site/page.html');
 
-        self::assertSame(
+        static::assertSame(
             ['page.html line 1: an absolute Windows path'],
             new DeterminismGuard()->inspect($directory),
         );
     }
 
-    public function testANonTextNameDoesNotHideALaterFile(): void
+    #[Test]
+    public function aNonTextNameDoesNotHideALaterFile(): void
     {
         $directory = $this->createTempDirectory();
         $this->write($directory, 'a/logo.png', "2026-11-02T18:19:02Z\n");
         $this->write($directory, 'b.html', "2026-11-02T18:19:02Z\n");
 
-        self::assertSame(
+        static::assertSame(
             ['b.html line 1: a build timestamp (an ISO 8601 instant)'],
             new DeterminismGuard()->inspect($directory),
         );
     }
 
-    public function testAnUnlistedExtensionIsNotScanned(): void
+    #[Test]
+    public function anUnlistedExtensionIsNotScanned(): void
     {
         $directory = $this->createTempDirectory();
         $this->write($directory, 'logo.png', "2026-11-02T18:19:02Z\n");
 
-        self::assertSame([], new DeterminismGuard()->inspect($directory));
+        static::assertSame([], new DeterminismGuard()->inspect($directory));
     }
 
-    public function testARelativeOutputDirectoryContributesNoPattern(): void
+    #[Test]
+    public function aRelativeOutputDirectoryContributesNoPattern(): void
     {
         $directory = $this->createTempDirectory();
         $this->write($directory, 'site/page.html', 'built in site order');
@@ -133,49 +144,53 @@ final class DeterminismGuardTest extends TestCase
         chdir($directory);
 
         try {
-            self::assertSame([], new DeterminismGuard()->inspect('site'));
+            static::assertSame([], new DeterminismGuard()->inspect('site'));
         } finally {
             chdir($previous);
         }
     }
 
-    public function testATextExtensionIsScannedWhateverItsCase(): void
+    #[Test]
+    public function aTextExtensionIsScannedWhateverItsCase(): void
     {
         $directory = $this->createTempDirectory();
         $this->write($directory, 'PAGE.HTML', "2026-11-02T18:19:02Z\n");
 
-        self::assertSame(
+        static::assertSame(
             ['PAGE.HTML line 1: a build timestamp (an ISO 8601 instant)'],
             new DeterminismGuard()->inspect($directory),
         );
     }
 
-    public function testATimestampIsReportedOnTheLineItOccurs(): void
+    #[Test]
+    public function aTimestampIsReportedOnTheLineItOccurs(): void
     {
         $directory = $this->createTempDirectory();
         $this->write($directory, 'page.html', "first\nsecond\n2026-11-02T18:19:02Z\n");
 
-        self::assertSame(
+        static::assertSame(
             ['page.html line 3: a build timestamp (an ISO 8601 instant)'],
             new DeterminismGuard()->inspect($directory),
         );
     }
 
-    public function testCleanOutputReportsNothing(): void
+    #[Test]
+    public function cleanOutputReportsNothing(): void
     {
         $directory = $this->createTempDirectory();
         $this->write($directory, 'index.html', "<p>stable</p>\n");
 
-        self::assertSame([], new DeterminismGuard()->inspect($directory));
+        static::assertSame([], new DeterminismGuard()->inspect($directory));
     }
 
-    public function testEveryTextFileIsInspectedInAPathOrderedSequence(): void
+    #[Test]
+    public function everyTextFileIsInspectedInAPathOrderedSequence(): void
     {
         $directory = $this->createTempDirectory();
         $this->write($directory, 'b.html', "2026-11-02T18:19:02Z\n");
         $this->write($directory, 'a/x.css', "2026-11-02T18:19:02Z\n");
 
-        self::assertSame(
+        static::assertSame(
             [
                 'a/x.css line 1: a build timestamp (an ISO 8601 instant)',
                 'b.html line 1: a build timestamp (an ISO 8601 instant)',
@@ -184,18 +199,20 @@ final class DeterminismGuardTest extends TestCase
         );
     }
 
-    public function testTheCnameFileIsScannedWhateverItsCase(): void
+    #[Test]
+    public function theCnameFileIsScannedWhateverItsCase(): void
     {
         $directory = $this->createTempDirectory();
         $this->write($directory, 'CNAME', "2026-11-02T18:19:02Z\n");
 
-        self::assertSame(
+        static::assertSame(
             ['CNAME line 1: a build timestamp (an ISO 8601 instant)'],
             new DeterminismGuard()->inspect($directory),
         );
     }
 
-    public function testTheHostnameIsReported(): void
+    #[Test]
+    public function theHostnameIsReported(): void
     {
         $hostname = gethostname();
 
@@ -206,40 +223,43 @@ final class DeterminismGuardTest extends TestCase
         $directory = $this->createTempDirectory();
         $this->write($directory, 'page.html', "served by {$hostname}\n");
 
-        self::assertSame(
+        static::assertSame(
             ['page.html line 1: this machine\'s name'],
             new DeterminismGuard()->inspect($directory),
         );
     }
 
-    public function testTheLineNumberCountsEveryNewlineBeforeTheMatch(): void
+    #[Test]
+    public function theLineNumberCountsEveryNewlineBeforeTheMatch(): void
     {
         $directory = $this->createTempDirectory();
         $this->write($directory, 'page.html', "\n<p>Generated at 2026-11-02</p>\n");
 
-        self::assertSame(
+        static::assertSame(
             ['page.html line 2: a generated-at stamp'],
             new DeterminismGuard()->inspect($directory),
         );
     }
 
-    public function testTheNoJekyllMarkerIsScannedEvenWithoutAnExtension(): void
+    #[Test]
+    public function theNoJekyllMarkerIsScannedEvenWithoutAnExtension(): void
     {
         $directory = $this->createTempDirectory();
         $this->write($directory, '.nojekyll', "2026-11-02T18:19:02Z\n");
 
-        self::assertSame(
+        static::assertSame(
             ['.nojekyll line 1: a build timestamp (an ISO 8601 instant)'],
             new DeterminismGuard()->inspect($directory),
         );
     }
 
-    public function testTheOutputDirectoryPathIsReported(): void
+    #[Test]
+    public function theOutputDirectoryPathIsReported(): void
     {
         $directory = $this->createTempDirectory();
         $this->write($directory, 'page.html', "checkout at {$directory}/page.html\n");
 
-        self::assertSame(
+        static::assertSame(
             ['page.html line 1: the output directory path'],
             new DeterminismGuard()->inspect($directory),
         );

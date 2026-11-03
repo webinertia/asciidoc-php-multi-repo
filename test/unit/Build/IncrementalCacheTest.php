@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Build;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Build\IncrementalCache;
 use Webware\AsciidocPhp\MultiRepo\Render\PageContext;
@@ -33,24 +34,27 @@ final class IncrementalCacheTest extends TestCase
 {
     use TempDirectoryTrait;
 
-    public function testACorruptEntryIsAMissRatherThanAFailure(): void
+    #[Test]
+    public function aCorruptEntryIsAMissRatherThanAFailure(): void
     {
         $directory = $this->createTempDirectory();
         $path      = Path::join($directory, 'pages', 'broken.json');
         new Filesystem()->ensureDirectory(dirname($path));
-        file_put_contents($path, 'not json at all');
+        file_put_contents($path, data: 'not json at all');
 
-        self::assertNull(new IncrementalCache()->load($directory, 'broken'));
+        static::assertNull(new IncrementalCache()->load($directory, 'broken'));
     }
 
-    public function testAMissingEntryIsAMiss(): void
+    #[Test]
+    public function aMissingEntryIsAMiss(): void
     {
         $directory = $this->createTempDirectory();
 
-        self::assertNull(new IncrementalCache()->load($directory, 'absent'));
+        static::assertNull(new IncrementalCache()->load($directory, 'absent'));
     }
 
-    public function testAnEntryWithAMalformedTableOfContentsIsAMiss(): void
+    #[Test]
+    public function anEntryWithAMalformedTableOfContentsIsAMiss(): void
     {
         $directory      = $this->createTempDirectory();
         $cache          = new IncrementalCache();
@@ -58,10 +62,11 @@ final class IncrementalCacheTest extends TestCase
         $payload['toc'] = [['level' => 'two', 'id' => 'intro', 'title' => 'Intro']];
         $this->writePayload($directory, 'badtoc', $payload);
 
-        self::assertNull($cache->load($directory, 'badtoc'));
+        static::assertNull($cache->load($directory, 'badtoc'));
     }
 
-    public function testAnEntryWithoutATableOfContentsIsAMiss(): void
+    #[Test]
+    public function anEntryWithoutATableOfContentsIsAMiss(): void
     {
         $directory = $this->createTempDirectory();
         $cache     = new IncrementalCache();
@@ -69,10 +74,11 @@ final class IncrementalCacheTest extends TestCase
         unset($payload['toc']);
         $this->writePayload($directory, 'notoc', $payload);
 
-        self::assertNull($cache->load($directory, 'notoc'));
+        static::assertNull($cache->load($directory, 'notoc'));
     }
 
-    public function testAnEntryWithoutItsRequiredFieldsIsAMiss(): void
+    #[Test]
+    public function anEntryWithoutItsRequiredFieldsIsAMiss(): void
     {
         $directory = $this->createTempDirectory();
         $cache     = new IncrementalCache();
@@ -80,10 +86,11 @@ final class IncrementalCacheTest extends TestCase
         unset($payload['urlPath']);
         $this->writePayload($directory, 'nofields', $payload);
 
-        self::assertNull($cache->load($directory, 'nofields'));
+        static::assertNull($cache->load($directory, 'nofields'));
     }
 
-    public function testAnEntryWithoutTheColorModeFieldsUsesTheDefaults(): void
+    #[Test]
+    public function anEntryWithoutTheColorModeFieldsUsesTheDefaults(): void
     {
         $directory = $this->createTempDirectory();
         $cache     = new IncrementalCache();
@@ -96,26 +103,28 @@ final class IncrementalCacheTest extends TestCase
 
         $restored = $cache->load($directory, 'legacy');
 
-        self::assertNotNull($restored);
+        static::assertNotNull($restored);
         $loaded = $restored->context();
-        self::assertNotNull($loaded);
-        self::assertSame('system', $loaded->colorMode());
-        self::assertSame('dark', $loaded->defaultColorMode());
-        self::assertSame('', $loaded->iconFontCdn());
-        self::assertNull($loaded->sourceUrl());
+        static::assertNotNull($loaded);
+        static::assertSame('system', $loaded->colorMode());
+        static::assertSame('dark', $loaded->defaultColorMode());
+        static::assertSame('', $loaded->iconFontCdn());
+        static::assertNull($loaded->sourceUrl());
     }
 
-    public function testANonObjectEntryIsAMiss(): void
+    #[Test]
+    public function aNonObjectEntryIsAMiss(): void
     {
         $directory = $this->createTempDirectory();
         $path      = Path::join($directory, 'pages', 'scalar.json');
         new Filesystem()->ensureDirectory(dirname($path));
-        file_put_contents($path, '"a string"');
+        file_put_contents($path, data: '"a string"');
 
-        self::assertNull(new IncrementalCache()->load($directory, 'scalar'));
+        static::assertNull(new IncrementalCache()->load($directory, 'scalar'));
     }
 
-    public function testAPageSurvivesARoundTripIntact(): void
+    #[Test]
+    public function aPageSurvivesARoundTripIntact(): void
     {
         $directory = $this->createTempDirectory();
         $cache     = new IncrementalCache();
@@ -124,92 +133,98 @@ final class IncrementalCacheTest extends TestCase
         $cache->store($directory, 'entry', $page);
         $restored = $cache->load($directory, 'entry');
 
-        self::assertNotNull($restored);
-        self::assertSame($page->html(), $restored->html());
-        self::assertSame($page->outputPath(), $restored->outputPath());
-        self::assertSame($page->urlPath(), $restored->urlPath());
-        self::assertSame($page->title(), $restored->title());
-        self::assertSame($page->headings(), $restored->headings());
-        self::assertSame($page->searchText(), $restored->searchText());
+        static::assertNotNull($restored);
+        static::assertSame($page->html(), $restored->html());
+        static::assertSame($page->outputPath(), $restored->outputPath());
+        static::assertSame($page->urlPath(), $restored->urlPath());
+        static::assertSame($page->title(), $restored->title());
+        static::assertSame($page->headings(), $restored->headings());
+        static::assertSame($page->searchText(), $restored->searchText());
 
         $toc = $restored->toc();
-        self::assertCount(2, $toc);
-        self::assertSame(2, $toc[0]->level());
-        self::assertSame('intro', $toc[0]->id());
-        self::assertSame('Intro', $toc[0]->title());
-        self::assertSame(3, $toc[1]->level());
+        static::assertCount(2, $toc);
+        static::assertSame(2, $toc[0]->level());
+        static::assertSame('intro', $toc[0]->id());
+        static::assertSame('Intro', $toc[0]->title());
+        static::assertSame(3, $toc[1]->level());
 
         $context = $restored->context();
-        self::assertNotNull($context);
-        self::assertSame('Docs', $context->siteName());
-        self::assertSame('Project', $context->projectTitle());
-        self::assertSame('Guide', $context->pageTitle());
-        self::assertSame('v1', $context->versionLabel());
-        self::assertSame('https://example.test/project/v1/guide/', $context->canonicalUrl());
-        self::assertSame('<p>body</p>', $context->body());
-        self::assertSame(['https://example.test/style.css'], $context->stylesheets());
-        self::assertSame('https://example.test/source/guide.adoc', $context->sourceUrl());
-        self::assertSame('light', $context->colorMode());
-        self::assertSame('light', $context->defaultColorMode());
-        self::assertSame('https://example.test/icons.css', $context->iconFontCdn());
-        self::assertSame([], $context->scripts());
+        static::assertNotNull($context);
+        static::assertSame('Docs', $context->siteName());
+        static::assertSame('Project', $context->projectTitle());
+        static::assertSame('Guide', $context->pageTitle());
+        static::assertSame('v1', $context->versionLabel());
+        static::assertSame('https://example.test/project/v1/guide/', $context->canonicalUrl());
+        static::assertSame('<p>body</p>', $context->body());
+        static::assertSame(['https://example.test/style.css'], $context->stylesheets());
+        static::assertSame('https://example.test/source/guide.adoc', $context->sourceUrl());
+        static::assertSame('light', $context->colorMode());
+        static::assertSame('light', $context->defaultColorMode());
+        static::assertSame('https://example.test/icons.css', $context->iconFontCdn());
+        static::assertSame([], $context->scripts());
     }
 
-    public function testAPageWithoutAShellContextIsNotStored(): void
+    #[Test]
+    public function aPageWithoutAShellContextIsNotStored(): void
     {
         $directory = $this->createTempDirectory();
         $cache     = new IncrementalCache();
 
         $cache->store($directory, 'bare', new RenderedPage('html', 'index.html', '/', 'Home'));
 
-        self::assertFileDoesNotExist(Path::join($directory, 'pages', 'bare.json'));
-        self::assertNull($cache->load($directory, 'bare'));
+        static::assertFileDoesNotExist(Path::join($directory, 'pages', 'bare.json'));
+        static::assertNull($cache->load($directory, 'bare'));
     }
 
-    public function testTheKeyChangesWhenAnInputChanges(): void
+    #[Test]
+    public function theKeyChangesWhenAnInputChanges(): void
     {
         $cache = new IncrementalCache();
 
-        self::assertNotSame($cache->key(['content' => 'one']), $cache->key(['content' => 'two']));
+        static::assertNotSame($cache->key(['content' => 'one']), $cache->key(['content' => 'two']));
     }
 
-    public function testTheKeyDoesNotDependOnTheOrderOfNestedParts(): void
+    #[Test]
+    public function theKeyDoesNotDependOnTheOrderOfNestedParts(): void
     {
         $cache = new IncrementalCache();
 
-        self::assertSame(
+        static::assertSame(
             $cache->key(['options' => ['safe' => 'unsafe', 'header_footer' => true]]),
             $cache->key(['options' => ['header_footer' => true, 'safe' => 'unsafe']]),
         );
     }
 
-    public function testTheKeyDoesNotDependOnTheOrderOfTheParts(): void
+    #[Test]
+    public function theKeyDoesNotDependOnTheOrderOfTheParts(): void
     {
         $cache = new IncrementalCache();
 
-        self::assertSame(
+        static::assertSame(
             $cache->key(['revision' => 'abc', 'path' => 'guide.adoc']),
             $cache->key(['path' => 'guide.adoc', 'revision' => 'abc']),
         );
     }
 
-    public function testTheKeyKeepsTheListOrderOfAList(): void
+    #[Test]
+    public function theKeyKeepsTheListOrderOfAList(): void
     {
         $cache = new IncrementalCache();
 
-        self::assertNotSame(
+        static::assertNotSame(
             $cache->key(['stylesheets' => ['a.css', 'b.css']]),
             $cache->key(['stylesheets' => ['b.css', 'a.css']]),
         );
     }
 
-    public function testTheKeyOwnsTheFormatVersion(): void
+    #[Test]
+    public function theKeyOwnsTheFormatVersion(): void
     {
         $cache = new IncrementalCache();
 
         // A caller that hands in its own formatVersion cannot collide with, or override, the
         // constant that invalidates every entry when the payload changes shape.
-        self::assertSame($cache->key([]), $cache->key(['formatVersion' => 99]));
+        static::assertSame($cache->key([]), $cache->key(['formatVersion' => 99]));
     }
 
     private function page(): RenderedPage
@@ -247,7 +262,7 @@ final class IncrementalCacheTest extends TestCase
     private function payloadAfter(IncrementalCache $cache, string $directory, string $key): array
     {
         $cache->store($directory, $key, $this->page());
-        $path = Path::join($directory, 'pages', $key . '.json');
+        $path = Path::join($directory, 'pages', "{$key}.json");
 
         return new Json()->decodeObject((string) file_get_contents($path), $path);
     }
@@ -257,6 +272,6 @@ final class IncrementalCacheTest extends TestCase
      */
     private function writePayload(string $directory, string $key, array $payload): void
     {
-        file_put_contents(Path::join($directory, 'pages', $key . '.json'), new Json()->encode($payload));
+        file_put_contents(Path::join($directory, 'pages', "{$key}.json"), new Json()->encode($payload));
     }
 }

@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Source;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Source\RepositoryFetcher;
 use Webware\AsciidocPhp\MultiRepo\Source\SourceException;
@@ -37,7 +38,8 @@ final class RepositoryFetcherRefetchTest extends TestCase
 
     private ProcessRunner $runner;
 
-    public function testADefaultFetcherReportsThreeAttempts(): void
+    #[Test]
+    public function aDefaultFetcherReportsThreeAttempts(): void
     {
         $missing = Path::join($this->tempDirectory, 'absent-repository');
 
@@ -53,13 +55,14 @@ final class RepositoryFetcherRefetchTest extends TestCase
                 Path::join($this->tempDirectory, 'cache'),
             );
 
-            self::fail('Expected a SourceException.');
+            static::fail('Expected a SourceException.');
         } catch (SourceException $exception) {
-            self::assertStringContainsString('3 attempt(s)', $exception->error()->message());
+            static::assertStringContainsString('3 attempt(s)', $exception->error()->message());
         }
     }
 
-    public function testAFetchFailureMessageCarriesNoTrailingWhitespace(): void
+    #[Test]
+    public function aFetchFailureMessageCarriesNoTrailingWhitespace(): void
     {
         $missing = Path::join($this->tempDirectory, 'absent-repository');
 
@@ -74,16 +77,17 @@ final class RepositoryFetcherRefetchTest extends TestCase
                     Path::join($this->tempDirectory, 'cache'),
                 );
 
-            self::fail('Expected a SourceException.');
+            static::fail('Expected a SourceException.');
         } catch (SourceException $exception) {
             $message = $exception->error()->message();
 
-            self::assertStringContainsString('does not appear to be a git repository', $message);
-            self::assertStringEndsNotWith("\n", $message);
+            static::assertStringContainsString('does not appear to be a git repository', $message);
+            static::assertStringEndsNotWith("\n", $message);
         }
     }
 
-    public function testARefetchChecksOutAMovedRevision(): void
+    #[Test]
+    public function aRefetchChecksOutAMovedRevision(): void
     {
         $origin  = $this->gitRepository(['docs/index.adoc' => "= Index\n"]);
         $bare    = $this->bareClone($origin, 'origin.git');
@@ -96,11 +100,12 @@ final class RepositoryFetcherRefetchTest extends TestCase
 
         $second = $fetcher->fetch(SourceFixture::repository(), SourceFixture::config(), $cache);
 
-        self::assertTrue($second->checkedOut());
-        self::assertContains('docs/second.adoc', $second->files());
+        static::assertTrue($second->checkedOut());
+        static::assertContains('docs/second.adoc', $second->files());
     }
 
-    public function testARefetchFollowsTheNewRemoteUrl(): void
+    #[Test]
+    public function aRefetchFollowsTheNewRemoteUrl(): void
     {
         $first = $this->bareClone(
             $this->gitRepository(['docs/index.adoc' => "= First\n"]),
@@ -123,10 +128,11 @@ final class RepositoryFetcherRefetchTest extends TestCase
 
         $fetched = $fetcher->fetch(SourceFixture::repository(), SourceFixture::config(), $cache);
 
-        self::assertSame($this->head($second), $fetched->revision());
+        static::assertSame($this->head($second), $fetched->revision());
     }
 
-    public function testTheContentDigestCoversEveryFileInTheDirectory(): void
+    #[Test]
+    public function theContentDigestCoversEveryFileInTheDirectory(): void
     {
         $root = $this->repository([
             'docs/alpha.adoc' => "= Alpha\n",
@@ -149,7 +155,7 @@ final class RepositoryFetcherRefetchTest extends TestCase
             ->fetch(SourceFixture::repository(path: $root), SourceFixture::config(), $cache)
             ->revision();
 
-        self::assertNotSame($before, $after);
+        static::assertNotSame($before, $after);
     }
 
     protected function setUp(): void

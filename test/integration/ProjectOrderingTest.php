@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebwareTestIntegration\AsciidocPhp\MultiRepo;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Build\BuildRunner;
 use Webware\AsciidocPhp\MultiRepo\Build\ContentWriter;
@@ -24,12 +25,15 @@ use WebwareTest\AsciidocPhp\MultiRepo\Support\TempDirectoryTrait;
 use function array_column;
 use function dirname;
 use function file_get_contents;
+use function file_put_contents;
 use function implode;
 use function is_file;
 use function preg_match;
 use function preg_match_all;
 use function sprintf;
 use function str_contains;
+use function strlen;
+use function substr;
 use function substr_count;
 use function trim;
 
@@ -64,12 +68,14 @@ final class ProjectOrderingTest extends TestCase
 
     private string $report;
 
-    public function testALabelThatStartsWithANumberIsStillOrderedByThatNumber(): void
+    #[Test]
+    public function aLabelThatStartsWithANumberIsStillOrderedByThatNumber(): void
     {
-        self::assertSame(['v1', 'beta', 'v2beta'], $this->projectReport('narrow')['versions']);
+        static::assertSame(['v1', 'beta', 'v2beta'], $this->projectReport('narrow')['versions']);
     }
 
-    public function testAProjectWhoseFetchFailsRecordsNoFetchAttempts(): void
+    #[Test]
+    public function aProjectWhoseFetchFailsRecordsNoFetchAttempts(): void
     {
         $manifest = [
             'schemaVersion' => 1,
@@ -91,11 +97,10 @@ final class ProjectOrderingTest extends TestCase
         $exitCode = new BuildCommand(
             runner: new BuildRunner(collector: new SourceCollector(
                 fetcher: new RepositoryFetcher(
-                    remoteUrl: static fn(string $organization, string $repository): string => (
-                        'file:///nonexistent/'
-                        . $repository
-                        . '.git'
-                    ),
+                    remoteUrl: static fn(
+                        string $organization,
+                        string $repository,
+                    ): string => "file:///nonexistent/{$repository}.git",
                 ),
             )),
         )->execute(
@@ -110,118 +115,129 @@ final class ProjectOrderingTest extends TestCase
             new Output(stderr: static function (string $line): void {}),
         );
 
-        self::assertSame(ExitCode::Degraded, $exitCode);
+        static::assertSame(ExitCode::Degraded, $exitCode);
 
         $written  = new Json()->decodeObject((string) file_get_contents($report), $report);
         $projects = $written['projects'] ?? [];
-        self::assertIsArray($projects);
+        static::assertIsArray($projects);
 
         $byRepository = array_column($projects, null, 'repository');
         $result       = $byRepository['remote'] ?? null;
 
-        self::assertIsArray($result);
-        self::assertSame('failed', $result['status']);
-        self::assertSame(0, $result['fetchAttempts']);
+        static::assertIsArray($result);
+        static::assertSame('failed', $result['status']);
+        static::assertSame(0, $result['fetchAttempts']);
     }
 
-    public function testNumericLabelsOutrankTheLabelsThatCarryNoNumber(): void
+    #[Test]
+    public function numericLabelsOutrankTheLabelsThatCarryNoNumber(): void
     {
-        self::assertSame(['v3', 'v2', 'v1', 'v2beta', 'zzz'], $this->projectReport('sorting')['versions']);
+        static::assertSame(['v3', 'v2', 'v1', 'v2beta', 'zzz'], $this->projectReport('sorting')['versions']);
     }
 
-    public function testTheBuildAnnouncesEveryPhaseOfEveryProject(): void
+    #[Test]
+    public function theBuildAnnouncesEveryPhaseOfEveryProject(): void
     {
         $stderr = $this->stderr();
 
-        self::assertStringContainsString('alpha: collecting sources', $stderr);
-        self::assertStringContainsString('alpha: rendered alpha/v1/index.html', $stderr);
-        self::assertStringContainsString('alpha: 5 page(s) ok', $stderr);
-        self::assertStringContainsString('alpha: wrote pages', $stderr);
+        static::assertStringContainsString('alpha: collecting sources', $stderr);
+        static::assertStringContainsString('alpha: rendered alpha/v1/index.html', $stderr);
+        static::assertStringContainsString('alpha: 5 page(s) ok', $stderr);
+        static::assertStringContainsString('alpha: wrote pages', $stderr);
 
-        self::assertStringContainsString('noindex: 2 page(s) ok', $stderr);
-        self::assertStringContainsString('zeta: 1 page(s) ok', $stderr);
-        self::assertStringContainsString('renderloop: 1 page(s) partial', $stderr);
-        self::assertStringContainsString('missingrepo: 0 page(s) failed', $stderr);
-        self::assertStringContainsString('nodocs: 0 page(s) failed', $stderr);
+        static::assertStringContainsString('noindex: 2 page(s) ok', $stderr);
+        static::assertStringContainsString('zeta: 1 page(s) ok', $stderr);
+        static::assertStringContainsString('renderloop: 1 page(s) partial', $stderr);
+        static::assertStringContainsString('missingrepo: 0 page(s) failed', $stderr);
+        static::assertStringContainsString('nodocs: 0 page(s) failed', $stderr);
     }
 
-    public function testTheBuildKeepsGoingWhenAPageCannotBeRendered(): void
+    #[Test]
+    public function theBuildKeepsGoingWhenAPageCannotBeRendered(): void
     {
-        self::assertStringContainsString(
+        static::assertStringContainsString(
             'warning: docs/v1/index.adoc: The include target "missing-partial.adoc" does not exist. (render-failed)',
             $this->stderr(),
         );
 
-        self::assertFalse(is_file(Path::join($this->output, 'renderloop', 'v1', 'index.html')));
-        self::assertTrue(is_file(Path::join($this->output, 'renderloop', 'v1', 'zzz.html')));
-        self::assertTrue(is_file(Path::join($this->output, 'renderloop', 'index.html')));
+        static::assertFalse(is_file(Path::join($this->output, 'renderloop', 'v1', 'index.html')));
+        static::assertTrue(is_file(Path::join($this->output, 'renderloop', 'v1', 'zzz.html')));
+        static::assertTrue(is_file(Path::join($this->output, 'renderloop', 'index.html')));
     }
 
-    public function testTheBuildNamesTheMissingDocumentationDirectory(): void
+    #[Test]
+    public function theBuildNamesTheMissingDocumentationDirectory(): void
     {
         $stderr = $this->stderr();
 
-        self::assertStringContainsString(
+        static::assertStringContainsString(
             'warning: docs: missingrepo: no documentation directory at docs/. (no-asciidoc-sources)',
             $stderr,
         );
-        self::assertStringContainsString(
+        static::assertStringContainsString(
             'warning: docs: nodocs: no documentation directory at docs/. (no-asciidoc-sources)',
             $stderr,
         );
     }
 
-    public function testTheBuildReportsNoTimingUnlessAskedForIt(): void
+    #[Test]
+    public function theBuildReportsNoTimingUnlessAskedForIt(): void
     {
         $quiet = $this->build(
             verbose: false,
             timings: false,
         );
 
-        self::assertStringNotContainsString('build: ', implode("\n", $quiet));
+        static::assertStringNotContainsString('build: ', implode("\n", $quiet));
     }
 
-    public function testTheBuildTimesItselfWhenAsked(): void
+    #[Test]
+    public function theBuildTimesItselfWhenAsked(): void
     {
         $timings = [];
 
         foreach ($this->stderr as $line) {
-            if (str_contains($line, 'build: ')) {
-                $timings[] = $line;
+            if (! str_contains($line, 'build: ')) {
+                continue;
             }
+
+            $timings[] = $line;
         }
 
-        self::assertCount(1, $timings);
-        self::assertMatchesRegularExpression('/^build: \d+\.\d{3}s$/', $timings[0]);
+        static::assertCount(1, $timings);
+        static::assertMatchesRegularExpression('/^build: \d+\.\d{3}s$/', $timings[0]);
 
         $seconds = (float) substr($timings[0], strlen('build: '), -1);
 
-        self::assertGreaterThan(0.0, $seconds);
-        self::assertLessThan(60.0, $seconds);
+        static::assertGreaterThan(0.0, $seconds);
+        static::assertLessThan(60.0, $seconds);
     }
 
-    public function testTheBuildWarnsAboutAnArchivedProjectAndAnIgnoredPath(): void
+    #[Test]
+    public function theBuildWarnsAboutAnArchivedProjectAndAnIgnoredPath(): void
     {
         $stderr = $this->stderr();
 
-        self::assertStringContainsString('warning: archived: archived, skipped', $stderr);
-        self::assertStringContainsString(
+        static::assertStringContainsString('warning: archived: archived, skipped', $stderr);
+        static::assertStringContainsString(
             'warning: stray: 1 path(s) outside a version directory were ignored: docs/draft-v1/index.adoc',
             $stderr,
         );
     }
 
-    public function testTheLandingPageAgreesWithTheRedirectOnTheLatestVersion(): void
+    #[Test]
+    public function theLandingPageAgreesWithTheRedirectOnTheLatestVersion(): void
     {
-        self::assertSame(
+        static::assertSame(
             ['Latest version: v1', 'Latest version: v10'],
             $this->cardVersions(['zeta', 'alpha']),
         );
     }
 
-    public function testTheLandingPageOrdersProjectsByConfiguredOrderThenBySlug(): void
+    #[Test]
+    public function theLandingPageOrdersProjectsByConfiguredOrderThenBySlug(): void
     {
-        self::assertSame(
+        static::assertSame(
             [
                 '/zeta/',
                 '/alpha/',
@@ -237,9 +253,10 @@ final class ProjectOrderingTest extends TestCase
         );
     }
 
-    public function testTheLandingPagePrefersTheConfiguredDescriptionOverThePageBody(): void
+    #[Test]
+    public function theLandingPagePrefersTheConfiguredDescriptionOverThePageBody(): void
     {
-        self::assertSame(
+        static::assertSame(
             [
                 'zeta'  => 'Zeta handles shipping.',
                 'alpha' => 'Alpha handles billing.',
@@ -249,14 +266,15 @@ final class ProjectOrderingTest extends TestCase
 
         $landing = (string) file_get_contents(Path::join($this->output, 'index.html'));
 
-        self::assertSame(9, substr_count($landing, 'class="card-description"'));
+        static::assertSame(9, substr_count($landing, needle: 'class="card-description"'));
     }
 
-    public function testTheReportCountsEveryProjectAndEveryPage(): void
+    #[Test]
+    public function theReportCountsEveryProjectAndEveryPage(): void
     {
         $report = $this->report();
 
-        self::assertSame(
+        static::assertSame(
             [
                 'ok'            => 8,
                 'partial'       => 1,
@@ -268,42 +286,46 @@ final class ProjectOrderingTest extends TestCase
             $report['totals'],
         );
 
-        self::assertCount(12, $report['projects']);
-        self::assertSame(ExitCode::Degraded, $this->exitCode);
+        static::assertCount(12, $report['projects']);
+        static::assertSame(ExitCode::Degraded, $this->exitCode);
     }
 
-    public function testTheReportRecordsTheFetchAttemptsOfEachProject(): void
+    #[Test]
+    public function theReportRecordsTheFetchAttemptsOfEachProject(): void
     {
-        self::assertSame(0, $this->projectReport('archived')['fetchAttempts']);
+        static::assertSame(0, $this->projectReport('archived')['fetchAttempts']);
 
         foreach (['alpha', 'zeta', 'noindex', 'twoindex', 'stray', 'sorting'] as $repository) {
-            self::assertSame(1, $this->projectReport($repository)['fetchAttempts'], $repository);
+            static::assertSame(1, $this->projectReport($repository)['fetchAttempts'], $repository);
         }
     }
 
-    public function testTheReportRecordsTheSkipReasonOfAnArchivedProject(): void
+    #[Test]
+    public function theReportRecordsTheSkipReasonOfAnArchivedProject(): void
     {
         $archived = $this->projectReport('archived');
 
-        self::assertSame('skipped', $archived['status']);
-        self::assertCount(1, $archived['warnings']);
+        static::assertSame('skipped', $archived['status']);
+        static::assertCount(1, $archived['warnings']);
 
         $warning = $archived['warnings'][0];
-        self::assertIsArray($warning);
-        self::assertSame('archived', $warning['reasonCode']);
-        self::assertSame('archived', $warning['message']);
+        static::assertIsArray($warning);
+        static::assertSame('archived', $warning['reasonCode']);
+        static::assertSame('archived', $warning['message']);
     }
 
-    public function testTheVersionlessRedirectTargetsTheHighestNumberedVersion(): void
+    #[Test]
+    public function theVersionlessRedirectTargetsTheHighestNumberedVersion(): void
     {
         $redirect = (string) file_get_contents(Path::join($this->output, 'alpha', 'index.html'));
 
-        self::assertStringContainsString('<title>Redirecting to v10</title>', $redirect);
-        self::assertStringContainsString('content="0; url=/alpha/v10/"', $redirect);
-        self::assertStringContainsString('<a href="/alpha/v10/">/alpha/v10/</a>', $redirect);
+        static::assertStringContainsString('<title>Redirecting to v10</title>', $redirect);
+        static::assertStringContainsString('content="0; url=/alpha/v10/"', $redirect);
+        static::assertStringContainsString('<a href="/alpha/v10/">/alpha/v10/</a>', $redirect);
     }
 
-    public function testTheVersionSelectorListsTheVersionsInSortedOrder(): void
+    #[Test]
+    public function theVersionSelectorListsTheVersionsInSortedOrder(): void
     {
         $matches = [];
 
@@ -313,14 +335,15 @@ final class ProjectOrderingTest extends TestCase
             $matches,
         );
 
-        self::assertSame(['v10', 'v1', 'beta', 'releasev3', 'v2beta'], $matches[1] ?? []);
-        self::assertStringContainsString(
+        static::assertSame(['v10', 'v1', 'beta', 'releasev3', 'v2beta'], $matches[1] ?? []);
+        static::assertStringContainsString(
             '<li class="version-item version-latest"><a href="/alpha/v10/index.html">',
             (string) file_get_contents(Path::join($this->output, 'alpha', 'v1', 'index.html')),
         );
     }
 
-    public function testTheVersionSelectorUsesTheSameOrderAsTheReport(): void
+    #[Test]
+    public function theVersionSelectorUsesTheSameOrderAsTheReport(): void
     {
         $matches = [];
 
@@ -330,12 +353,13 @@ final class ProjectOrderingTest extends TestCase
             $matches,
         );
 
-        self::assertSame(['v3', 'v2', 'v1', 'v2beta', 'zzz'], $matches[1] ?? []);
+        static::assertSame(['v3', 'v2', 'v1', 'v2beta', 'zzz'], $matches[1] ?? []);
     }
 
-    public function testVersionsAreSortedByNumberThenByLabel(): void
+    #[Test]
+    public function versionsAreSortedByNumberThenByLabel(): void
     {
-        self::assertSame(['v10', 'v1', 'beta', 'releasev3', 'v2beta'], $this->projectReport('alpha')['versions']);
+        static::assertSame(['v10', 'v1', 'beta', 'releasev3', 'v2beta'], $this->projectReport('alpha')['versions']);
     }
 
     protected function setUp(): void
@@ -462,12 +486,12 @@ final class ProjectOrderingTest extends TestCase
 
     private function fixtureConfig(): string
     {
-        return Path::join(dirname(__DIR__, 2), 'test', 'fixtures', 'ordering', 'site.json');
+        return Path::join(dirname(__DIR__, levels: 2), 'test', 'fixtures', 'ordering', 'site.json');
     }
 
     private function fixtureManifest(): string
     {
-        return Path::join(dirname(__DIR__, 2), 'test', 'fixtures', 'ordering', 'manifest.json');
+        return Path::join(dirname(__DIR__, levels: 2), 'test', 'fixtures', 'ordering', 'manifest.json');
     }
 
     /**
@@ -476,14 +500,14 @@ final class ProjectOrderingTest extends TestCase
     private function projectReport(string $repository): array
     {
         foreach ($this->report()['projects'] as $project) {
-            self::assertIsArray($project);
+            static::assertIsArray($project);
 
             if (($project['repository'] ?? '') === $repository) {
                 return $project;
             }
         }
 
-        self::fail("The report carries no entry for {$repository}.");
+        static::fail("The report carries no entry for {$repository}.");
     }
 
     /**

@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Cli;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Cli\Options;
 use Webware\AsciidocPhp\MultiRepo\Cli\ProjectFilter;
@@ -15,40 +16,44 @@ use WebwareTest\AsciidocPhp\MultiRepo\Support\SourceFixture;
 #[CoversMethod(ProjectFilter::class, 'apply')]
 final class ProjectFilterTest extends TestCase
 {
-    public function testAnUnrelatedProjectIsDropped(): void
+    #[Test]
+    public function anUnrelatedProjectIsDropped(): void
     {
         $repositories = [SourceFixture::repository('message-bus', 'bus')];
 
-        self::assertSame([], ProjectFilter::apply($repositories, new Options(projects: ['other'])));
+        static::assertSame([], ProjectFilter::apply($repositories, new Options(projects: ['other'])));
     }
 
-    public function testAProjectIsMatchedByItsName(): void
+    #[Test]
+    public function aProjectIsMatchedByItsName(): void
     {
         $repositories = [SourceFixture::repository('message-bus', 'bus')];
 
         $filtered = ProjectFilter::apply($repositories, new Options(projects: ['message-bus']));
 
-        self::assertCount(1, $filtered);
-        self::assertSame('bus', $filtered[0]->slug());
+        static::assertCount(1, $filtered);
+        static::assertSame('bus', $filtered[0]->slug());
     }
 
-    public function testAProjectIsMatchedByItsSlug(): void
+    #[Test]
+    public function aProjectIsMatchedByItsSlug(): void
     {
         $repositories = [SourceFixture::repository('message-bus', 'bus')];
 
         $filtered = ProjectFilter::apply($repositories, new Options(projects: ['bus']));
 
-        self::assertCount(1, $filtered);
-        self::assertSame('message-bus', $filtered[0]->name());
+        static::assertCount(1, $filtered);
+        static::assertSame('message-bus', $filtered[0]->name());
     }
 
-    public function testWithoutAFilterEveryProjectIsKept(): void
+    #[Test]
+    public function withoutAFilterEveryProjectIsKept(): void
     {
         $repositories = [
             SourceFixture::repository('message-bus', 'bus'),
             SourceFixture::repository('versioned', 'versioned'),
         ];
 
-        self::assertCount(2, ProjectFilter::apply($repositories, new Options()));
+        static::assertCount(2, ProjectFilter::apply($repositories, new Options()));
     }
 }

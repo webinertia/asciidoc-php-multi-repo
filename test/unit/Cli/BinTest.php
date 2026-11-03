@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebwareTest\AsciidocPhp\MultiRepo\Cli;
 
 use PHPUnit\Framework\Attributes\CoversNothing;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Cli\ExitCode;
 use Webware\AsciidocPhp\MultiRepo\Support\Path;
@@ -26,7 +27,8 @@ final class BinTest extends TestCase
 
     private string $scratch;
 
-    public function testAnAbsoluteConfigResolvesFromAnotherWorkingDirectory(): void
+    #[Test]
+    public function anAbsoluteConfigResolvesFromAnotherWorkingDirectory(): void
     {
         $result = new ProcessRunner($this->scratch)->run([
             PHP_BINARY,
@@ -38,31 +40,33 @@ final class BinTest extends TestCase
             $this->fixtureManifest(),
         ]);
 
-        self::assertSame(ExitCode::Degraded->value, $result->exitCode(), $result->describeFailure());
-        self::assertStringContainsString('versioned: ok', $result->stderr());
-        self::assertStringContainsString('broken-include: partial', $result->stderr());
-        self::assertStringContainsString('markdown-only: failed', $result->stderr());
-        self::assertStringContainsString('no site output was written', $result->stdout());
-        self::assertStringNotContainsString('unable to locate', $result->stderr());
+        static::assertSame(ExitCode::Degraded->value, $result->exitCode(), $result->describeFailure());
+        static::assertStringContainsString('versioned: ok', $result->stderr());
+        static::assertStringContainsString('broken-include: partial', $result->stderr());
+        static::assertStringContainsString('markdown-only: failed', $result->stderr());
+        static::assertStringContainsString('no site output was written', $result->stdout());
+        static::assertStringNotContainsString('unable to locate', $result->stderr());
     }
 
-    public function testHelpExitsZero(): void
+    #[Test]
+    public function helpExitsZero(): void
     {
         $result = new ProcessRunner($this->root())->run([PHP_BINARY, $this->binary(), '--help']);
 
-        self::assertSame(ExitCode::Success->value, $result->exitCode(), $result->describeFailure());
-        self::assertStringContainsString('Global options:', $result->stdout());
-        self::assertStringContainsString('--manifest', $result->stdout());
-        self::assertSame('', $result->stderr());
+        static::assertSame(ExitCode::Success->value, $result->exitCode(), $result->describeFailure());
+        static::assertStringContainsString('Global options:', $result->stdout());
+        static::assertStringContainsString('--manifest', $result->stdout());
+        static::assertSame('', $result->stderr());
     }
 
-    public function testNoArgumentsPrintsUsageAndExitsTwo(): void
+    #[Test]
+    public function noArgumentsPrintsUsageAndExitsTwo(): void
     {
         $result = new ProcessRunner($this->root())->run([PHP_BINARY, $this->binary()]);
 
-        self::assertSame(ExitCode::ConfigError->value, $result->exitCode(), $result->describeFailure());
-        self::assertSame('', $result->stdout());
-        self::assertStringContainsString('asciidoc-php-multi-repo <command> [options]', $result->stderr());
+        static::assertSame(ExitCode::ConfigError->value, $result->exitCode(), $result->describeFailure());
+        static::assertSame('', $result->stdout());
+        static::assertStringContainsString('asciidoc-php-multi-repo <command> [options]', $result->stderr());
     }
 
     protected function setUp(): void
@@ -92,6 +96,6 @@ final class BinTest extends TestCase
 
     private function root(): string
     {
-        return dirname(__DIR__, 3);
+        return dirname(__DIR__, levels: 3);
     }
 }

@@ -29,7 +29,7 @@ final readonly class AssetHasher
      */
     public function hash(string $contents): string
     {
-        return substr(hash('sha256', $contents), 0, $this->length);
+        return substr(hash('sha256', $contents), offset: 0, length: $this->length);
     }
 
     /**

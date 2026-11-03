@@ -31,7 +31,7 @@ final readonly class SiteSection
     {
         return new self(
             Values::requiredString($data, 'name'),
-            rtrim(Values::requiredString($data, 'baseUrl'), '/'),
+            rtrim(Values::requiredString($data, 'baseUrl'), characters: '/'),
             self::normaliseBasePath(Values::string($data, 'basePath', '/')),
             Values::optionalString($data, 'hostname'),
             Values::string($data, 'defaultVersionLabel', self::DEFAULT_VERSION_LABEL),
@@ -43,7 +43,7 @@ final readonly class SiteSection
      */
     public static function normaliseBasePath(string $basePath): string
     {
-        $trimmed = ltrim(rtrim($basePath, '/'), '/');
+        $trimmed = ltrim(rtrim($basePath, characters: '/'), characters: '/');
 
         return '' === $trimmed ? '/' : "/{$trimmed}/";
     }

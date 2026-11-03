@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Source;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Report\ReasonCode;
 use Webware\AsciidocPhp\MultiRepo\Source\DocPage;
@@ -24,7 +25,8 @@ use function array_map;
 #[CoversMethod(PageEnumerator::class, 'enumerate')]
 final class PageEnumeratorTest extends TestCase
 {
-    public function testAMissingEntryNamesTheCandidates(): void
+    #[Test]
+    public function aMissingEntryNamesTheCandidates(): void
     {
         try {
             new PageEnumerator()->enumerate(
@@ -37,15 +39,16 @@ final class PageEnumeratorTest extends TestCase
         } catch (SourceException $exception) {
             $error = $exception->error();
 
-            self::assertSame(ReasonCode::MissingEntry, $error->reasonCode());
-            self::assertStringContainsString('index.adoc', $error->message());
-            self::assertStringContainsString('README.adoc', $error->message());
-            self::assertStringContainsString('missing-entry', $error->message());
-            self::assertNotNull($error->correctiveAction());
+            static::assertSame(ReasonCode::MissingEntry, $error->reasonCode());
+            static::assertStringContainsString('index.adoc', $error->message());
+            static::assertStringContainsString('README.adoc', $error->message());
+            static::assertStringContainsString('missing-entry', $error->message());
+            static::assertNotNull($error->correctiveAction());
         }
     }
 
-    public function testANestedPartialIsDroppedEvenWithNoExcludePatterns(): void
+    #[Test]
+    public function aNestedPartialIsDroppedEvenWithNoExcludePatterns(): void
     {
         $config = SourceFixture::config([
             'source' => [
@@ -63,13 +66,14 @@ final class PageEnumeratorTest extends TestCase
             $config,
         );
 
-        self::assertSame(
+        static::assertSame(
             ['docs/index.adoc'],
             array_map(static fn(DocPage $page): string => $page->relativePath(), $set->pages()),
         );
     }
 
-    public function testAnExcludePatternIsMatchedInsideTheVersionOnly(): void
+    #[Test]
+    public function anExcludePatternIsMatchedInsideTheVersionOnly(): void
     {
         $config = SourceFixture::config([
             'source' => [
@@ -84,13 +88,14 @@ final class PageEnumeratorTest extends TestCase
             $config,
         );
 
-        self::assertSame(
+        static::assertSame(
             ['docs/v1/index.adoc'],
             array_map(static fn(DocPage $page): string => $page->relativePath(), $set->pages()),
         );
     }
 
-    public function testANonAsciiDocFileDoesNotStopTheScan(): void
+    #[Test]
+    public function aNonAsciiDocFileDoesNotStopTheScan(): void
     {
         $set = new PageEnumerator()->enumerate(
             SourceFixture::fetched('example', ['docs/notes.txt', 'docs/index.adoc']),
@@ -98,13 +103,14 @@ final class PageEnumeratorTest extends TestCase
             SourceFixture::config(),
         );
 
-        self::assertSame(
+        static::assertSame(
             ['docs/index.adoc'],
             array_map(static fn(DocPage $page): string => $page->relativePath(), $set->pages()),
         );
     }
 
-    public function testAPartialDoesNotStopTheScan(): void
+    #[Test]
+    public function aPartialDoesNotStopTheScan(): void
     {
         $set = new PageEnumerator()->enumerate(
             SourceFixture::fetched('example', ['docs/_partial.adoc', 'docs/index.adoc']),
@@ -112,13 +118,14 @@ final class PageEnumeratorTest extends TestCase
             SourceFixture::config(),
         );
 
-        self::assertSame(
+        static::assertSame(
             ['docs/index.adoc'],
             array_map(static fn(DocPage $page): string => $page->relativePath(), $set->pages()),
         );
     }
 
-    public function testASingleStarDoesNotCrossDirectories(): void
+    #[Test]
+    public function aSingleStarDoesNotCrossDirectories(): void
     {
         $config = SourceFixture::config([
             'source' => [
@@ -133,13 +140,14 @@ final class PageEnumeratorTest extends TestCase
             $config,
         );
 
-        self::assertSame(
+        static::assertSame(
             ['docs/index.adoc', 'docs/reference/deep.adoc'],
             array_map(static fn(DocPage $page): string => $page->relativePath(), $set->pages()),
         );
     }
 
-    public function testAVersionWithoutAsciiDocFailsWithNoAsciidocSources(): void
+    #[Test]
+    public function aVersionWithoutAsciiDocFailsWithNoAsciidocSources(): void
     {
         try {
             new PageEnumerator()->enumerate(
@@ -152,13 +160,14 @@ final class PageEnumeratorTest extends TestCase
         } catch (SourceException $exception) {
             $error = $exception->error();
 
-            self::assertSame(ReasonCode::NoAsciidocSources, $error->reasonCode());
-            self::assertStringContainsString('.adoc', $error->message());
-            self::assertStringContainsString('markdown-only', $error->message());
+            static::assertSame(ReasonCode::NoAsciidocSources, $error->reasonCode());
+            static::assertStringContainsString('.adoc', $error->message());
+            static::assertStringContainsString('markdown-only', $error->message());
         }
     }
 
-    public function testBothAsciiDocExtensionsAreAccepted(): void
+    #[Test]
+    public function bothAsciiDocExtensionsAreAccepted(): void
     {
         $set = new PageEnumerator()->enumerate(
             SourceFixture::fetched('example', ['docs/index.adoc', 'docs/guide.asciidoc']),
@@ -166,13 +175,14 @@ final class PageEnumeratorTest extends TestCase
             SourceFixture::config(),
         );
 
-        self::assertSame(
+        static::assertSame(
             ['docs/index.adoc', 'docs/guide.asciidoc'],
             array_map(static fn(DocPage $page): string => $page->relativePath(), $set->pages()),
         );
     }
 
-    public function testPagesOfAnotherVersionAreExcluded(): void
+    #[Test]
+    public function pagesOfAnotherVersionAreExcluded(): void
     {
         $set = new PageEnumerator()->enumerate(
             SourceFixture::fetched('versioned', ['docs/v1/index.adoc', 'docs/v2/index.adoc']),
@@ -180,13 +190,14 @@ final class PageEnumeratorTest extends TestCase
             SourceFixture::config(),
         );
 
-        self::assertSame(
+        static::assertSame(
             ['docs/v2/index.adoc'],
             array_map(static fn(DocPage $page): string => $page->relativePath(), $set->pages()),
         );
     }
 
-    public function testTheAbsolutePathIsAnchoredAtTheRepositoryRoot(): void
+    #[Test]
+    public function theAbsolutePathIsAnchoredAtTheRepositoryRoot(): void
     {
         $set = new PageEnumerator()->enumerate(
             SourceFixture::fetched('example', ['docs/index.adoc'], rootPath: '/cache/example'),
@@ -195,12 +206,13 @@ final class PageEnumeratorTest extends TestCase
         );
         $page = $set->entry();
 
-        self::assertSame('docs/index.adoc', $page->relativePath());
-        self::assertStringContainsString('example', $page->absolutePath());
-        self::assertStringEndsWith('index.adoc', $page->absolutePath());
+        static::assertSame('docs/index.adoc', $page->relativePath());
+        static::assertStringContainsString('example', $page->absolutePath());
+        static::assertStringEndsWith('index.adoc', $page->absolutePath());
     }
 
-    public function testTheConfiguredExcludePatternsApply(): void
+    #[Test]
+    public function theConfiguredExcludePatternsApply(): void
     {
         $set = new PageEnumerator()->enumerate(
             SourceFixture::fetched('example', [
@@ -217,13 +229,14 @@ final class PageEnumeratorTest extends TestCase
             ]),
         );
 
-        self::assertSame(
+        static::assertSame(
             ['docs/index.adoc'],
             array_map(static fn(DocPage $page): string => $page->relativePath(), $set->pages()),
         );
     }
 
-    public function testTheEntryPageIsTheFirstConfiguredCandidateThatExists(): void
+    #[Test]
+    public function theEntryPageIsTheFirstConfiguredCandidateThatExists(): void
     {
         $config = SourceFixture::config();
 
@@ -233,10 +246,11 @@ final class PageEnumeratorTest extends TestCase
             $config,
         );
 
-        self::assertSame('docs/v1/README.adoc', $set->entry()->relativePath());
+        static::assertSame('docs/v1/README.adoc', $set->entry()->relativePath());
     }
 
-    public function testTheEntryPageMustBeAtTheRootOfTheVersion(): void
+    #[Test]
+    public function theEntryPageMustBeAtTheRootOfTheVersion(): void
     {
         try {
             new PageEnumerator()->enumerate(
@@ -245,9 +259,9 @@ final class PageEnumeratorTest extends TestCase
                 SourceFixture::config(),
             );
         } catch (SourceException $exception) {
-            self::assertSame(ReasonCode::MissingEntry, $exception->error()->reasonCode());
-            self::assertSame('v1', $exception->error()->version());
-            self::assertSame('docs/v1', $exception->error()->path());
+            static::assertSame(ReasonCode::MissingEntry, $exception->error()->reasonCode());
+            static::assertSame('v1', $exception->error()->version());
+            static::assertSame('docs/v1', $exception->error()->path());
 
             return;
         }
@@ -255,7 +269,8 @@ final class PageEnumeratorTest extends TestCase
         self::fail('Expected a SourceException.');
     }
 
-    public function testTheVersionedFixtureEnumeratesItsExactPages(): void
+    #[Test]
+    public function theVersionedFixtureEnumeratesItsExactPages(): void
     {
         $set = new PageEnumerator()->enumerate(
             SourceFixture::fetched('versioned', [
@@ -268,16 +283,17 @@ final class PageEnumeratorTest extends TestCase
             SourceFixture::config(),
         );
 
-        self::assertSame(
+        static::assertSame(
             ['docs/v1/guide.adoc', 'docs/v1/index.adoc', 'docs/v1/reference/nested.adoc'],
             array_map(static fn(DocPage $page): string => $page->relativePath(), $set->pages()),
         );
-        self::assertSame('docs/v1/index.adoc', $set->entry()->relativePath());
-        self::assertSame('v1', $set->entry()->version());
-        self::assertSame('v1', $set->version()->label());
+        static::assertSame('docs/v1/index.adoc', $set->entry()->relativePath());
+        static::assertSame('v1', $set->entry()->version());
+        static::assertSame('v1', $set->version()->label());
     }
 
-    public function testUnderscorePrefixedFilesAreDropped(): void
+    #[Test]
+    public function underscorePrefixedFilesAreDropped(): void
     {
         $set = new PageEnumerator()->enumerate(
             SourceFixture::fetched('example', [
@@ -289,7 +305,7 @@ final class PageEnumeratorTest extends TestCase
             SourceFixture::config(),
         );
 
-        self::assertSame(
+        static::assertSame(
             ['docs/index.adoc'],
             array_map(static fn(DocPage $page): string => $page->relativePath(), $set->pages()),
         );

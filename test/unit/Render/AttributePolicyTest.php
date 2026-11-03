@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Render;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\Asciidoc;
 use Webware\AsciidocPhp\Document;
@@ -33,15 +34,17 @@ final class AttributePolicyTest extends TestCase
         A page that would carry a build date if the policy let it.
         ADOC;
 
-    public function testHighlightingLeavesTheHighlighterAttributeAlone(): void
+    #[Test]
+    public function highlightingLeavesTheHighlighterAttributeAlone(): void
     {
         $policy = new AttributePolicy(syntaxHighlighting: true);
 
-        self::assertTrue($policy->syntaxHighlighting());
-        self::assertArrayNotHasKey('source-highlighter', $policy->attributes());
+        static::assertTrue($policy->syntaxHighlighting());
+        static::assertArrayNotHasKey('source-highlighter', $policy->attributes());
     }
 
-    public function testRenderingTwiceAcrossAClockChangeProducesIdenticalBytes(): void
+    #[Test]
+    public function renderingTwiceAcrossAClockChangeProducesIdenticalBytes(): void
     {
         $original = date_default_timezone_get();
 
@@ -55,54 +58,58 @@ final class AttributePolicyTest extends TestCase
             date_default_timezone_set($original);
         }
 
-        self::assertSame($first, $second);
+        static::assertSame($first, $second);
     }
 
-    public function testTheClockAttributesCarryNoValueInTheDocument(): void
+    #[Test]
+    public function theClockAttributesCarryNoValueInTheDocument(): void
     {
         $document = $this->document(new AttributePolicy());
 
-        self::assertNotNull($document);
+        static::assertNotNull($document);
 
         foreach (AttributePolicy::CLOCK_ATTRIBUTES as $name) {
-            self::assertSame('', $document->getAttribute($name));
+            static::assertSame('', $document->getAttribute($name));
         }
     }
 
-    public function testTheConverterChromeIsSwitchedOff(): void
+    #[Test]
+    public function theConverterChromeIsSwitchedOff(): void
     {
         $attributes = new AttributePolicy()->attributes();
 
-        self::assertFalse($attributes['stylesheet']);
-        self::assertSame('', $attributes['noembed']);
-        self::assertFalse($attributes['linkcss']);
-        self::assertFalse($attributes['toc']);
-        self::assertFalse($attributes['docinfo']);
-        self::assertFalse($attributes['source-highlighter']);
+        static::assertFalse($attributes['stylesheet']);
+        static::assertSame('', $attributes['noembed']);
+        static::assertFalse($attributes['linkcss']);
+        static::assertFalse($attributes['toc']);
+        static::assertFalse($attributes['docinfo']);
+        static::assertFalse($attributes['source-highlighter']);
     }
 
-    public function testTheSixClockAttributesArePinnedToAnEmptyString(): void
+    #[Test]
+    public function theSixClockAttributesArePinnedToAnEmptyString(): void
     {
         $attributes = new AttributePolicy()->attributes();
 
-        self::assertSame(
+        static::assertSame(
             ['docdate', 'doctime', 'docdatetime', 'localdate', 'localtime', 'localdatetime'],
             AttributePolicy::CLOCK_ATTRIBUTES,
         );
 
         foreach (AttributePolicy::CLOCK_ATTRIBUTES as $name) {
-            self::assertArrayHasKey($name, $attributes);
-            self::assertSame('', $attributes[$name]);
+            static::assertArrayHasKey($name, $attributes);
+            static::assertSame('', $attributes[$name]);
         }
     }
 
-    public function testWithoutThePolicyTheClockAttributesCarryTheBuildDate(): void
+    #[Test]
+    public function withoutThePolicyTheClockAttributesCarryTheBuildDate(): void
     {
         $document = $this->document(null);
 
-        self::assertNotNull($document);
-        self::assertNotSame('', $document->getAttribute('docdate'));
-        self::assertNotSame('', $document->getAttribute('doctime'));
+        static::assertNotNull($document);
+        static::assertNotSame('', $document->getAttribute('docdate'));
+        static::assertNotSame('', $document->getAttribute('doctime'));
     }
 
     private function document(?AttributePolicy $policy): ?Document

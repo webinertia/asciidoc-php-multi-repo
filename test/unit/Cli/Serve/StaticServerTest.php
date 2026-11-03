@@ -230,7 +230,7 @@ final class StaticServerTest extends TestCase
     {
         $socket = fsockopen('127.0.0.1', $server->port(), $errno, $error, timeout: 5.0);
 
-        self::assertIsResource($socket, sprintf(
+        static::assertIsResource($socket, sprintf(
             'cannot connect to port %d: %s (%d)',
             $server->port(),
             $error,
@@ -238,12 +238,12 @@ final class StaticServerTest extends TestCase
         ));
 
         fwrite($socket, $raw);
-        self::assertTrue($server->serveOnce(2.0));
+        static::assertTrue($server->serveOnce(2.0));
 
         $response = stream_get_contents($socket);
         fclose($socket);
 
-        self::assertIsString($response);
+        static::assertIsString($response);
 
         return $response;
     }

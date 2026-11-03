@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Render;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Config\SiteConfig;
 use Webware\AsciidocPhp\MultiRepo\Render\PageRenderer;
@@ -63,17 +64,19 @@ final class PageRendererTest extends TestCase
     use SiteFixtureTrait;
     use TempDirectoryTrait;
 
-    public function testABlankProjectTitleOverrideFallsBackToTheProjectName(): void
+    #[Test]
+    public function aBlankProjectTitleOverrideFallsBackToTheProjectName(): void
     {
         $page = $this->renderFromTemp(
             "= Page\n\nText.\n",
             $this->configWithOverrides(['projects' => ['versioned' => ['title' => '   ']]]),
         );
 
-        self::assertStringContainsString('<p class="project-name">Versioned</p>', $page->html());
+        static::assertStringContainsString('<p class="project-name">Versioned</p>', $page->html());
     }
 
-    public function testABrokenIncludeFailsWithRenderFailedAndTheSourcePath(): void
+    #[Test]
+    public function aBrokenIncludeFailsWithRenderFailedAndTheSourcePath(): void
     {
         try {
             $this->render('docs/v1/index.adoc', repository: 'broken-include');
@@ -81,15 +84,16 @@ final class PageRendererTest extends TestCase
         } catch (SourceException $exception) {
             $error = $exception->error();
 
-            self::assertSame(ReasonCode::RenderFailed, $error->reasonCode());
-            self::assertSame('docs/v1/index.adoc', $error->path());
-            self::assertSame('v1', $error->version());
-            self::assertStringContainsString('missing.adoc', $error->message());
-            self::assertNotNull($error->correctiveAction());
+            static::assertSame(ReasonCode::RenderFailed, $error->reasonCode());
+            static::assertSame('docs/v1/index.adoc', $error->path());
+            static::assertSame('v1', $error->version());
+            static::assertStringContainsString('missing.adoc', $error->message());
+            static::assertNotNull($error->correctiveAction());
         }
     }
 
-    public function testACrlfSourceRendersIdenticallyToItsLfTwin(): void
+    #[Test]
+    public function aCrlfSourceRendersIdenticallyToItsLfTwin(): void
     {
         $lf = "= Twin Page\n\nIntro paragraph.\n\n== Section\n\nBody text.\n\n* one\n* two\n";
 
@@ -100,50 +104,55 @@ final class PageRendererTest extends TestCase
             subject: $lf,
         ));
 
-        self::assertSame($fromLf->html(), $fromCrlf->html());
+        static::assertSame($fromLf->html(), $fromCrlf->html());
     }
 
-    public function testAHumanisedNameFillsInWhenTheDocumentHasNoTitle(): void
+    #[Test]
+    public function aHumanisedNameFillsInWhenTheDocumentHasNoTitle(): void
     {
         $page = $this->renderFromTemp("Just a paragraph.\n", relativePath: 'docs/v1/UPPER-CASE_PAGE.adoc');
 
-        self::assertSame('Upper Case Page', $page->title());
+        static::assertSame('Upper Case Page', $page->title());
     }
 
-    public function testAnIncludeTargetIsTrimmedBeforeItIsResolved(): void
+    #[Test]
+    public function anIncludeTargetIsTrimmedBeforeItIsResolved(): void
     {
         try {
             $this->renderFromTemp("= Page\n\ninclude::   missing.adoc   []\n");
             self::fail('A padded include of a missing file should fail the page.');
         } catch (SourceException $exception) {
-            self::assertSame(
+            static::assertSame(
                 'The include target "missing.adoc" does not exist.',
                 $exception->error()->message(),
             );
         }
     }
 
-    public function testAnIncludeThatNamesADirectoryIsNotAMissingFile(): void
+    #[Test]
+    public function anIncludeThatNamesADirectoryIsNotAMissingFile(): void
     {
         $directory = $this->createTempDirectory();
         new Filesystem()->ensureDirectory(Path::join($directory, 'partials'));
 
         $page = $this->renderFromTemp("= Page\n\ninclude::partials[]\n", directory: $directory);
 
-        self::assertSame('Page', $page->title());
+        static::assertSame('Page', $page->title());
     }
 
-    public function testAProjectTitleOverrideIsUsedWhenItIsNotBlank(): void
+    #[Test]
+    public function aProjectTitleOverrideIsUsedWhenItIsNotBlank(): void
     {
         $page = $this->renderFromTemp(
             "= Page\n\nText.\n",
             $this->configWithOverrides(['projects' => ['versioned' => ['title' => 'Custom Widgets']]]),
         );
 
-        self::assertStringContainsString('<p class="project-name">Custom Widgets</p>', $page->html());
+        static::assertStringContainsString('<p class="project-name">Custom Widgets</p>', $page->html());
     }
 
-    public function testARemoteIncludeDoesNotStopTheCheckForTheNextOne(): void
+    #[Test]
+    public function aRemoteIncludeDoesNotStopTheCheckForTheNextOne(): void
     {
         try {
             $this->renderFromTemp(
@@ -151,47 +160,51 @@ final class PageRendererTest extends TestCase
             );
             self::fail('The second include is missing and should fail the page.');
         } catch (SourceException $exception) {
-            self::assertSame(
+            static::assertSame(
                 'The include target "missing.adoc" does not exist.',
                 $exception->error()->message(),
             );
         }
     }
 
-    public function testARemoteIncludeIsNotTreatedAsAMissingFile(): void
+    #[Test]
+    public function aRemoteIncludeIsNotTreatedAsAMissingFile(): void
     {
         $page = $this->renderFromTemp("= Page\n\ninclude::https://example.com/guide.adoc[]\n");
 
-        self::assertSame('Page', $page->title());
+        static::assertSame('Page', $page->title());
     }
 
-    public function testASearchLimitOfZeroKeepsTheWholeText(): void
+    #[Test]
+    public function aSearchLimitOfZeroKeepsTheWholeText(): void
     {
         $page = $this->renderFromTemp(
-            "= Long\n\n" . str_repeat('word ', 900) . "\n",
+            "= Long\n\n" . str_repeat('word ', times: 900) . "\n",
             $this->configWithOverrides(['render' => ['searchExtractLimit' => 0]]),
         );
 
-        self::assertGreaterThan(2000, mb_strlen($page->searchText()));
+        static::assertGreaterThan(2000, mb_strlen($page->searchText()));
     }
 
-    public function testASubdirectoryBasePathIsAppliedToEveryAssetAndLink(): void
+    #[Test]
+    public function aSubdirectoryBasePathIsAppliedToEveryAssetAndLink(): void
     {
         $page = $this->render('docs/v1/index.adoc', basePath: '/docs/');
         $html = $page->html();
 
-        self::assertStringContainsString('<link rel="stylesheet" href="/docs/assets/site.', $html);
-        self::assertStringContainsString('<link rel="stylesheet" href="/docs/assets/accent.', $html);
-        self::assertStringContainsString('<script src="/docs/assets/theme.', $html);
-        self::assertStringContainsString(
+        static::assertStringContainsString('<link rel="stylesheet" href="/docs/assets/site.', $html);
+        static::assertStringContainsString('<link rel="stylesheet" href="/docs/assets/accent.', $html);
+        static::assertStringContainsString('<script src="/docs/assets/theme.', $html);
+        static::assertStringContainsString(
             '<link rel="canonical" href="https://docs.example.test/docs/versioned/v1/index.html">',
             $html,
         );
-        self::assertStringContainsString('href="/docs/versioned/v1/reference/nested.html"', $html);
-        self::assertStringNotContainsString('href="/versioned', $html);
+        static::assertStringContainsString('href="/docs/versioned/v1/reference/nested.html"', $html);
+        static::assertStringNotContainsString('href="/versioned', $html);
     }
 
-    public function testEveryDocumentedSafeModeIsAccepted(): void
+    #[Test]
+    public function everyDocumentedSafeModeIsAccepted(): void
     {
         $repository = $this->fixtureRepository('versioned');
         $version    = $this->fixtureVersion();
@@ -205,19 +218,20 @@ final class PageRendererTest extends TestCase
                 $source,
             );
 
-            self::assertStringContainsString(
+            static::assertStringContainsString(
                 'This is the version 1 guide.',
                 $page->html(),
                 "Safe mode \"{$mode}\" should still resolve the include.",
             );
-            self::assertSame('Versioned Project', $page->title());
+            static::assertSame('Versioned Project', $page->title());
         }
     }
 
-    public function testEveryIncludeIsCheckedNotJustTheFirst(): void
+    #[Test]
+    public function everyIncludeIsCheckedNotJustTheFirst(): void
     {
         $directory = $this->createTempDirectory();
-        file_put_contents(Path::join($directory, 'guide.adoc'), "== Guide\n\nIncluded text.\n");
+        file_put_contents(Path::join($directory, 'guide.adoc'), data: "== Guide\n\nIncluded text.\n");
 
         try {
             $this->renderFromTemp(
@@ -226,50 +240,54 @@ final class PageRendererTest extends TestCase
             );
             self::fail('The second include is missing and should fail the page.');
         } catch (SourceException $exception) {
-            self::assertSame(
+            static::assertSame(
                 'The include target "missing.adoc" does not exist.',
                 $exception->error()->message(),
             );
         }
     }
 
-    public function testTheCanonicalUrlKeepsASingleSlashWhenTheBaseUrlEndsWithOne(): void
+    #[Test]
+    public function theCanonicalUrlKeepsASingleSlashWhenTheBaseUrlEndsWithOne(): void
     {
         $page = $this->renderFromTemp(
             "= Page\n\nText.\n",
             $this->configWithOverrides(['site' => ['baseUrl' => 'https://docs.example.test/']]),
         );
 
-        self::assertStringContainsString(
+        static::assertStringContainsString(
             '<link rel="canonical" href="https://docs.example.test/versioned/v1/page.html">',
             $page->html(),
         );
     }
 
-    public function testTheConverterDoesNotEmitItsOwnHeaderAndFooter(): void
+    #[Test]
+    public function theConverterDoesNotEmitItsOwnHeaderAndFooter(): void
     {
         $html = $this->render('docs/v1/index.adoc')->html();
 
-        self::assertSame(1, substr_count($html, '<!DOCTYPE html>'));
-        self::assertStringNotContainsString('<div id="header">', $html);
-        self::assertStringNotContainsString('<div id="footer">', $html);
+        static::assertSame(1, substr_count($html, needle: '<!DOCTYPE html>'));
+        static::assertStringNotContainsString('<div id="header">', $html);
+        static::assertStringNotContainsString('<div id="footer">', $html);
     }
 
-    public function testTheEntryPageRendersWithTheExpectedTitleAndPath(): void
+    #[Test]
+    public function theEntryPageRendersWithTheExpectedTitleAndPath(): void
     {
         $page = $this->render('docs/v1/index.adoc');
 
-        self::assertSame('Versioned Project', $page->title());
-        self::assertSame('versioned/v1/index.html', $page->outputPath());
-        self::assertSame('/versioned/v1/index.html', $page->urlPath());
-        self::assertStringContainsString(
+        static::assertSame('Versioned Project', $page->title());
+        static::assertSame('versioned/v1/index.html', $page->outputPath());
+        static::assertSame('/versioned/v1/index.html', $page->urlPath());
+        static::assertStringContainsString(
             '<title>Versioned Project | Versioned | Fixture Site</title>',
             $page->html(),
         );
-        self::assertStringContainsString('Welcome to version 1.', $page->html());
+        static::assertStringContainsString('Welcome to version 1.', $page->html());
     }
 
-    public function testTheIncludedSectionIsRenderedIntoThePageUnderSafeMode(): void
+    #[Test]
+    public function theIncludedSectionIsRenderedIntoThePageUnderSafeMode(): void
     {
         $page = new PageRenderer()->render(
             $this->configWithSafeMode('safe'),
@@ -278,16 +296,17 @@ final class PageRendererTest extends TestCase
             $this->source('versioned', 'docs/v1/index.adoc'),
         );
 
-        self::assertStringContainsString('<h2 id="_guide">Guide</h2>', $page->html());
-        self::assertStringContainsString('This is the version 1 guide.', $page->html());
-        self::assertSame(['Guide'], $page->headings());
+        static::assertStringContainsString('<h2 id="_guide">Guide</h2>', $page->html());
+        static::assertStringContainsString('This is the version 1 guide.', $page->html());
+        static::assertSame(['Guide'], $page->headings());
     }
 
-    public function testTheOutputPathIsPartOfThePublicSurface(): void
+    #[Test]
+    public function theOutputPathIsPartOfThePublicSurface(): void
     {
         $renderer = new PageRenderer();
 
-        self::assertSame(
+        static::assertSame(
             'versioned/v1/index.html',
             $renderer->outputPath(
                 $this->fixtureRepository('versioned'),
@@ -297,21 +316,23 @@ final class PageRendererTest extends TestCase
         );
     }
 
-    public function testThePageCarriesNoBuildDateAndNoAbsolutePath(): void
+    #[Test]
+    public function thePageCarriesNoBuildDateAndNoAbsolutePath(): void
     {
         $page = $this->render('docs/v1/index.adoc');
         $html = $page->html();
 
-        self::assertFalse(str_contains($html, (string) date('Y')));
-        self::assertStringNotContainsString($this->fixturePath('org/versioned'), $html);
-        self::assertStringNotContainsString('C:\\', $html);
-        self::assertStringNotContainsString('file://', $html);
-        self::assertStringNotContainsString('docdate', $html);
-        self::assertStringNotContainsString('doctime', $html);
-        self::assertStringNotContainsString('localdate', $html);
+        static::assertFalse(str_contains($html, (string) date('Y')));
+        static::assertStringNotContainsString($this->fixturePath('org/versioned'), $html);
+        static::assertStringNotContainsString('C:\\', $html);
+        static::assertStringNotContainsString('file://', $html);
+        static::assertStringNotContainsString('docdate', $html);
+        static::assertStringNotContainsString('doctime', $html);
+        static::assertStringNotContainsString('localdate', $html);
     }
 
-    public function testTheSafeModeIsReadWithoutRegardToCase(): void
+    #[Test]
+    public function theSafeModeIsReadWithoutRegardToCase(): void
     {
         $repository = $this->fixtureRepository('versioned');
         $version    = $this->fixtureVersion();
@@ -331,57 +352,62 @@ final class PageRendererTest extends TestCase
             $source,
         );
 
-        self::assertStringContainsString('This is the version 1 guide.', $safe->html());
-        self::assertStringNotContainsString('This is the version 1 guide.', $secure->html());
+        static::assertStringContainsString('This is the version 1 guide.', $safe->html());
+        static::assertStringNotContainsString('This is the version 1 guide.', $secure->html());
     }
 
-    public function testTheSearchTextHasNoSurroundingWhitespace(): void
+    #[Test]
+    public function theSearchTextHasNoSurroundingWhitespace(): void
     {
         $text = $this->render('docs/v1/index.adoc')->searchText();
 
-        self::assertNotSame('', $text);
-        self::assertSame(trim($text), $text);
+        static::assertNotSame('', $text);
+        static::assertSame(trim($text), $text);
     }
 
-    public function testTheSearchTextIsATruncatedPrefixOfTheWholeText(): void
+    #[Test]
+    public function theSearchTextIsATruncatedPrefixOfTheWholeText(): void
     {
         $page = $this->renderFromTemp(
-            "= Accents\n\nIntro text.\n\n" . str_repeat("\u{65e5}", 400) . "\n",
+            "= Accents\n\nIntro text.\n\n" . str_repeat("\u{65e5}", times: 400) . "\n",
             $this->configWithOverrides(['render' => ['searchExtractLimit' => 200]]),
         );
 
-        self::assertSame(200, mb_strlen($page->searchText()));
-        self::assertStringStartsWith('Intro text.', $page->searchText());
+        static::assertSame(200, mb_strlen($page->searchText()));
+        static::assertStringStartsWith('Intro text.', $page->searchText());
     }
 
-    public function testTheSearchTextIsPlain(): void
+    #[Test]
+    public function theSearchTextIsPlain(): void
     {
         $page = $this->render('docs/v1/index.adoc');
 
-        self::assertStringNotContainsString('<', $page->searchText());
-        self::assertStringContainsString('Welcome to version 1.', $page->searchText());
-        self::assertSame(
+        static::assertStringNotContainsString('<', $page->searchText());
+        static::assertStringContainsString('Welcome to version 1.', $page->searchText());
+        static::assertSame(
             ['title' => 'Versioned Project', 'text' => $page->searchText(), 'headings' => $page->headings()],
             $page->searchDocument(),
         );
     }
 
-    public function testTheSearchTextIsTruncatedOnCharacterBoundaries(): void
+    #[Test]
+    public function theSearchTextIsTruncatedOnCharacterBoundaries(): void
     {
         $page = $this->renderFromTemp(
-            "= Accents\n\n" . str_repeat("\u{e9}", 400) . "\n",
+            "= Accents\n\n" . str_repeat("\u{e9}", times: 400) . "\n",
             $this->configWithOverrides(['render' => ['searchExtractLimit' => 200]]),
         );
 
-        self::assertSame(200, mb_strlen($page->searchText()));
+        static::assertSame(200, mb_strlen($page->searchText()));
     }
 
-    public function testTheSearchTextStopsAtTheConfiguredLimit(): void
+    #[Test]
+    public function theSearchTextStopsAtTheConfiguredLimit(): void
     {
         $directory = $this->createTempDirectory();
         $path      = Path::join($directory, 'long.adoc');
 
-        file_put_contents($path, "= Long Page\n\n" . str_repeat('word ', 900) . "\n");
+        file_put_contents($path, "= Long Page\n\n" . str_repeat('word ', times: 900) . "\n");
 
         $page = new PageRenderer()->render(
             $this->fixtureConfig(),
@@ -397,29 +423,31 @@ final class PageRendererTest extends TestCase
 
         $limit = $this->fixtureConfig()->render()->searchExtractLimit();
 
-        self::assertSame(2000, $limit);
-        self::assertSame($limit, mb_strlen($page->searchText()));
-        self::assertStringEndsWith('word', trim($page->searchText()));
+        static::assertSame(2000, $limit);
+        static::assertSame($limit, mb_strlen($page->searchText()));
+        static::assertStringEndsWith('word', trim($page->searchText()));
     }
 
-    public function testTheSourceLinkPointsAtTheRepository(): void
+    #[Test]
+    public function theSourceLinkPointsAtTheRepository(): void
     {
         $page = $this->render('docs/v1/index.adoc');
 
-        self::assertStringContainsString(
+        static::assertStringContainsString(
             'href="https://github.com/fixture-org/versioned/blob/main/docs/v1/index.adoc"',
             $page->html(),
         );
     }
 
-    public function testTheTableOfContentsComesFromTheDocumentSections(): void
+    #[Test]
+    public function theTableOfContentsComesFromTheDocumentSections(): void
     {
         $page = $this->render('docs/v1/guide.adoc');
 
-        self::assertSame([2], array_map(static fn($entry): int => $entry->level(), $page->toc()));
-        self::assertSame(['_guide'], array_map(static fn($entry): string => $entry->id(), $page->toc()));
-        self::assertSame(['Guide'], $page->headings());
-        self::assertStringContainsString('<li class="toc-level-2"><a href="#_guide">Guide</a></li>', $page->html());
+        static::assertSame([2], array_map(static fn($entry): int => $entry->level(), $page->toc()));
+        static::assertSame(['_guide'], array_map(static fn($entry): string => $entry->id(), $page->toc()));
+        static::assertSame(['Guide'], $page->headings());
+        static::assertStringContainsString('<li class="toc-level-2"><a href="#_guide">Guide</a></li>', $page->html());
     }
 
     protected function tearDown(): void
@@ -437,9 +465,9 @@ final class PageRendererTest extends TestCase
     {
         $decoded = json_decode(
             (string) file_get_contents($this->fixturePath('site.json')),
-            true,
-            512,
-            JSON_THROW_ON_ERROR,
+            associative: true,
+            depth: 512,
+            flags: JSON_THROW_ON_ERROR,
         );
         $document = is_array($decoded) ? $decoded : [];
 

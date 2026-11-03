@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Search;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Search\TextExtractor;
 
@@ -19,72 +20,80 @@ use function strlen;
 #[CoversMethod(TextExtractor::class, 'truncate')]
 final class TextExtractorTest extends TestCase
 {
-    public function testAHtmlFragmentWithoutAParagraphYieldsAnEmptyDescription(): void
+    #[Test]
+    public function aHtmlFragmentWithoutAParagraphYieldsAnEmptyDescription(): void
     {
-        self::assertSame('', new TextExtractor()->firstParagraph('<h2>Only a heading</h2>'));
+        static::assertSame('', new TextExtractor()->firstParagraph('<h2>Only a heading</h2>'));
     }
 
-    public function testALimitOfZeroDisablesTruncation(): void
+    #[Test]
+    public function aLimitOfZeroDisablesTruncation(): void
     {
-        $text = str_repeat('word ', 40);
+        $text = str_repeat('word ', times: 40);
 
-        self::assertSame($text, new TextExtractor(limit: 0)->truncate($text));
-        self::assertSame(0, new TextExtractor(limit: 0)->limit());
+        static::assertSame($text, new TextExtractor(limit: 0)->truncate($text));
+        static::assertSame(0, new TextExtractor(limit: 0)->limit());
     }
 
-    public function testATextUnderTheLimitIsUnchanged(): void
+    #[Test]
+    public function aTextUnderTheLimitIsUnchanged(): void
     {
         $text = 'A short description.';
 
-        self::assertSame($text, new TextExtractor(limit: 100)->truncate($text));
-        self::assertSame($text, new TextExtractor(limit: 20)->truncate($text));
+        static::assertSame($text, new TextExtractor(limit: 100)->truncate($text));
+        static::assertSame($text, new TextExtractor(limit: 20)->truncate($text));
     }
 
-    public function testEntitiesAreDecodedInTheExtractedText(): void
+    #[Test]
+    public function entitiesAreDecodedInTheExtractedText(): void
     {
-        self::assertSame(
+        static::assertSame(
             'AT&T <tag>',
             new TextExtractor()->plain('<p>AT&amp;T &lt;tag&gt;</p>'),
         );
     }
 
-    public function testMarkupIsStrippedAndWhitespaceCollapses(): void
+    #[Test]
+    public function markupIsStrippedAndWhitespaceCollapses(): void
     {
         $html =
             "<div class=\"paragraph\">\n<p>Alpha&nbsp;beta\tgamma\n"
             . " <strong>delta</strong> epsilon.</p>\n</div>";
 
-        self::assertSame(
+        static::assertSame(
             'Alpha beta gamma delta epsilon.',
             new TextExtractor()->plain($html),
         );
     }
 
-    public function testScriptAndStyleContentIsNotIndexed(): void
+    #[Test]
+    public function scriptAndStyleContentIsNotIndexed(): void
     {
         $html = '<style>.a{color:red}</style><p>Kept</p><script>var a = 1;</script>';
 
-        self::assertSame('Kept', new TextExtractor()->plain($html));
+        static::assertSame('Kept', new TextExtractor()->plain($html));
     }
 
-    public function testTheFirstParagraphIsUsedForADescription(): void
+    #[Test]
+    public function theFirstParagraphIsUsedForADescription(): void
     {
         $html =
             "<div class=\"sect1\">\n<h2 id=\"a\">Heading</h2>\n"
             . "<div class=\"sectionbody\">\n<div class=\"paragraph\">\n"
             . "<p>The opening paragraph.</p>\n</div>\n</div>\n</div>";
 
-        self::assertSame('The opening paragraph.', new TextExtractor()->firstParagraph($html));
+        static::assertSame('The opening paragraph.', new TextExtractor()->firstParagraph($html));
     }
 
-    public function testTruncationDoesNotSplitAWord(): void
+    #[Test]
+    public function truncationDoesNotSplitAWord(): void
     {
-        $text = str_repeat('word ', 40);
+        $text = str_repeat('word ', times: 40);
 
         $truncated = new TextExtractor(limit: 20)->truncate("{$text}");
 
-        self::assertSame('word word word word', $truncated);
-        self::assertLessThanOrEqual(20, strlen($truncated));
-        self::assertStringEndsNotWith('wor', $truncated);
+        static::assertSame('word word word word', $truncated);
+        static::assertLessThanOrEqual(20, strlen($truncated));
+        static::assertStringEndsNotWith('wor', $truncated);
     }
 }

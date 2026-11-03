@@ -71,26 +71,26 @@ final class LinkRewriter
         }
 
         $suffix = '';
-        $hashAt = strpos($url, '#');
+        $hashAt = strpos($url, needle: '#');
         if (false !== $hashAt) {
             $suffix = substr($url, $hashAt);
-            $url    = substr($url, 0, $hashAt);
+            $url    = substr($url, offset: 0, length: $hashAt);
         }
 
-        $queryAt = strpos($url, '?');
+        $queryAt = strpos($url, needle: '?');
         if (false !== $queryAt) {
             $suffix = substr($url, $queryAt) . $suffix;
-            $url    = substr($url, 0, $queryAt);
+            $url    = substr($url, offset: 0, length: $queryAt);
         }
 
         if ('' === $url) {
             return $this->rewriteFragmentTarget($suffix, $pageUrl, $basePath);
         }
 
-        $path     = (string) preg_replace('/\.adoc$/i', '.html', $url);
+        $path     = (string) preg_replace('/\.adoc$/i', replacement: '.html', subject: $url);
         $resolved = $this->resolve($pageUrl, $path);
 
-        return rtrim($basePath, '/') . $resolved . $suffix;
+        return rtrim($basePath, characters: '/') . $resolved . $suffix;
     }
 
     private function ensureNoopener(string $attributes): string
@@ -188,8 +188,8 @@ final class LinkRewriter
             return $fragment;
         }
 
-        $path     = (string) preg_replace('/\.adoc$/i', '.html', $match[1] ?? '');
-        $resolved = rtrim($basePath, '/') . $this->resolve($pageUrl, $path);
+        $path     = (string) preg_replace('/\.adoc$/i', replacement: '.html', subject: $match[1] ?? '');
+        $resolved = rtrim($basePath, characters: '/') . $this->resolve($pageUrl, $path);
         $anchor   = $match[2] ?? '';
 
         if ('' !== $anchor) {

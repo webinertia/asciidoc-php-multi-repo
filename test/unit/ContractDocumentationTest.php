@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebwareTest\AsciidocPhp\MultiRepo;
 
 use PHPUnit\Framework\Attributes\CoversNothing;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Cli\Application;
 use Webware\AsciidocPhp\MultiRepo\Cli\Commands\CommandInterface;
@@ -36,7 +37,8 @@ final class ContractDocumentationTest extends TestCase
 
     private string $contract;
 
-    public function testEveryDocumentedCommandIsRegistered(): void
+    #[Test]
+    public function everyDocumentedCommandIsRegistered(): void
     {
         $registered = array_map(
             static fn(CommandInterface $command): string => $command->name(),
@@ -45,10 +47,10 @@ final class ContractDocumentationTest extends TestCase
 
         $documented = $this->documentedCommands();
 
-        self::assertNotSame([], $documented, 'No commands were found in contracts/cli.md.');
+        static::assertNotSame([], $documented, 'No commands were found in contracts/cli.md.');
 
         foreach ($documented as $command) {
-            self::assertContains(
+            static::assertContains(
                 $command,
                 $registered,
                 sprintf('Command "%s" is documented but not registered.', $command),
@@ -56,26 +58,28 @@ final class ContractDocumentationTest extends TestCase
         }
     }
 
-    public function testEveryDocumentedExitCodeMatchesTheEnum(): void
+    #[Test]
+    public function everyDocumentedExitCodeMatchesTheEnum(): void
     {
         $documented = $this->documentedExitCodes();
 
-        self::assertCount(5, $documented, 'The exit code table must document five codes.');
+        static::assertCount(5, $documented, 'The exit code table must document five codes.');
 
         foreach ($documented as $name => $code) {
             $case = ExitCode::from($code);
 
-            self::assertSame($name, $case->label(), sprintf('Exit code %d is documented as "%s".', $code, $name));
-            self::assertSame($code, $case->value);
+            static::assertSame($name, $case->label(), sprintf('Exit code %d is documented as "%s".', $code, $name));
+            static::assertSame($code, $case->value);
         }
     }
 
-    public function testEveryDocumentedOptionAppearsInTheHelpText(): void
+    #[Test]
+    public function everyDocumentedOptionAppearsInTheHelpText(): void
     {
         $help = $this->application()->usage();
 
         foreach ($this->documentedOptions() as $option) {
-            self::assertStringContainsString(
+            static::assertStringContainsString(
                 $option['flag'],
                 $help,
                 sprintf('Option "%s" is documented but missing from the help text.', $option['flag']),
@@ -83,11 +87,12 @@ final class ContractDocumentationTest extends TestCase
         }
     }
 
-    public function testEveryDocumentedOptionIsAccepted(): void
+    #[Test]
+    public function everyDocumentedOptionIsAccepted(): void
     {
         $options = $this->documentedOptions();
 
-        self::assertNotSame([], $options, 'No options were found in contracts/cli.md.');
+        static::assertNotSame([], $options, 'No options were found in contracts/cli.md.');
 
         foreach ($options as $option) {
             $arguments = ['asciidoc-php-multi-repo', '--help', $option['flag']];
@@ -98,35 +103,36 @@ final class ContractDocumentationTest extends TestCase
 
             $exit = $this->application()->run($arguments);
 
-            self::assertSame(
+            static::assertSame(
                 ExitCode::Success->value,
                 $exit,
                 sprintf('Option "%s" is documented but was not accepted: %s', $option['flag'], $this->captured->stderr),
             );
-            self::assertSame('', $this->captured->stderr, sprintf('Option "%s" produced an error.', $option['flag']));
+            static::assertSame('', $this->captured->stderr, sprintf('Option "%s" produced an error.', $option['flag']));
         }
     }
 
-    public function testEveryEnumExitCodeIsDocumented(): void
+    #[Test]
+    public function everyEnumExitCodeIsDocumented(): void
     {
         $documented = $this->documentedExitCodes();
 
         foreach (ExitCode::cases() as $case) {
-            self::assertArrayHasKey(
+            static::assertArrayHasKey(
                 $case->label(),
                 $documented,
                 sprintf('Exit code "%s" is not documented in contracts/cli.md.', $case->label()),
             );
-            self::assertSame($case->value, $documented[$case->label()]);
+            static::assertSame($case->value, $documented[$case->label()]);
         }
     }
 
     protected function setUp(): void
     {
         $this->captured = new CapturedOutput();
-        $contents       = file_get_contents(Path::join(dirname(__DIR__, 2), 'contracts', 'cli.md'));
+        $contents       = file_get_contents(Path::join(dirname(__DIR__, levels: 2), 'contracts', 'cli.md'));
 
-        self::assertIsString($contents);
+        static::assertIsString($contents);
 
         $this->contract = $contents;
     }
@@ -150,7 +156,7 @@ final class ContractDocumentationTest extends TestCase
         $commands = [];
 
         foreach ($this->tableRows('Commands') as $row) {
-            $name = trim($row[0] ?? '', ' `');
+            $name = trim($row[0] ?? '', characters: ' `');
 
             if ('' !== $name) {
                 $commands[] = $name;
@@ -222,7 +228,7 @@ final class ContractDocumentationTest extends TestCase
 
         foreach (explode("\n", $this->contract) as $line) {
             if (str_starts_with($line, '## ')) {
-                $inside = trim(substr($line, 3)) === $heading;
+                $inside = trim(substr($line, offset: 3)) === $heading;
 
                 continue;
             }
@@ -232,13 +238,13 @@ final class ContractDocumentationTest extends TestCase
             }
 
             $cells = array_map('trim', explode('|', trim($line)));
-            $cells = array_slice($cells, 1, -1);
+            $cells = array_slice($cells, offset: 1, length: -1);
 
             if ([] === $cells || preg_match('/^-+$/', $cells[0]) === 1) {
                 continue;
             }
 
-            if (in_array($cells[0], ['Option', 'Command', 'Code'], true)) {
+            if (in_array($cells[0], ['Option', 'Command', 'Code'], strict: true)) {
                 continue;
             }
 

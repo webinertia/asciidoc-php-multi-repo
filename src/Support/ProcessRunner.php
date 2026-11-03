@@ -102,8 +102,8 @@ final class ProcessRunner
         [$stdin, $stdoutPipe, $stderrPipe] = [$pipes[0], $pipes[1], $pipes[2]];
 
         fclose($stdin);
-        stream_set_blocking($stdoutPipe, false);
-        stream_set_blocking($stderrPipe, false);
+        stream_set_blocking($stdoutPipe, enable: false);
+        stream_set_blocking($stderrPipe, enable: false);
 
         $stdout   = '';
         $stderr   = '';
@@ -116,7 +116,10 @@ final class ProcessRunner
             $write  = null;
             $except = null;
 
-            if (@stream_select($read, $write, $except, 0, self::READ_TIMEOUT_MICROSECONDS) === false) {
+            if (
+                @stream_select($read, $write, $except, seconds: 0, microseconds: self::READ_TIMEOUT_MICROSECONDS)
+                === false
+            ) {
                 $read = [];
             }
 

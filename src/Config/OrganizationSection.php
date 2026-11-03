@@ -48,7 +48,7 @@ final readonly class OrganizationSection
 
     public function excludes(string $repositoryName): bool
     {
-        return in_array($repositoryName, $this->excludeRepositories, true);
+        return in_array($repositoryName, $this->excludeRepositories, strict: true);
     }
 
     public function name(): string

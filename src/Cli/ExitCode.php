@@ -55,7 +55,7 @@ enum ExitCode: int
     public static function fromProjectStatuses(string ...$statuses): self
     {
         foreach ($statuses as $status) {
-            if (! in_array($status, ['ok', 'skipped'], true)) {
+            if (! in_array($status, ['ok', 'skipped'], strict: true)) {
                 return self::Degraded;
             }
         }

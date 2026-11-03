@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo;
 
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Config\SchemaValidator;
 use Webware\AsciidocPhp\MultiRepo\Support\Json;
@@ -109,12 +110,13 @@ final class SchemaContractTest extends TestCase
     /**
      * @param array<string, mixed> $document
      */
+    #[Test]
     #[DataProvider('publishedSchemas')]
-    public function testSchemaAcceptsAMinimalConformingDocument(string $name, array $document): void
+    public function schemaAcceptsAMinimalConformingDocument(string $name, array $document): void
     {
         $result = new SchemaValidator()->validate($document, $this->schema($name));
 
-        self::assertTrue(
+        static::assertTrue(
             $result->isValid(),
             "{$name} schema rejected a minimal document: {$this->json->encodeCompact($result->errors())}",
         );
@@ -123,8 +125,9 @@ final class SchemaContractTest extends TestCase
     /**
      * @param array<string, mixed> $document
      */
+    #[Test]
     #[DataProvider('publishedSchemas')]
-    public function testSchemaRejectsADocumentMissingARequiredMember(string $name, array $document): void
+    public function schemaRejectsADocumentMissingARequiredMember(string $name, array $document): void
     {
         $schema = $this->schema($name);
         $broken = $document;
@@ -137,12 +140,13 @@ final class SchemaContractTest extends TestCase
 
         $result = new SchemaValidator()->validate($broken, $schema);
 
-        self::assertFalse($result->isValid(), "{$name} schema accepted a document missing a required member.");
+        static::assertFalse($result->isValid(), "{$name} schema accepted a document missing a required member.");
     }
 
-    public function testThePackagedSiteSchemaIsThePublishedCopy(): void
+    #[Test]
+    public function thePackagedSiteSchemaIsThePublishedCopy(): void
     {
-        self::assertSame(
+        static::assertSame(
             $this->json->encode($this->schema('site')),
             $this->json->encode($this->json->decode($this->read('config', 'site.schema.json'))),
             'config/site.schema.json and contracts/site.schema.json have drifted apart.',
@@ -159,14 +163,14 @@ final class SchemaContractTest extends TestCase
         $path = Path::join($this->root(), $directory, $file);
         $json = file_get_contents($path);
 
-        self::assertIsString($json, "Unable to read {$path}");
+        static::assertIsString($json, "Unable to read {$path}");
 
         return $json;
     }
 
     private function root(): string
     {
-        return dirname(__DIR__, 2);
+        return dirname(__DIR__, levels: 2);
     }
 
     /**

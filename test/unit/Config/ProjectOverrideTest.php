@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Config;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Config\ProjectOverride;
 
@@ -29,18 +30,21 @@ final class ProjectOverrideTest extends TestCase
     /**
      * @param array<string, mixed> $data
      */
+    #[Test]
     #[DataProvider('singleFields')]
-    public function testASingleFieldMakesTheOverrideNonEmpty(array $data): void
+    public function aSingleFieldMakesTheOverrideNonEmpty(array $data): void
     {
-        self::assertFalse(ProjectOverride::fromArray($data)->isEmpty());
+        static::assertFalse(ProjectOverride::fromArray($data)->isEmpty());
     }
 
-    public function testEmptyIsEmpty(): void
+    #[Test]
+    public function emptyIsEmpty(): void
     {
-        self::assertTrue(ProjectOverride::empty()->isEmpty());
+        static::assertTrue(ProjectOverride::empty()->isEmpty());
     }
 
-    public function testFromArrayReadsEveryField(): void
+    #[Test]
+    public function fromArrayReadsEveryField(): void
     {
         $override = ProjectOverride::fromArray([
             'slug'        => 'message-bus',
@@ -50,23 +54,24 @@ final class ProjectOverrideTest extends TestCase
             'order'       => 10,
         ]);
 
-        self::assertSame('message-bus', $override->slug());
-        self::assertSame('Message Bus', $override->title());
-        self::assertSame('Message bus abstractions.', $override->description());
-        self::assertSame('#05a578', $override->accent());
-        self::assertSame(10, $override->order());
-        self::assertFalse($override->isEmpty());
+        static::assertSame('message-bus', $override->slug());
+        static::assertSame('Message Bus', $override->title());
+        static::assertSame('Message bus abstractions.', $override->description());
+        static::assertSame('#05a578', $override->accent());
+        static::assertSame(10, $override->order());
+        static::assertFalse($override->isEmpty());
     }
 
-    public function testFromArrayWithoutFieldsIsEmpty(): void
+    #[Test]
+    public function fromArrayWithoutFieldsIsEmpty(): void
     {
         $override = ProjectOverride::fromArray([]);
 
-        self::assertNull($override->slug());
-        self::assertNull($override->title());
-        self::assertNull($override->description());
-        self::assertNull($override->accent());
-        self::assertNull($override->order());
-        self::assertTrue($override->isEmpty());
+        static::assertNull($override->slug());
+        static::assertNull($override->title());
+        static::assertNull($override->description());
+        static::assertNull($override->accent());
+        static::assertNull($override->order());
+        static::assertTrue($override->isEmpty());
     }
 }

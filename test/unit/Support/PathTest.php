@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Support;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Support\Path;
 
@@ -125,63 +126,72 @@ final class PathTest extends TestCase
         ];
     }
 
+    #[Test]
     #[DataProvider('isAbsoluteProvider')]
-    public function testIsAbsolute(string $path, bool $expected): void
+    public function isAbsolute(string $path, bool $expected): void
     {
-        self::assertSame($expected, Path::isAbsolute($path));
+        static::assertSame($expected, Path::isAbsolute($path));
     }
 
     /**
      * @param list<string> $parts
      */
+    #[Test]
     #[DataProvider('joinProvider')]
-    public function testJoin(array $parts, string $expected): void
+    public function join(array $parts, string $expected): void
     {
-        self::assertSame($expected, Path::join(...$parts));
+        static::assertSame($expected, Path::join(...$parts));
     }
 
+    #[Test]
     #[DataProvider('normaliseProvider')]
-    public function testNormalise(string $path, string $expected): void
+    public function normalise(string $path, string $expected): void
     {
-        self::assertSame($expected, Path::normalise($path));
+        static::assertSame($expected, Path::normalise($path));
     }
 
+    #[Test]
     #[DataProvider('relativeToProvider')]
-    public function testRelativeTo(string $from, string $to, string $expected): void
+    public function relativeTo(string $from, string $to, string $expected): void
     {
-        self::assertSame($expected, Path::relativeTo($from, $to));
+        static::assertSame($expected, Path::relativeTo($from, $to));
     }
 
-    public function testResolveJoinsRelativePaths(): void
+    #[Test]
+    public function resolveJoinsRelativePaths(): void
     {
-        self::assertSame(
+        static::assertSame(
             'C:' . self::DS . 'base' . self::DS . 'out',
             Path::resolve('C:' . self::DS . 'base', 'out'),
         );
     }
 
-    public function testResolveKeepsAbsolutePaths(): void
+    #[Test]
+    public function resolveKeepsAbsolutePaths(): void
     {
-        self::assertSame(
+        static::assertSame(
             Path::normalise('C:' . self::DS . 'other'),
             Path::resolve('C:' . self::DS . 'base', 'C:' . self::DS . 'other'),
         );
     }
 
-    public function testResolveWithoutPathReturnsBase(): void
+    #[Test]
+    public function resolveWithoutPathReturnsBase(): void
     {
-        self::assertSame('C:' . self::DS . 'base', Path::resolve('C:' . self::DS . 'base', ''));
+        static::assertSame('C:' . self::DS . 'base', Path::resolve('C:' . self::DS . 'base', ''));
     }
 
+    #[Test]
     #[DataProvider('urlPathProvider')]
-    public function testToUrlPath(string $path, string $expected): void
+    public function toUrlPath(string $path, string $expected): void
     {
-        self::assertSame($expected, Path::toUrlPath($path));
+        static::assertSame($expected, Path::toUrlPath($path));
     }
 
+    #[Test]
     #[DataProvider('withExtensionProvider')]
-    public function testWithExtension(string $path, string $extension, string $expected): void
+    public function withExtension(string $path, string $extension, string $expected): void
     {
-        self::assertSame($expected, Path::withExtension($path, $extension));
+        static::assertSame($expected, Path::withExtension($path, $extension));
     }
 }

@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Cli;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Cli\Options;
 use Webware\AsciidocPhp\MultiRepo\Cli\OptionsParser;
@@ -63,7 +64,8 @@ final class OptionsParserTest extends TestCase
         ];
     }
 
-    public function testBooleanFlags(): void
+    #[Test]
+    public function booleanFlags(): void
     {
         $options = $this->parser->parse([
             'build',
@@ -77,57 +79,64 @@ final class OptionsParserTest extends TestCase
             '--version',
         ]);
 
-        self::assertTrue($options->full);
-        self::assertTrue($options->force);
-        self::assertTrue($options->quiet);
-        self::assertTrue($options->verbose);
-        self::assertTrue($options->timings);
-        self::assertTrue($options->noColor);
-        self::assertTrue($options->help);
-        self::assertTrue($options->version);
+        static::assertTrue($options->full);
+        static::assertTrue($options->force);
+        static::assertTrue($options->quiet);
+        static::assertTrue($options->verbose);
+        static::assertTrue($options->timings);
+        static::assertTrue($options->noColor);
+        static::assertTrue($options->help);
+        static::assertTrue($options->version);
     }
 
-    public function testConfigLongOptionWithInlineValue(): void
+    #[Test]
+    public function configLongOptionWithInlineValue(): void
     {
-        self::assertSame('docs/site.json', $this->parser->parse(['--config=docs/site.json'])->config);
+        static::assertSame('docs/site.json', $this->parser->parse(['--config=docs/site.json'])->config);
     }
 
-    public function testConfigLongOptionWithSeparateValue(): void
+    #[Test]
+    public function configLongOptionWithSeparateValue(): void
     {
-        self::assertSame('docs/site.json', $this->parser->parse(['--config', 'docs/site.json'])->config);
+        static::assertSame('docs/site.json', $this->parser->parse(['--config', 'docs/site.json'])->config);
     }
 
-    public function testConfigShortOption(): void
+    #[Test]
+    public function configShortOption(): void
     {
-        self::assertSame('docs/site.json', $this->parser->parse(['build', '-c', 'docs/site.json'])->configPath());
+        static::assertSame('docs/site.json', $this->parser->parse(['build', '-c', 'docs/site.json'])->configPath());
     }
 
-    public function testDoubleDashEndsOptionParsing(): void
+    #[Test]
+    public function doubleDashEndsOptionParsing(): void
     {
         $options = $this->parser->parse(['--', 'build']);
 
-        self::assertSame('build', $options->command);
+        static::assertSame('build', $options->command);
     }
 
-    public function testEmptyArgumentListProducesDefaults(): void
+    #[Test]
+    public function emptyArgumentListProducesDefaults(): void
     {
         $options = $this->parser->parse([]);
 
-        self::assertSame('', $options->command);
-        self::assertSame('site.json', $options->configPath());
-        self::assertSame(Options::DEFAULT_PORT, $options->port);
+        static::assertSame('', $options->command);
+        static::assertSame('site.json', $options->configPath());
+        static::assertSame(Options::DEFAULT_PORT, $options->port);
     }
 
-    public function testFirstPositionalIsTheCommand(): void
+    #[Test]
+    public function firstPositionalIsTheCommand(): void
     {
-        self::assertSame('build', $this->parser->parse(['build'])->command);
+        static::assertSame('build', $this->parser->parse(['build'])->command);
     }
 
     /**
      * @param list<string> $arguments
      */
+    #[Test]
     #[DataProvider('invalidArgumentLists')]
-    public function testInvalidArgumentsAreRejected(array $arguments, string $expectedMessage): void
+    public function invalidArgumentsAreRejected(array $arguments, string $expectedMessage): void
     {
         $this->expectException(UsageException::class);
         $this->expectExceptionMessage($expectedMessage);
@@ -135,38 +144,43 @@ final class OptionsParserTest extends TestCase
         $this->parser->parse($arguments);
     }
 
-    public function testOutOptionAcceptsShortLongAndDocumentedAlias(): void
+    #[Test]
+    public function outOptionAcceptsShortLongAndDocumentedAlias(): void
     {
-        self::assertSame('build/site', $this->parser->parse(['-o', 'build/site'])->out);
-        self::assertSame('build/site', $this->parser->parse(['--out', 'build/site'])->out);
-        self::assertSame('build/site', $this->parser->parse(['--output', 'build/site'])->out);
+        static::assertSame('build/site', $this->parser->parse(['-o', 'build/site'])->out);
+        static::assertSame('build/site', $this->parser->parse(['--out', 'build/site'])->out);
+        static::assertSame('build/site', $this->parser->parse(['--output', 'build/site'])->out);
     }
 
-    public function testProjectIsRepeatableAndOrdered(): void
+    #[Test]
+    public function projectIsRepeatableAndOrdered(): void
     {
         $options = $this->parser->parse(['build', '--project', 'message-bus', '--project=messagebus-event']);
 
-        self::assertSame(['message-bus', 'messagebus-event'], $options->projects);
+        static::assertSame(['message-bus', 'messagebus-event'], $options->projects);
     }
 
-    public function testRefAcceptsARevisionContainingAnEqualsSign(): void
+    #[Test]
+    public function refAcceptsARevisionContainingAnEqualsSign(): void
     {
         $options = $this->parser->parse(['--ref', 'message-bus=feature=thing']);
 
-        self::assertSame(['message-bus' => 'feature=thing'], $options->refs);
+        static::assertSame(['message-bus' => 'feature=thing'], $options->refs);
     }
 
-    public function testRefIsRepeatableAndKeyedByRepository(): void
+    #[Test]
+    public function refIsRepeatableAndKeyedByRepository(): void
     {
         $options = $this->parser->parse(['build', '--ref', 'message-bus=main', '--ref=webware-tools=v2']);
 
-        self::assertSame(
+        static::assertSame(
             ['message-bus' => 'main', 'webware-tools' => 'v2'],
             $options->refs,
         );
     }
 
-    public function testRemainingValueOptions(): void
+    #[Test]
+    public function remainingValueOptions(): void
     {
         $options = $this->parser->parse([
             'build',
@@ -184,26 +198,28 @@ final class OptionsParserTest extends TestCase
             '9000',
         ]);
 
-        self::assertSame('build/cache', $options->cache);
-        self::assertSame('build/report.json', $options->report);
-        self::assertSame(8, $options->concurrency);
-        self::assertSame('test/fixtures/manifest.json', $options->manifest);
-        self::assertSame('/docs/', $options->basePath);
-        self::assertSame(9000, $options->port);
+        static::assertSame('build/cache', $options->cache);
+        static::assertSame('build/report.json', $options->report);
+        static::assertSame(8, $options->concurrency);
+        static::assertSame('test/fixtures/manifest.json', $options->manifest);
+        static::assertSame('/docs/', $options->basePath);
+        static::assertSame(9000, $options->port);
     }
 
-    public function testShortBooleanFlagsMayBeClustered(): void
+    #[Test]
+    public function shortBooleanFlagsMayBeClustered(): void
     {
         $options = $this->parser->parse(['build', '-qvt']);
 
-        self::assertTrue($options->quiet);
-        self::assertTrue($options->verbose);
-        self::assertTrue($options->timings);
+        static::assertTrue($options->quiet);
+        static::assertTrue($options->verbose);
+        static::assertTrue($options->timings);
     }
 
-    public function testShortHelpFlag(): void
+    #[Test]
+    public function shortHelpFlag(): void
     {
-        self::assertTrue($this->parser->parse(['-h'])->help);
+        static::assertTrue($this->parser->parse(['-h'])->help);
     }
 
     protected function setUp(): void

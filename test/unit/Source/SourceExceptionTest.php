@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Source;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Webware\AsciidocPhp\MultiRepo\Report\ReasonCode;
@@ -16,7 +17,8 @@ use Webware\AsciidocPhp\MultiRepo\Source\SourceException;
 #[CoversMethod(SourceException::class, 'error')]
 final class SourceExceptionTest extends TestCase
 {
-    public function testThePreviousExceptionIsKept(): void
+    #[Test]
+    public function thePreviousExceptionIsKept(): void
     {
         $previous  = new RuntimeException('transport failed');
         $exception = new SourceException(
@@ -24,17 +26,18 @@ final class SourceExceptionTest extends TestCase
             $previous,
         );
 
-        self::assertSame($previous, $exception->getPrevious());
+        static::assertSame($previous, $exception->getPrevious());
     }
 
-    public function testTheReportableErrorIsCarried(): void
+    #[Test]
+    public function theReportableErrorIsCarried(): void
     {
         $error     = new SourceError(ReasonCode::MissingEntry, 'No entry document.', 'latest', 'index.adoc');
         $exception = new SourceException($error);
 
-        self::assertSame($error, $exception->error());
-        self::assertSame('No entry document.', $exception->getMessage());
-        self::assertSame(0, $exception->getCode());
-        self::assertNull($exception->getPrevious());
+        static::assertSame($error, $exception->error());
+        static::assertSame('No entry document.', $exception->getMessage());
+        static::assertSame(0, $exception->getCode());
+        static::assertNull($exception->getPrevious());
     }
 }

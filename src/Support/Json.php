@@ -49,7 +49,7 @@ final class Json
     public function decode(string $json, string $source = 'JSON document'): mixed
     {
         try {
-            return json_decode($json, true, self::MAX_DEPTH, JSON_THROW_ON_ERROR);
+            return json_decode($json, associative: true, depth: self::MAX_DEPTH, flags: JSON_THROW_ON_ERROR);
         } catch (JsonException $exception) {
             throw $this->mapFailure($json, $source, $exception);
         }
@@ -66,7 +66,12 @@ final class Json
 
         // Re-decoding with objects preserved distinguishes a JSON object from a JSON array, which
         // the associative form cannot do for empty documents.
-        if (! json_decode($json, false, self::MAX_DEPTH, JSON_THROW_ON_ERROR) instanceof stdClass) {
+        if (
+            !
+                json_decode($json, associative: false, depth: self::MAX_DEPTH, flags: JSON_THROW_ON_ERROR)
+                instanceof stdClass
+
+        ) {
             throw new JsonDecodeException(
                 sprintf('%s must contain a JSON object.', $source),
                 $source,

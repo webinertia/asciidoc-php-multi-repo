@@ -6,6 +6,7 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Cli;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Webware\AsciidocPhp\MultiRepo\Cli\Application;
 use Webware\AsciidocPhp\MultiRepo\Cli\Commands\CommandInterface;
@@ -34,32 +35,35 @@ final class CommandStubTest extends TestCase
         ];
     }
 
+    #[Test]
     #[DataProvider('contractCommands')]
-    public function testEveryCommandHasANonEmptySummary(string $name): void
+    public function everyCommandHasANonEmptySummary(string $name): void
     {
-        self::assertNotSame('', $this->command($name)->summary());
+        static::assertNotSame('', $this->command($name)->summary());
     }
 
+    #[Test]
     #[DataProvider('contractCommands')]
-    public function testEveryContractCommandIsRegistered(string $name): void
+    public function everyContractCommandIsRegistered(string $name): void
     {
         $names = array_map(
             static fn(CommandInterface $command): string => $command->name(),
             Application::defaultCommands(),
         );
 
-        self::assertContains($name, $names);
+        static::assertContains($name, $names);
     }
 
-    public function testTheRegistryHasNoDuplicateNames(): void
+    #[Test]
+    public function theRegistryHasNoDuplicateNames(): void
     {
         $names = array_map(
             static fn(CommandInterface $command): string => $command->name(),
             Application::defaultCommands(),
         );
 
-        self::assertSame($names, array_values(array_unique($names)));
-        self::assertCount(7, $names);
+        static::assertSame($names, array_values(array_unique($names)));
+        static::assertCount(7, $names);
     }
 
     private function command(string $name): CommandInterface

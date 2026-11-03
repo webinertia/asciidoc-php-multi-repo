@@ -127,7 +127,7 @@ final readonly class PageRenderer
         $pageTitle = trim((string) $document->getDocTitle());
 
         if ('' === $pageTitle) {
-            $pageTitle = $this->humanise(basename($source->relativePath(), '.adoc'));
+            $pageTitle = $this->humanise(basename($source->relativePath(), suffix: '.adoc'));
         }
 
         $projectTitle = $this->projectTitle($config, $repository);
@@ -140,7 +140,9 @@ final readonly class PageRenderer
             projectTitle    : $projectTitle,
             pageTitle       : $pageTitle,
             versionLabel    : $version->label(),
-            canonicalUrl    : rtrim($config->site()->baseUrl(), '/') . rtrim($basePath, '/') . $urlPath,
+            canonicalUrl    : rtrim($config->site()->baseUrl(), characters: '/')
+                . rtrim($basePath, characters: '/')
+                . $urlPath,
             body            : $body,
             toc             : $entries,
             stylesheets     : [
@@ -271,7 +273,7 @@ final readonly class PageRenderer
 
     private function humanise(string $value): string
     {
-        return ucwords(strtolower(preg_replace('/[-_]+/', ' ', $value) ?? $value));
+        return ucwords(strtolower(preg_replace('/[-_]+/', replacement: ' ', subject: $value) ?? $value));
     }
 
     private function projectTitle(SiteConfig $config, DiscoveredRepository $repository): string
@@ -318,11 +320,15 @@ final readonly class PageRenderer
 
     private function searchText(string $html, int $limit): string
     {
-        $text = (string) preg_replace('/\s+/', ' ', (string) preg_replace('/<[^>]*>/', ' ', $html));
+        $text = (string) preg_replace(
+            '/\s+/',
+            replacement: ' ',
+            subject: (string) preg_replace('/<[^>]*>/', replacement: ' ', subject: $html),
+        );
         $text = trim($text);
 
-        if ($limit > 0 && mb_substr($text, 0, $limit) !== $text) {
-            return mb_substr($text, 0, $limit);
+        if ($limit > 0 && mb_substr($text, start: 0, length: $limit) !== $text) {
+            return mb_substr($text, start: 0, length: $limit);
         }
 
         return $text;

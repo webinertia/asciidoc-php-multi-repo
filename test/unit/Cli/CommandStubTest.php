@@ -35,6 +35,12 @@ final class CommandStubTest extends TestCase
     }
 
     #[DataProvider('contractCommands')]
+    public function testEveryCommandHasANonEmptySummary(string $name): void
+    {
+        self::assertNotSame('', $this->command($name)->summary());
+    }
+
+    #[DataProvider('contractCommands')]
     public function testEveryContractCommandIsRegistered(string $name): void
     {
         $names = array_map(
@@ -43,12 +49,6 @@ final class CommandStubTest extends TestCase
         );
 
         self::assertContains($name, $names);
-    }
-
-    #[DataProvider('contractCommands')]
-    public function testEveryCommandHasANonEmptySummary(string $name): void
-    {
-        self::assertNotSame('', $this->command($name)->summary());
     }
 
     public function testTheRegistryHasNoDuplicateNames(): void

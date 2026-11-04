@@ -1,0 +1,219 @@
+= GitHub action reference
+:toclevels: 3
+
+The repository ships a GitHub container action that renders a multi-repository
+documentation site on the caller's checkout. A consumer adds one `uses:` line; the action pulls
+its image from GHCR, so nothing is installed in the caller's job.
+
+The action is the supported distribution path for a third party. It needs no GitHub App, no
+installation, and no private credential of its own. The xref:operating.adoc[operator guide]
+records the earlier publish model, which this page replaces for third-party use.
+
+== Using the action
+
+[source,yaml]
+----
+- uses: webinertia/asciidoc-php-multi-repo@1.0.x
+  with:
+    config: site.json
+    output: build/docs
+----
+
+The `uses:` ref is a git ref in this repository: a release tag such as `1.0.0`, or the `1.0.x`
+branch for the newest commit. It is not the image tag. Pin a release tag in a production
+workflow.
+
+== Inputs
+
+[cols="1,1,1,2"]
+|===
+| Input | Required | Default | Meaning
+
+| `config`
+| yes
+| `site.json`
+| Path to the site configuration, relative to the workspace.
+
+| `output`
+| no
+| `build/docs`
+| Directory that receives the rendered site, relative to the workspace.
+|===
+
+`action.yml` passes `render` as the container's first argument, which is the image entrypoint's
+verb for the CLI's `build` command: discover, fetch, render, and write the site. The options
+follow the verb, so `config` becomes `--config` and `output` becomes `--out`.
+
+There is no `validate` mode. The image entrypoint exposes the `render`, `watch`, and `serve`
+verbs, and the action uses `render`.
+
+== Building without discovery
+
+A manifest replaces the discovery API call, and the action has no input for it. The image
+entrypoint reads `ASCIIDOC_MANIFEST` from the container environment and passes it as
+`--manifest`, so the workflow sets the variable on the step:
+
+[source,yaml]
+----
+- uses: webinertia/asciidoc-php-multi-repo@1.0.x
+  with:
+    config: site.json
+    output: build/docs
+  env:
+    ASCIIDOC_MANIFEST: manifest.json
+----
+
+With `ASCIIDOC_MANIFEST` set, discovery is read from the file and no token is needed.
+
+== The image and its tags
+
+`action.yml` runs `docker://ghcr.io/webinertia/asciidoc-php-multi-repo:1`, which is the slim
+runtime image built from `docker/Dockerfile`: PHP, the extensions the package requires, the
+runtime dependencies, and the console binary. It is the same image `compose.yml`'s `render`,
+`watch`, and `preview` services run locally.
+
+[cols="1,2"]
+|===
+| Tag | Meaning
+
+| `1`
+| The newest 1.x release. This is the tag `action.yml` references, so the action follows 1.x
+  releases without a change.
+
+| full version, for example `1.0.0`
+| One exact release.
+
+| `latest`
+| The newest publish of any kind.
+|===
+
+`.github/workflows/publish-image.yml` pushes these tags on a release tag, and on a manual
+dispatch of a release tag. The package is public, so pulling the image needs no credentials and
+no `docker login`.
+
+The publish workflow builds `docker/Dockerfile` only. It loads the built image locally and fails
+if `node`, `npm`, or `npx` is present, so the repository's dev toolchain image, which carries
+Node for a test harness, can never be published by mistake.
+
+== Linux runners only
+
+Container actions run only on Linux runners. The job must use `runs-on: ubuntu-latest`; a
+Windows or macOS runner cannot run a `docker://` action at all, and there is no fallback for
+those platforms.
+
+GitHub mounts the calling repository at `/github/workspace` and runs the container with that as
+its working directory, so `config` and `output` are resolved against the checkout.
+
+== Credentials
+
+The action receives no token of its own. It never sees `GITHUB_TOKEN`, and the image carries no
+credential. Two consequences follow:
+
+* With `ASCIIDOC_MANIFEST` set, discovery is read from the file and no token is needed at all.
+* Without a manifest, the CLI reads the token named by the configuration's
+  `organization.tokenEnvVar`, which is `DOC_DISCOVERY_TOKEN`, from the container environment. If
+  the workflow does not pass that variable, discovery fails.
+
+The discovery token needs Organization Custom properties, Read only. It is held by the site
+repository, never by a source repository.
+
+== The site repository workflow
+
+This is the complete surface a site repository needs: render with the action, then publish with
+GitHub Pages. The `repository_dispatch` trigger is what makes a source repository's push visible
+here without waiting for the schedule.
+
+[source,yaml]
+----
+name: Publish documentation
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+  repository_dispatch:
+    types: [docs-source-updated]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: publish-documentation
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Render and publish
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Render the site
+        uses: webinertia/asciidoc-php-multi-repo@1.0.x
+        with:
+          config: site.json
+          output: build/docs
+        env:
+          DOC_DISCOVERY_TOKEN: ${{ secrets.DOC_DISCOVERY_TOKEN }}
+      - name: Upload the site
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: build/docs
+      - name: Deploy to Pages
+        id: deploy
+        uses: actions/deploy-pages@v5
+----
+
+`build/docs` is the `output` input, so the upload path and the action input have to agree.
+Replace the `DOC_DISCOVERY_TOKEN` variable with `ASCIIDOC_MANIFEST` when the site is built from
+a manifest.
+
+== The source repository workflow
+
+Each repository whose documentation is published carries a small workflow that tells the site
+repository its sources changed. It renders nothing and reads no discovery.
+
+[source,yaml]
+----
+name: Notify documentation site
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    name: Dispatch a documentation rebuild
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch docs-source-updated
+        env:
+          DOCS_SITE_TOKEN: ${{ secrets.DOCS_SITE_TOKEN }}
+        run: |
+          curl --fail --silent --show-error \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $DOCS_SITE_TOKEN" \
+            https://api.github.com/repos/webinertia/docs.webinertia.net/dispatches \
+            -d '{"event_type":"docs-source-updated"}'
+----
+
+`DOCS_SITE_TOKEN` is scoped to the site repository only, with Contents, Read and write, which is
+what `repository_dispatch` requires. It grants nothing in the source repository.
+
+It is not `DOC_DISCOVERY_TOKEN`. The discovery token reads organization properties and stays in
+the site repository; the dispatch token can only trigger a workflow on the site repository.
+Store `DOCS_SITE_TOKEN` as a repository secret, or as an organization secret limited to the
+repositories whose documentation is published.

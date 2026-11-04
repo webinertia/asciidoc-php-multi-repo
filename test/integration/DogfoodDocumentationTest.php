@@ -42,6 +42,7 @@ final class DogfoodDocumentationTest extends TestCase
 
     private const array PAGES = [
         'index.html',
+        'action.html',
         'authoring.html',
         'action-setup.html',
         'theming.html',
@@ -63,7 +64,7 @@ final class DogfoodDocumentationTest extends TestCase
     {
         static::assertSame(ExitCode::Success, $this->exitCode);
         static::assertStringContainsString(
-            self::SLUG . ': 5 page(s) ok',
+            self::SLUG . ': 6 page(s) ok',
             implode("\n", $this->stderr),
         );
 

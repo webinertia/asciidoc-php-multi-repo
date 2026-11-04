@@ -5,7 +5,7 @@ This site is built by webware/asciidoc-php-multi-repo from the AsciiDoc sources 
 repository's own `docs/v1` directory. It is the dogfood copy: the same pipeline that publishes
 an onboarded repository publishes this one.
 
-The four guides below are the complete operator and author documentation for version 1.
+The guides below are the complete operator and author documentation for version 1.
 
 == Guides
 
@@ -16,6 +16,8 @@ The four guides below are the complete operator and author documentation for ver
 * xref:theming.adoc[Theme guide] - the token set, per-project accents, and light and dark mode.
 * xref:troubleshooting.adoc[Troubleshooting and reason codes] - every reason code the build
   report can emit, its cause, and its fix.
+* xref:action.adoc[GitHub action reference] - the container action's inputs, its image tags, the
+  Linux runner constraint, and the workflows a consumer copies.
 
 == Getting started
 

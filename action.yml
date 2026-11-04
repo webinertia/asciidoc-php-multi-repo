@@ -1,0 +1,46 @@
+name: 'AsciiDoc PHP Multi Repo'
+description: 'Render a multi-repository AsciiDoc documentation site on the caller checkout.'
+author: 'webinertia'
+
+# The action runs the runtime image built by docker/Dockerfile, which the
+# publish workflow pushes to GHCR. GitHub mounts the calling repository at
+# /github/workspace and runs the container with that as its working directory,
+# so every path below is relative to the checkout.
+#
+# The image's own entrypoint is the command, so the first argument is one of
+# its verbs. `render` is the CLI's `build`: it discovers, fetches, renders, and
+# writes the site. Everything after the verb is passed to the CLI unchanged,
+# which is why the options below follow it.
+#
+# A manifest is not an argument here. The entrypoint reads ASCIIDOC_MANIFEST
+# from the container environment and turns it into `--manifest`, so a workflow
+# that wants an offline build sets that variable on the step with `env:`.
+#
+# The image is public, so pulling it needs no credentials. The only credential
+# the action can ever see is one the calling workflow puts into the container
+# environment; organization discovery reads DOC_DISCOVERY_TOKEN, and setting
+# ASCIIDOC_MANIFEST instead means no token is needed at all.
+
+inputs:
+  config:
+    description: 'Path to the site configuration file, relative to the workspace.'
+    required: true
+    default: 'site.json'
+  output:
+    description: 'Directory that receives the rendered site, relative to the workspace.'
+    required: false
+    default: 'build/docs'
+
+runs:
+  using: 'docker'
+  image: 'docker://ghcr.io/webinertia/asciidoc-php-multi-repo:1'
+  args:
+    - 'render'
+    - '--config'
+    - ${{ inputs.config }}
+    - '--out'
+    - ${{ inputs.output }}
+
+branding:
+  icon: 'book-open'
+  color: 'purple'

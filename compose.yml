@@ -82,6 +82,11 @@ x-site-stack: &site-stack
       # of that range, so the container proves the lowest supported runtime.
       PHP_VERSION: "8.4"
   image: asciidoc-php-multi-repo:local
+  # The runtime image runs as root so it can also serve as the GitHub container
+  # action, whose mounted workspace belongs to the runner's uid. Local
+  # rendering does not need that, so these services keep the unprivileged
+  # `site` account the image creates.
+  user: "1000:1000"
   working_dir: /site
   # A PID 1 that reaps children, so a stopped watch loop leaves nothing behind.
   init: true

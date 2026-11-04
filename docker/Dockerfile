@@ -14,6 +14,10 @@
 #
 # The `render`, `watch`, and `preview` services in `compose.yml` build from
 # this file.
+#
+# This is also the image the GitHub container action in `action.yml` runs,
+# once the publish workflow has pushed it to GHCR. The action uses the default
+# entrypoint below, which is why the action's arguments begin with a verb.
 # ---------------------------------------------------------------------------
 
 # PHP version to base the image on. The package supports ~8.4.0 and ~8.5.0;
@@ -139,8 +143,13 @@ RUN set -eux; \
     useradd --uid 1000 --gid 1000 --create-home --shell /bin/bash site; \
     chown -R site:site /app
 
-USER site
-
+# No `USER site`. This image is also a GitHub container action, and the runner
+# mounts the calling repository at /github/workspace owned by the runner's own
+# uid, which a fixed uid inside the image cannot write to. Container actions
+# conventionally run as root for that reason, so the image does too, and
+# `compose.yml` pins `user: "1000:1000"` for the local site stack so that local
+# rendering stays on the unprivileged `site` account.
+#
 # The rendered site and the cache are written under the working directory, so
 # the mounted site directory is where the caller decides they belong.
 ENV ASCIIDOC_SERVE_HOST=0.0.0.0

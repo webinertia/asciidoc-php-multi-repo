@@ -1,0 +1,93 @@
+name: Publish image
+
+# Builds the runtime image from docker/Dockerfile and pushes it to GHCR, which
+# is where the container action in action.yml pulls it from:
+#
+#   docker://ghcr.io/webinertia/asciidoc-php-multi-repo:1
+#
+# Only docker/Dockerfile is publishable. The root Dockerfile is the interactive
+# dev toolchain image and carries Node, because test/integration/
+# SearchBehaviourTest.php shells out to a Node harness. That dependency is for
+# tests and must never reach a published image, so the build is loaded locally
+# first and asserted to carry no Node toolchain. If this workflow is ever
+# pointed at the root Dockerfile, the assertion fails and nothing is pushed.
+#
+# A release tag publishes the full version, the `1` major alias the action
+# references, and `latest`. A manual dispatch publishes the same tags from the
+# dispatched ref, so dispatch a tag (`gh workflow run publish-image.yml --ref
+# 1.0.0`) rather than a branch: from a branch there is no version to derive and
+# only `latest` would move.
+#
+# The package must be public for third parties to pull the image without
+# credentials. Visibility is a package setting, not something GITHUB_TOKEN can
+# change, so it is set once in the package settings after the first push:
+# Package settings, Danger Zone, Change visibility, Public.
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+      - '[0-9]+.[0-9]+.[0-9]+-*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: publish-image-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Build and push the runtime image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v4
+      - name: Log in to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Derive the image tags
+        id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}
+            type=raw,value=latest
+      - name: Build the runtime image locally
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: docker/Dockerfile
+          load: true
+          push: false
+          tags: asciidoc-runtime:assert
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Assert the runtime image carries no Node toolchain
+        run: |
+          set -eu
+          for tool in node npm npx; do
+            if docker run --rm --entrypoint sh asciidoc-runtime:assert -c "command -v $tool" >/dev/null 2>&1; then
+              echo "::error::the runtime image carries $tool. Publish must not ship the dev toolchain; check that file: is docker/Dockerfile."
+              exit 1
+            fi
+          done
+          echo "The runtime image carries no node, npm, or npx."
+      - name: Push
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: docker/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha

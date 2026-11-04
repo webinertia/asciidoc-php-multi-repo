@@ -7,13 +7,18 @@ declare(strict_types=1);
  * @var string $siteName
  * @var string $canonicalUrl
  * @var list<string> $stylesheets
+ * @var list<string> $scripts
  * @var string $logoUrl
+ * @var string $colorMode
+ * @var string $defaultColorMode
  * @var list<array{description: string, title: string, url: string, version: string}> $cards
  */
 
+require __DIR__ . '/theme-bootstrap.php';
+
 ?>
 <!DOCTYPE html>
-<html lang="en" class="no-js">
+<html lang="en" data-theme="<?= $e($themeInitial) ?>" data-theme-mode="<?= $e($themeMode) ?>">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -25,7 +30,7 @@ declare(strict_types=1);
 <?php foreach ($stylesheets as $stylesheet) : ?>
 <link rel="stylesheet" href="<?= $e($stylesheet) ?>">
 <?php endforeach ?>
-</head>
+<?php $themeBootstrap() ?></head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header">
@@ -35,6 +40,7 @@ declare(strict_types=1);
 <p class="site-name"><?= $e($siteName) ?></p>
 <?php endif ?>
 <h1 class="landing-title">Documentation</h1>
+<button type="button" class="theme-toggle" data-theme-toggle aria-pressed="false" aria-label="Toggle dark mode">Toggle dark mode</button>
 </header>
 <main id="main" class="landing">
 <?php if ([] === $cards) : ?>
@@ -53,5 +59,8 @@ declare(strict_types=1);
 </ul>
 <?php endif ?>
 </main>
+<?php foreach ($scripts as $script) : ?>
+<script src="<?= $e($script) ?>" defer></script>
+<?php endforeach ?>
 </body>
 </html>

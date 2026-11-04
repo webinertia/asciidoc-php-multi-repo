@@ -170,18 +170,20 @@ final class BuildRunner
         $this->writePages($config, $navigation, $projects, $outputDirectory, $output, $renderer);
 
         $assembly = new SiteAssembly(
-            outputDirectory: $outputDirectory,
-            config         : $config,
-            urls           : $urls,
-            projects       : $summaries,
-            entryPages     : $entryPages,
-            redirects      : $redirects,
-            searchIndexes  : $searchIndexes,
-            siteSearchIndex: new SiteIndexBuilder()->toJson($summaries, $urls),
-            assets         : $assets,
-            baseStylesheet : $urls->asset($theme->baseName()),
-            stylesheet     : $urls->asset($theme->siteName()),
-            logoUrl        : $theme->logoUrl($config->site()->basePath()),
+            outputDirectory : $outputDirectory,
+            config          : $config,
+            urls            : $urls,
+            projects        : $summaries,
+            entryPages      : $entryPages,
+            redirects       : $redirects,
+            searchIndexes   : $searchIndexes,
+            siteSearchIndex : new SiteIndexBuilder()->toJson($summaries, $urls),
+            assets          : $assets,
+            baseStylesheet  : $urls->asset($theme->baseName()),
+            stylesheet      : $urls->asset($theme->siteName()),
+            logoUrl         : $theme->logoUrl($config->site()->basePath()),
+            accentStylesheet: $urls->asset($theme->accentName()),
+            themeScript     : $urls->asset($theme->themeScriptName()),
         );
 
         $this->assembler->assemble($assembly);

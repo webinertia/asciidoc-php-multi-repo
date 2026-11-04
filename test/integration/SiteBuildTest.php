@@ -286,6 +286,29 @@ final class SiteBuildTest extends TestCase
     }
 
     #[Test]
+    public function theLandingPageCarriesTheSameThemeContractAsADocsPage(): void
+    {
+        $landing = (string) file_get_contents(Path::join($this->output, 'index.html'));
+        $docs    = (string) file_get_contents(Path::join($this->output, 'versioned', 'v1', 'index.html'));
+
+        static::assertStringContainsString(
+            '<html lang="en" data-theme="dark" data-theme-mode="system">',
+            $landing,
+            'the landing page paints the configured theme before scripting runs',
+        );
+        static::assertStringContainsString('data-theme-toggle', $landing);
+        static::assertStringContainsString('/assets/asciidoctor.', $landing);
+        static::assertStringContainsString('/assets/site.', $landing);
+        static::assertStringContainsString('/assets/accent.', $landing);
+        static::assertStringContainsString('/assets/theme.', $landing);
+
+        $bootstrap = "window.localStorage.getItem('asciidoc-php-theme')";
+
+        static::assertStringContainsString($bootstrap, $landing);
+        static::assertStringContainsString($bootstrap, $docs, 'both shells share one bootstrap');
+    }
+
+    #[Test]
     public function theNotFoundPageLinksHomeAndListsEveryProject(): void
     {
         $html = (string) file_get_contents(Path::join($this->output, '404.html'));

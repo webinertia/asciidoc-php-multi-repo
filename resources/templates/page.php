@@ -8,15 +8,15 @@ declare(strict_types=1);
  * @var Closure(list<Webware\AsciidocPhp\MultiRepo\Render\TocEntry>): string $toc
  */
 
-$mode    = $context->colorMode();
-$mode    = in_array($mode, ['light', 'dark', 'system'], true) ? $mode : 'system';
-$initial = $context->defaultColorMode();
-$initial = in_array($initial, ['light', 'dark'], true) ? $initial : 'dark';
-$chrome  = $context->chrome();
+$colorMode        = $context->colorMode();
+$defaultColorMode = $context->defaultColorMode();
+$chrome           = $context->chrome();
+
+require __DIR__ . '/theme-bootstrap.php';
 
 ?>
 <!DOCTYPE html>
-<html lang="en" data-theme="<?= $e($initial) ?>" data-theme-mode="<?= $e($mode) ?>">
+<html lang="en" data-theme="<?= $e($themeInitial) ?>" data-theme-mode="<?= $e($themeMode) ?>">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -31,27 +31,7 @@ $chrome  = $context->chrome();
 <?php if ('' !== $context->iconFontCdn()) : ?>
 <link rel="stylesheet" href="<?= $e($context->iconFontCdn()) ?>">
 <?php endif ?>
-<script>
-(function () {
-  var stored = null;
-  try {
-    stored = window.localStorage.getItem('asciidoc-php-theme');
-  } catch (error) {
-    stored = null;
-  }
-  var mode = document.documentElement.getAttribute('data-theme-mode');
-  var theme;
-  if (stored === 'light' || stored === 'dark') {
-    theme = stored;
-  } else if (mode === 'light' || mode === 'dark') {
-    theme = mode;
-  } else {
-    theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  }
-  document.documentElement.setAttribute('data-theme', theme);
-})();
-</script>
-</head>
+<?php $themeBootstrap() ?></head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header">

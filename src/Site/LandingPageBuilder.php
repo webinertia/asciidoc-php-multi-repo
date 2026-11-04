@@ -8,7 +8,9 @@ use RuntimeException;
 use Webware\AsciidocPhp\MultiRepo\Render\PageShell;
 use Webware\AsciidocPhp\MultiRepo\Search\TextExtractor;
 
+use function array_filter;
 use function array_map;
+use function array_values;
 
 /**
  * Emits the site landing page: one card per publishable project, in the documented order.
@@ -33,12 +35,15 @@ final readonly class LandingPageBuilder
     public function build(SiteAssembly $assembly, string $canonicalUrl): string
     {
         return $this->shell->renderTemplate('landing.php', [
-            'siteName'     => $assembly->siteName(),
-            'canonicalUrl' => $canonicalUrl,
-            'stylesheets'  => [$assembly->baseStylesheet(), $assembly->stylesheet()],
-            'cards'        => $this->cards($assembly->projects(), $assembly->entryPages()),
-            'logoUrl'      => $assembly->logoUrl(),
-            'e'            => $this->shell->escape(...),
+            'siteName'         => $assembly->siteName(),
+            'canonicalUrl'     => $canonicalUrl,
+            'stylesheets'      => $this->stylesheets($assembly),
+            'scripts'          => $this->scripts($assembly),
+            'cards'            => $this->cards($assembly->projects(), $assembly->entryPages()),
+            'logoUrl'          => $assembly->logoUrl(),
+            'colorMode'        => $assembly->config()->theme()->colorMode(),
+            'defaultColorMode' => $assembly->config()->theme()->defaultColorMode(),
+            'e'                => $this->shell->escape(...),
         ]);
     }
 
@@ -68,5 +73,33 @@ final readonly class LandingPageBuilder
         }
 
         return $this->extractor->firstParagraph($entryHtml);
+    }
+
+    /**
+     * The theme toggle script. The landing page carries no navigation, search, or project chrome, so
+     * this is the only script it needs.
+     *
+     * @return list<string>
+     */
+    private function scripts(SiteAssembly $assembly): array
+    {
+        return array_values(array_filter(
+            [$assembly->themeScript()],
+            static fn(string $url): bool => '' !== $url,
+        ));
+    }
+
+    /**
+     * The base layer, the site overrides, then the default accent, in the same order a docs page
+     * links them. An assembly built without an accent URL links the two shared layers only.
+     *
+     * @return list<string>
+     */
+    private function stylesheets(SiteAssembly $assembly): array
+    {
+        return array_values(array_filter(
+            [$assembly->baseStylesheet(), $assembly->stylesheet(), $assembly->accentStylesheet()],
+            static fn(string $url): bool => '' !== $url,
+        ));
     }
 }

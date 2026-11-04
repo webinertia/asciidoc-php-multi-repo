@@ -16,8 +16,6 @@ use Webware\AsciidocPhp\MultiRepo\Support\ProcessRunner;
 use function is_dir;
 use function max;
 use function sprintf;
-use function str_starts_with;
-use function substr;
 use function trim;
 
 /**
@@ -32,12 +30,12 @@ final class RepositoryFetcher
 {
     private const float GIT_TIMEOUT_SECONDS = 120.0;
 
-    private const int REVISION_LENGTH = 64;
-
     /** @var Closure(string, string): string */
     private readonly Closure $remoteUrl;
 
     private readonly int $maxAttempts;
+
+    private readonly SourceTree $tree;
 
     /**
      * @param null|Closure(string, string): string $remoteUrl builds the clone URL from the
@@ -48,6 +46,7 @@ final class RepositoryFetcher
         int $maxAttempts = 3,
         ?Closure $remoteUrl = null,
         private readonly Filesystem $filesystem = new Filesystem(),
+        ?SourceTree $tree = null,
     ) {
         $this->maxAttempts = max(1, $maxAttempts);
         $this->remoteUrl   = $remoteUrl
@@ -56,6 +55,7 @@ final class RepositoryFetcher
                 $organization,
                 $repository,
             );
+        $this->tree = $tree ?? new SourceTree($this->filesystem, $this->runner);
     }
 
     /**
@@ -73,11 +73,11 @@ final class RepositoryFetcher
         $path          = $repository->path();
 
         if (null !== $path) {
-            $files = $this->files($path);
+            $files = $this->tree->files($path, $config->output()->generatedPaths());
 
             return new FetchedRepository(
                 $repository->name(),
-                $this->localRevision($path, $files),
+                $this->tree->revision($path, $files),
                 $path,
                 $documentation,
                 $files,
@@ -157,7 +157,7 @@ final class RepositoryFetcher
             $revision,
             $root,
             $documentation,
-            $this->files($root),
+            $this->tree->files($root),
             $attempts,
             $checkedOut,
         );
@@ -204,57 +204,6 @@ final class RepositoryFetcher
         }
 
         return $attempts;
-    }
-
-    /**
-     * Every file below the root, without the git metadata directory.
-     *
-     * @return list<string>
-     */
-    private function files(string $root): array
-    {
-        $files = [];
-
-        foreach ($this->filesystem->scan($root) as $file) {
-            if (str_starts_with($file, '.git/')) {
-                continue;
-            }
-
-            $files[] = $file;
-        }
-
-        return $files;
-    }
-
-    /**
-     * @param list<string> $files
-     */
-    private function localRevision(string $root, array $files): string
-    {
-        if (is_dir(Path::join($root, '.git'))) {
-            $result = $this->runner->run(
-                ['git', 'rev-parse', 'HEAD'],
-                $root,
-                self::GIT_TIMEOUT_SECONDS,
-            );
-
-            if ($result->successful()) {
-                return trim($result->stdout());
-            }
-        }
-
-        $material = '';
-
-        foreach ($files as $file) {
-            $hash     = $this->filesystem->hash(Path::join($root, $file));
-            $material .= "{$file}:{$hash}\n";
-        }
-
-        return substr(
-            string: $this->filesystem->hashContents($material),
-            offset: 0,
-            length: self::REVISION_LENGTH,
-        );
     }
 
     private function remoteUrlFor(DiscoveredRepository $repository, SiteConfig $config): string

@@ -38,6 +38,21 @@ final readonly class OutputSection
         return $this->directory;
     }
 
+    /**
+     * Every path this build writes. A source tree's revision digest must not include them: they
+     * are rewritten by the run that computes the digest, so hashing them is both wrong and racy.
+     *
+     * @return list<string>
+     */
+    public function generatedPaths(): array
+    {
+        return [
+            $this->directory,
+            $this->cacheDirectory,
+            $this->reportPath,
+        ];
+    }
+
     public function reportPath(): string
     {
         return $this->reportPath;

@@ -39,6 +39,18 @@ final class OutputSectionTest extends TestCase
     }
 
     #[Test]
+    public function generatedPathsAreTheSiteTheCacheAndTheReport(): void
+    {
+        $section = OutputSection::fromArray([
+            'directory'      => 'public',
+            'cacheDirectory' => 'cache',
+            'reportPath'     => 'reports/report.json',
+        ]);
+
+        static::assertSame(['public', 'cache', 'reports/report.json'], $section->generatedPaths());
+    }
+
+    #[Test]
     public function withPathsReturnsANewInstance(): void
     {
         $section = OutputSection::fromArray([]);

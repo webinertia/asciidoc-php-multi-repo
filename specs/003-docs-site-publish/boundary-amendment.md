@@ -81,7 +81,11 @@ repository cannot enumerate the organization.
 - `tasks.md` tasks that create the App and set the organization variable and secret describe the
   superseded model. They are not reticked or reworded here; this amendment records the
   replacement boundary.
-- `docs/v1/operating.adoc` documents the settled model.
+- `tasks.md` T075 and `plan.md` name `docs/v1/operating.adoc`. The page is now
+  `docs/v1/action-setup.adoc`, titled "Action setup guide", because the guide covers action setup
+  rather than App operation. The merged files keep the old path; this amendment records the
+  current one.
+- `docs/v1/action-setup.adoc` documents the settled model.
 
 ## Consequences
 

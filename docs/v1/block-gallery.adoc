@@ -601,3 +601,7 @@ A description list:
 '''
 A rule without a title.
 '''
+
+=== Cross references
+
+A cross reference to xref:index.adoc[the index page].

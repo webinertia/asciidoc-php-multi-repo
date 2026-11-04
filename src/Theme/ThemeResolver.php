@@ -213,6 +213,46 @@ final readonly class ThemeResolver
     }
 
     /**
+     * The loader that draws `[source,mermaid]` blocks with the vendored bundle.
+     *
+     * @throws RuntimeException when the script is missing or unreadable
+     */
+    public function mermaidLoader(): string
+    {
+        return $this->readFile($this->jsDirectory, 'mermaid.js');
+    }
+
+    /**
+     * The published Mermaid loader name.
+     *
+     * @throws RuntimeException when the script is missing or unreadable
+     */
+    public function mermaidLoaderName(): string
+    {
+        return $this->hasher->hashedName('mermaid-loader', 'js', $this->mermaidLoader());
+    }
+
+    /**
+     * The vendored Mermaid bundle, pinned by version and published as a site asset.
+     *
+     * @throws RuntimeException when the script is missing or unreadable
+     */
+    public function mermaidScript(): string
+    {
+        return $this->readFile($this->jsDirectory, 'mermaid.min.js');
+    }
+
+    /**
+     * The published Mermaid bundle name.
+     *
+     * @throws RuntimeException when the script is missing or unreadable
+     */
+    public function mermaidScriptName(): string
+    {
+        return $this->hasher->hashedName('mermaid', 'js', $this->mermaidScript());
+    }
+
+    /**
      * The navigation script.
      *
      * @throws RuntimeException when the script is missing or unreadable

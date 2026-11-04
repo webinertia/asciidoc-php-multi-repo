@@ -510,6 +510,27 @@ main {
 }
 
 /*
+ * A rendered Mermaid diagram. The loader replaces the source text inside the listing block's `<pre>`
+ * with the drawn SVG, so the box keeps the surface and border a code block has and only the type
+ * changes: the diagram is not source text, so it does not get the monospace face.
+ *
+ * The overflow guard is the `<pre>`'s own `overflow-x: auto` plus the cap below. Mermaid draws to a
+ * viewBox and scales to the column, but a diagram that carries its own fixed width would otherwise
+ * push the whole page sideways; capping the SVG keeps the scroll inside the block instead.
+ */
+.mermaid-diagram {
+    font-family: var(--font-body);
+    overflow-x: auto;
+}
+
+.mermaid-diagram > svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin-inline: auto;
+}
+
+/*
  * A code span inside a link. The base sheet restates the colour on hover at a higher specificity
  * than the chip rule, which turned the span near black on a raised surface.
  */

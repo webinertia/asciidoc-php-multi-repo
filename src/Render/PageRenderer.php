@@ -150,7 +150,7 @@ final readonly class PageRenderer
                 $this->theme->assetUrl($basePath, $this->theme->siteName()),
                 $this->theme->assetUrl($basePath, $this->theme->accentName($accent)),
             ],
-            scripts         : $this->scripts($basePath, $chrome),
+            scripts         : $this->scripts($basePath, $chrome, $body),
             sourceUrl       : sprintf(
                 self::GITHUB_BLOB,
                 $config->organization()->name(),
@@ -199,7 +199,7 @@ final readonly class PageRenderer
         }
 
         return $page->withHtml($this->shell->render(
-            $context->withChrome($chrome, $this->scripts($basePath, $chrome)),
+            $context->withChrome($chrome, $this->scripts($basePath, $chrome, $context->body())),
         ));
     }
 
@@ -262,6 +262,48 @@ final readonly class PageRenderer
         return $relative;
     }
 
+    /**
+     * The scripts the site chrome needs, which are absent when the chrome is empty.
+     *
+     * @return list<string>
+     *
+     * @throws RuntimeException when a theme asset cannot be read
+     */
+    private function chromeScripts(string $basePath, PageChrome $chrome): array
+    {
+        $scripts = [];
+
+        if ($chrome->hasProjectSwitcher() || $chrome->hasVersionSelector()) {
+            $scripts[] = $this->theme->assetUrl($basePath, $this->theme->navScriptName());
+        }
+
+        if ($chrome->hasSearch()) {
+            $scripts[] = $this->theme->assetUrl($basePath, $this->theme->searchCoreName());
+            $scripts[] = $this->theme->assetUrl($basePath, $this->theme->searchScriptName());
+        }
+
+        return $scripts;
+    }
+
+    /**
+     * The scripts that draw a diagram, empty when the page has none.
+     *
+     * @return list<string>
+     *
+     * @throws RuntimeException when a theme asset cannot be read
+     */
+    private function diagramScripts(string $basePath, string $body): array
+    {
+        if (! $this->hasMermaid($body)) {
+            return [];
+        }
+
+        return [
+            $this->theme->assetUrl($basePath, $this->theme->mermaidScriptName()),
+            $this->theme->assetUrl($basePath, $this->theme->mermaidLoaderName()),
+        ];
+    }
+
     private function failure(PreparedSource $source, string $message, string $correctiveAction): SourceError
     {
         return new SourceError(
@@ -271,6 +313,14 @@ final readonly class PageRenderer
             $source->relativePath(),
             $correctiveAction,
         );
+    }
+
+    /**
+     * Whether the converted body carries a diagram block.
+     */
+    private function hasMermaid(string $body): bool
+    {
+        return str_contains($body, 'language-mermaid') || str_contains($body, 'data-lang="mermaid"');
     }
 
     private function humanise(string $value): string
@@ -300,24 +350,24 @@ final readonly class PageRenderer
     }
 
     /**
+     * The scripts this page needs.
+     *
+     * The chrome decides whether the navigation and search scripts are needed at all. The body
+     * decides whether a diagram has to be drawn, because only the converted page knows whether the
+     * author wrote a `[source,mermaid]` block. The vendored bundle is large, so a page without a
+     * diagram never links it.
+     *
      * @return list<string>
      *
      * @throws RuntimeException when a theme asset cannot be read
      */
-    private function scripts(string $basePath, PageChrome $chrome): array
+    private function scripts(string $basePath, PageChrome $chrome, string $body): array
     {
-        $scripts = [$this->theme->assetUrl($basePath, $this->theme->themeScriptName())];
-
-        if ($chrome->hasProjectSwitcher() || $chrome->hasVersionSelector()) {
-            $scripts[] = $this->theme->assetUrl($basePath, $this->theme->navScriptName());
-        }
-
-        if ($chrome->hasSearch()) {
-            $scripts[] = $this->theme->assetUrl($basePath, $this->theme->searchCoreName());
-            $scripts[] = $this->theme->assetUrl($basePath, $this->theme->searchScriptName());
-        }
-
-        return $scripts;
+        return [
+            $this->theme->assetUrl($basePath, $this->theme->themeScriptName()),
+            ...$this->diagramScripts($basePath, $body),
+            ...$this->chromeScripts($basePath, $chrome),
+        ];
     }
 
     private function searchText(string $html, int $limit): string

@@ -256,7 +256,21 @@ final class SiteBuildTest extends TestCase
         static::assertCount(1, $this->assetsMatching('asciidoctor.*.css'));
         static::assertCount(1, $this->assetsMatching('site.*.css'));
         static::assertCount(1, $this->assetsMatching('theme.*.js'));
+        static::assertCount(1, $this->assetsMatching('mermaid.*.js'));
+        static::assertCount(1, $this->assetsMatching('mermaid-loader.*.js'));
         static::assertNotSame([], $this->assetsMatching('accent.*.css'));
+    }
+
+    #[Test]
+    public function theDiagramPageLinksTheMermaidBundleAndAPageWithoutOneDoesNot(): void
+    {
+        $withDiagram = (string) file_get_contents(Path::join($this->output, 'versioned', 'v2', 'guide.html'));
+        $without     = (string) file_get_contents(Path::join($this->output, 'versioned', 'v2', 'index.html'));
+
+        static::assertStringContainsString('language-mermaid', $withDiagram);
+        static::assertStringContainsString('/assets/mermaid.', $withDiagram);
+        static::assertStringContainsString('/assets/mermaid-loader.', $withDiagram);
+        static::assertStringNotContainsString('/assets/mermaid', $without);
     }
 
     #[Test]

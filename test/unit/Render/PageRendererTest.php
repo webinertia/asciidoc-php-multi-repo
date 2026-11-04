@@ -28,6 +28,7 @@ use function file_get_contents;
 use function file_put_contents;
 use function hash;
 use function hash_file;
+use function implode;
 use function is_array;
 use function json_decode;
 use function mb_strlen;
@@ -109,6 +110,17 @@ final class PageRendererTest extends TestCase
     }
 
     #[Test]
+    public function aDiagramPageLinksTheVendoredMermaidBundleAndItsLoader(): void
+    {
+        $page = $this->renderFromTemp("= Diagram\n\n[source,mermaid]\n----\nflowchart TD\n    A --> B\n----\n");
+
+        $scripts = implode("\n", $page->context()?->scripts() ?? []);
+
+        static::assertStringContainsString('/assets/mermaid.', $scripts);
+        static::assertStringContainsString('/assets/mermaid-loader.', $scripts);
+    }
+
+    #[Test]
     public function aHumanisedNameFillsInWhenTheDocumentHasNoTitle(): void
     {
         $page = $this->renderFromTemp("Just a paragraph.\n", relativePath: 'docs/v1/UPPER-CASE_PAGE.adoc');
@@ -139,6 +151,14 @@ final class PageRendererTest extends TestCase
         $page = $this->renderFromTemp("= Page\n\ninclude::partials[]\n", directory: $directory);
 
         static::assertSame('Page', $page->title());
+    }
+
+    #[Test]
+    public function aPageWithoutADiagramDoesNotLinkTheMermaidBundle(): void
+    {
+        $page = $this->renderFromTemp("= Plain\n\nA paragraph with `code` in it.\n");
+
+        static::assertStringNotContainsString('mermaid', implode("\n", $page->context()?->scripts() ?? []));
     }
 
     #[Test]

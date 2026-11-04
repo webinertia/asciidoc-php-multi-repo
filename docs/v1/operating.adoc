@@ -1,9 +1,9 @@
 = Operator guide
 :toclevels: 3
 
-This guide is for an organization owner who onboards repositories to the documentation site. It
-covers the organization property, the credentials the builder uses, the site repository secrets,
-the publish triggers, and the end-to-end onboarding procedure.
+This guide is for the owner of a documentation site. It covers the organization property, the
+container action that builds and publishes the site, the credentials involved, the workflows the
+site repository and each source repository carry, and the end-to-end onboarding procedure.
 
 == Who can onboard
 
@@ -93,81 +93,97 @@ satisfies the version, entry page, and extension rules. In short:
 The full layout and the authoring rules are in the xref:authoring.adoc[author guide]. No change
 to this package and no change to the site configuration is required to onboard a repository.
 
+== How the site is built and published
+
+The builder is distributed as a GitHub Docker container action published from
+`webinertia/asciidoc-php-multi-repo`. A site repository consumes it with one `uses:` line.
+Nothing is installed at run time: the image is public on GHCR, the runner pulls it, and the
+action neither installs the package nor its dependencies.
+
+The action runs inside the site repository with that repository's own `GITHUB_TOKEN`. A
+`GITHUB_TOKEN` is a repository-scoped installation token. It can build and deploy the site, and
+it can read public sources, but it cannot enumerate the organization or read `doc-target` on a
+sibling repository. That boundary is why the discovery token in the next section exists.
+
+A source list can come from three places, and the build step does not care which one produced it:
+
+* Organization discovery, which reads `doc-target` with a fine-grained personal access token
+  stored in the site repository.
+* An explicit repository list in the site configuration, which is what a personal account uses
+  because custom properties are organization-only.
+* A manifest, which skips discovery entirely and needs no token at all.
+
+Container actions run only on Linux runners, so the documented `runs-on` is `ubuntu-latest`.
+
+Freshness is not automatic. The site repository rebuilds on its own schedule, on a manual
+dispatch, and when a source repository sends a `repository_dispatch`. A source push reaches the
+site only when that source repository carries the small trigger workflow described under What the
+consumer needs.
+
 == Credentials
 
-Two separate credentials, the discovery token and the publish App, plus the site repository's own
-`GITHUB_TOKEN`.
+Three credentials, in three different places: the discovery token in the site repository, the
+trigger token in each source repository, and the site repository's own `GITHUB_TOKEN`. No GitHub
+App is involved.
 
 === Discovery token
 
-The discovery token enumerates `doc-target` repositories:
+The discovery token reads the organization property. It is a fine-grained personal access token
+stored as `DOC_DISCOVERY_TOKEN` in the site repository. It is needed only when the site discovers
+its sources from the organization.
 
-* Organization permissions: Custom properties, Read. That is the permission GitHub lists for
-  `GET /orgs/{org}/properties/values`.
-* Resource owner: the organization. Repository access: public repositories, read only. Public
-  clones need no authentication, so no Contents permission is required.
+* Organization permissions: Custom properties, Read.
+* Repository permissions: Contents, Read on the source repositories. Discovery resolves each
+  repository's default branch and archived flag, and a private source needs Contents, Read for
+  that.
 * No write permissions of any kind.
-* That single endpoint returns `repository_full_name` for every repository, so no separate
-  repository listing call is made and no Metadata, Administration, or Contents permission is
-  needed.
-* The token owner must be an organization member, because organization members can read these
-  properties. If the organization enforces a fine-grained PAT policy, the token must be approved
-  or calls return 403.
-* If private repositories are onboarded later, add Contents, Read, and select those repositories.
+* Resource owner: the organization. The token owner must be an organization member, because
+  organization members can read these properties. If the organization enforces a fine-grained
+  PAT policy, the token must be approved or calls return 403.
 
-=== Trigger token
-
-The trigger token is a separate credential, never the discovery token: calling
-`repository_dispatch` on the site repository requires Contents, Read and write on
-`webinertia/docs.webinertia.net`. Using `workflow_dispatch` instead would require Actions, write.
-The credentials are separated so that a leak in a component repository cannot enumerate the
-organization.
+A build driven from a manifest never reads the property and never needs this token.
 
 === Publishing credential
 
-The `gh-pages` branch is pushed with the site repository's own `GITHUB_TOKEN`, not either PAT.
+The site's `gh-pages` branch is pushed with the site repository's own `GITHUB_TOKEN` at
+`contents: write`. The action uses that token to deploy. No personal access token is involved in
+publishing.
 
-=== Trigger credential in the site repository
+=== Trigger credential in the source repository
 
-The site repository specification supersedes the trigger token with a GitHub App named
-`AsciiDoc PHPublisher`. It belongs to the site repository alone: install it on
-`webinertia/docs.webinertia.net` only, which the API records as `repository_selection: selected`,
-and grant it one permission, Repository permissions, Contents, Read and write. It carries no
-organization permission and no other repository permission. The
-private key is an organization secret whose repository access list is limited to repositories
-that carry `doc-target: true`.
+Each source repository that wants push-triggered publishing carries one secret,
+`DOCS_DISPATCH_TOKEN`. It is a fine-grained personal access token with Repository permissions,
+Contents, Read and write, scoped to the site repository only, and no organization permission. It
+is the only credential a source repository ever holds.
 
-The permissions are the same as the trigger token above: Contents, Read and write on the site
-repository. The App replaces the long-lived PAT, not the permission it grants.
+The token exists for one call: `POST /repos/{site}/dispatches` with event type
+`docs-source-updated`. Contents, Read and write on the site repository is the exact permission
+that call requires, which is why the token carries that permission and nothing broader. It cannot
+read the organization, it cannot read another source repository, and it cannot change the
+published site except by asking for a rebuild.
 
-The App does not publish. The publish workflow pushes `gh-pages` with the site repository's own
-`GITHUB_TOKEN` at `contents: write`, which is the publishing credential described above. The App
-exists only so that a consumer repository can mint a short-lived installation token and send a
-`repository_dispatch`. Contents, Read and write is the exact permission that dispatch requires,
-which is why the App carries that permission and nothing broader.
-
-Discovery does not use the App either. Discovery uses `DOC_DISCOVERY_TOKEN`, the separate
-fine-grained PAT with Organization Custom properties Read. The two credentials are deliberately
-separate so that a leak in a consumer repository cannot enumerate the organization.
+The trigger token is entirely separate from `DOC_DISCOVERY_TOKEN`. The discovery token lives in
+the site repository and is never copied into a source repository, so a leak in one source
+repository cannot enumerate the organization.
 
 === Rotating the right credential
 
-The failure tells you which credential to look at, because the two are stored in different places.
+The failure tells you which credential to look at, because they are stored in different places.
 
 * A build that exits 3 means discovery failed. Rotate or reissue `DOC_DISCOVERY_TOKEN`, the
-  fine-grained PAT stored in the site repository. The App has no part in discovery.
-* A dispatch that never arrives, or a consumer run that fails while minting its token, means the
-  App credential or the App installation is the problem. Check the private key stored as
-  `DOCS_PUBLISH_APP_PRIVATE_KEY`, the App ID in `DOCS_PUBLISH_APP_ID`, and that the App is still
-  installed on `webinertia/docs.webinertia.net`. Rotate the private key in the App settings,
-  replace the organization secret, and re-run the consumer workflow.
+  fine-grained token stored in the site repository.
+* A source push that never triggers a build means that source repository's `DOCS_DISPATCH_TOKEN`
+  is missing, expired, or no longer scoped to the site repository. Reissue it, store it in that
+  repository, and re-run the trigger workflow.
+* A run that builds but cannot push means the site repository's `GITHUB_TOKEN` lacks
+  `contents: write`, which the workflow's `permissions` block grants.
 
-Do not swap the two. Replacing the discovery token never fixes a dispatch, and replacing the App
-key never fixes exit 3.
+Do not swap them. Replacing the discovery token never fixes a missing dispatch, and replacing a
+trigger token never fixes exit 3.
 
 == Site repository secrets and variables
 
-The publish workflow lives in `webinertia/docs.webinertia.net`. It uses these credentials:
+The site repository carries the discovery token and uses its own `GITHUB_TOKEN`:
 
 [cols="2,1,2,3"]
 |===
@@ -175,120 +191,201 @@ The publish workflow lives in `webinertia/docs.webinertia.net`. It uses these cr
 
 | `DOC_DISCOVERY_TOKEN`
 | repository secret
-| `webinertia/docs.webinertia.net`
-| Discovery, Organization Custom properties Read only
-
-| `DOCS_PUBLISH_APP_ID`
-| organization variable
-| all repositories
-| Public identifier of the publish App
-
-| `DOCS_PUBLISH_APP_PRIVATE_KEY`
-| organization secret
-| repositories where `doc-target` is true
-| Mints installation tokens in consumer runs
+| site repository
+| Organization Custom properties Read, and Contents Read on the sources
 
 | `GITHUB_TOKEN`
 | automatic
 | site repository workflow
-| Pushes `gh-pages` with `contents: write`
+| Builds and pushes `gh-pages` with `contents: write`
 |===
 
-`DOC_DISCOVERY_TOKEN` is the discovery token from the previous section, stored in the site
-repository. The site workflow never holds a trigger PAT: the trigger credential belongs to the
-consumer repository that dispatches the publish, not to the publish workflow itself.
+`DOC_DISCOVERY_TOKEN` is required only for organization discovery. A manifest build does not read
+it. The site repository never holds a trigger token: the trigger credential belongs to each
+source repository that sends a dispatch.
 
-== Creating the publish App
+=== The source repository secret
 
-One organization owner creates the App once. Open the organization settings, then Developer
-settings, then GitHub Apps, and choose New GitHub App. Name it `AsciiDoc PHPublisher`, which is
-the name to search for when the App has to be found again later. GitHub App names are unique
-across all of GitHub, so if the name is already taken a single word change is enough; the name is
-a label and no workflow depends on it.
-
-Register the App with these fields:
-
-[cols="1,2"]
+[cols="2,1,2,3"]
 |===
-| Field | Value
+| Name | Kind | Scope | Purpose
 
-| GitHub App name
-| `AsciiDoc PHPublisher`
-
-| Homepage URL
-| `https://docs.webinertia.net/`
-
-| Webhook
-| Inactive. Nothing consumes webhooks; the App exists only to mint tokens.
-
-| Repository permissions
-| Contents, Read and write. No other repository permission.
-
-| Organization permissions
-| None.
-
-| Where it can be installed
-| Only on the `webinertia` account.
+| `DOCS_DISPATCH_TOKEN`
+| repository secret
+| each source repository
+| Contents Read and write on the site repository only
 |===
 
-Then complete the setup in this order, because the App ID and the private key are needed as soon
-as they exist and the private key is shown only once:
+This is the only secret a source repository holds.
 
-. Create the App, then record its App ID as the organization variable `DOCS_PUBLISH_APP_ID`,
-  scoped to all repositories so every consumer run can read it.
-. Generate a private key and store it immediately as the organization secret
-  `DOCS_PUBLISH_APP_PRIVATE_KEY`. The key is shown once, so a key that is generated and not
-  stored has to be revoked and replaced. Limit the secret's repository access list to the
-  repositories that carry `doc-target: true`.
-. Install the App. In the installation page choose Only select repositories, then pick
-  `webinertia/docs.webinertia.net`. The API equivalent is `repository_selection: selected` with
-  that one repository. Do not install the App on a consumer repository: the token is narrowed to
-  the site repository when it is minted, so the consumer never needs the App itself.
+== What the consumer needs
 
-=== Keeping the secret access list aligned with doc-target
+Onboarding a documentation site needs one workflow in the site repository, the `doc-target`
+property on each source repository, one discovery token for organizations, and one trigger
+workflow in each source repository that should publish on a push. Nothing else is installed and
+no App is created.
 
-The custom property and the organization secret's repository access list are two separate
-switches, and both must be set for a repository to dispatch successfully.
+=== The site repository workflow
+
+Copy this file to `.github/workflows/publish-docs.yml` in the site repository. It triggers on a
+push to the site repository, on a schedule, on a manual dispatch, and on a dispatch from a source
+repository.
+
+[source,yaml]
+----
+name: Publish docs
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+  repository_dispatch:
+    types: [docs-source-updated]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: docs-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the site repository
+        uses: actions/checkout@v4
+      - name: Build and deploy the site
+        uses: webinertia/asciidoc-php-multi-repo@1.0.x
+        with:
+          config: site.json
+        env:
+          DOC_DISCOVERY_TOKEN: ${{ secrets.DOC_DISCOVERY_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+----
+
+Replace `main` with the site repository's default branch. Pin the `uses:` reference to the release
+tag that carries the action definition; `1.0.x` names the branch the action is published from.
+`permissions: contents: write` is what lets the action push `gh-pages`.
+
+The `repository_dispatch` event type is `docs-source-updated`. It is the only event type the site
+repository listens for. The `repository` and `ref` payload fields are advisory: they are recorded
+in the run summary for correlation and never select, restrict, or extend the set of published
+projects. That set comes from `doc-target`, or from the explicit source list.
+
+=== The doc-target property step
+
+Set `doc-target` to `true` on each source repository, as described in The doc-target property. The
+property is the onboarding switch for organization discovery, and it is the value the discovery
+token's repository access list is kept in step with.
+
+A repository that has never been onboarded has the value `false`, so nothing is published until
+an organization owner sets it to `true`.
+
+=== The discovery token for organizations
+
+Create one fine-grained personal access token with Organization permissions, Custom properties,
+Read, and Repository permissions, Contents, Read on the source repositories. Store it in the site
+repository as the secret `DOC_DISCOVERY_TOKEN`.
+
+That single token closes the one gap `GITHUB_TOKEN` cannot: `GITHUB_TOKEN` is scoped to the site
+repository and cannot read `doc-target` on a sibling repository. No App is involved.
+
+A personal account cannot use custom properties, because they are organization-only. It lists its
+sources explicitly in the site configuration instead, as described under Non-organization
+deployments. A manifest build needs no token at all.
+
+=== The source repository trigger workflow
+
+Push-triggered freshness needs one more file, in each source repository. Copy this to
+`.github/workflows/notify-docs.yml` and replace the site repository in the API path:
+
+[source,yaml]
+----
+name: Notify the docs site
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Request a docs publish
+        env:
+          GH_TOKEN: ${{ secrets.DOCS_DISPATCH_TOKEN }}
+          SOURCE: ${{ github.repository }}
+          REF: ${{ github.sha }}
+        run: |
+          gh api --method POST \
+            repos/webinertia/docs.webinertia.net/dispatches \
+            -f event_type=docs-source-updated \
+            -f client_payload[repository]="$SOURCE" \
+            -f client_payload[ref]="$REF"
+----
+
+Replace `main` with the source repository's default branch, and the API path with the site
+repository. The step needs `DOCS_DISPATCH_TOKEN`, described under Trigger credential in the source
+repository.
+
+A source repository without this workflow is still published by the scheduled run. It just waits
+for the schedule instead of publishing on the push.
+
+== Keeping the discovery token aligned with doc-target
+
+The custom property and the discovery token's repository access list are two separate switches,
+and both must be set for a repository to be built.
 
 * The `doc-target` property selects the repository for the site build.
-* The secret access list lets the repository read `DOCS_PUBLISH_APP_PRIVATE_KEY` so its workflow
-  can mint a token.
+* The discovery token's repository access list lets discovery resolve the repository's default
+  branch and archived flag, which needs Contents, Read on that repository.
 
-Setting only the property produces a repository that appears on the site after the next publish
-but whose notification step fails with a 403 when it tries to mint the token. Setting only the
-access list lets the repository mint a token, but the site never builds it.
+Setting only the property produces a repository that discovery selects but cannot resolve when
+the repository is private. Setting only the access list lets discovery resolve a repository that
+is never selected.
 
 Keep the list in step by hand:
 
-* Onboarding a repository: add it to the secret access list.
-* Offboarding a repository: remove it from the secret access list.
+* Onboarding a repository: add it to the discovery token's repository access list with Contents,
+  Read.
+* Offboarding a repository: remove it from the discovery token's repository access list.
 
-This manual alignment is a known, accepted cost. The alternative, a private key copy per
-repository, is one rotation event per copy. An over-broad access list only lets a repository that
-is already in the organization request a rebuild; it grants no discovery, no read of the
-organization, and no write to any content.
+This manual alignment is a known, accepted cost. The token carries no write permission, so an
+over-broad access list grants no ability to change any repository.
 
 == Publish triggers
 
-The site repository runs one workflow, `.github/workflows/publish-docs.yml`, with one job and
-three triggers.
+The site repository runs one workflow, `.github/workflows/publish-docs.yml`, with one job and four
+triggers.
 
 [cols="1,2"]
 |===
 | Trigger | Configuration
 
+| Push to the site repository
+| `push` on the site repository's default branch
+
 | Nightly schedule
 | `schedule: 17 3 * * *` (03:17 UTC every day)
 
 | Manual dispatch
-| `workflow_dispatch` with inputs `note` (string, optional) and `force_republish` (boolean, default `false`)
+| `workflow_dispatch`, no required inputs
 
 | Repository dispatch
-| `repository_dispatch: types: [docs-publish]`
+| `repository_dispatch: types: [docs-source-updated]`
 |===
 
 Concurrency is one group named `docs-publish` with `cancel-in-progress: false`, so a running
 publish finishes before the next one starts.
+
+The schedule is the safety net. A source repository that carries the trigger workflow publishes
+on its push; one that does not is picked up by the next scheduled run.
 
 Run a manual publish:
 
@@ -298,76 +395,16 @@ gh workflow run publish-docs.yml --repo webinertia/docs.webinertia.net
 gh run list --repo webinertia/docs.webinertia.net --workflow publish-docs.yml
 ----
 
-Trigger a publish from a consumer repository after its documentation changes:
+Trigger a publish from a source repository after its documentation changes:
 
 [source,sh]
 ----
 gh api repos/webinertia/docs.webinertia.net/dispatches \
-  -f event_type=docs-publish
+  -f event_type=docs-source-updated
 ----
 
-The dispatch requires Contents, Read and write on the site repository, which is what the trigger
-token or the publish App provides.
-
-== Consumer notification workflow (optional)
-
-`doc-target: true` is the whole onboarding requirement. A repository appears on the site because
-the nightly publish discovers the property, whether or not it has a workflow of its own. The
-snippet below is optional: it notifies the site immediately after a push so the change appears
-without waiting for the nightly run. It reduces latency and does nothing else.
-
-Prerequisites:
-
-* The App `AsciiDoc PHPublisher` exists and is installed on `webinertia/docs.webinertia.net`.
-* `DOCS_PUBLISH_APP_ID` and `DOCS_PUBLISH_APP_PRIVATE_KEY` are set at organization scope.
-* The repository is on the secret's access list, which is the manual step in Keeping the secret
-  access list aligned with doc-target.
-* The repository carries `doc-target: true`. The snippet does not onboard it.
-
-Add these steps to an existing workflow in the consumer repository:
-
-[source,yaml]
-----
-- id: docs-publish-token
-  uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
-  with:
-    app-id: ${{ vars.DOCS_PUBLISH_APP_ID }}
-    private-key: ${{ secrets.DOCS_PUBLISH_APP_PRIVATE_KEY }}
-    owner: webinertia
-    repositories: docs.webinertia.net
-
-- name: Request a docs site publish
-  continue-on-error: true
-  env:
-    GH_TOKEN: ${{ steps.docs-publish-token.outputs.token }}
-    REPOSITORY: ${{ github.repository }}
-    REF: ${{ github.sha }}
-    SOURCE: ${{ github.workflow }}
-  run: |
-    gh api --method POST \
-      repos/webinertia/docs.webinertia.net/dispatches \
-      -f event_type=docs-publish \
-      -f client_payload[repository]="$REPOSITORY" \
-      -f client_payload[ref]="$REF" \
-      -f client_payload[source]="$SOURCE"
-----
-
-The action is pinned by commit SHA, not by a tag, so a moved tag cannot change what runs in a
-consumer repository. The comment names the release the SHA belongs to.
-
-`repositories: docs.webinertia.net` narrows the installation token to the site repository. Even
-if the App were installed more widely, the token minted here could not read or write the
-consumer's own repository. That is why the consumer repository needs no secret of its own and no
-App installation.
-
-The event type is `docs-publish`. It is the only event type the site repository listens for. The
-`repository`, `ref` and `source` payload fields are advisory: they are recorded in the run summary
-for correlation, and they never select, restrict, or extend the set of projects that is published.
-That set comes from `doc-target` alone.
-
-The dispatch step is `continue-on-error: true` on purpose. A documentation notification must never
-fail the consumer's build, because the nightly run publishes the change anyway. A failed dispatch
-is a latency regression, not a broken build.
+The dispatch requires Contents, Read and write on the site repository, which is what the source
+repository's `DOCS_DISPATCH_TOKEN` provides.
 
 == Onboarding a repository end to end
 
@@ -375,26 +412,25 @@ is a latency regression, not a broken build.
   with an entry page and at least one AsciiDoc page.
 . As an organization owner, set `doc-target` to `true` for the repository. Do this in the
   organization settings, or through the API.
-. Add the repository to the repository access list of the organization secret
-  `DOCS_PUBLISH_APP_PRIVATE_KEY`. This is the manual step described in Keeping the secret access
-  list aligned with doc-target.
-. Optionally, add the consumer notification snippet from Consumer notification workflow so a push
-  publishes immediately instead of waiting for the nightly run.
-. Wait for the nightly run, or trigger a publish manually or with `repository_dispatch`.
+. Add the repository to the repository access list of `DOC_DISCOVERY_TOKEN` with Contents, Read.
+  This is the manual step described in Keeping the discovery token aligned with doc-target.
+. For push-triggered freshness, copy the source repository trigger workflow into the repository
+  and store `DOCS_DISPATCH_TOKEN` as a repository secret.
+. Wait for the scheduled run, trigger a publish manually, or push to the source repository.
 . Read the workflow run summary. The new project appears as a card on the landing page, in the
   project switcher, and in the site search index.
 . Open `/slug/` and confirm the entry page renders.
 
-No repository configuration change is part of these steps. The only site-side change is the
-organization secret access list, and the optional snippet is the only consumer-side change.
+No change to the builder and no change to the site configuration is part of these steps. The
+site-side change is the discovery token's access list, and the source-side changes are the
+property, the trigger workflow, and its secret.
 
 == Offboarding a repository
 
 Set `doc-target` to `false`, and remove the repository from the repository access list of
-`DOCS_PUBLISH_APP_PRIVATE_KEY`. The next full publish removes the project's pages, card, switcher
-entry, and search index, because the publish replaces the whole `gh-pages` tree. A repository that
-keeps the notification snippet still runs it, but minting the token fails and `continue-on-error`
-keeps that harmless.
+`DOC_DISCOVERY_TOKEN`. Remove the trigger workflow and the `DOCS_DISPATCH_TOKEN` secret from the
+repository. The next full publish removes the project's pages, card, switcher entry, and search
+index, because the publish replaces the whole `gh-pages` tree.
 
 Do not delete the repository's `docs` directory as part of offboarding; keeping it makes
 re-onboarding a single property change plus the access list step.
@@ -449,11 +485,11 @@ missing file, not a certificate or DNS problem.
 No redirect exists for any of these paths. Any inbound reference has to be repointed
 independently of this work.
 
-=== The App secret access list tracks doc-target
+=== The discovery token access list tracks doc-target
 
-The organization secret's repository access list must be kept in step with the property by hand.
-Keeping the secret access list aligned with doc-target states the procedure and the consequence of
-a stale list.
+The discovery token's repository access list must be kept in step with the property by hand.
+Keeping the discovery token aligned with doc-target states the procedure and the consequence of a
+stale list.
 
 === The discovery token expires
 
@@ -463,28 +499,58 @@ first thing to discover it.
 
 Rotation procedure:
 
-. Issue a replacement token with Organization Custom properties Read and no write permission.
+. Issue a replacement token with Organization Custom properties Read, Contents Read on the source
+  repositories, and no write permission.
 . Store it as `DOC_DISCOVERY_TOKEN` in `webinertia/docs.webinertia.net`.
 . Run a publish and confirm it succeeds.
 . Revoke the old token.
 
 === Which credential to rotate
 
-Use Rotating the right credential above. A build that exits 3 is the discovery token; a dispatch
-that never arrives is the App private key or its installation.
+Use Rotating the right credential above. A build that exits 3 is the discovery token; a source
+push that never triggers a build is that repository's trigger token.
 
 == Non-organization deployments
 
 GitHub custom properties exist only for organizations, so a personal-account deployment cannot
-use property discovery. Supply the project list through the `--manifest` option instead:
+use property discovery. It names each source repository explicitly in the site configuration's
+manifest:
+
+[source,json]
+----
+{
+    "schemaVersion": 1,
+    "repositories": [
+        {
+            "name": "example-project",
+            "slug": "example-project",
+            "defaultBranch": "main",
+            "archived": false
+        }
+    ]
+}
+----
+
+The manifest lists each repository with a name, an optional slug, a default branch, an archived
+flag, an onboarded flag, and a local path. Manifest entries with a local path are read from that
+path and never fetched over the network.
+
+The action reads the manifest when `ASCIIDOC_MANIFEST` names it:
+
+[source,yaml]
+----
+        env:
+          ASCIIDOC_MANIFEST: manifest.json
+----
+
+A manifest build performs no property read, so it needs no `DOC_DISCOVERY_TOKEN` and no
+organization. The same manifest is what the CLI takes with `--manifest`:
 
 [source,sh]
 ----
 bin/asciidoc-php-multi-repo build --config site.json --manifest manifest.json
 ----
 
-The manifest lists each repository with a name, an optional slug, a default branch, an archived
-flag, an onboarded flag, and a local path. Manifest entries with a local path are read from that
-path and never fetched over the network. That is the complete org-agnostic story: configuration
-names the organization, the property, and the onboard value for organization deployments, and
-names a manifest for everything else.
+That is the complete org-agnostic story: an organization names the property and the onboard value
+for discovery, and a personal account names an explicit source list. The build step does not care
+which produced the list.

@@ -510,6 +510,27 @@ main {
 }
 
 /*
+ * A rendered Mermaid diagram. The loader replaces the source text inside the listing block's `<pre>`
+ * with the drawn SVG, so the box keeps the surface and border a code block has and only the type
+ * changes: the diagram is not source text, so it does not get the monospace face.
+ *
+ * The overflow guard is the `<pre>`'s own `overflow-x: auto` plus the cap below. Mermaid draws to a
+ * viewBox and scales to the column, but a diagram that carries its own fixed width would otherwise
+ * push the whole page sideways; capping the SVG keeps the scroll inside the block instead.
+ */
+.mermaid-diagram {
+    font-family: var(--font-body);
+    overflow-x: auto;
+}
+
+.mermaid-diagram > svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin-inline: auto;
+}
+
+/*
  * A code span inside a link. The base sheet restates the colour on hover at a higher specificity
  * than the chip rule, which turned the span near black on a raised surface.
  */
@@ -634,6 +655,79 @@ main {
  * Admonition glyphs come from the base stylesheet, which defines both the icon sizing and the
  * five `fa icon-*` codepoints. Nothing is restated here.
  */
+
+/*
+ * The landing page. It shares the header, the token set, and the theme contract with a docs page,
+ * but its body is a card grid rather than an article, so the page carries its own measure and the
+ * article column rules do not apply.
+ */
+.landing {
+    max-width: 60rem;
+    margin: 0 auto;
+    padding: var(--space-5) var(--space-4);
+}
+
+.landing-title {
+    margin: 0;
+    font-size: 1.125rem;
+}
+
+.landing-empty {
+    margin: 0;
+    color: var(--text-muted);
+}
+
+/*
+ * One card per publishable project, in the configured order. The grid wraps rather than forcing a
+ * fixed column count, so the same rule serves a single project and a full site.
+ */
+.project-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.project-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-3);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-medium);
+    background-color: var(--surface-raised);
+}
+
+.card-title {
+    margin: 0;
+    font-size: 1.125rem;
+}
+
+.card-title a {
+    text-decoration: none;
+}
+
+.card-title a:hover,
+.card-title a:focus-visible {
+    text-decoration: underline;
+}
+
+.card-version,
+.card-description {
+    margin: 0;
+    font-size: 0.875rem;
+}
+
+.card-version {
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+}
+
+.card-description {
+    color: var(--text-body);
+}
 
 .site-footer {
     display: flex;

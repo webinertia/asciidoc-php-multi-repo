@@ -574,7 +574,7 @@ count = 1
 file = "test/integration/SiteBuildTest.php"
 code = "ambiguous-function-call"
 message = "Ambiguous function call detected."
-count = 8
+count = 6
 
 [[issues]]
 file = "test/integration/SiteBuildTest.php"

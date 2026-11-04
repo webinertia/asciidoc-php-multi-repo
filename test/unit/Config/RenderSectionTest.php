@@ -21,7 +21,7 @@ final class RenderSectionTest extends TestCase
         static::assertSame('safe', $section->safeMode());
         static::assertSame(4, $section->concurrency());
         static::assertSame(2000, $section->searchExtractLimit());
-        static::assertFalse($section->syntaxHighlighting());
+        static::assertTrue($section->syntaxHighlighting());
     }
 
     #[Test]

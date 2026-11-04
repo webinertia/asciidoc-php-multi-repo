@@ -165,6 +165,66 @@ final readonly class ThemeResolver
     }
 
     /**
+     * The vendored highlight.js theme plus the dark half, which is what the build publishes.
+     *
+     * @throws RuntimeException when a stylesheet is missing or unreadable
+     */
+    public function highlightCss(): string
+    {
+        return "{$this->read('highlight.min.css')}\n{$this->read('highlight-dark.css')}";
+    }
+
+    /**
+     * The loader that highlights a listing block with the vendored bundle.
+     *
+     * @throws RuntimeException when the script is missing or unreadable
+     */
+    public function highlightLoader(): string
+    {
+        return $this->readFile($this->jsDirectory, 'highlight.js');
+    }
+
+    /**
+     * The published highlight loader name.
+     *
+     * @throws RuntimeException when the script is missing or unreadable
+     */
+    public function highlightLoaderName(): string
+    {
+        return $this->hasher->hashedName('highlight-loader', 'js', $this->highlightLoader());
+    }
+
+    /**
+     * The published highlight stylesheet name.
+     *
+     * @throws RuntimeException when a stylesheet is missing or unreadable
+     */
+    public function highlightName(): string
+    {
+        return $this->hasher->hashedName('highlight', 'css', $this->highlightCss());
+    }
+
+    /**
+     * The vendored highlight.js bundle, pinned by version and published as a site asset.
+     *
+     * @throws RuntimeException when the script is missing or unreadable
+     */
+    public function highlightScript(): string
+    {
+        return $this->readFile($this->jsDirectory, 'highlight.min.js');
+    }
+
+    /**
+     * The published highlight bundle name.
+     *
+     * @throws RuntimeException when the script is missing or unreadable
+     */
+    public function highlightScriptName(): string
+    {
+        return $this->hasher->hashedName('highlight', 'js', $this->highlightScript());
+    }
+
+    /**
      * The light mode colour tokens, keyed by custom property name.
      *
      * @return array<string, string>
@@ -210,6 +270,46 @@ final readonly class ThemeResolver
         }
 
         return $this->assetUrl($basePath, $this->logoName());
+    }
+
+    /**
+     * The loader that draws `[source,mermaid]` blocks with the vendored bundle.
+     *
+     * @throws RuntimeException when the script is missing or unreadable
+     */
+    public function mermaidLoader(): string
+    {
+        return $this->readFile($this->jsDirectory, 'mermaid.js');
+    }
+
+    /**
+     * The published Mermaid loader name.
+     *
+     * @throws RuntimeException when the script is missing or unreadable
+     */
+    public function mermaidLoaderName(): string
+    {
+        return $this->hasher->hashedName('mermaid-loader', 'js', $this->mermaidLoader());
+    }
+
+    /**
+     * The vendored Mermaid bundle, pinned by version and published as a site asset.
+     *
+     * @throws RuntimeException when the script is missing or unreadable
+     */
+    public function mermaidScript(): string
+    {
+        return $this->readFile($this->jsDirectory, 'mermaid.min.js');
+    }
+
+    /**
+     * The published Mermaid bundle name.
+     *
+     * @throws RuntimeException when the script is missing or unreadable
+     */
+    public function mermaidScriptName(): string
+    {
+        return $this->hasher->hashedName('mermaid', 'js', $this->mermaidScript());
     }
 
     /**

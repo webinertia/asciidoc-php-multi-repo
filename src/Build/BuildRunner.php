@@ -170,18 +170,20 @@ final class BuildRunner
         $this->writePages($config, $navigation, $projects, $outputDirectory, $output, $renderer);
 
         $assembly = new SiteAssembly(
-            outputDirectory: $outputDirectory,
-            config         : $config,
-            urls           : $urls,
-            projects       : $summaries,
-            entryPages     : $entryPages,
-            redirects      : $redirects,
-            searchIndexes  : $searchIndexes,
-            siteSearchIndex: new SiteIndexBuilder()->toJson($summaries, $urls),
-            assets         : $assets,
-            baseStylesheet : $urls->asset($theme->baseName()),
-            stylesheet     : $urls->asset($theme->siteName()),
-            logoUrl        : $theme->logoUrl($config->site()->basePath()),
+            outputDirectory : $outputDirectory,
+            config          : $config,
+            urls            : $urls,
+            projects        : $summaries,
+            entryPages      : $entryPages,
+            redirects       : $redirects,
+            searchIndexes   : $searchIndexes,
+            siteSearchIndex : new SiteIndexBuilder()->toJson($summaries, $urls),
+            assets          : $assets,
+            baseStylesheet  : $urls->asset($theme->baseName()),
+            stylesheet      : $urls->asset($theme->siteName()),
+            logoUrl         : $theme->logoUrl($config->site()->basePath()),
+            accentStylesheet: $urls->asset($theme->accentName()),
+            themeScript     : $urls->asset($theme->themeScriptName()),
         );
 
         $this->assembler->assemble($assembly);
@@ -258,13 +260,18 @@ final class BuildRunner
     private function assets(ThemeResolver $theme, SiteConfig $config, array $repositories): array
     {
         $assets = [
-            $theme->baseName()         => $theme->baseCss(),
-            $theme->siteName()         => $theme->siteCss(),
-            $theme->logoName()         => $theme->logo(),
-            $theme->themeScriptName()  => $theme->themeScript(),
-            $theme->navScriptName()    => $theme->navScript(),
-            $theme->searchCoreName()   => $theme->searchCore(),
-            $theme->searchScriptName() => $theme->searchScript(),
+            $theme->baseName()            => $theme->baseCss(),
+            $theme->siteName()            => $theme->siteCss(),
+            $theme->logoName()            => $theme->logo(),
+            $theme->themeScriptName()     => $theme->themeScript(),
+            $theme->mermaidScriptName()   => $theme->mermaidScript(),
+            $theme->mermaidLoaderName()   => $theme->mermaidLoader(),
+            $theme->highlightName()       => $theme->highlightCss(),
+            $theme->highlightScriptName() => $theme->highlightScript(),
+            $theme->highlightLoaderName() => $theme->highlightLoader(),
+            $theme->navScriptName()       => $theme->navScript(),
+            $theme->searchCoreName()      => $theme->searchCore(),
+            $theme->searchScriptName()    => $theme->searchScript(),
         ];
 
         foreach ($repositories as $repository) {

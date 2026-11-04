@@ -1,3 +1,9 @@
 == Guide
 
 This is the version 2 guide.
+
+[source,mermaid]
+----
+flowchart TD
+    A[Start] --> B[Finish]
+----

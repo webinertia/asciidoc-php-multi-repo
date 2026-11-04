@@ -34,6 +34,7 @@ use function glob;
 use function implode;
 use function is_array;
 use function is_file;
+use function preg_match;
 use function str_contains;
 use function strpos;
 use function trim;
@@ -256,7 +257,46 @@ final class SiteBuildTest extends TestCase
         static::assertCount(1, $this->assetsMatching('asciidoctor.*.css'));
         static::assertCount(1, $this->assetsMatching('site.*.css'));
         static::assertCount(1, $this->assetsMatching('theme.*.js'));
+        static::assertCount(1, $this->assetsMatching('mermaid.*.js'));
+        static::assertCount(1, $this->assetsMatching('mermaid-loader.*.js'));
+        static::assertCount(1, $this->assetsMatching('highlight.*.js'));
+        static::assertCount(1, $this->assetsMatching('highlight-loader.*.js'));
+        static::assertCount(1, $this->assetsMatching('highlight.*.css'));
         static::assertNotSame([], $this->assetsMatching('accent.*.css'));
+    }
+
+    #[Test]
+    public function theCodePageLinksTheHighlighterAndAPageWithoutACodeBlockDoesNot(): void
+    {
+        $withCode = (string) file_get_contents(Path::join($this->output, 'versioned', 'v1', 'guide.html'));
+        $without  = (string) file_get_contents(Path::join($this->output, 'versioned', 'v2', 'index.html'));
+
+        static::assertStringContainsString('class="language-php hljs"', $withCode);
+        static::assertSame(1, preg_match('#/assets/highlight\.[0-9a-f]+\.js#', $withCode));
+        static::assertSame(1, preg_match('#/assets/highlight-loader\.[0-9a-f]+\.js#', $withCode));
+        static::assertSame(1, preg_match('#/assets/highlight\.[0-9a-f]+\.css#', $withCode));
+        static::assertStringNotContainsString('/assets/highlight', $without);
+    }
+
+    #[Test]
+    public function theDiagramPageIsNotHandedToTheHighlighter(): void
+    {
+        $withDiagram = (string) file_get_contents(Path::join($this->output, 'versioned', 'v2', 'guide.html'));
+
+        static::assertStringContainsString('class="language-mermaid hljs"', $withDiagram);
+        static::assertStringNotContainsString('/assets/highlight', $withDiagram);
+    }
+
+    #[Test]
+    public function theDiagramPageLinksTheMermaidBundleAndAPageWithoutOneDoesNot(): void
+    {
+        $withDiagram = (string) file_get_contents(Path::join($this->output, 'versioned', 'v2', 'guide.html'));
+        $without     = (string) file_get_contents(Path::join($this->output, 'versioned', 'v2', 'index.html'));
+
+        static::assertStringContainsString('language-mermaid', $withDiagram);
+        static::assertStringContainsString('/assets/mermaid.', $withDiagram);
+        static::assertStringContainsString('/assets/mermaid-loader.', $withDiagram);
+        static::assertStringNotContainsString('/assets/mermaid', $without);
     }
 
     #[Test]
@@ -283,6 +323,29 @@ final class SiteBuildTest extends TestCase
         static::assertStringContainsString('href="/versioned/"', $html);
         static::assertStringNotContainsString('markdown-only', $html);
         static::assertStringNotContainsString('broken-include', $html);
+    }
+
+    #[Test]
+    public function theLandingPageCarriesTheSameThemeContractAsADocsPage(): void
+    {
+        $landing = (string) file_get_contents(Path::join($this->output, 'index.html'));
+        $docs    = (string) file_get_contents(Path::join($this->output, 'versioned', 'v1', 'index.html'));
+
+        static::assertStringContainsString(
+            '<html lang="en" data-theme="dark" data-theme-mode="system">',
+            $landing,
+            'the landing page paints the configured theme before scripting runs',
+        );
+        static::assertStringContainsString('data-theme-toggle', $landing);
+        static::assertStringContainsString('/assets/asciidoctor.', $landing);
+        static::assertStringContainsString('/assets/site.', $landing);
+        static::assertStringContainsString('/assets/accent.', $landing);
+        static::assertStringContainsString('/assets/theme.', $landing);
+
+        $bootstrap = "window.localStorage.getItem('asciidoc-php-theme')";
+
+        static::assertStringContainsString($bootstrap, $landing);
+        static::assertStringContainsString($bootstrap, $docs, 'both shells share one bootstrap');
     }
 
     #[Test]

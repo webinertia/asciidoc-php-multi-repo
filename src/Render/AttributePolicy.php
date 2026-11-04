@@ -40,42 +40,32 @@ final readonly class AttributePolicy
         'localdatetime',
     ];
 
-    public function __construct(
-        private bool $syntaxHighlighting = false,
-    ) {}
-
     /**
      * The `attributes` option for the converter.
      *
      * `false` unsets an attribute, which is the array form of the AsciiDoc `name!` syntax. The
-     * highlighter is only unset when highlighting is off: when the site enables it the attribute is
-     * left alone so the configured highlighter keeps whatever default the converter gives it.
+     * highlighter is always unset: the converter's highlighter emits its own payload, which is a
+     * CDN request the site cannot make, and it tokenises the source server side. The site ships a
+     * vendored highlighter instead and leaves the `hljs` class the converter puts on a listing
+     * block, which is what the vendored stylesheet paints.
      *
      * @return array<string, string|false>
      */
     public function attributes(): array
     {
         $attributes = [
-            'stylesheet' => false,
-            'noembed'    => '',
-            'linkcss'    => '',
-            'toc'        => false,
-            'docinfo'    => false,
+            'stylesheet'         => false,
+            'noembed'            => '',
+            'linkcss'            => '',
+            'toc'                => false,
+            'docinfo'            => false,
+            'source-highlighter' => false,
         ];
-
-        if (! $this->syntaxHighlighting) {
-            $attributes['source-highlighter'] = false;
-        }
 
         foreach (self::CLOCK_ATTRIBUTES as $name) {
             $attributes[$name] = '';
         }
 
         return $attributes;
-    }
-
-    public function syntaxHighlighting(): bool
-    {
-        return $this->syntaxHighlighting;
     }
 }

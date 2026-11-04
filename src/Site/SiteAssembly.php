@@ -38,7 +38,20 @@ final readonly class SiteAssembly
         private string $baseStylesheet,
         private string $stylesheet,
         private string $logoUrl,
+        private string $accentStylesheet = '',
+        private string $themeScript = '',
     ) {}
+
+    /**
+     * The published accent stylesheet URL, linked after the site overrides.
+     *
+     * The landing page links it too, so a site whose default accent differs from the shipped one
+     * looks the same before and after a reader enters a project.
+     */
+    public function accentStylesheet(): string
+    {
+        return $this->accentStylesheet;
+    }
 
     /**
      * @return array<string, string>
@@ -129,6 +142,14 @@ final readonly class SiteAssembly
     public function stylesheet(): string
     {
         return $this->stylesheet;
+    }
+
+    /**
+     * The published theme toggle script URL.
+     */
+    public function themeScript(): string
+    {
+        return $this->themeScript;
     }
 
     public function urls(): UrlBuilder

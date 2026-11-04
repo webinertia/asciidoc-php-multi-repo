@@ -43,10 +43,20 @@ use function str_replace;
 #[CoversMethod(ThemeResolver::class, 'darkColors')]
 #[CoversMethod(ThemeResolver::class, 'defaultColorMode')]
 #[CoversMethod(ThemeResolver::class, 'hasher')]
+#[CoversMethod(ThemeResolver::class, 'highlightCss')]
+#[CoversMethod(ThemeResolver::class, 'highlightLoader')]
+#[CoversMethod(ThemeResolver::class, 'highlightLoaderName')]
+#[CoversMethod(ThemeResolver::class, 'highlightName')]
+#[CoversMethod(ThemeResolver::class, 'highlightScript')]
+#[CoversMethod(ThemeResolver::class, 'highlightScriptName')]
 #[CoversMethod(ThemeResolver::class, 'lightColors')]
 #[CoversMethod(ThemeResolver::class, 'logo')]
 #[CoversMethod(ThemeResolver::class, 'logoName')]
 #[CoversMethod(ThemeResolver::class, 'logoUrl')]
+#[CoversMethod(ThemeResolver::class, 'mermaidLoader')]
+#[CoversMethod(ThemeResolver::class, 'mermaidLoaderName')]
+#[CoversMethod(ThemeResolver::class, 'mermaidScript')]
+#[CoversMethod(ThemeResolver::class, 'mermaidScriptName')]
 #[CoversMethod(ThemeResolver::class, 'navScript')]
 #[CoversMethod(ThemeResolver::class, 'navScriptName')]
 #[CoversMethod(ThemeResolver::class, 'searchCore')]
@@ -199,6 +209,39 @@ final class ThemeResolverTest extends TestCase
     }
 
     #[Test]
+    public function theDiagramPayloadIsHashedAndCarriesTheStrictRenderBehaviour(): void
+    {
+        $resolver = new ThemeResolver();
+        $hasher   = $resolver->hasher();
+        $bundle   = $resolver->mermaidScript();
+        $loader   = $resolver->mermaidLoader();
+
+        static::assertStringContainsString('mermaid', $bundle);
+        static::assertSame(
+            $hasher->hashedName('mermaid', 'js', $bundle),
+            $resolver->mermaidScriptName(),
+        );
+        static::assertMatchesRegularExpression('/^mermaid\.[0-9a-f]+\.js$/', $resolver->mermaidScriptName());
+
+        // The loader is the only place the render options are set, so the strict sandbox and the
+        // theme follow are asserted on the script the browser actually runs.
+        static::assertStringContainsString("securityLevel: 'strict'", $loader);
+        static::assertStringContainsString('startOnLoad: false', $loader);
+        static::assertStringContainsString("getAttribute('data-theme')", $loader);
+        static::assertStringContainsString('MutationObserver', $loader);
+        static::assertStringContainsString('closest', $loader);
+        static::assertSame(
+            $hasher->hashedName('mermaid-loader', 'js', $loader),
+            $resolver->mermaidLoaderName(),
+        );
+        static::assertMatchesRegularExpression(
+            '/^mermaid-loader\.[0-9a-f]+\.js$/',
+            $resolver->mermaidLoaderName(),
+        );
+        static::assertNotSame($resolver->mermaidScriptName(), $resolver->mermaidLoaderName());
+    }
+
+    #[Test]
     public function theHasherIsExposed(): void
     {
         $resolver = new ThemeResolver();
@@ -209,6 +252,66 @@ final class ThemeResolverTest extends TestCase
             'js',
             $resolver->themeScript(),
         ));
+    }
+
+    #[Test]
+    public function theHighlightPayloadIsHashedAndCarriesTheMermaidSkip(): void
+    {
+        $resolver = new ThemeResolver();
+        $hasher   = $resolver->hasher();
+        $bundle   = $resolver->highlightScript();
+        $loader   = $resolver->highlightLoader();
+
+        static::assertStringContainsString('hljs', $bundle);
+        static::assertStringContainsString('highlightElement', $bundle);
+        static::assertSame(
+            $hasher->hashedName('highlight', 'js', $bundle),
+            $resolver->highlightScriptName(),
+        );
+        static::assertMatchesRegularExpression(
+            '/^highlight\.[0-9a-f]+\.js$/',
+            $resolver->highlightScriptName(),
+        );
+
+        // The diagram block carries the same language class shape as a listing block, so the skip
+        // is what keeps the two loaders from overwriting each other's work.
+        static::assertStringContainsString('language-mermaid', $loader);
+        static::assertStringContainsString('data-lang', $loader);
+        static::assertStringContainsString('data-highlighted', $loader);
+        static::assertStringContainsString('highlightElement', $loader);
+        static::assertSame(
+            $hasher->hashedName('highlight-loader', 'js', $loader),
+            $resolver->highlightLoaderName(),
+        );
+        static::assertMatchesRegularExpression(
+            '/^highlight-loader\.[0-9a-f]+\.js$/',
+            $resolver->highlightLoaderName(),
+        );
+        static::assertNotSame($resolver->highlightScriptName(), $resolver->highlightLoaderName());
+    }
+
+    #[Test]
+    public function theHighlightStylesheetCarriesBothColourModes(): void
+    {
+        $resolver = new ThemeResolver();
+        $css      = $resolver->highlightCss();
+
+        static::assertStringContainsString('.hljs-keyword', $css);
+        static::assertStringContainsString('[data-theme="dark"] .hljs-keyword', $css);
+        static::assertStringContainsString('[data-theme="dark"] .hljs-string', $css);
+        static::assertStringContainsString('[data-theme="dark"] .hljs-comment', $css);
+
+        // The vendored theme pads and scrolls the code element, which would nest a second scroll
+        // box inside the pre, so the dark half resets both.
+        static::assertStringContainsString('pre code.hljs', $css);
+        static::assertStringContainsString('overflow-x: visible', $css);
+
+        static::assertSame(
+            $resolver->hasher()->hashedName('highlight', 'css', $css),
+            $resolver->highlightName(),
+        );
+        static::assertMatchesRegularExpression('/^highlight\.[0-9a-f]+\.css$/', $resolver->highlightName());
+        static::assertNotSame($resolver->siteName(), $resolver->highlightName());
     }
 
     #[Test]

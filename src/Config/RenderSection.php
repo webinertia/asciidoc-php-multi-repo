@@ -30,7 +30,7 @@ final readonly class RenderSection
             Values::string($data, 'safeMode', 'safe'),
             Values::integer($data, 'concurrency', 4),
             Values::integer($data, 'searchExtractLimit', 2000),
-            Values::boolean($data, 'syntaxHighlighting', false),
+            Values::boolean($data, 'syntaxHighlighting', true),
         );
     }
 
@@ -49,6 +49,15 @@ final readonly class RenderSection
         return $this->searchExtractLimit;
     }
 
+    /**
+     * Whether a page links the vendored highlighter payload.
+     *
+     * The converter's own highlighter is always off, so this flag is the only switch: when it is on,
+     * a page whose body contains a highlighted code block links the vendored bundle, its loader and
+     * its stylesheet. It defaults to on because the converter puts the `hljs` class on every listing
+     * block regardless, and a page that advertises highlighting without the payload is a page with
+     * no colours in it.
+     */
     public function syntaxHighlighting(): bool
     {
         return $this->syntaxHighlighting;

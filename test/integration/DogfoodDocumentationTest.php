@@ -45,6 +45,7 @@ final class DogfoodDocumentationTest extends TestCase
         'action.html',
         'action-setup.html',
         'authoring.html',
+        'block-gallery.html',
         'theming.html',
         'troubleshooting.html',
     ];
@@ -64,7 +65,7 @@ final class DogfoodDocumentationTest extends TestCase
     {
         static::assertSame(ExitCode::Success, $this->exitCode);
         static::assertStringContainsString(
-            self::SLUG . ': 6 page(s) ok',
+            self::SLUG . ': 7 page(s) ok',
             implode("\n", $this->stderr),
         );
 

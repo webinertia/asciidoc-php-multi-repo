@@ -1,0 +1,603 @@
+= Block gallery
+:toc: left
+:toc-title: Contents
+:sectnums:
+:icons: font
+:source-highlighter: highlight.js
+:doctype: article
+
+This document describes every option available when using `asciidoc-php`,
+both from the command line and from the PHP API.
+
+== Command-line Interface
+
+The `bin/asciidoc-php` binary converts one or more AsciiDoc source files to the
+configured output format.
+
+=== Synopsis
+
+[source,bash]
+----
+asciidoc-php [options] FILE [FILE ...]
+asciidoc-php [options] -          # read from STDIN, write to STDOUT
+----
+
+=== Options
+
+==== `-b, --backend BACKEND`
+
+Select the output backend.
+
+[cols="1,3",options="header"]
+|===
+|Value |Description
+|`html5` *(default)* |HTML 5 output via the bundled `Html5Converter`
+|===
+
+NOTE: Only `html5` is implemented in v0.1.  The flag is accepted for
+forward-compatibility.
+
+---
+
+==== `-d, --doctype DOCTYPE`
+
+Set the document type, which controls which structural sections are
+valid and how the header is rendered.
+
+[cols="1,3",options="header"]
+|===
+|Value |Description
+|`article` *(default)* |Standard article - single-part document
+|`book` |Multi-part book - accepts `= Part Title` level-0 sections
+|`manpage` |UNIX man-page - `NAME`, `SYNOPSIS`, `DESCRIPTION` structure
+|`inline` |Fragment - renders a single inline paragraph, no block wrapper
+|===
+
+---
+
+==== `-o, --out-file FILE`
+
+Write the converted output to `FILE` instead of the default location.
+
+* Use `-` to write to STDOUT.
+* When converting multiple input files this flag applies to every file in
+  sequence; prefer `--destination-dir` for batch conversion.
+
+---
+
+==== `-D, --destination-dir DIR`
+
+Place all converted output files into `DIR`.
+
+* The directory is created automatically (including intermediate
+  directories) if it does not exist.
+* Each output file is named after the input file with its extension
+  replaced by `.html`.
+
+[source,bash]
+----
+asciidoc-php -D html/ docs/*.adoc
+----
+
+---
+
+==== `-B, --base-dir DIR`
+
+Override the base directory used to resolve `include::` directives.
+
+* Defaults to the directory of the input file when `--out-file` / a
+  positional path is given, or the current working directory for STDIN.
+
+---
+
+==== `-S, --safe-mode MODE`
+
+Control which features are available based on trust level.
+
+[cols="1,1,3",options="header"]
+|===
+|Value |Integer |Description
+|`unsafe` |0 |All features enabled; use only for fully trusted input
+|`safe` |1 *(default)* |Standard restrictions; external includes allowed from within `base-dir`
+|`server` |10 |Stricter; restricts access to the filesystem above `base-dir`
+|`secure` |20 |Maximum restriction; `include::` disabled, no filesystem access
+|===
+
+---
+
+==== `-a, --attribute KEY[=VALUE]`
+
+Set (or unset) a document attribute. Repeatable.
+
+[cols="1,3",options="header"]
+|===
+|Form |Effect
+|`-a mykey` |Sets `mykey` to an empty string
+|`-a mykey=myvalue` |Sets `mykey` to `myvalue`
+|`-a mykey!` |Explicitly unsets `mykey`
+|===
+
+Attributes set via `-a` are applied before the document header is read,
+so they can be referenced in the source.  They cannot be overridden by
+attribute entries in the source file (they are _locked_).
+
+Common attributes you may want to set via `-a`:
+
+[cols="1,3",options="header"]
+|===
+|Attribute |Purpose
+|`toc` |Enable table of contents (`auto`, `left`, `right`)
+|`toc-title` |Override TOC heading text (default: `Table of Contents`)
+|`sectnums` |Auto-number sections
+|`icons` |Enable icons; set to `font` to use Font Awesome
+|`source-highlighter` |Syntax highlighter (`highlight.js`)
+|`skip-front-matter` |Strip leading YAML front matter before parsing (see <<yaml-front-matter>>)
+|`imagesdir` |Base path prepended to all `image::` targets
+|`experimental` |Enable UI macro (`btn:[]`, `kbd:[]`, `menu:[]`)
+|`docinfo` |Inject external docinfo files (`shared`, `private`, `shared-head`, etc.)
+|===
+
+---
+
+==== `-s, --no-header-footer`
+
+Produce an embedded (fragment) document - omit the `<html>`, `<head>`,
+and `<body>` wrapper elements.  Useful when embedding the output into an
+existing page.
+
+---
+
+==== `--concurrency N`
+
+Maximum number of files to convert concurrently when processing multiple
+input files.
+
+[cols="1,3",options="header"]
+|===
+|Value |Behaviour
+|`0` *(default)* |Sequential (no concurrency)
+|Any positive integer |Cap concurrent conversions at N
+|===
+
+---
+
+==== `-q, --quiet`
+
+Suppress all informational messages.  Only fatal errors are written to
+`STDERR`.
+
+---
+
+==== `-v, --verbose`
+
+Log each converted file to the logger (or `STDOUT`) after it completes.
+
+---
+
+==== `-t, --timings`
+
+Print a timing breakdown for each file after conversion.
+
+---
+
+==== `--trace`
+
+Print a full PHP stack trace when a conversion error is caught.  Without
+this flag only the error message is shown.
+
+---
+
+==== `-h, --help`
+
+Print the help message and exit with code `0`.
+
+---
+
+==== `--version`
+
+Print the library version string and exit with code `0`.
+
+---
+
+=== Examples
+
+.Convert a single file (output alongside source)
+[source,bash]
+----
+asciidoc-php docs/guide.adoc
+----
+
+.Convert with left-sidebar TOC
+[source,bash]
+----
+asciidoc-php -a toc=left docs/guide.adoc
+----
+
+.Convert multiple files to an output directory
+[source,bash]
+----
+asciidoc-php -D html/ docs/*.adoc
+----
+
+.Read from STDIN, write to STDOUT (pipeline)
+[source,bash]
+----
+cat fragment.adoc | asciidoc-php -s -o - -
+----
+
+.Set multiple attributes
+[source,bash]
+----
+asciidoc-php -a toc=left -a sectnums -a icons=font docs/guide.adoc
+----
+
+.Strip YAML front matter
+[source,bash]
+----
+asciidoc-php -a skip-front-matter docs/page.adoc
+----
+
+.Quiet batch conversion
+[source,bash]
+----
+asciidoc-php -q -D out/ docs/*.adoc
+----
+
+---
+
+== PHP API
+
+=== `Asciidoc::convert()`
+
+Convert an AsciiDoc string directly.
+
+[source,php]
+----
+use Webware\AsciidocPhp\Asciidoc;
+
+$html = Asciidoc::convert($source, $opts);
+----
+
+`$source` is any valid AsciiDoc string.  `$opts` is an optional
+associative array - see <<api-options>> for all recognised keys.
+
+=== `Asciidoc::convertFile()`
+
+Read an AsciiDoc file from disk and convert it.
+
+[source,php]
+----
+$html = Asciidoc::convertFile('/path/to/guide.adoc', $opts);
+----
+
+* Throws `\RuntimeException` if the file does not exist or cannot be read.
+* `base_dir` defaults to `dirname($path)` when not supplied.
+
+[#api-options]
+=== API Option Keys
+
+[cols="1,1,1,3",options="header"]
+|===
+|Key |Type |Default |Description
+
+|`backend`
+|`string`
+|`'html5'`
+|Output backend.  Currently only `'html5'` is supported.
+
+|`doctype`
+|`string`
+|`'article'`
+|Document type: `article`, `book`, `manpage`, `inline`.
+
+|`safe`
+|`SafeMode`
+|`SafeMode::SAFE`
+|Trust level.  Pass a `\Webware\AsciidocPhp\SafeMode` enum case.
+
+|`attributes`
+|`array<string, string\|false>`
+|`[]`
+|Initial document attributes.  `false` explicitly unsets an attribute;
+a string sets it.  Keys set here are _locked_ - the document header
+cannot override them.
+
+|`header_footer`
+|`bool`
+|`true`
+|When `false`, output is an embedded fragment (no `<html>`/`<head>`/`<body>`).
+
+|`base_dir`
+|`string\|null`
+|`null`
+|Base directory for `include::` resolution.  Defaults to
+`dirname($path)` for `convertFile()`.
+
+|`converter`
+|`ConverterInterface`
+|`Html5Converter`
+|Custom converter instance.  Implement
+`\Webware\AsciidocPhp\Converter\ConverterInterface` to supply your own.
+
+|`sourcemap`
+|`bool`
+|`false`
+|Attach source-location metadata to AST nodes (for tooling / IDE use).
+|===
+
+=== API Examples
+
+.Minimal conversion
+[source,php]
+----
+$html = Asciidoc::convert('= Hello World');
+----
+
+.Embedded fragment
+[source,php]
+----
+$fragment = Asciidoc::convert($source, ['header_footer' => false]);
+----
+
+.Set attributes programmatically
+[source,php]
+----
+$html = Asciidoc::convert($source, [
+    'attributes' => [
+        'toc'              => 'left',
+        'sectnums'         => '',
+        'icons'            => 'font',
+        'source-highlighter' => 'highlight.js',
+    ],
+]);
+----
+
+.Strip YAML front matter and read promoted attributes
+[source,php]
+----
+use Webware\AsciidocPhp\Asciidoc;
+use Webware\AsciidocPhp\Document;
+use Webware\AsciidocPhp\Parser\Parser;
+use Webware\AsciidocPhp\Reader\Cursor;
+use Webware\AsciidocPhp\Reader\PreprocessorReader;
+
+// High-level: skip-front-matter via the facade
+$html = Asciidoc::convertFile('page.adoc', [
+    'attributes' => ['skip-front-matter' => ''],
+]);
+
+// The raw YAML block is available as the `front-matter` document attribute
+// after the parse if you work at the lower-level API.
+----
+
+.Use a strict safe mode
+[source,php]
+----
+use Webware\AsciidocPhp\SafeMode;
+
+$html = Asciidoc::convertFile('untrusted.adoc', [
+    'safe' => SafeMode::SECURE,
+]);
+----
+
+---
+
+[#yaml-front-matter]
+== YAML Front Matter
+
+When the `skip-front-matter` attribute is set, `asciidoc-php` recognises
+a YAML front matter block at the very start of the document.
+
+=== Format
+
+The block is delimited by `---` on its own line, must begin on the first
+line of the file, and must be closed by a second `---` line before any
+AsciiDoc content.
+
+[source,yaml]
+----
+---
+layout: default
+title: "My Page"
+author: Alice
+---
+= My Page
+Alice
+:toc: left
+
+Document body starts here.
+----
+
+=== Behaviour
+
+[cols="1,3",options="header"]
+|===
+|Rule |Detail
+|Activation |Front matter is only parsed when `skip-front-matter` is set; otherwise the `---` lines are treated as literal content.
+|Storage |The raw YAML text (between the delimiters, delimiters excluded) is stored in the `front-matter` document attribute.
+|Attribute promotion |Simple scalar `key: value` pairs are promoted as document attributes.
+|Quote stripping |Values wrapped in `"..."` or `'...'` have their surrounding quotes stripped.
+|No override |A promoted key never overwrites an attribute already set on the document (e.g. via `-a`).
+|Unclosed block |If no closing `---` is found, the lines are restored and no front matter is extracted.
+|===
+
+=== Activating via CLI
+
+[source,bash]
+----
+asciidoc-php -a skip-front-matter docs/page.adoc
+----
+
+=== Activating via API
+
+[source,php]
+----
+$html = Asciidoc::convertFile('page.adoc', [
+    'attributes' => ['skip-front-matter' => ''],
+]);
+----
+
+---
+
+== Document Attributes Reference
+
+The following built-in attributes are set automatically on every document.
+They can be read by the document source, overridden via `-a` / `attributes`,
+or queried from `Document::getAttribute()`.
+
+=== Read-only (set by the converter)
+
+[cols="1,3",options="header"]
+|===
+|Attribute |Value
+|`asciidoc-version` |Library version string (e.g. `0.1.0`)
+|`asciidoctor-version` |Same as `asciidoc-version`
+|`backend` |Active backend name (e.g. `html5`)
+|`basebackend` |Base backend family (`html`, `docbook`)
+|`doctype` |Active doctype (e.g. `article`)
+|`encoding` |Always `UTF-8`
+|`filetype` |Output file type (e.g. `html`)
+|`outfilesuffix` |Output file extension (e.g. `.html`)
+|`docdate` |Date the document was converted (`YYYY-MM-DD`)
+|`doctime` |Time the document was converted (`HH:MM:SS`)
+|`docdatetime` |Date + time combined
+|`localdate` |Same as `docdate`
+|`localtime` |Same as `doctime`
+|`localdatetime` |Same as `docdatetime`
+|===
+
+=== Configurable
+
+[cols="1,1,3",options="header"]
+|===
+|Attribute |Default |Description
+|`toc` |_(unset)_ |Enable TOC and set placement: `auto` (inline after title), `left`, `right`
+|`toc-title` |`Table of Contents` |Heading text shown above the TOC
+|`toc-placement` |`auto` |Alternative placement key; `left` and `right` work the same as `:toc: left/right`
+|`sectnums` |_(unset)_ |Auto-number sections when set
+|`sectanchors` |_(unset)_ |Prepend anchor links to section titles when set
+|`sectlinks` |_(unset)_ |Make section titles clickable anchor links when set
+|`icons` |_(unset)_ |Set to `font` to use Font Awesome icons in admonitions
+|`source-highlighter` |_(unset)_ |Set to `highlight.js` to enable client-side syntax highlighting
+|`skip-front-matter` |_(unset)_ |Strip leading YAML front matter when set
+|`imagesdir` |_(unset)_ |Prepended to all `image::` / `image:` target paths
+|`experimental` |_(unset)_ |Enable UI macros (`btn:[]`, `kbd:[]`, `menu:[]`) when set
+|`caution-caption` |`Caution` |Label for CAUTION admonition blocks
+|`important-caption` |`Important` |Label for IMPORTANT admonition blocks
+|`note-caption` |`Note` |Label for NOTE admonition blocks
+|`tip-caption` |`Tip` |Label for TIP admonition blocks
+|`warning-caption` |`Warning` |Label for WARNING admonition blocks
+|`table-caption` |`Table` |Caption prefix for auto-numbered tables
+|`figure-caption` |`Figure` |Caption prefix for auto-numbered figures
+|`example-caption` |`Example` |Caption prefix for auto-numbered examples
+|===
+
+== Theme block catalogue
+
+Every construct the site stylesheet targets appears once below, so a theme change can be
+checked against a single page in both the light and the dark palette.
+
+=== Admonitions
+
+NOTE: A note.
+
+TIP: A tip.
+
+IMPORTANT: An important note.
+
+WARNING: A warning.
+
+CAUTION: A caution.
+
+=== Block titles
+
+.A titled listing block
+[source,bash]
+----
+echo "titled listing"
+----
+
+.A titled table
+[cols="1,2",options="header"]
+|===
+|Key |Meaning
+|`alpha` |First row
+|`beta` |Second row
+|===
+
+=== Literal blocks
+
+An indented literal block:
+
+    $ asciidoc-php --version
+    asciidoc-php 0.1.0
+
+A delimited literal block:
+
+....
+delimited literal text
+....
+
+=== Callouts
+
+[source,php]
+----
+$first = 1; // <1>
+$second = 2; // <2>
+----
+<1> The first value.
+<2> The second value.
+
+=== Quotes
+
+[quote,Ada Lovelace,Notes]
+____
+A quoted paragraph, with an attribution line.
+____
+
+[verse]
+____
+a verse line
+another verse line
+____
+
+=== Example and sidebar blocks
+
+.An example block
+====
+Content of an example block.
+====
+
+.A sidebar block
+****
+Content of a sidebar block.
+****
+
+=== Lists
+
+An unordered list, nested once:
+
+* first bullet
+** nested bullet
+* second bullet
+
+An ordered list:
+
+. first item
+. second item
+
+A description list:
+
+`asciidoc-php`:: The converter package.
+`asciidoc-php-multi-repo`:: The aggregate site generator.
+
+=== Inline markup
+
+*bold text*, _italic text_, `monospaced text`, and a https://example.com[link].
+
+=== Rules
+
+.A titled rule
+'''
+A rule without a title.
+'''

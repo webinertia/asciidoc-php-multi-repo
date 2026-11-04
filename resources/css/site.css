@@ -90,6 +90,16 @@ a:focus-visible {
     outline-offset: 2px;
 }
 
+/*
+ * Selected text. The browser default highlight is tuned for a light page, so on the dark surface the
+ * selected text was barely distinguishable from the band behind it. Both values come from the theme,
+ * so the highlight tracks the palette instead of guessing at the surface underneath it.
+ */
+::selection {
+    background-color: var(--color-primary);
+    color: var(--surface-page);
+}
+
 .skip-link {
     position: absolute;
     left: -100vw;
@@ -430,6 +440,17 @@ main {
     font-size: 1.25rem;
 }
 
+/*
+ * The preamble's opening paragraph. The base sheet paints it 85 percent black so the lead paragraph
+ * reads heavier, and that selector is an id plus two classes, so `.doc p` lost and the paragraph
+ * stayed near black on the dark page at roughly 1.1 to 1. This reproduces the id path and adds the
+ * `.doc` ancestor, which outranks the base rule outright rather than relying on load order.
+ */
+.doc #preamble > .sectionbody > .paragraph:first-of-type p,
+.doc .paragraph.lead > p {
+    color: var(--text-body);
+}
+
 .doc p,
 .doc ul,
 .doc ol,
@@ -447,7 +468,13 @@ main {
     font-size: 0.9em;
 }
 
-.doc code {
+/*
+ * Inline code. The base sheet paints the chip with `:not(pre):not([class^=L]) > code`, which
+ * carries one class and two elements, so a plain `.doc code` lost the background and the chip kept
+ * a near white fill under the dark theme while the text had already moved to the theme. This
+ * selector matches that specificity exactly and this sheet loads later, so it wins the tie.
+ */
+.doc :not(pre) > code {
     padding: 0.1em 0.3em;
     border-radius: var(--radius-small);
     background-color: var(--surface-raised);
@@ -466,6 +493,28 @@ main {
 .doc pre code {
     padding: 0;
     background-color: transparent;
+}
+
+/*
+ * Code blocks. The base rule that paints listing blocks carries three classes, so `.doc pre` never
+ * reached it and every listing kept the near white fill under the dark theme. Same tie-break as the
+ * chip above: equal specificity, later sheet.
+ *
+ * Literal output blocks are left alone. The base sheet inverts them, and a dark fill reads as
+ * program output in either palette, so the inversion is deliberate rather than a leak.
+ */
+.doc .literalblock > pre,
+.doc .listingblock > .content > pre {
+    background-color: var(--surface-raised);
+    color: var(--text-body);
+}
+
+/*
+ * A code span inside a link. The base sheet restates the colour on hover at a higher specificity
+ * than the chip rule, which turned the span near black on a raised surface.
+ */
+.doc a > code:hover {
+    color: var(--text-body);
 }
 
 .doc blockquote {
@@ -508,6 +557,45 @@ main {
 .doc tr.even,
 .doc tr.alt {
     background-color: transparent;
+}
+
+/*
+ * The table head and foot rows carry their own fill in the base sheet. The cells are already
+ * themed, so this only stops the row fill showing at the cell borders.
+ */
+.doc thead,
+.doc tfoot {
+    background-color: transparent;
+}
+
+/*
+ * Block titles. The base sheet sets one colour for every block title through a long selector list,
+ * and only the sidebar title was restated, so a listing, example, or admonition title stayed dark
+ * red on a dark page. `:is()` keeps the list readable while still outranking the single class each
+ * base selector uses.
+ */
+.doc
+    :is(
+        .listingblock,
+        .literalblock,
+        .exampleblock,
+        .openblock,
+        .paragraph,
+        .imageblock,
+        .stemblock,
+        .verseblock,
+        .videoblock,
+        .audioblock,
+        .dlist,
+        .olist,
+        .ulist,
+        .qlist,
+        .hdlist
+    )
+    > .title,
+.doc .admonitionblock td.content > .title,
+.doc table.tableblock > .title {
+    color: var(--text-muted);
 }
 
 .doc .exampleblock > .content,

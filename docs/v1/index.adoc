@@ -16,6 +16,8 @@ The guides below are the complete operator and author documentation for version 
 * xref:action.adoc[GitHub action reference] - the container action's inputs, its image tags, the
   Linux runner constraint, and the workflows a consumer copies.
 * xref:theming.adoc[Theme guide] - the token set, per-project accents, and light and dark mode.
+* xref:block-gallery.adoc[Block gallery] - one page carrying every construct the stylesheet
+  targets, for checking a theme change against the whole surface at once.
 * xref:troubleshooting.adoc[Troubleshooting and reason codes] - every reason code the build
   report can emit, its cause, and its fix.
 

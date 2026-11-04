@@ -44,6 +44,15 @@ use function str_replace;
 #[CoversMethod(ThemeResolver::class, 'defaultColorMode')]
 #[CoversMethod(ThemeResolver::class, 'hasher')]
 #[CoversMethod(ThemeResolver::class, 'lightColors')]
+#[CoversMethod(ThemeResolver::class, 'logo')]
+#[CoversMethod(ThemeResolver::class, 'logoName')]
+#[CoversMethod(ThemeResolver::class, 'logoUrl')]
+#[CoversMethod(ThemeResolver::class, 'navScript')]
+#[CoversMethod(ThemeResolver::class, 'navScriptName')]
+#[CoversMethod(ThemeResolver::class, 'searchCore')]
+#[CoversMethod(ThemeResolver::class, 'searchCoreName')]
+#[CoversMethod(ThemeResolver::class, 'searchScript')]
+#[CoversMethod(ThemeResolver::class, 'searchScriptName')]
 #[CoversMethod(ThemeResolver::class, 'siteCss')]
 #[CoversMethod(ThemeResolver::class, 'siteName')]
 #[CoversMethod(ThemeResolver::class, 'themeScript')]
@@ -59,6 +68,17 @@ final class ThemeResolverTest extends TestCase
     {
         static::assertSame([], $this->lightColorsFrom(':root {'));
         static::assertSame([], $this->lightColorsFrom(":root {\n    color: red;\n}\n"));
+    }
+
+    #[Test]
+    public function aMissingMarkIsReported(): void
+    {
+        $directory = $this->createTempDirectory();
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage("Asset \"logo.svg\" is missing from \"{$directory}\".");
+
+        new ThemeResolver(imgDirectory: $directory)->logo();
     }
 
     #[Test]
@@ -171,6 +191,14 @@ final class ThemeResolverTest extends TestCase
     }
 
     #[Test]
+    public function theConfiguredLogoReplacesTheShippedMark(): void
+    {
+        $resolver = new ThemeResolver(theme: ThemeConfig::fromArray(['logo' => '/brand/mark.svg']));
+
+        static::assertSame('/brand/mark.svg', $resolver->logoUrl('/docs/'));
+    }
+
+    #[Test]
     public function theHasherIsExposed(): void
     {
         $resolver = new ThemeResolver();
@@ -208,6 +236,52 @@ final class ThemeResolverTest extends TestCase
         static::assertStringNotContainsString('url(http', $css);
         static::assertStringNotContainsString('https://', $css);
         static::assertFalse(str_contains($css, 'file://'));
+    }
+
+    #[Test]
+    public function theScriptsArePublishedUnderHashedNames(): void
+    {
+        $resolver = new ThemeResolver();
+        $hasher   = $resolver->hasher();
+
+        static::assertNotSame('', $resolver->navScript());
+        static::assertSame(
+            $hasher->hashedName('nav', 'js', $resolver->navScript()),
+            $resolver->navScriptName(),
+        );
+        static::assertMatchesRegularExpression('/^nav\.[0-9a-f]+\.js$/', $resolver->navScriptName());
+
+        static::assertNotSame('', $resolver->searchCore());
+        static::assertSame(
+            $hasher->hashedName('search-core', 'js', $resolver->searchCore()),
+            $resolver->searchCoreName(),
+        );
+        static::assertMatchesRegularExpression(
+            '/^search-core\.[0-9a-f]+\.js$/',
+            $resolver->searchCoreName(),
+        );
+
+        static::assertNotSame('', $resolver->searchScript());
+        static::assertSame(
+            $hasher->hashedName('search', 'js', $resolver->searchScript()),
+            $resolver->searchScriptName(),
+        );
+        static::assertMatchesRegularExpression('/^search\.[0-9a-f]+\.js$/', $resolver->searchScriptName());
+    }
+
+    #[Test]
+    public function theShippedMarkIsPublishedUnderTheBasePath(): void
+    {
+        $resolver = new ThemeResolver();
+
+        static::assertStringContainsString('<svg', $resolver->logo());
+        static::assertSame(
+            $resolver->hasher()->hashedName('logo', 'svg', $resolver->logo()),
+            $resolver->logoName(),
+        );
+        static::assertMatchesRegularExpression('/^logo\.[0-9a-f]+\.svg$/', $resolver->logoName());
+        static::assertSame("/assets/{$resolver->logoName()}", $resolver->logoUrl('/'));
+        static::assertSame("/docs/assets/{$resolver->logoName()}", $resolver->logoUrl('/docs/'));
     }
 
     #[Test]

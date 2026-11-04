@@ -68,4 +68,21 @@ final class ThemeConfigTest extends TestCase
         static::assertSame(ColorMode::SYSTEM, $mode->mode());
         static::assertSame(ColorMode::DARK, $mode->fallback());
     }
+
+    #[Test]
+    public function theLogoAndIconFontAreOptional(): void
+    {
+        $defaults = ThemeConfig::defaults();
+
+        static::assertSame('', $defaults->logo());
+        static::assertSame(ThemeConfig::DEFAULT_ICON_FONT_CDN, $defaults->iconFontCdn());
+
+        $configured = ThemeConfig::fromArray([
+            'logo'        => '/brand/mark.svg',
+            'iconFontCdn' => 'https://cdn.example.test/icons.css',
+        ]);
+
+        static::assertSame('/brand/mark.svg', $configured->logo());
+        static::assertSame('https://cdn.example.test/icons.css', $configured->iconFontCdn());
+    }
 }

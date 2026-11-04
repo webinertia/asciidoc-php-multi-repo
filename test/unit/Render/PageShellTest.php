@@ -9,6 +9,7 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
+use Webware\AsciidocPhp\MultiRepo\Render\PageChrome;
 use Webware\AsciidocPhp\MultiRepo\Render\PageContext;
 use Webware\AsciidocPhp\MultiRepo\Render\PageShell;
 use Webware\AsciidocPhp\MultiRepo\Render\TocEntry;
@@ -41,10 +42,12 @@ use function substr_count;
 #[CoversMethod(PageContext::class, 'sourceUrl')]
 #[CoversMethod(PageContext::class, 'colorMode')]
 #[CoversMethod(PageContext::class, 'defaultColorMode')]
+#[CoversMethod(PageContext::class, 'logoUrl')]
 #[CoversMethod(PageContext::class, 'pageTitle')]
 #[CoversMethod(PageContext::class, 'projectTitle')]
 #[CoversMethod(PageContext::class, 'siteName')]
 #[CoversMethod(PageContext::class, 'versionLabel')]
+#[CoversMethod(PageContext::class, 'withChrome')]
 final class PageShellTest extends TestCase
 {
     use TempDirectoryTrait;
@@ -115,6 +118,28 @@ final class PageShellTest extends TestCase
         $html = new PageShell()->render($this->context(body: $body));
 
         static::assertStringContainsString($body, $html);
+    }
+
+    #[Test]
+    public function theChromeCopyKeepsTheLogoAndTakesTheNewScripts(): void
+    {
+        $page = new PageContext(
+            siteName    : 'Fixture Site',
+            projectTitle: 'Widgets',
+            pageTitle   : 'Usage examples',
+            versionLabel: 'v1',
+            canonicalUrl: 'https://docs.example.test/widgets/v1/usage.html',
+            body        : '<article class="doc"></article>',
+            logoUrl     : '/assets/logo.abc123.svg',
+        );
+
+        $withChrome = $page->withChrome(new PageChrome(landingUrl: '/docs/'), ['/assets/nav.def456.js']);
+
+        static::assertSame('/assets/logo.abc123.svg', $withChrome->logoUrl());
+        static::assertSame(['/assets/nav.def456.js'], $withChrome->scripts());
+        static::assertSame('/docs/', $withChrome->chrome()->landingUrl());
+        static::assertSame($page->title(), $withChrome->title());
+        static::assertSame($page->canonicalUrl(), $withChrome->canonicalUrl());
     }
 
     #[Test]

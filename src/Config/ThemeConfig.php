@@ -18,17 +18,17 @@ final readonly class ThemeConfig
      */
     public const string DEFAULT_ICON_FONT_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css';
 
-    public function __construct(
+    private function __construct(
         private string $name,
         private string $defaultAccent,
-        private string $colorMode,
-        private string $defaultColorMode,
+        private ColorMode $colorMode,
         private string $iconFontCdn = self::DEFAULT_ICON_FONT_CDN,
+        private string $logo = '',
     ) {}
 
     public static function defaults(): self
     {
-        return new self(self::DEFAULT_NAME, self::DEFAULT_ACCENT, 'system', 'dark');
+        return new self(self::DEFAULT_NAME, self::DEFAULT_ACCENT, new ColorMode());
     }
 
     /**
@@ -39,15 +39,18 @@ final readonly class ThemeConfig
         return new self(
             Values::string($data, 'name', self::DEFAULT_NAME),
             Values::string($data, 'defaultAccent', self::DEFAULT_ACCENT),
-            Values::string($data, 'colorMode', 'system'),
-            Values::string($data, 'defaultColorMode', 'dark'),
+            new ColorMode(
+                Values::string($data, 'colorMode', ColorMode::SYSTEM),
+                Values::string($data, 'defaultColorMode', ColorMode::DARK),
+            ),
             Values::string($data, 'iconFontCdn', self::DEFAULT_ICON_FONT_CDN),
+            Values::string($data, 'logo', ''),
         );
     }
 
     public function colorMode(): string
     {
-        return $this->colorMode;
+        return $this->colorMode->mode();
     }
 
     public function defaultAccent(): string
@@ -57,7 +60,7 @@ final readonly class ThemeConfig
 
     public function defaultColorMode(): string
     {
-        return $this->defaultColorMode;
+        return $this->colorMode->fallback();
     }
 
     /**
@@ -75,6 +78,14 @@ final readonly class ThemeConfig
     public function isBuiltIn(): bool
     {
         return self::DEFAULT_NAME === $this->name;
+    }
+
+    /**
+     * A logo URL that replaces the mark shipped with the package, empty when the shipped mark is used.
+     */
+    public function logo(): string
+    {
+        return $this->logo;
     }
 
     public function name(): string

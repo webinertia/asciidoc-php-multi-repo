@@ -7,8 +7,10 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Config;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Webware\AsciidocPhp\MultiRepo\Config\ColorMode;
 use Webware\AsciidocPhp\MultiRepo\Config\ThemeConfig;
 
+#[CoversClass(ColorMode::class)]
 #[CoversClass(ThemeConfig::class)]
 final class ThemeConfigTest extends TestCase
 {
@@ -56,5 +58,31 @@ final class ThemeConfigTest extends TestCase
     {
         static::assertTrue(ThemeConfig::defaults()->isBuiltIn());
         static::assertFalse(ThemeConfig::fromArray(['name' => 'custom'])->isBuiltIn());
+    }
+
+    #[Test]
+    public function theColourModePairCarriesThePreferenceAndTheFallback(): void
+    {
+        $mode = new ColorMode();
+
+        static::assertSame(ColorMode::SYSTEM, $mode->mode());
+        static::assertSame(ColorMode::DARK, $mode->fallback());
+    }
+
+    #[Test]
+    public function theLogoAndIconFontAreOptional(): void
+    {
+        $defaults = ThemeConfig::defaults();
+
+        static::assertSame('', $defaults->logo());
+        static::assertSame(ThemeConfig::DEFAULT_ICON_FONT_CDN, $defaults->iconFontCdn());
+
+        $configured = ThemeConfig::fromArray([
+            'logo'        => '/brand/mark.svg',
+            'iconFontCdn' => 'https://cdn.example.test/icons.css',
+        ]);
+
+        static::assertSame('/brand/mark.svg', $configured->logo());
+        static::assertSame('https://cdn.example.test/icons.css', $configured->iconFontCdn());
     }
 }

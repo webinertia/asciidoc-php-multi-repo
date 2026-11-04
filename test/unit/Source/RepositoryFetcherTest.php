@@ -8,9 +8,11 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Webware\AsciidocPhp\MultiRepo\Config\SiteConfig;
 use Webware\AsciidocPhp\MultiRepo\Report\ReasonCode;
 use Webware\AsciidocPhp\MultiRepo\Source\RepositoryFetcher;
 use Webware\AsciidocPhp\MultiRepo\Source\SourceException;
+use Webware\AsciidocPhp\MultiRepo\Source\SourceTree;
 use Webware\AsciidocPhp\MultiRepo\Support\Filesystem;
 use Webware\AsciidocPhp\MultiRepo\Support\Path;
 use Webware\AsciidocPhp\MultiRepo\Support\ProcessRunner;
@@ -27,6 +29,7 @@ use function trim;
  * resolved revision is recorded either way.
  */
 #[CoversClass(RepositoryFetcher::class)]
+#[CoversClass(SourceTree::class)]
 #[CoversMethod(RepositoryFetcher::class, 'fetch')]
 final class RepositoryFetcherTest extends TestCase
 {
@@ -189,6 +192,42 @@ final class RepositoryFetcherTest extends TestCase
         static::assertTrue($first->checkedOut());
         static::assertFalse($second->checkedOut());
         static::assertSame($first->revision(), $second->revision());
+    }
+
+    #[Test]
+    public function aWorktreeReportsTheCommitItsGitFilePointsAt(): void
+    {
+        $root   = $this->gitRepository(['docs/index.adoc' => "= Index\n"]);
+        $linked = Path::join($this->tempDirectory, 'linked-' . bin2hex(random_bytes(6)));
+
+        $this->runner->mustRun(['git', 'worktree', 'add', '--detach', $linked], $root, 60.0);
+
+        $fetched = $this->fetcher()->fetch(
+            SourceFixture::repository(path: $linked),
+            SourceFixture::config(),
+            "{$this->tempDirectory}/cache",
+        );
+
+        static::assertSame($this->head($linked), $fetched->revision());
+    }
+
+    #[Test]
+    public function generatedOutputIsNotTreatedAsASource(): void
+    {
+        $root = $this->repository([
+            'docs/index.adoc'          => "= Index\n",
+            'build/site/index.html'    => '<!doctype html>',
+            'build/cache/pages/a.json' => '{}',
+            'build/report.json'        => '{}',
+        ]);
+
+        $fetched = $this->fetcher()->fetch(
+            SourceFixture::repository(path: $root),
+            $this->configWriting($root),
+            "{$this->tempDirectory}/cache",
+        );
+
+        static::assertSame(['docs/index.adoc'], $fetched->files());
     }
 
     #[Test]
@@ -377,6 +416,31 @@ final class RepositoryFetcherTest extends TestCase
         static::assertSame(['fixture-org', 'message-bus'], $seen);
     }
 
+    #[Test]
+    public function theRevisionIgnoresGeneratedOutput(): void
+    {
+        $root = $this->repository([
+            'docs/index.adoc'   => "= Index\n",
+            'build/report.json' => '{"ok":1}',
+        ]);
+
+        $config = $this->configWriting($root);
+
+        $before = $this
+            ->fetcher()
+            ->fetch(SourceFixture::repository(path: $root), $config, "{$this->tempDirectory}/cache")
+            ->revision();
+
+        $this->filesystem->writeAtomic(Path::join($root, 'build/report.json'), '{"ok":2}');
+
+        $after = $this
+            ->fetcher()
+            ->fetch(SourceFixture::repository(path: $root), $config, "{$this->tempDirectory}/cache")
+            ->revision();
+
+        static::assertSame($before, $after);
+    }
+
     protected function setUp(): void
     {
         $this->filesystem = new Filesystem();
@@ -400,6 +464,20 @@ final class RepositoryFetcherTest extends TestCase
         );
 
         return $bare;
+    }
+
+    /**
+     * A configuration whose output paths sit inside $root, so generated files can be planted there.
+     */
+    private function configWriting(string $root): SiteConfig
+    {
+        return SourceFixture::config([
+            'output' => [
+                'directory'      => Path::join($root, 'build/site'),
+                'cacheDirectory' => Path::join($root, 'build/cache'),
+                'reportPath'     => Path::join($root, 'build/report.json'),
+            ],
+        ]);
     }
 
     /**

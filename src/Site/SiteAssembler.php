@@ -60,11 +60,8 @@ final readonly class SiteAssembler
     private function writeLandingPage(SiteAssembly $assembly): void
     {
         $html = $this->landing->build(
-            $assembly->siteName(),
+            $assembly,
             $this->canonical($assembly, $assembly->urls()->basePath()),
-            [$assembly->baseStylesheet(), $assembly->stylesheet()],
-            $assembly->projects(),
-            $assembly->entryPages(),
         );
 
         $this->writer->write($assembly->outputDirectory(), self::LANDING_FILE, $html);

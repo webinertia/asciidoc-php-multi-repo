@@ -37,6 +37,7 @@ final readonly class SiteAssembly
         private array $assets,
         private string $baseStylesheet,
         private string $stylesheet,
+        private string $logoUrl,
     ) {}
 
     /**
@@ -76,6 +77,14 @@ final readonly class SiteAssembly
     public function hostname(): ?string
     {
         return $this->config->site()->hostname();
+    }
+
+    /**
+     * The logo URL the aggregate pages render.
+     */
+    public function logoUrl(): string
+    {
+        return $this->logoUrl;
     }
 
     public function outputDirectory(): string

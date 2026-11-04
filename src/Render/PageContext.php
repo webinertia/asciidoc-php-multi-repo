@@ -35,6 +35,7 @@ final readonly class PageContext
         private string $colorMode = 'system',
         private string $defaultColorMode = 'dark',
         private string $iconFontCdn = '',
+        private string $logoUrl = '',
         private ?PageChrome $chrome = null,
     ) {}
 
@@ -72,6 +73,14 @@ final readonly class PageContext
     public function iconFontCdn(): string
     {
         return $this->iconFontCdn;
+    }
+
+    /**
+     * The logo URL the shell renders, empty when the shell should not render a mark.
+     */
+    public function logoUrl(): string
+    {
+        return $this->logoUrl;
     }
 
     public function pageTitle(): string
@@ -157,6 +166,7 @@ final readonly class PageContext
             colorMode       : $this->colorMode,
             defaultColorMode: $this->defaultColorMode,
             iconFontCdn     : $this->iconFontCdn,
+            logoUrl         : $this->logoUrl,
             chrome          : $chrome,
         );
     }

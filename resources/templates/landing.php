@@ -7,6 +7,7 @@ declare(strict_types=1);
  * @var string $siteName
  * @var string $canonicalUrl
  * @var list<string> $stylesheets
+ * @var string $logoUrl
  * @var list<array{description: string, title: string, url: string, version: string}> $cards
  */
 
@@ -18,6 +19,9 @@ declare(strict_types=1);
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= $e($siteName) ?></title>
 <link rel="canonical" href="<?= $e($canonicalUrl) ?>">
+<?php if ('' !== $logoUrl) : ?>
+<link rel="icon" href="<?= $e($logoUrl) ?>">
+<?php endif ?>
 <?php foreach ($stylesheets as $stylesheet) : ?>
 <link rel="stylesheet" href="<?= $e($stylesheet) ?>">
 <?php endforeach ?>
@@ -25,7 +29,11 @@ declare(strict_types=1);
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header">
+<?php if ('' !== $logoUrl) : ?>
+<img class="site-logo" src="<?= $e($logoUrl) ?>" alt="<?= $e($siteName) ?>" width="34" height="34" decoding="async">
+<?php else : ?>
 <p class="site-name"><?= $e($siteName) ?></p>
+<?php endif ?>
 <h1 class="landing-title">Documentation</h1>
 </header>
 <main id="main" class="landing">

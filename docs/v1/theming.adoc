@@ -24,6 +24,7 @@ object. The package ships one stylesheet and one script; a site never edits them
 }
 ----
 
+[cols="1,2,1"]
 |===
 | Key | Meaning | Default
 
@@ -42,6 +43,10 @@ object. The package ships one stylesheet and one script; a site never edits them
 | `theme.defaultColorMode`
 | `light` or `dark`, painted before the toggle script runs.
 | `dark`
+
+| `theme.logo`
+| URL of the header mark and favicon. Leave unset to use the mark shipped with the package.
+| shipped mark
 
 | `projects.<name>.accent`
 | Accent for one project, as a six-digit hex colour.
@@ -161,6 +166,10 @@ Use `site.json` for every supported override:
 * `projects.<name>.accent` changes the accent for one project.
 * `theme.colorMode` pins the site to light or dark, or leaves it to the operating system.
 * `theme.defaultColorMode` controls the pre-script paint.
+* `theme.logo` replaces the shipped header mark and favicon with your own, given as an absolute
+  `https://` URL or a path under the published site such as `/assets/our-logo.svg`. When a mark is
+  present it carries the site name as its alternative text and is the link to the landing page, so
+  the site name is not repeated beside it.
 
 Individual design tokens, such as `--surface-page` or `--measure`, are part of the package
 stylesheet and are not configurable in `site.json` in this version. Do not copy or fork the
@@ -173,3 +182,16 @@ Stylesheets and scripts are published under `assets/` with a content hash in the
 example `site.4f3a1c2d.css`. The hash changes when the bytes change, so a rebuild after a token
 or accent change produces new URLs and browsers fetch the new files without a hard refresh. Do
 not link the package's source stylesheet directly or hard-code an asset file name.
+
+== Checking a theme change
+
+Most theme defects are a colour that the base stylesheet set for one construct and the site
+stylesheet never restated. They are invisible until the construct is on the page, so checking a
+change one guide at a time misses them.
+
+The xref:block-gallery.adoc[block gallery] carries every construct the stylesheet targets in a
+single page: all five admonition types, titled and untitled blocks, listing, literal, example,
+sidebar, quote, verse, the three list types, description lists, callouts, inline markup, and
+tables. Load it in both colour modes after a stylesheet change. A construct whose text is hard to
+read against its own background is a base-sheet rule that outranks the site stylesheet, and the
+fix is a selector of equal or greater specificity rather than a more forceful declaration.

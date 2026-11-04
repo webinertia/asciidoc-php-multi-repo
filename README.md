@@ -11,8 +11,9 @@ Multi-repository site builder for asciidoc-php: aggregates docs from many repos 
 - [Action setup guide](docs/v1/action-setup.adoc) - the `doc-target` property, the two tokens, the site secrets, and the publish triggers.
 - [Theme guide](docs/v1/theming.adoc) - the token set, per-project accents, and light and dark behaviour.
 - [Troubleshooting and reason codes](docs/v1/troubleshooting.adoc) - every reason code, its cause, and its fix.
+- [GitHub action reference](docs/v1/action.adoc) - the container action's inputs, image tags, Linux runner constraint, and the consumer workflows.
 
-The four AsciiDoc guides are rendered by this package from `docs/v1`. To rebuild them locally:
+The five AsciiDoc guides are rendered by this package from `docs/v1`. To rebuild them locally:
 
 ```sh
 composer install

@@ -10,6 +10,10 @@
 /summary.log
 /vendor/
 /build/
+# The fixture site.json resolves its output against test/fixtures, so integration runs write
+# generated pages, cache entries and a report into the checkout. They are build artifacts, not
+# fixtures: nothing reads them back, and tracking them dirties the tree after every test run.
+/test/fixtures/build/
 /.vscode
 /mago-results.txt
 *:Zone.Identifier
@@ -32,5 +36,6 @@
 # project. The alignment run's spec.md, plan.md and tasks.md are working notes:
 # they complete their purpose when alignment lands and are not carried forward.
 /.specify/extensions/.cache/
+/.impeccable/
 __pycache__/
 *.pyc

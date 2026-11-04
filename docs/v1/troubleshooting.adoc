@@ -96,6 +96,7 @@ non-zero code when any project fails or is degraded.
 
 == Exit codes
 
+[cols="1,2,3"]
 |===
 | Code | Name | Meaning
 

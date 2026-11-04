@@ -155,6 +155,7 @@ final class IncrementalCache
                 'colorMode'        => $context->colorMode(),
                 'defaultColorMode' => $context->defaultColorMode(),
                 'iconFontCdn'      => $context->iconFontCdn(),
+                'logoUrl'          => $context->logoUrl(),
             ],
         ];
     }
@@ -218,6 +219,7 @@ final class IncrementalCache
             colorMode       : $this->string($context, 'colorMode') ?? 'system',
             defaultColorMode: $this->string($context, 'defaultColorMode') ?? 'dark',
             iconFontCdn     : $this->string($context, 'iconFontCdn') ?? '',
+            logoUrl         : $this->string($context, 'logoUrl') ?? '',
             chrome          : new PageChrome(),
         );
 

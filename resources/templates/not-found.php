@@ -8,6 +8,7 @@ declare(strict_types=1);
  * @var string $landingUrl
  * @var string $baseStylesheet
  * @var string $stylesheet
+ * @var string $logoUrl
  * @var list<array{title: string, url: string}> $projects
  */
 
@@ -19,13 +20,20 @@ declare(strict_types=1);
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= $e("Page not found | {$siteName}") ?></title>
 <meta name="robots" content="noindex">
+<?php if ('' !== $logoUrl) : ?>
+<link rel="icon" href="<?= $e($logoUrl) ?>">
+<?php endif ?>
 <link rel="stylesheet" href="<?= $e($baseStylesheet) ?>">
 <link rel="stylesheet" href="<?= $e($stylesheet) ?>">
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header">
+<?php if ('' !== $logoUrl) : ?>
+<a class="site-brand" href="<?= $e($landingUrl) ?>"><img class="site-logo" src="<?= $e($logoUrl) ?>" alt="<?= $e($siteName) ?>" width="34" height="34" decoding="async"></a>
+<?php else : ?>
 <p class="site-name"><a href="<?= $e($landingUrl) ?>"><?= $e($siteName) ?></a></p>
+<?php endif ?>
 </header>
 <main id="main" class="not-found">
 <h1>Page not found</h1>

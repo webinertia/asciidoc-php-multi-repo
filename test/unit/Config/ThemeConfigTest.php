@@ -7,8 +7,10 @@ namespace WebwareTest\AsciidocPhp\MultiRepo\Config;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Webware\AsciidocPhp\MultiRepo\Config\ColorMode;
 use Webware\AsciidocPhp\MultiRepo\Config\ThemeConfig;
 
+#[CoversClass(ColorMode::class)]
 #[CoversClass(ThemeConfig::class)]
 final class ThemeConfigTest extends TestCase
 {
@@ -56,5 +58,14 @@ final class ThemeConfigTest extends TestCase
     {
         static::assertTrue(ThemeConfig::defaults()->isBuiltIn());
         static::assertFalse(ThemeConfig::fromArray(['name' => 'custom'])->isBuiltIn());
+    }
+
+    #[Test]
+    public function theColourModePairCarriesThePreferenceAndTheFallback(): void
+    {
+        $mode = new ColorMode();
+
+        static::assertSame(ColorMode::SYSTEM, $mode->mode());
+        static::assertSame(ColorMode::DARK, $mode->fallback());
     }
 }

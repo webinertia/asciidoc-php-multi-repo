@@ -43,6 +43,10 @@ object. The package ships one stylesheet and one script; a site never edits them
 | `light` or `dark`, painted before the toggle script runs.
 | `dark`
 
+| `theme.logo`
+| URL of the header mark and favicon. Leave unset to use the mark shipped with the package.
+| shipped mark
+
 | `projects.<name>.accent`
 | Accent for one project, as a six-digit hex colour.
 | `theme.defaultAccent`
@@ -161,6 +165,10 @@ Use `site.json` for every supported override:
 * `projects.<name>.accent` changes the accent for one project.
 * `theme.colorMode` pins the site to light or dark, or leaves it to the operating system.
 * `theme.defaultColorMode` controls the pre-script paint.
+* `theme.logo` replaces the shipped header mark and favicon with your own, given as an absolute
+  `https://` URL or a path under the published site such as `/assets/our-logo.svg`. When a mark is
+  present it carries the site name as its alternative text and is the link to the landing page, so
+  the site name is not repeated beside it.
 
 Individual design tokens, such as `--surface-page` or `--measure`, are part of the package
 stylesheet and are not configurable in `site.json` in this version. Do not copy or fork the

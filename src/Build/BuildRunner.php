@@ -181,6 +181,7 @@ final class BuildRunner
             assets         : $assets,
             baseStylesheet : $urls->asset($theme->baseName()),
             stylesheet     : $urls->asset($theme->siteName()),
+            logoUrl        : $theme->logoUrl($config->site()->basePath()),
         );
 
         $this->assembler->assemble($assembly);
@@ -259,6 +260,7 @@ final class BuildRunner
         $assets = [
             $theme->baseName()         => $theme->baseCss(),
             $theme->siteName()         => $theme->siteCss(),
+            $theme->logoName()         => $theme->logo(),
             $theme->themeScriptName()  => $theme->themeScript(),
             $theme->navScriptName()    => $theme->navScript(),
             $theme->searchCoreName()   => $theme->searchCore(),

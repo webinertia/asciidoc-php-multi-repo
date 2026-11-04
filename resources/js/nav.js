@@ -48,7 +48,11 @@
     nav.classList.add('has-toggle');
 
     button.addEventListener('click', function () {
-      if ('true' === button.getAttribute('aria-expanded')) {
+      var expanded = 'true' === button.getAttribute('aria-expanded');
+
+      closeAll(nav);
+
+      if (expanded) {
         close(nav);
       } else {
         open(nav);

@@ -161,6 +161,7 @@ final readonly class PageRenderer
             colorMode       : $this->theme->colorMode(),
             defaultColorMode: $this->theme->defaultColorMode(),
             iconFontCdn     : $this->theme->config()->iconFontCdn(),
+            logoUrl         : $this->theme->logoUrl($basePath),
             chrome          : $chrome,
         );
 

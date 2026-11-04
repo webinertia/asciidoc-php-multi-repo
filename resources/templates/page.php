@@ -22,6 +22,9 @@ $chrome  = $context->chrome();
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= $e($context->title()) ?></title>
 <link rel="canonical" href="<?= $e($context->canonicalUrl()) ?>">
+<?php if ('' !== $context->logoUrl()) : ?>
+<link rel="icon" href="<?= $e($context->logoUrl()) ?>">
+<?php endif ?>
 <?php foreach ($context->stylesheets() as $stylesheet) : ?>
 <link rel="stylesheet" href="<?= $e($stylesheet) ?>">
 <?php endforeach ?>
@@ -52,7 +55,11 @@ $chrome  = $context->chrome();
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header">
+<?php if ('' !== $context->logoUrl()) : ?>
+<a class="site-brand" href="<?= $e($chrome->landingUrl()) ?>"><img class="site-logo" src="<?= $e($context->logoUrl()) ?>" alt="<?= $e($context->siteName()) ?>" width="34" height="34" decoding="async"></a>
+<?php else : ?>
 <p class="site-name"><a href="<?= $e($chrome->landingUrl()) ?>"><?= $e($context->siteName()) ?></a></p>
+<?php endif ?>
 <p class="project-name"><?= $e($context->projectTitle()) ?></p>
 <p class="version-label"><?= $e($context->versionLabel()) ?></p>
 <?php if ($chrome->hasProjectSwitcher()) : ?>

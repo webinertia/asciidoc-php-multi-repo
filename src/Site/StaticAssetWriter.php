@@ -60,6 +60,7 @@ final readonly class StaticAssetWriter
             'landingUrl'     => $assembly->urls()->basePath(),
             'baseStylesheet' => $assembly->baseStylesheet(),
             'stylesheet'     => $assembly->stylesheet(),
+            'logoUrl'        => $assembly->logoUrl(),
             'projects'       => array_map(
                 static fn(ProjectSummary $project): array => [
                     'title' => $project->title(),

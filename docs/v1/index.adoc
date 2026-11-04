@@ -23,7 +23,7 @@ The guides below are the complete operator and author documentation for version 
 
 A repository is published when its organization property is set to the onboard value and its
 `docs/` tree contains an entry page. No configuration in this package changes. The author guide
-describes the tree; the operator guide describes the property and the credentials that read it.
+describes the tree; the action setup guide describes the property and the credentials that read it.
 
 For a local build, install the package and run the CLI from a checkout:
 

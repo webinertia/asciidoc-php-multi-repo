@@ -186,7 +186,10 @@ final class ThemeResolverTest extends TestCase
     #[Test]
     public function theModeAndTheInitialPaintComeFromTheThemeConfig(): void
     {
-        $resolver = new ThemeResolver(theme: new ThemeConfig('webware', '#7e5ae0', 'light', 'dark'));
+        $resolver = new ThemeResolver(theme: ThemeConfig::fromArray([
+            'colorMode'        => 'light',
+            'defaultColorMode' => 'dark',
+        ]));
 
         static::assertSame('light', $resolver->colorMode());
         static::assertSame('dark', $resolver->defaultColorMode());

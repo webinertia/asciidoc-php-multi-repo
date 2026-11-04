@@ -119,6 +119,30 @@ a:focus-visible {
     margin: 0;
 }
 
+/*
+ * The brand mark. It is centred rather than baseline aligned because an image has no text baseline,
+ * and it is a fixed square so a wider header row cannot stretch it. The mark carries the site name
+ * as its alternative text, so the word does not appear beside it.
+ */
+.site-logo {
+    flex: 0 0 auto;
+    align-self: center;
+    width: 34px;
+    height: 34px;
+}
+
+/*
+ * The mark's link. `line-height: 0` removes the inline baseline gap the anchor would otherwise add
+ * below the image, and the underline is dropped because it would draw under the mark.
+ */
+.site-brand {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-self: center;
+    line-height: 0;
+    text-decoration: none;
+}
+
 .site-name {
     font-weight: 700;
 }
@@ -142,6 +166,188 @@ a:focus-visible {
     color: var(--text-body);
     font: inherit;
     cursor: pointer;
+}
+
+/*
+ * Site chrome. The switchers are progressive enhancement: nav.js replaces the label with a button
+ * and hides the list. The open panel is absolute so it overlays the page instead of joining the
+ * header flex flow, which would grow the header and push the document down.
+ */
+
+.project-switcher,
+.version-selector,
+.site-search {
+    position: relative;
+}
+
+.has-toggle .nav-label {
+    display: none;
+}
+
+.nav-toggle,
+.search-input,
+.search-scope {
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-medium);
+    background-color: var(--surface-page);
+    color: var(--text-body);
+    font: inherit;
+}
+
+.nav-toggle {
+    cursor: pointer;
+}
+
+.nav-toggle:hover {
+    border-color: var(--color-link);
+    color: var(--color-link-hover);
+}
+
+.nav-toggle:focus-visible,
+.search-input:focus-visible,
+.search-scope:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+}
+
+.project-switcher ul,
+.version-selector ul {
+    position: absolute;
+    top: calc(100% + var(--space-1));
+    left: 0;
+    z-index: 20;
+    min-width: 12rem;
+    margin: 0;
+    padding: var(--space-1) 0;
+    list-style: none;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-medium);
+    background-color: var(--surface-page);
+    box-shadow: 0 0.5rem 1.5rem rgba(30, 27, 38, 0.18);
+}
+
+.project-switcher ul[hidden],
+.version-selector ul[hidden] {
+    display: none;
+}
+
+.project-item,
+.version-item {
+    margin: 0;
+}
+
+.project-item a,
+.version-item a {
+    display: block;
+    padding: var(--space-1) var(--space-3);
+    color: var(--text-body);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.project-item a:hover,
+.project-item a:focus-visible,
+.version-item a:hover,
+.version-item a:focus-visible {
+    background-color: var(--surface-raised);
+    color: var(--color-link-hover);
+}
+
+.project-item a[aria-current="page"],
+.version-item a[aria-current="page"] {
+    color: var(--color-link);
+    font-weight: 700;
+}
+
+.version-flag {
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+.site-search {
+    display: flex;
+    flex-basis: 100%;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.site-search[hidden] {
+    display: none;
+}
+
+.search-label,
+.search-scope-label {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+.search-input {
+    flex: 1 1 16rem;
+    min-width: 0;
+}
+
+/* The Asciidoctor stylesheet is loaded globally and carries a bare
+ * `select { width: 100% }` from its form-control reset. Left alone, that
+ * stretches the scope picker across the whole header row and wraps it onto
+ * a line of its own. */
+.search-scope {
+    flex: 0 0 auto;
+    width: auto;
+}
+
+.search-results {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 0;
+    z-index: 20;
+    max-height: 60vh;
+    overflow-y: auto;
+    margin: var(--space-1) 0 0;
+    padding: var(--space-1) 0;
+    list-style: none;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-medium);
+    background-color: var(--surface-page);
+    box-shadow: 0 0.5rem 1.5rem rgba(30, 27, 38, 0.18);
+}
+
+.search-results[hidden] {
+    display: none;
+}
+
+.search-result {
+    margin: 0;
+    padding: var(--space-2) var(--space-3);
+}
+
+.search-result a {
+    color: var(--color-link);
+    text-decoration: none;
+}
+
+.search-result-title {
+    display: block;
+    color: var(--text-body);
+    font-weight: 600;
+}
+
+.search-result-project,
+.search-result-version,
+.search-result-section {
+    display: inline-block;
+    margin-right: var(--space-2);
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+.search-status {
+    flex-basis: 100%;
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.875rem;
 }
 
 .layout {

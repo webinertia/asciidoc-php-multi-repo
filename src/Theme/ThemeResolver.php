@@ -45,6 +45,8 @@ final readonly class ThemeResolver
 
     private string $cssDirectory;
 
+    private string $imgDirectory;
+
     private string $jsDirectory;
 
     private ThemeConfig $theme;
@@ -53,8 +55,10 @@ final readonly class ThemeResolver
         private AssetHasher $hasher = new AssetHasher(),
         ?string $cssDirectory = null,
         ?ThemeConfig $theme = null,
+        ?string $imgDirectory = null,
     ) {
         $this->cssDirectory = $cssDirectory ?? dirname(__DIR__, levels: 2) . '/resources/css';
+        $this->imgDirectory = $imgDirectory ?? dirname(__DIR__, levels: 2) . '/resources/img';
         $this->jsDirectory  = dirname(__DIR__, levels: 2) . '/resources/js';
         $this->theme        = $theme ?? ThemeConfig::defaults();
     }
@@ -170,6 +174,42 @@ final readonly class ThemeResolver
     public function lightColors(): array
     {
         return $this->tokens(':root');
+    }
+
+    /**
+     * The mark shipped with the package, used when the site does not configure its own logo URL.
+     *
+     * @throws RuntimeException when the mark is missing or unreadable
+     */
+    public function logo(): string
+    {
+        return $this->readFile($this->imgDirectory, 'logo.svg');
+    }
+
+    /**
+     * The published mark name.
+     *
+     * @throws RuntimeException when the mark is missing or unreadable
+     */
+    public function logoName(): string
+    {
+        return $this->hasher->hashedName('logo', 'svg', $this->logo());
+    }
+
+    /**
+     * The logo URL the shell renders: the configured one when set, otherwise the published mark.
+     *
+     * @throws RuntimeException when the mark is missing or unreadable
+     */
+    public function logoUrl(string $basePath): string
+    {
+        $configured = $this->theme->logo();
+
+        if ('' !== $configured) {
+            return $configured;
+        }
+
+        return $this->assetUrl($basePath, $this->logoName());
     }
 
     /**

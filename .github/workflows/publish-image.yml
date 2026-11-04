@@ -23,6 +23,13 @@ name: Publish image
 # 1.0.0`) rather than a branch: from a branch there is no version to derive and
 # only `latest` would move.
 #
+# The major alias is derived with `type=match`, not `type=semver,pattern={{major}}`.
+# metadata-action suppresses semver major and minor tags for prerelease
+# versions by design, so on `1.0.0-alpha.3` the semver form publishes
+# `1.0.0-alpha.3` and `latest` only, and the action's `:1` pull fails with a
+# missing manifest. Matching the leading number off the tag produces `1` for
+# both `1.0.0-alpha.3` and `1.0.0`.
+#
 # The package must be public for third parties to pull the image without
 # credentials. Visibility is a package setting, not something GITHUB_TOKEN can
 # change, so it is set once in the package settings after the first push:
@@ -65,7 +72,7 @@ jobs:
           images: ghcr.io/${{ github.repository }}
           tags: |
             type=semver,pattern={{version}}
-            type=semver,pattern={{major}}
+            type=match,pattern=^(\d+),group=1
             type=raw,value=latest
       - name: Build the runtime image locally
         uses: docker/build-push-action@v7

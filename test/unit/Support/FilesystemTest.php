@@ -15,6 +15,7 @@ use function bin2hex;
 use function file_get_contents;
 use function file_put_contents;
 use function filemtime;
+use function fileperms;
 use function glob;
 use function hash;
 use function is_dir;
@@ -176,6 +177,16 @@ final class FilesystemTest extends TestCase
     }
 
     #[Test]
+    public function writeAtomicMakesTheFileWorldReadable(): void
+    {
+        $target = Path::join($this->directory, 'build', 'html', 'index.html');
+
+        $this->filesystem->writeAtomic($target, '<html></html>');
+
+        static::assertSame(0o444, fileperms($target) & 0o444);
+    }
+
+    #[Test]
     public function writeIfChangedLeavesNoTemporaryFile(): void
     {
         $target = Path::join($this->directory, 'index.adoc');
@@ -184,6 +195,16 @@ final class FilesystemTest extends TestCase
         $this->filesystem->writeIfChanged($target, 'second');
 
         static::assertSame([], glob(Path::join($this->directory, '.tmp-*')) ?: []);
+    }
+
+    #[Test]
+    public function writeIfChangedMakesTheFileWorldReadable(): void
+    {
+        $target = Path::join($this->directory, 'index.adoc');
+
+        static::assertTrue($this->filesystem->writeIfChanged($target, 'first'));
+
+        static::assertSame(0o444, fileperms($target) & 0o444);
     }
 
     #[Test]

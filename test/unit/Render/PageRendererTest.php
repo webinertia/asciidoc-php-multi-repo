@@ -32,6 +32,7 @@ use function implode;
 use function is_array;
 use function json_decode;
 use function mb_strlen;
+use function preg_match;
 use function str_contains;
 use function str_repeat;
 use function str_replace;
@@ -95,6 +96,25 @@ final class PageRendererTest extends TestCase
     }
 
     #[Test]
+    public function aCodePageLinksTheVendoredHighlighterItsLoaderAndItsStylesheet(): void
+    {
+        $page = $this->renderFromTemp("= Code\n\n[source,php]\n----\n<?php echo 'hi';\n----\n");
+
+        $context = $page->context();
+
+        static::assertNotNull($context);
+        static::assertSame(1, preg_match('#/assets/highlight\.[0-9a-f]+\.js#', implode("\n", $context->scripts())));
+        static::assertSame(
+            1,
+            preg_match('#/assets/highlight-loader\.[0-9a-f]+\.js#', implode("\n", $context->scripts())),
+        );
+        static::assertSame(
+            1,
+            preg_match('#/assets/highlight\.[0-9a-f]+\.css#', implode("\n", $context->stylesheets())),
+        );
+    }
+
+    #[Test]
     public function aCrlfSourceRendersIdenticallyToItsLfTwin(): void
     {
         $lf = "= Twin Page\n\nIntro paragraph.\n\n== Section\n\nBody text.\n\n* one\n* two\n";
@@ -107,6 +127,23 @@ final class PageRendererTest extends TestCase
         ));
 
         static::assertSame($fromLf->html(), $fromCrlf->html());
+    }
+
+    #[Test]
+    public function aDiagramPageIsNotHandedToTheHighlighter(): void
+    {
+        $page = $this->renderFromTemp(
+            "= Diagram\n\n[source,mermaid]\n----\nflowchart TD\n    A --> B\n----\n",
+        );
+
+        $context = $page->context();
+
+        static::assertNotNull($context);
+        static::assertStringContainsString('language-mermaid', $page->html());
+        static::assertStringNotContainsString(
+            '/assets/highlight',
+            implode("\n", [...$context->scripts(), ...$context->stylesheets()]),
+        );
     }
 
     #[Test]
@@ -151,6 +188,20 @@ final class PageRendererTest extends TestCase
         $page = $this->renderFromTemp("= Page\n\ninclude::partials[]\n", directory: $directory);
 
         static::assertSame('Page', $page->title());
+    }
+
+    #[Test]
+    public function aPageWithoutACodeBlockLinksNoHighlighterPayload(): void
+    {
+        $page = $this->renderFromTemp("= Plain\n\nA paragraph with `code` in it.\n");
+
+        $context = $page->context();
+
+        static::assertNotNull($context);
+        static::assertStringNotContainsString(
+            '/assets/highlight',
+            implode("\n", [...$context->scripts(), ...$context->stylesheets()]),
+        );
     }
 
     #[Test]
@@ -205,6 +256,24 @@ final class PageRendererTest extends TestCase
         );
 
         static::assertGreaterThan(2000, mb_strlen($page->searchText()));
+    }
+
+    #[Test]
+    public function aSiteThatTurnsHighlightingOffLinksNoPayloadAndKeepsTheMarkup(): void
+    {
+        $page = $this->renderFromTemp(
+            "= Code\n\n[source,php]\n----\n<?php echo 'hi';\n----\n",
+            $this->configWithOverrides(['render' => ['syntaxHighlighting' => false]]),
+        );
+
+        $context = $page->context();
+
+        static::assertNotNull($context);
+        static::assertStringContainsString('class="language-php hljs"', $page->html());
+        static::assertStringNotContainsString(
+            '/assets/highlight',
+            implode("\n", [...$context->scripts(), ...$context->stylesheets()]),
+        );
     }
 
     #[Test]

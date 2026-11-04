@@ -1,3 +1,10 @@
 == Guide
 
 This is the version 1 guide.
+
+[source,php]
+----
+<?php
+
+$answer = 42;
+----

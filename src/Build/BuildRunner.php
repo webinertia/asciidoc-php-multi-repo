@@ -260,15 +260,18 @@ final class BuildRunner
     private function assets(ThemeResolver $theme, SiteConfig $config, array $repositories): array
     {
         $assets = [
-            $theme->baseName()          => $theme->baseCss(),
-            $theme->siteName()          => $theme->siteCss(),
-            $theme->logoName()          => $theme->logo(),
-            $theme->themeScriptName()   => $theme->themeScript(),
-            $theme->mermaidScriptName() => $theme->mermaidScript(),
-            $theme->mermaidLoaderName() => $theme->mermaidLoader(),
-            $theme->navScriptName()     => $theme->navScript(),
-            $theme->searchCoreName()    => $theme->searchCore(),
-            $theme->searchScriptName()  => $theme->searchScript(),
+            $theme->baseName()            => $theme->baseCss(),
+            $theme->siteName()            => $theme->siteCss(),
+            $theme->logoName()            => $theme->logo(),
+            $theme->themeScriptName()     => $theme->themeScript(),
+            $theme->mermaidScriptName()   => $theme->mermaidScript(),
+            $theme->mermaidLoaderName()   => $theme->mermaidLoader(),
+            $theme->highlightName()       => $theme->highlightCss(),
+            $theme->highlightScriptName() => $theme->highlightScript(),
+            $theme->highlightLoaderName() => $theme->highlightLoader(),
+            $theme->navScriptName()       => $theme->navScript(),
+            $theme->searchCoreName()      => $theme->searchCore(),
+            $theme->searchScriptName()    => $theme->searchScript(),
         ];
 
         foreach ($repositories as $repository) {

@@ -34,6 +34,7 @@ use function glob;
 use function implode;
 use function is_array;
 use function is_file;
+use function preg_match;
 use function str_contains;
 use function strpos;
 use function trim;
@@ -258,7 +259,32 @@ final class SiteBuildTest extends TestCase
         static::assertCount(1, $this->assetsMatching('theme.*.js'));
         static::assertCount(1, $this->assetsMatching('mermaid.*.js'));
         static::assertCount(1, $this->assetsMatching('mermaid-loader.*.js'));
+        static::assertCount(1, $this->assetsMatching('highlight.*.js'));
+        static::assertCount(1, $this->assetsMatching('highlight-loader.*.js'));
+        static::assertCount(1, $this->assetsMatching('highlight.*.css'));
         static::assertNotSame([], $this->assetsMatching('accent.*.css'));
+    }
+
+    #[Test]
+    public function theCodePageLinksTheHighlighterAndAPageWithoutACodeBlockDoesNot(): void
+    {
+        $withCode = (string) file_get_contents(Path::join($this->output, 'versioned', 'v1', 'guide.html'));
+        $without  = (string) file_get_contents(Path::join($this->output, 'versioned', 'v2', 'index.html'));
+
+        static::assertStringContainsString('class="language-php hljs"', $withCode);
+        static::assertSame(1, preg_match('#/assets/highlight\.[0-9a-f]+\.js#', $withCode));
+        static::assertSame(1, preg_match('#/assets/highlight-loader\.[0-9a-f]+\.js#', $withCode));
+        static::assertSame(1, preg_match('#/assets/highlight\.[0-9a-f]+\.css#', $withCode));
+        static::assertStringNotContainsString('/assets/highlight', $without);
+    }
+
+    #[Test]
+    public function theDiagramPageIsNotHandedToTheHighlighter(): void
+    {
+        $withDiagram = (string) file_get_contents(Path::join($this->output, 'versioned', 'v2', 'guide.html'));
+
+        static::assertStringContainsString('class="language-mermaid hljs"', $withDiagram);
+        static::assertStringNotContainsString('/assets/highlight', $withDiagram);
     }
 
     #[Test]

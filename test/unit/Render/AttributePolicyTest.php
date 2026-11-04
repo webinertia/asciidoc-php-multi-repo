@@ -25,7 +25,6 @@ use function date_default_timezone_set;
  */
 #[CoversClass(AttributePolicy::class)]
 #[CoversMethod(AttributePolicy::class, 'attributes')]
-#[CoversMethod(AttributePolicy::class, 'syntaxHighlighting')]
 final class AttributePolicyTest extends TestCase
 {
     private const string CLOCK_SOURCE = <<<'ADOC'
@@ -33,15 +32,6 @@ final class AttributePolicyTest extends TestCase
 
         A page that would carry a build date if the policy let it.
         ADOC;
-
-    #[Test]
-    public function highlightingLeavesTheHighlighterAttributeAlone(): void
-    {
-        $policy = new AttributePolicy(syntaxHighlighting: true);
-
-        static::assertTrue($policy->syntaxHighlighting());
-        static::assertArrayNotHasKey('source-highlighter', $policy->attributes());
-    }
 
     #[Test]
     public function renderingTwiceAcrossAClockChangeProducesIdenticalBytes(): void
@@ -84,6 +74,12 @@ final class AttributePolicyTest extends TestCase
         static::assertFalse($attributes['toc']);
         static::assertFalse($attributes['docinfo']);
         static::assertFalse($attributes['source-highlighter']);
+    }
+
+    #[Test]
+    public function theConverterHighlighterIsAlwaysSwitchedOff(): void
+    {
+        static::assertFalse(new AttributePolicy()->attributes()['source-highlighter']);
     }
 
     #[Test]

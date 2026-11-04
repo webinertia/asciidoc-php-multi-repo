@@ -40,7 +40,7 @@ final class IncrementalCache
     /**
      * Bumped whenever the cached payload changes shape, which invalidates every existing entry.
      */
-    public const int FORMAT_VERSION = 1;
+    public const int FORMAT_VERSION = 2;
 
     private const string DIRECTORY = 'pages';
 
@@ -151,6 +151,7 @@ final class IncrementalCache
                 'canonicalUrl'     => $context->canonicalUrl(),
                 'body'             => $context->body(),
                 'stylesheets'      => $context->stylesheets(),
+                'scripts'          => $context->scripts(),
                 'sourceUrl'        => $context->sourceUrl(),
                 'colorMode'        => $context->colorMode(),
                 'defaultColorMode' => $context->defaultColorMode(),
@@ -214,7 +215,7 @@ final class IncrementalCache
             body            : $this->string($context, 'body') ?? '',
             toc             : $entries,
             stylesheets     : $this->strings($context, 'stylesheets'),
-            scripts         : [],
+            scripts         : $this->strings($context, 'scripts'),
             sourceUrl       : $this->string($context, 'sourceUrl'),
             colorMode       : $this->string($context, 'colorMode') ?? 'system',
             defaultColorMode: $this->string($context, 'defaultColorMode') ?? 'dark',

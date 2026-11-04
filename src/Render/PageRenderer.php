@@ -18,12 +18,15 @@ use Webware\AsciidocPhp\MultiRepo\Support\Path;
 use Webware\AsciidocPhp\MultiRepo\Theme\ThemeResolver;
 use Webware\AsciidocPhp\SafeMode;
 
+use function array_unique;
+use function array_values;
 use function basename;
 use function dirname;
 use function file_exists;
 use function getcwd;
 use function is_file;
 use function mb_substr;
+use function preg_match;
 use function preg_match_all;
 use function preg_replace;
 use function rtrim;
@@ -96,7 +99,7 @@ final readonly class PageRenderer
         $this->assertIncludesResolve($source);
 
         $converter  = new SiteConverter();
-        $attributes = new AttributePolicy($config->render()->syntaxHighlighting());
+        $attributes = new AttributePolicy();
 
         $html = Asciidoc::convertFile($source->page()->absolutePath(), [
             'backend'       => 'html5',
@@ -135,6 +138,13 @@ final readonly class PageRenderer
         $siteName     = $config->site()->name();
         $chrome       ??= new PageChrome();
 
+        /*
+         * The stylesheet and script lists are resolved against the body, because only the
+         * conversion knows whether the page carries a diagram or a listing block, and against the
+         * site configuration, because it decides whether a listing block is coloured at all.
+         */
+        $assets = $this->pageAssets($config, $basePath, $accent, $body, $chrome);
+
         $context = new PageContext(
             siteName        : $siteName,
             projectTitle    : $projectTitle,
@@ -145,12 +155,8 @@ final readonly class PageRenderer
                 . $urlPath,
             body            : $body,
             toc             : $entries,
-            stylesheets     : [
-                $this->theme->assetUrl($basePath, $this->theme->baseName()),
-                $this->theme->assetUrl($basePath, $this->theme->siteName()),
-                $this->theme->assetUrl($basePath, $this->theme->accentName($accent)),
-            ],
-            scripts         : $this->scripts($basePath, $chrome, $body),
+            stylesheets     : $assets['stylesheets'],
+            scripts         : $assets['scripts'],
             sourceUrl       : sprintf(
                 self::GITHUB_BLOB,
                 $config->organization()->name(),
@@ -186,7 +192,9 @@ final readonly class PageRenderer
      * The same page with the site chrome attached.
      *
      * The chrome is built once every page has rendered, so a page's shell is rendered a second time
-     * from the conversion it already carries. Nothing is converted twice.
+     * from the conversion it already carries. Nothing is converted twice. The scripts this page
+     * already carries are kept, because they were resolved against the body and the site config on
+     * the first render, and only the chrome's own scripts are added.
      *
      * @throws RuntimeException when a theme asset cannot be read
      */
@@ -198,8 +206,10 @@ final readonly class PageRenderer
             return $page;
         }
 
+        $scripts = [...$context->scripts(), ...$this->chromeScripts($basePath, $chrome)];
+
         return $page->withHtml($this->shell->render(
-            $context->withChrome($chrome, $this->scripts($basePath, $chrome, $context->body())),
+            $context->withChrome($chrome, array_values(array_unique($scripts))),
         ));
     }
 
@@ -286,6 +296,41 @@ final readonly class PageRenderer
     }
 
     /**
+     * The scripts that colour a listing block, empty when the page has none to colour.
+     *
+     * @return list<string>
+     *
+     * @throws RuntimeException when a theme asset cannot be read
+     */
+    private function codeScripts(string $basePath, string $body): array
+    {
+        if (! $this->hasCodeBlock($body)) {
+            return [];
+        }
+
+        return [
+            $this->theme->assetUrl($basePath, $this->theme->highlightScriptName()),
+            $this->theme->assetUrl($basePath, $this->theme->highlightLoaderName()),
+        ];
+    }
+
+    /**
+     * The stylesheet that paints a highlighted listing block, empty when the page has none.
+     *
+     * @return list<string>
+     *
+     * @throws RuntimeException when a theme asset cannot be read
+     */
+    private function codeStylesheets(string $basePath, string $body): array
+    {
+        if (! $this->hasCodeBlock($body)) {
+            return [];
+        }
+
+        return [$this->theme->assetUrl($basePath, $this->theme->highlightName())];
+    }
+
+    /**
      * The scripts that draw a diagram, empty when the page has none.
      *
      * @return list<string>
@@ -316,6 +361,19 @@ final readonly class PageRenderer
     }
 
     /**
+     * Whether the converted body carries a listing block the highlighter should colour.
+     *
+     * The converter writes `class="language-php hljs"` and `data-lang="php"` on a source block, so
+     * the language class is the marker. A Mermaid block carries the same shape, and it is excluded:
+     * it is rendered to a diagram, and handing it to the highlighter would replace its source text
+     * with token spans the diagram loader no longer recognises.
+     */
+    private function hasCodeBlock(string $body): bool
+    {
+        return 1 === preg_match('/class="language-(?!mermaid)/', $body);
+    }
+
+    /**
      * Whether the converted body carries a diagram block.
      */
     private function hasMermaid(string $body): bool
@@ -326,6 +384,50 @@ final readonly class PageRenderer
     private function humanise(string $value): string
     {
         return ucwords(strtolower(preg_replace('/[-_]+/', replacement: ' ', subject: $value) ?? $value));
+    }
+
+    /**
+     * The stylesheets and scripts this page needs, in load order.
+     *
+     * The body decides whether a diagram has to be drawn and whether a listing block has to be
+     * coloured, because only the conversion knows what the author wrote. The chrome decides whether
+     * the navigation and search scripts are needed at all. Site configuration decides whether a
+     * listing block is coloured, because the vendored highlighter can be switched off. The vendored
+     * bundles are large, so a page that needs neither never links them.
+     *
+     * @return array{stylesheets: list<string>, scripts: list<string>}
+     *
+     * @throws RuntimeException when a theme asset cannot be read
+     */
+    private function pageAssets(
+        SiteConfig $config,
+        string $basePath,
+        ?string $accent,
+        string $body,
+        PageChrome $chrome,
+    ): array {
+        $codeScripts     = [];
+        $codeStylesheets = [];
+
+        if ($config->render()->syntaxHighlighting()) {
+            $codeScripts     = $this->codeScripts($basePath, $body);
+            $codeStylesheets = $this->codeStylesheets($basePath, $body);
+        }
+
+        return [
+            'stylesheets' => [
+                $this->theme->assetUrl($basePath, $this->theme->baseName()),
+                $this->theme->assetUrl($basePath, $this->theme->siteName()),
+                $this->theme->assetUrl($basePath, $this->theme->accentName($accent)),
+                ...$codeStylesheets,
+            ],
+            'scripts'     => [
+                $this->theme->assetUrl($basePath, $this->theme->themeScriptName()),
+                ...$this->diagramScripts($basePath, $body),
+                ...$codeScripts,
+                ...$this->chromeScripts($basePath, $chrome),
+            ],
+        ];
     }
 
     private function projectTitle(SiteConfig $config, DiscoveredRepository $repository): string
@@ -347,27 +449,6 @@ final readonly class PageRenderer
             'secure' => SafeMode::SECURE,
             default  => SafeMode::SAFE,
         };
-    }
-
-    /**
-     * The scripts this page needs.
-     *
-     * The chrome decides whether the navigation and search scripts are needed at all. The body
-     * decides whether a diagram has to be drawn, because only the converted page knows whether the
-     * author wrote a `[source,mermaid]` block. The vendored bundle is large, so a page without a
-     * diagram never links it.
-     *
-     * @return list<string>
-     *
-     * @throws RuntimeException when a theme asset cannot be read
-     */
-    private function scripts(string $basePath, PageChrome $chrome, string $body): array
-    {
-        return [
-            $this->theme->assetUrl($basePath, $this->theme->themeScriptName()),
-            ...$this->diagramScripts($basePath, $body),
-            ...$this->chromeScripts($basePath, $chrome),
-        ];
     }
 
     private function searchText(string $html, int $limit): string

@@ -258,7 +258,7 @@ jobs:
       - name: Check out the site repository
         uses: actions/checkout@v4
       - name: Build and deploy the site
-        uses: webinertia/asciidoc-php-multi-repo@1.0.x
+        uses: webinertia/asciidoc-php-multi-repo@1.0.0-alpha.4
         with:
           config: site.json
         env:
@@ -266,8 +266,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ----
 
-Replace `main` with the site repository's default branch. Pin the `uses:` reference to the release
-tag that carries the action definition; `1.0.x` names the branch the action is published from.
+Replace `main` with the site repository's default branch. The `uses:` reference is the pin: use a
+release tag such as `1.0.0-alpha.4`, never a branch. The image inside `action.yml` is the major
+alias `:1`, which moves within major 1 as releases are published, so a tag pins the action
+definition but not the exact image bytes. A consumer that needs an exact image must pin to a tag
+whose `action.yml` names a version-specific image; no released tag does that yet.
 `permissions: contents: write` is what lets the action push `gh-pages`.
 
 The `repository_dispatch` event type is `docs-source-updated`. It is the only event type the site

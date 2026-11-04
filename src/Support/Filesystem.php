@@ -10,6 +10,7 @@ use RecursiveIteratorIterator;
 use RuntimeException;
 use SplFileInfo;
 
+use function chmod;
 use function dirname;
 use function file_get_contents;
 use function file_put_contents;
@@ -164,6 +165,15 @@ final class Filesystem
             if (@file_put_contents($temporary, $contents, LOCK_EX) === false) {
                 throw new RuntimeException(sprintf('Unable to write "%s".', $path));
             }
+
+            // tempnam() creates the temporary file with mode 0600 and rename() moves the inode
+            // without touching its mode, so without this the destination would be readable only
+            // by the writing user. That breaks every consumer of the root-running container
+            // image, whose output has to be readable by the runner and by later steps. The mode
+            // is set explicitly rather than inherited from umask so the result does not depend on
+            // how the process was started. The return value is ignored: the write itself
+            // succeeded, so a mode that cannot be widened is not a reason to discard the content.
+            chmod($temporary, permissions: 0o644);
 
             if (@rename($temporary, $path)) {
                 return;

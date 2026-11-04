@@ -8,7 +8,7 @@ Multi-repository site builder for asciidoc-php: aggregates docs from many repos 
 
 - [quickstart.md](quickstart.md) - install, configure, build, watch, and preview from a clean checkout.
 - [Author guide](docs/v1/authoring.adoc) - the `docs/vN` layout, entry pages, includes, links, and the outdated-version banner.
-- [Operator guide](docs/v1/operating.adoc) - the `doc-target` property, the two tokens, the site secrets, and the publish triggers.
+- [Action setup guide](docs/v1/action-setup.adoc) - the `doc-target` property, the two tokens, the site secrets, and the publish triggers.
 - [Theme guide](docs/v1/theming.adoc) - the token set, per-project accents, and light and dark behaviour.
 - [Troubleshooting and reason codes](docs/v1/troubleshooting.adoc) - every reason code, its cause, and its fix.
 

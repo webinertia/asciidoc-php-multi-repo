@@ -153,9 +153,9 @@ ls build/docs/asciidoc-php-multi-repo/v1
 ```
 
 ```
+action-setup.html
 authoring.html
 index.html
-operating.html
 theming.html
 troubleshooting.html
 ```
@@ -279,6 +279,6 @@ output that was produced.
 ## 9. Where to go next
 
 - [Author guide](docs/v1/authoring.adoc) - layout, entry pages, includes, links, and the outdated banner.
-- [Operator guide](docs/v1/operating.adoc) - the property, the tokens, the secrets, and the triggers.
+- [Action setup guide](docs/v1/action-setup.adoc) - the property, the tokens, the secrets, and the triggers.
 - [Theme guide](docs/v1/theming.adoc) - tokens, per-project accents, and light and dark behaviour.
 - [Troubleshooting](docs/v1/troubleshooting.adoc) - every reason code, its cause, and its fix.

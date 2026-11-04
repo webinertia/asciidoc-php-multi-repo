@@ -11,7 +11,7 @@ The four guides below are the complete operator and author documentation for ver
 
 * xref:authoring.adoc[Author guide] - how to lay out `docs/`, add pages, use includes, and link
   between projects.
-* xref:operating.adoc[Operator guide] - the `doc-target` organization property, credentials,
+* xref:action-setup.adoc[Action setup guide] - the `doc-target` organization property, credentials,
   site repository secrets, and the publish triggers.
 * xref:theming.adoc[Theme guide] - the token set, per-project accents, and light and dark mode.
 * xref:troubleshooting.adoc[Troubleshooting and reason codes] - every reason code the build

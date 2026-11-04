@@ -49,7 +49,7 @@ final class ReadmeLinkCheckTest extends TestCase
         foreach ([
             'quickstart.md',
             'docs/v1/authoring.adoc',
-            'docs/v1/operating.adoc',
+            'docs/v1/action-setup.adoc',
             'docs/v1/theming.adoc',
             'docs/v1/troubleshooting.adoc',
         ] as $expected) {

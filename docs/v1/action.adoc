@@ -6,8 +6,10 @@ documentation site on the caller's checkout. A consumer adds one `uses:` line; t
 its image from GHCR, so nothing is installed in the caller's job.
 
 The action is the supported distribution path for a third party. It needs no GitHub App, no
-installation, and no private credential of its own. The xref:operating.adoc[operator guide]
-records the earlier publish model, which this page replaces for third-party use.
+installation, and no private credential of its own. This page is the reference for the action
+itself: its inputs, its image, and the workflows a consumer copies. The
+xref:action-setup.adoc[Action setup guide] covers onboarding end to end, including the
+`doc-target` property, the credentials, and the publish triggers.
 
 == Using the action
 

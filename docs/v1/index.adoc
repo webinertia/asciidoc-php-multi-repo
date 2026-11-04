@@ -13,11 +13,11 @@ The guides below are the complete operator and author documentation for version 
   between projects.
 * xref:action-setup.adoc[Action setup guide] - the `doc-target` organization property, credentials,
   site repository secrets, and the publish triggers.
+* xref:action.adoc[GitHub action reference] - the container action's inputs, its image tags, the
+  Linux runner constraint, and the workflows a consumer copies.
 * xref:theming.adoc[Theme guide] - the token set, per-project accents, and light and dark mode.
 * xref:troubleshooting.adoc[Troubleshooting and reason codes] - every reason code the build
   report can emit, its cause, and its fix.
-* xref:action.adoc[GitHub action reference] - the container action's inputs, its image tags, the
-  Linux runner constraint, and the workflows a consumer copies.
 
 == Getting started
 

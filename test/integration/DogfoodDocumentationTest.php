@@ -43,8 +43,8 @@ final class DogfoodDocumentationTest extends TestCase
     private const array PAGES = [
         'index.html',
         'action.html',
-        'authoring.html',
         'action-setup.html',
+        'authoring.html',
         'theming.html',
         'troubleshooting.html',
     ];

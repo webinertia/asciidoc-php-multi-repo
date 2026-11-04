@@ -8,9 +8,14 @@ name: Publish image
 # Only docker/Dockerfile is publishable. The root Dockerfile is the interactive
 # dev toolchain image and carries Node, because test/integration/
 # SearchBehaviourTest.php shells out to a Node harness. That dependency is for
-# tests and must never reach a published image, so the build is loaded locally
-# first and asserted to carry no Node toolchain. If this workflow is ever
-# pointed at the root Dockerfile, the assertion fails and nothing is pushed.
+# tests and must never reach a published image.
+#
+# The guard is structural rather than advisory: the image is built exactly once,
+# loaded into the local daemon, asserted to carry no Node toolchain, and only
+# then tagged and pushed from that same local image. There is no second build,
+# so the artifact that is asserted is by construction the artifact that is
+# published. Pointing the build at the root Dockerfile fails the assertion and
+# nothing is pushed.
 #
 # A release tag publishes the full version, the `1` major alias the action
 # references, and `latest`. A manual dispatch publishes the same tags from the
@@ -70,6 +75,7 @@ jobs:
           load: true
           push: false
           tags: asciidoc-runtime:assert
+          labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - name: Assert the runtime image carries no Node toolchain
@@ -82,12 +88,14 @@ jobs:
             fi
           done
           echo "The runtime image carries no node, npm, or npx."
-      - name: Push
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          file: docker/Dockerfile
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
+      - name: Tag and push the asserted image
+        env:
+          TAGS: ${{ steps.meta.outputs.tags }}
+        run: |
+          set -eu
+          printf '%s\n' "$TAGS" | while IFS= read -r tag; do
+            [ -n "$tag" ] || continue
+            docker tag asciidoc-runtime:assert "$tag"
+            docker push "$tag"
+          done
+          printf '%s\n' "$TAGS"

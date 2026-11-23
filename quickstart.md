@@ -40,7 +40,7 @@ php bin/asciidoc-php-multi-repo --version
 
 Expected output, where the version is whatever `composer.json` currently declares:
 
-```
+```text
 asciidoc-php-multi-repo 0.0.0-dev
 ```
 
@@ -127,7 +127,7 @@ php bin/asciidoc-php-multi-repo build --config site.json --manifest manifest.jso
 
 Expected output on standard output:
 
-```
+```text
 asciidoc-php-multi-repo: 5 page(s)
 output directory: /absolute/path/to/build/docs
 ```
@@ -141,7 +141,7 @@ Look at the result:
 ls build/docs
 ```
 
-```
+```text
 asciidoc-php-multi-repo/
 ```
 
@@ -152,7 +152,7 @@ rendered page:
 ls build/docs/asciidoc-php-multi-repo/v1
 ```
 
-```
+```text
 action-setup.html
 authoring.html
 index.html
@@ -209,7 +209,7 @@ and a `docs/` tree on the repository's default branch.
    `doc-target` set to `"false"` and are not published until an owner changes it.
 2. Add the documentation tree. Versioned layout:
 
-   ```
+   ```text
    docs/
      v1/
        index.adoc
@@ -218,7 +218,7 @@ and a `docs/` tree on the repository's default branch.
 
    Unversioned layout:
 
-   ```
+   ```text
    docs/
      index.adoc
      guide.adoc

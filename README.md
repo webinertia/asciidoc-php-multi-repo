@@ -67,7 +67,7 @@ directory holds either version subdirectories or an unversioned tree.
 versions, and the directory name is the version label. Version labels sort numerically, so `v10`
 outranks `v2`.
 
-```
+```text
 docs/
   v1/
     index.adoc
@@ -84,7 +84,7 @@ That tree publishes `/slug/v1/index.html`, `/slug/v1/guide.html`,
 **Unversioned layout (FR-011).** When no version subdirectory exists, the documentation directory
 itself is a single version labelled `latest`.
 
-```
+```text
 docs/
   index.adoc
   guide.adoc
@@ -95,7 +95,7 @@ That tree publishes `/slug/latest/index.html` and `/slug/latest/guide.html`.
 **Mixed layout (FR-012).** When version subdirectories and loose AsciiDoc files both exist, the
 version subdirectories win. Loose files are ignored and the build records a warning naming each one.
 
-```
+```text
 docs/
   loose.adoc        <- ignored, with a warning
   v1/

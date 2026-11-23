@@ -9,7 +9,7 @@ site repository, and local container users.
 
 ## Invocation
 
-```
+```text
 asciidoc-php-multi-repo <command> [options]
 ```
 
@@ -104,7 +104,7 @@ that case the message on standard error is the only output.
 
 ## Examples
 
-```
+```bash
 asciidoc-php-multi-repo build --config site.json --report build/report.json
 asciidoc-php-multi-repo validate --manifest test/fixtures/manifest.json
 asciidoc-php-multi-repo build --project message-bus --project messagebus-event --full
